@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IT Movies</title>
+  <meta name="description" content="A list of movies and series about computers, technology, and artificial intelligence">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="static/film-cute-color-96.png">
+</head>
+<body>
+  <div id="app">
+    <header class="top">
+      <div class="brand">
+        <div class="logo">
+          <img src="static/film-cute-color-96.png" alt="IT Movies Logo" width="48" height="48">
+        </div>
+        <div class="brand-text">
+          <h1>{{ t.title }}</h1>
+          <p>{{ t.subtitle }}</p>
+          <p class="invite" v-html="t.invite"></p>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="lang" role="group">
+          <button type="button" :class="{ active: lang === 'ru' }" @click="setLang('ru')">RU</button>
+          <button type="button" :class="{ active: lang === 'en' }" @click="setLang('en')">EN</button>
+        </div>
+        <input id="srch" class="search" v-model="query" type="search" :placeholder="t.search">
+      </div>
+    </header>
+
+    <nav class="nav">
+      <a href="#movies">{{ t.movies }} <span>{{ counts.movies }}</span></a>
+      <a href="#series">{{ t.series }} <span>{{ counts.series }}</span></a>
+      <a href="#documentaries">{{ t.documentaries }} <span>{{ counts.documentaries }}</span></a>
+    </nav>
+
+    <catalog-table id="movies" type-key="movie" :title="t.movies" :items="movies" :t="t" :lang="lang" :sort="sorts.movie" @sort="sortBy"></catalog-table>
+    <catalog-table id="series" type-key="series" :title="t.series" :items="series" :t="t" :lang="lang" :sort="sorts.series" @sort="sortBy"></catalog-table>
+    <catalog-table id="documentaries" type-key="documentary" :title="t.documentaries" :items="documentaries" :t="t" :lang="lang" :sort="sorts.documentary" @sort="sortBy"></catalog-table>
+
+    <footer>
+      Coded with <span class="heart">♥</span> by <a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a>
+    </footer>
+    <button class="scroll-top" @click="scrollToTop" v-show="showScrollTop">↑</button>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
