@@ -14,6 +14,20 @@ window.CATALOG = [
     "kpRating": 7.7
   },
   {
+      "type": "movie",
+      "titleEn": "Mercy",
+      "titleRu": "Казнить нельзя помиловать",
+      "genres": [
+        "scifi",
+        "drama"
+      ],
+      "year": 2026,
+      "imdbId": "tt31050594",
+      "imdbRating": 6.8,
+      "kpId": 5453060,
+      "kpRating": 6.2
+    },
+  {
     "type": "movie",
     "titleEn": "Hacker",
     "titleRu": "Хакер",
