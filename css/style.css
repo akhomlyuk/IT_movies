@@ -269,7 +269,7 @@ td {
   text-align: left;
   padding: 0.62rem 0.8rem;
   border-bottom: 1px solid var(--line);
-  vertical-align: top;
+
 }
 
 th {
@@ -325,7 +325,7 @@ tbody tr:hover {
 .fav-icon {
   display: inline-flex;
   align-items: center;
-  margin-right: 0.35rem;
+  margin-right: 0.15rem;
   vertical-align: text-bottom;
 }
 
