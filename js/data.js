@@ -1192,19 +1192,6 @@ window.CATALOG = [
   },
   {
     "type": "documentary",
-    "titleEn": "The Secret History Of Hacking",
-    "titleRu": "The Secret History Of Hacking",
-    "genres": [
-      "documentary"
-    ],
-    "year": 2001,
-    "imdbId": "tt2335921",
-    "imdbRating": 7.5,
-    "kpId": null,
-    "kpRating": null
-  },
-  {
-    "type": "documentary",
     "titleEn": "The Singularity",
     "titleRu": "Сингулярность",
     "genres": [
