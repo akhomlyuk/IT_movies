@@ -17,6 +17,7 @@ const I18N = {
     empty: "Ничего не найдено",
     genres: {
       crime: "Криминал",
+      ai: "ИИ",
       drama: "Драма",
       thriller: "Триллер",
       romance: "Мелодрама",
@@ -55,6 +56,7 @@ const I18N = {
     empty: "Nothing found",
     genres: {
       crime: "Crime",
+      ai: "AI",
       drama: "Drama",
       thriller: "Thriller",
       romance: "Romance",

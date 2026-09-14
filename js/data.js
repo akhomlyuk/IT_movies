@@ -14,12 +14,55 @@ window.CATALOG = [
     "kpRating": 7.7
   },
   {
+    "type": "movie",
+    "titleEn": "Tron: Ares",
+    "titleRu": "Трон: Арес",
+    "genres": [
+      "scifi",
+      "drama"
+    ],
+    "year": 2025,
+    "imdbId": "tt6604188",
+    "imdbRating": 6.1,
+    "kpId": 634944,
+    "kpRating": 6.2
+    },
+    {
+      "type": "movie",
+      "titleEn": "Twelve Monkeys",
+      "titleRu": "12 обезьян",
+      "genres": [
+        "scifi",
+        "cyberpunk"
+     ],
+      "year": 1995,
+      "imdbId": "tt0114746",
+      "imdbRating": 8.0,
+      "kpId": 502,
+      "kpRating": 7.8,
+      "fav": true
+    },
+    {
+             "type": "movie",
+             "titleEn": "Minority Report",
+             "titleRu": "Особое мнение",
+             "genres": [
+               "crime",
+               "drama"
+             ],
+             "year": 2002,
+             "imdbId": "tt0181689",
+             "imdbRating": 7.6,
+             "kpId": 496,
+             "kpRating": 7.7
+    },
+    {
       "type": "movie",
       "titleEn": "Mercy",
       "titleRu": "Казнить нельзя помиловать",
       "genres": [
         "scifi",
-        "drama"
+        "ai"
       ],
       "year": 2026,
       "imdbId": "tt31050594",
@@ -27,6 +70,33 @@ window.CATALOG = [
       "kpId": 5453060,
       "kpRating": 6.2
     },
+    {
+      "type": "movie",
+      "titleEn": "In Time",
+      "titleRu": "Время",
+      "genres": [
+        "scifi"
+      ],
+      "year": 2011,
+      "imdbId": "tt1637688",
+      "imdbRating": 6.7,
+      "kpId": 517988,
+      "kpRating": 7.3
+    },
+    {
+          "type": "movie",
+          "titleEn": "Upgrade",
+          "titleRu": "Апгрейд",
+          "genres": [
+            "scifi",
+            "cyberpunk"
+          ],
+          "year": 2018,
+          "imdbId": "tt6499752",
+          "imdbRating": 7.5,
+          "kpId": 1009784,
+          "kpRating": 7.6
+        },
   {
     "type": "movie",
     "titleEn": "Hacker",
@@ -1293,6 +1363,63 @@ window.CATALOG = [
     "kpId": 655800,
     "kpRating": 8.5
   },
+  {
+      "type": "series",
+      "titleEn": "12 Monkeys",
+      "titleRu": "12 обезьян",
+      "genres": [
+        "drama",
+        "scifi"
+      ],
+      "year": 2015,
+      "imdbId": "tt3148266",
+      "imdbRating": 7.7,
+      "kpId": 795260,
+      "kpRating": 6.9
+  },
+  {
+      "type": "series",
+      "titleEn": "Fringe",
+      "titleRu": "Грань",
+      "genres": [
+        "scifi",
+        "drama"
+      ],
+      "year": 2008,
+      "imdbId": "tt1119644",
+      "imdbRating": 8.4,
+      "kpId": 412342,
+      "kpRating": 8.0,
+      "fav": true
+  },
+  {
+      "type": "series",
+      "titleEn": "Blade Runner 2099",
+      "titleRu": "Бегущий по лезвию 2099",
+      "genres": [
+        "cyberpunk",
+        "scifi"
+      ],
+      "year": 2026,
+      "imdbId": "tt18224594",
+      "imdbRating": null,
+      "kpId": 4855987,
+      "kpRating": null
+    },
+    {
+          "type": "series",
+          "titleEn": "Murderbot",
+          "titleRu": "Дневники киллербота",
+          "genres": [
+            "cyberpunk",
+            "scifi"
+          ],
+          "year": 2025,
+          "imdbId": "tt30444310",
+          "imdbRating": 7.4,
+          "kpId": 6802577,
+          "kpRating": 7.0
+    },
     {
     "type": "series",
     "titleEn": "The Scene",
