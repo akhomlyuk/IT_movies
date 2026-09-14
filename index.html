@@ -42,6 +42,10 @@
           <button type="button" :class="{ active: lang === 'ru' }" @click="setLang('ru')">RU</button>
           <button type="button" :class="{ active: lang === 'en' }" @click="setLang('en')">EN</button>
         </div>
+        <div class="theme-toggle" role="group">
+          <button type="button" :class="{ active: theme === 'dark' }" @click="setTheme('dark')">🌙</button>
+          <button type="button" :class="{ active: theme === 'light' }" @click="setTheme('light')">☀️</button>
+        </div>
         <input id="srch" class="search" v-model="query" type="search" :placeholder="t.search">
       </div>
     </header>

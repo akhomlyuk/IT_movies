@@ -11,6 +11,19 @@
   --focus: #161513;
 }
 
+:root.dark {
+  --bg: #1a1a1f;
+  --paper: #242429;
+  --ink: #e4e4e6;
+  --muted: #8e8e93;
+  --line: #333338;
+  --line-strong: #45454a;
+  --hover: #2c2c31;
+  --kp: #ff8533;
+  --imdb: #e2c04a;
+  --focus: #e4e4e6;
+}
+
 *,
 *::before,
 *::after {
@@ -149,6 +162,35 @@ a {
 
 .search:focus {
   outline: 1px solid var(--focus);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.theme-toggle button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+}
+
+.theme-toggle button.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.theme-toggle button + button {
+  border-left: 1px solid var(--line-strong);
 }
 
 .nav {
@@ -405,7 +447,8 @@ footer .heart {
     width: 100%;
   }
 
-  .lang {
+  .lang,
+  .theme-toggle {
     width: fit-content;
   }
 

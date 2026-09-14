@@ -202,6 +202,7 @@ createApp({
   components: { CatalogTable },
   setup() {
     const lang = ref(localStorage.getItem("it-movies-lang") || "ru");
+    const theme = ref(localStorage.getItem("it-movies-theme") || "dark");
     const query = ref("");
     const showScrollTop = ref(false);
     const sorts = reactive({
@@ -216,6 +217,15 @@ createApp({
         localStorage.setItem("it-movies-lang", value);
         document.documentElement.lang = value;
         document.title = I18N[value].title;
+      },
+      { immediate: true }
+    );
+
+    watch(
+      theme,
+      (value) => {
+        localStorage.setItem("it-movies-theme", value);
+        document.documentElement.classList.toggle("dark", value === "dark");
       },
       { immediate: true }
     );
@@ -259,6 +269,10 @@ createApp({
       lang.value = next;
     }
 
+    function setTheme(next) {
+      theme.value = next;
+    }
+
     function sortBy(type, key) {
       const current = sorts[type];
       if (current.key === key) {
@@ -275,6 +289,7 @@ createApp({
 
     return {
       lang,
+      theme,
       query,
       showScrollTop,
       sorts,
@@ -284,6 +299,7 @@ createApp({
       documentaries,
       counts,
       setLang,
+      setTheme,
       sortBy,
       scrollToTop,
     };
