@@ -15,6 +15,20 @@ window.CATALOG = [
   },
   {
     "type": "movie",
+    "titleEn": "Khottabych",
+    "titleRu": "}{отт@бь)ч",
+    "genres": [
+      "comedy",
+      "adventure"
+    ],
+    "year": 2006,
+    "imdbId": "tt0466043",
+    "imdbRating": 6.2,
+    "kpId": 161085,
+    "kpRating": 6.4
+  },
+  {
+    "type": "movie",
     "titleEn": "Tron: Ares",
     "titleRu": "Трон: Арес",
     "genres": [
@@ -863,6 +877,46 @@ window.CATALOG = [
   },
   {
     "type": "documentary",
+    "titleEn": "Download: The True Story of the Internet",
+    "titleRu": "Загрузка: Подлинная история Интернета",
+    "genres": [
+      "history"
+    ],
+    "year": 2008,
+    "imdbId": "tt1684716",
+    "imdbRating": 7.7,
+    "kpId": 568047,
+    "kpRating": 7.5,
+    "fav": true
+  },
+  {
+    "type": "documentary",
+    "titleEn": "Running with the Devil: The Wild World of John McAfee",
+    "titleRu": "На грани: Безумная жизнь Джона Макафи",
+    "genres": [
+      "history"
+    ],
+    "year": 2022,
+    "imdbId": "tt21379574",
+    "imdbRating": 5.9,
+    "kpId": 5091663,
+    "kpRating": null
+  },
+  {
+    "type": "documentary",
+    "titleEn": "Cyberbunker: The Criminal Underworld",
+    "titleRu": "Кибербункер: Даркнет в Германии",
+    "genres": [
+      "history"
+    ],
+    "year": 2023,
+    "imdbId": "tt29472617",
+    "imdbRating": 6.4,
+    "kpId": 5413461,
+    "kpRating": null
+  },
+  {
+    "type": "documentary",
     "titleEn": "Citizenfour",
     "titleRu": "Citizenfour: Правда Сноудена",
     "genres": [
@@ -1351,6 +1405,20 @@ window.CATALOG = [
     "kpRating": 8.5
   },
   {
+    "type": "series",
+    "titleEn": "Offlayn",
+    "titleRu": "Оффлайн",
+    "genres": [
+      "drama",
+      "thriller"
+    ],
+    "year": 2022,
+    "imdbId": "tt15866282",
+    "imdbRating": 7.1,
+    "kpId": 1338345,
+    "kpRating": 7.9
+  },
+  {
       "type": "series",
       "titleEn": "12 Monkeys",
       "titleRu": "12 обезьян",
@@ -1511,7 +1579,7 @@ window.CATALOG = [
     "titleEn": "Person of Interest",
     "titleRu": "В поле зрения",
     "genres": [
-      "action",
+      "ai",
       "drama"
     ],
     "year": 2011,
