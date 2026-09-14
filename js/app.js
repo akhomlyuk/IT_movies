@@ -3,7 +3,7 @@ const { createApp, computed, reactive, ref, watch } = Vue;
 const I18N = {
   ru: {
     title: "IT Movies",
-    subtitle: "Подборка фильмов и сериалов о компьютерах, технологиях, искусственном интеллекте",
+    subtitle: "Подборка фильмов и сериалов о компьютерах, технологиях, ИИ и т.д.",
     invite: "Предложить фильм, сериал - <img src=\"static/telegram_32.png\" alt=\"\" width=\"16\" height=\"16\" class=\"tg-icon\"> <a href=\"https://t.me/wh_lab\" target=\"_blank\" rel=\"noopener\">Whitehat Lab</a> или в <a href=\"https://t.me/whitehat_chat\" target=\"_blank\" rel=\"noopener\">чат</a>",
     search: "Поиск по названию, жанру, году",
     movies: "Фильмы",
@@ -41,7 +41,7 @@ const I18N = {
   },
   en: {
     title: "IT Movies",
-    subtitle: "A curated list of films and series about computers, technology, artificial intelligence",
+    subtitle: "A curated list of films and series about computers, technology, AI, etc",
     invite: "Suggest a film, series - <img src=\"static/telegram_32.png\" alt=\"\" width=\"16\" height=\"16\" class=\"tg-icon\"> <a href=\"https://t.me/wh_lab\" target=\"_blank\" rel=\"noopener\">Whitehat Lab</a> or in <a href=\"https://t.me/whitehat_chat\" target=\"_blank\" rel=\"noopener\">chat</a>",
     search: "Search title, genre, year",
     movies: "Movies",
