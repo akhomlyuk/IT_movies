@@ -713,7 +713,7 @@ window.CATALOG = [
     "titleEn": "Tron",
     "titleRu": "Трон",
     "genres": [
-      "action",
+      "scifi",
       "adventure"
     ],
     "year": 1982,
@@ -727,7 +727,7 @@ window.CATALOG = [
     "titleEn": "Tron: Legacy",
     "titleRu": "Трон: Наследие",
     "genres": [
-      "action",
+      "scifi",
       "adventure"
     ],
     "year": 2010,
@@ -948,6 +948,19 @@ window.CATALOG = [
     "kpRating": 7.8,
     "fav": true
   },
+  {
+      "type": "documentary",
+      "titleEn": "Как получить доступ ко всему: Реверс-инжиниринг",
+      "titleRu": "Как получить доступ ко всему: Реверс-инжиниринг",
+      "genres": [
+        "documentary"
+      ],
+      "year": 2026,
+      "imdbId": null
+      "imdbRating": null,
+      "kpId": 11442722,
+      "kpRating": null,
+    },
   {
     "type": "documentary",
     "titleEn": "Plug and Pray",
