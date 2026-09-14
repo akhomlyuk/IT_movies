@@ -875,19 +875,19 @@ window.CATALOG = [
     "kpRating": 7.3,
     "fav": true
   },
-  {
-    "type": "documentary",
-    "titleEn": "Code 2600",
-    "titleRu": "Code 2600",
-    "genres": [
-      "documentary"
-    ],
-    "year": 2012,
-    "imdbId": "tt1830538",
-    "imdbRating": 7.2,
-    "kpId": null,
-    "kpRating": null
-  },
+//  {
+//    "type": "documentary",
+//    "titleEn": "Code 2600",
+//    "titleRu": "Code 2600",
+//    "genres": [
+//      "documentary"
+//    ],
+//    "year": 2012,
+//    "imdbId": "tt1830538",
+//    "imdbRating": 7.2,
+//    "kpId": null,
+//    "kpRating": null
+//  },
   {
     "type": "documentary",
     "titleEn": "Deep Web",
@@ -901,19 +901,19 @@ window.CATALOG = [
     "kpId": 808328,
     "kpRating": 6.9
   },
-  {
-    "type": "documentary",
-    "titleEn": "DEFCON: The Documentary",
-    "titleRu": "DEFCON",
-    "genres": [
-      "documentary"
-    ],
-    "year": 2013,
-    "imdbId": "tt3010462",
-    "imdbRating": 5.7,
-    "kpId": null,
-    "kpRating": null
-  },
+//  {
+//    "type": "documentary",
+//    "titleEn": "DEFCON: The Documentary",
+//    "titleRu": "DEFCON",
+//    "genres": [
+//      "documentary"
+//    ],
+//    "year": 2013,
+//    "imdbId": "tt3010462",
+//    "imdbRating": 5.7,
+//    "kpId": null,
+//    "kpRating": null
+//  },
   {
     "type": "documentary",
     "titleEn": "DSKNECTD",
@@ -1072,32 +1072,32 @@ window.CATALOG = [
     "kpRating": 7.2,
     "fav": true
   },
-  {
-    "type": "documentary",
-    "titleEn": "Silk Road: Drugs, Death and the Dark Web",
-    "titleRu": "Silk Road: Drugs, Death and the Dark Web",
-    "genres": [
-      "documentary"
-    ],
-    "year": 2017,
-    "imdbId": "tt7301126",
-    "imdbRating": 7.2,
-    "kpId": null,
-    "kpRating": null
-  },
-  {
-    "type": "documentary",
-    "titleEn": "Softwaring Hard",
-    "titleRu": "Softwaring Hard",
-    "genres": [
-      "documentary"
-    ],
-    "year": 2014,
-    "imdbId": "tt3063636",
-    "imdbRating": 7.4,
-    "kpId": null,
-    "kpRating": null
-  },
+//  {
+//    "type": "documentary",
+//    "titleEn": "Silk Road: Drugs, Death and the Dark Web",
+//    "titleRu": "Silk Road: Drugs, Death and the Dark Web",
+//    "genres": [
+//      "documentary"
+//    ],
+//    "year": 2017,
+//    "imdbId": "tt7301126",
+//    "imdbRating": 7.2,
+//    "kpId": null,
+//    "kpRating": null
+//  },
+//  {
+//    "type": "documentary",
+//    "titleEn": "Softwaring Hard",
+//    "titleRu": "Softwaring Hard",
+//    "genres": [
+//      "documentary"
+//    ],
+//    "year": 2014,
+//    "imdbId": "tt3063636",
+//    "imdbRating": 7.4,
+//    "kpId": null,
+//    "kpRating": null
+//  },
   {
     "type": "documentary",
     "titleEn": "Steal This Film",

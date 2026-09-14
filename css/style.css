@@ -386,6 +386,32 @@ a.imdb .star {
   opacity: 0.9;
 }
 
+a.kp .ext-icon,
+a.imdb .ext-icon {
+  display: inline-block;
+  margin-left: 0.25em;
+  margin-right: 0.25em;
+  vertical-align: middle;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+
+a.kp:hover .ext-icon,
+a.imdb:hover .ext-icon {
+  opacity: 1;
+}
+
+:root.dark a.kp .ext-icon,
+:root.dark a.imdb .ext-icon {
+  filter: brightness(2.5);
+  opacity: 0.8;
+}
+
+:root.dark a.kp:hover .ext-icon,
+:root.dark a.imdb:hover .ext-icon {
+  opacity: 1;
+}
+
 .empty {
   color: var(--muted);
   padding: 1rem 0.8rem;
