@@ -956,10 +956,10 @@ window.CATALOG = [
         "documentary"
       ],
       "year": 2026,
-      "imdbId": null
+      "imdbId": null,
       "imdbRating": null,
       "kpId": 11442722,
-      "kpRating": null,
+      "kpRating": null
     },
   {
     "type": "documentary",
