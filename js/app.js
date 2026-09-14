@@ -182,10 +182,10 @@ const CatalogTable = {
               <td class="genre">{{ genreLabel(item) }}</td>
               <td class="year">{{ item.year }}</td>
               <td class="num">
-                <a class="kp" :href="kpUrl(item)" target="_blank" rel="noopener"><img class="ext-icon" src="static/external_link_icon.png" alt="" width="12" height="12"><span v-if="item.kpRating != null">{{ formatRating(item.kpRating) }}</span><span class="star" v-if="isHighRating(item.kpRating)" aria-hidden="true">★</span></a>
+                <img class="ext-icon" src="static/external_link_icon.png" alt="" width="12" height="12"><a class="kp" :href="kpUrl(item)" target="_blank" rel="noopener"><span v-if="item.kpRating != null">{{ formatRating(item.kpRating) }}</span><span class="star" v-if="isHighRating(item.kpRating)" aria-hidden="true">★</span></a>
               </td>
               <td class="num">
-                <a class="imdb" :href="imdbUrl(item)" target="_blank" rel="noopener"><img class="ext-icon" src="static/external_link_icon.png" alt="" width="12" height="12"><span v-if="item.imdbRating != null">{{ formatRating(item.imdbRating) }}</span><span class="star" v-if="isHighRating(item.imdbRating)" aria-hidden="true">★</span></a>
+                <img class="ext-icon" src="static/external_link_icon.png" alt="" width="12" height="12"><a class="imdb" :href="imdbUrl(item)" target="_blank" rel="noopener"><span v-if="item.imdbRating != null">{{ formatRating(item.imdbRating) }}</span><span class="star" v-if="isHighRating(item.imdbRating)" aria-hidden="true">★</span></a>
               </td>
             </tr>
             <tr v-if="!items.length">
