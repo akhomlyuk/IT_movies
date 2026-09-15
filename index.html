@@ -67,7 +67,7 @@
     </main>
     <footer>
       Coded with <span class="heart">♥</span> by <a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a>
-      <span v-if="renderTime"> ⚡️ Render: {{ renderTime }}ms</span>
+      <span v-if="renderTime"> ⚡️ Render: {{ renderTime }}ms</span><span> 🎬 Всего фильмов: {{ counts.all }}</span>
     </footer>
     <button class="scroll-top" @click="scrollToTop" v-show="showScrollTop">↑</button>
   </div>
