@@ -14,6 +14,7 @@ const I18N = {
     year: "Год",
     kp: "Кинопоиск",
     imdb: "IMDb",
+    recommend: "Рекомендую",
     empty: "Ничего не найдено",
     genres: {
       crime: "Криминал",
@@ -53,6 +54,7 @@ const I18N = {
     year: "Year",
     kp: "Kinopoisk",
     imdb: "IMDb",
+    recommend:"I recommend",
     empty: "Nothing found",
     genres: {
       crime: "Crime",
@@ -203,7 +205,7 @@ const CatalogTable = {
                   <img class="poster-icon" src="static/poster_icon.png" alt="" width="24" height="24">
                   <img class="poster-tooltip" :src="item.poster" :alt="displayTitle(item)" loading="lazy" decoding="async">
                 </span>
-                <span class="fav-icon" v-if="item.fav"><img :src="favIcon" alt="" width="24" height="24"></span>
+                <span class="fav-icon" :title="t.recommend" v-if="item.fav"><img :src="favIcon" :alt="t.recommend" width="24" height="24"></span>
                 <a :href="imdbUrl(item)" target="_blank" rel="noopener">{{ displayTitle(item) }}</a>
                 <span class="alt-title" v-if="altTitle(item)">{{ altTitle(item) }}</span>
               </td>
