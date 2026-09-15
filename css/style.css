@@ -11,6 +11,22 @@
   --focus: #161513;
 }
 
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../static/fonts/roboto-regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../static/fonts/roboto-medium.woff2") format("woff2");
+}
+
 :root.dark {
   --bg: #1a1a1f;
   --paper: #242429;
