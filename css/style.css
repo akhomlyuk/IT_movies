@@ -52,7 +52,7 @@ a {
 #app {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 2.25rem 1.25rem 4rem;
+  padding: 2.25rem 1.25rem 2.25rem;
 }
 
 .top {
@@ -198,7 +198,7 @@ a {
   flex-wrap: wrap;
   gap: 0.5rem 1.25rem;
   margin: 1.1rem 0 2rem;
-  font-size: 0.92rem;
+  font-size: 1rem;
 }
 
 .nav a {
@@ -405,7 +405,7 @@ a.imdb .star {
 
 footer {
   margin-top: 1rem;
-  padding-top: 1.25rem;
+  padding-top: 1rem;
   border-top: 1px solid var(--line);
   text-align: center;
   color: var(--muted);
