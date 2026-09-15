@@ -61,9 +61,9 @@
     </nav>
 
     <main>
-    <catalog-table id="movies" type-key="movie" :title="t.movies" :items="movies" :t="t" :lang="lang" :sort="sorts.movie" @sort="sortBy"></catalog-table>
-    <catalog-table id="series" type-key="series" :title="t.series" :items="series" :t="t" :lang="lang" :sort="sorts.series" @sort="sortBy"></catalog-table>
-    <catalog-table id="documentaries" type-key="documentary" :title="t.documentaries" :items="documentaries" :t="t" :lang="lang" :sort="sorts.documentary" @sort="sortBy"></catalog-table>
+    <catalog-table id="movies" type-key="movie" :title="t.movies" :items="movies" :t="t" :lang="lang" :sort="sorts.movie" :with-posters="isDesktop" @sort="sortBy"></catalog-table>
+    <catalog-table id="series" type-key="series" :title="t.series" :items="series" :t="t" :lang="lang" :sort="sorts.series" :with-posters="isDesktop" @sort="sortBy"></catalog-table>
+    <catalog-table id="documentaries" type-key="documentary" :title="t.documentaries" :items="documentaries" :t="t" :lang="lang" :sort="sorts.documentary" :with-posters="isDesktop" @sort="sortBy"></catalog-table>
     </main>
     <footer>
       Coded with <span class="heart">♥</span> by <a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a>

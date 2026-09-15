@@ -54,7 +54,8 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 502,
     "kpRating": 7.8,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/12monkeys_film_poster.webp"
   },
   {
     "type": "movie",

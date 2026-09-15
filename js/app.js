@@ -114,6 +114,21 @@ function isHighRating(value) {
   return value != null && value !== "" && Number(value) >= 7;
 }
 
+// Posters are a hover-only feature, so they are rendered on desktop devices only
+// (fine pointer that can hover, wide enough viewport for the tooltip).
+const DESKTOP_QUERY = "(hover: hover) and (pointer: fine) and (min-width: 721px)";
+
+function useIsDesktop() {
+  const mq = window.matchMedia(DESKTOP_QUERY);
+  const isDesktop = ref(mq.matches);
+  const onChange = (event) => {
+    isDesktop.value = event.matches;
+  };
+  onMounted(() => mq.addEventListener("change", onChange));
+  onUnmounted(() => mq.removeEventListener("change", onChange));
+  return isDesktop;
+}
+
 function imdbUrl(item) {
   return `https://www.imdb.com/title/${item.imdbId}/`;
 }
@@ -130,7 +145,8 @@ const CatalogTable = {
     items: Array,
     t: Object,
     lang: String,
-    sort: Object
+    sort: Object,
+    withPosters: Boolean
   },
   emits: ["sort"],
   methods: {
@@ -183,6 +199,10 @@ const CatalogTable = {
           <tbody>
             <tr v-for="item in items" :key="item.imdbId">
               <td class="title-cell">
+                <span class="poster-wrap" v-if="withPosters && item.poster">
+                  <img class="poster-icon" src="static/poster_icon.png" alt="" width="24" height="24">
+                  <img class="poster-tooltip" :src="item.poster" :alt="displayTitle(item)" loading="lazy" decoding="async">
+                </span>
                 <span class="fav-icon" v-if="item.fav"><img :src="favIcon" alt="" width="24" height="24"></span>
                 <a :href="imdbUrl(item)" target="_blank" rel="noopener">{{ displayTitle(item) }}</a>
                 <span class="alt-title" v-if="altTitle(item)">{{ altTitle(item) }}</span>
@@ -215,6 +235,7 @@ const app = createApp({
     const query = ref("");
     const showScrollTop = ref(false);
     const renderTime = ref(null);
+    const isDesktop = useIsDesktop();
 
     onMounted(() => {
       renderTime.value = (performance.now() - start).toFixed(1);
@@ -316,6 +337,7 @@ const app = createApp({
       query,
       showScrollTop,
       renderTime,
+      isDesktop,
       sorts,
       t,
       series,

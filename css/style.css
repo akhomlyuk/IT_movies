@@ -334,6 +334,40 @@ tbody tr:hover {
 
 .title-cell {
   min-width: 220px;
+  position: relative;
+}
+
+.poster-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: text-bottom;
+}
+
+.poster-icon {
+  cursor: pointer;
+}
+
+.poster-tooltip {
+  position: absolute;
+  top: 100%;
+  margin-top: 0.25rem;
+  margin-left: 15vw;
+  display: block;
+  width: 180px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 100;
+}
+
+/* Posters are rendered by Vue only on desktop, hover is the only trigger */
+@media (hover: hover) {
+  .poster-wrap:hover .poster-tooltip {
+    opacity: 1;
+  }
 }
 
 .fav-icon {
