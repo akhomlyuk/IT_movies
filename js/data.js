@@ -40,77 +40,77 @@ window.CATALOG = [
     "imdbRating": 6.1,
     "kpId": 634944,
     "kpRating": 6.2
-    },
-    {
-      "type": "movie",
-      "titleEn": "Twelve Monkeys",
-      "titleRu": "12 обезьян",
-      "genres": [
-        "scifi",
-        "cyberpunk"
-     ],
-      "year": 1995,
-      "imdbId": "tt0114746",
-      "imdbRating": 8.0,
-      "kpId": 502,
-      "kpRating": 7.8,
-      "fav": true
-    },
-    {
-             "type": "movie",
-             "titleEn": "Minority Report",
-             "titleRu": "Особое мнение",
-             "genres": [
-               "crime",
-               "drama"
-             ],
-             "year": 2002,
-             "imdbId": "tt0181689",
-             "imdbRating": 7.6,
-             "kpId": 496,
-             "kpRating": 7.7
-    },
-    {
-      "type": "movie",
-      "titleEn": "Mercy",
-      "titleRu": "Казнить нельзя помиловать",
-      "genres": [
-        "scifi",
-        "ai"
-      ],
-      "year": 2026,
-      "imdbId": "tt31050594",
-      "imdbRating": 6.8,
-      "kpId": 5453060,
-      "kpRating": 6.2
-    },
-    {
-      "type": "movie",
-      "titleEn": "In Time",
-      "titleRu": "Время",
-      "genres": [
-        "scifi"
-      ],
-      "year": 2011,
-      "imdbId": "tt1637688",
-      "imdbRating": 6.7,
-      "kpId": 517988,
-      "kpRating": 7.3
-    },
-    {
-          "type": "movie",
-          "titleEn": "Upgrade",
-          "titleRu": "Апгрейд",
-          "genres": [
-            "scifi",
-            "cyberpunk"
-          ],
-          "year": 2018,
-          "imdbId": "tt6499752",
-          "imdbRating": 7.5,
-          "kpId": 1009784,
-          "kpRating": 7.6
-        },
+  },
+  {
+    "type": "movie",
+    "titleEn": "Twelve Monkeys",
+    "titleRu": "12 обезьян",
+    "genres": [
+      "scifi",
+      "cyberpunk"
+    ],
+    "year": 1995,
+    "imdbId": "tt0114746",
+    "imdbRating": 8.0,
+    "kpId": 502,
+    "kpRating": 7.8,
+    "fav": true
+  },
+  {
+    "type": "movie",
+    "titleEn": "Minority Report",
+    "titleRu": "Особое мнение",
+    "genres": [
+      "crime",
+      "drama"
+    ],
+    "year": 2002,
+    "imdbId": "tt0181689",
+    "imdbRating": 7.6,
+    "kpId": 496,
+    "kpRating": 7.7
+  },
+  {
+    "type": "movie",
+    "titleEn": "Mercy",
+    "titleRu": "Казнить нельзя помиловать",
+    "genres": [
+      "scifi",
+      "ai"
+    ],
+    "year": 2026,
+    "imdbId": "tt31050594",
+    "imdbRating": 6.8,
+    "kpId": 5453060,
+    "kpRating": 6.2
+  },
+  {
+    "type": "movie",
+    "titleEn": "In Time",
+    "titleRu": "Время",
+    "genres": [
+      "scifi"
+    ],
+    "year": 2011,
+    "imdbId": "tt1637688",
+    "imdbRating": 6.7,
+    "kpId": 517988,
+    "kpRating": 7.3
+  },
+  {
+    "type": "movie",
+    "titleEn": "Upgrade",
+    "titleRu": "Апгрейд",
+    "genres": [
+      "scifi",
+      "cyberpunk"
+    ],
+    "year": 2018,
+    "imdbId": "tt6499752",
+    "imdbRating": 7.5,
+    "kpId": 1009784,
+    "kpRating": 7.6
+  },
   {
     "type": "movie",
     "titleEn": "Hacker",
@@ -929,19 +929,7 @@ window.CATALOG = [
     "kpRating": 7.3,
     "fav": true
   },
-//  {
-//    "type": "documentary",
-//    "titleEn": "Code 2600",
-//    "titleRu": "Code 2600",
-//    "genres": [
-//      "documentary"
-//    ],
-//    "year": 2012,
-//    "imdbId": "tt1830538",
-//    "imdbRating": 7.2,
-//    "kpId": null,
-//    "kpRating": null
-//  },
+
   {
     "type": "documentary",
     "titleEn": "Deep Web",
@@ -955,19 +943,7 @@ window.CATALOG = [
     "kpId": 808328,
     "kpRating": 6.9
   },
-//  {
-//    "type": "documentary",
-//    "titleEn": "DEFCON: The Documentary",
-//    "titleRu": "DEFCON",
-//    "genres": [
-//      "documentary"
-//    ],
-//    "year": 2013,
-//    "imdbId": "tt3010462",
-//    "imdbRating": 5.7,
-//    "kpId": null,
-//    "kpRating": null
-//  },
+
   {
     "type": "documentary",
     "titleEn": "DSKNECTD",
@@ -1087,18 +1063,18 @@ window.CATALOG = [
     "fav": true
   },
   {
-      "type": "documentary",
-      "titleEn": "Как получить доступ ко всему: Реверс-инжиниринг",
-      "titleRu": "Как получить доступ ко всему: Реверс-инжиниринг",
-      "genres": [
-        "documentary"
-      ],
-      "year": 2026,
-      "imdbId": null,
-      "imdbRating": null,
-      "kpId": 11442722,
-      "kpRating": null
-    },
+    "type": "documentary",
+    "titleEn": "Как получить доступ ко всему: Реверс-инжиниринг",
+    "titleRu": "Как получить доступ ко всему: Реверс-инжиниринг",
+    "genres": [
+      "documentary"
+    ],
+    "year": 2026,
+    "imdbId": null,
+    "imdbRating": null,
+    "kpId": 11442722,
+    "kpRating": null
+  },
   {
     "type": "documentary",
     "titleEn": "Plug and Pray",
@@ -1126,32 +1102,7 @@ window.CATALOG = [
     "kpRating": 7.2,
     "fav": true
   },
-//  {
-//    "type": "documentary",
-//    "titleEn": "Silk Road: Drugs, Death and the Dark Web",
-//    "titleRu": "Silk Road: Drugs, Death and the Dark Web",
-//    "genres": [
-//      "documentary"
-//    ],
-//    "year": 2017,
-//    "imdbId": "tt7301126",
-//    "imdbRating": 7.2,
-//    "kpId": null,
-//    "kpRating": null
-//  },
-//  {
-//    "type": "documentary",
-//    "titleEn": "Softwaring Hard",
-//    "titleRu": "Softwaring Hard",
-//    "genres": [
-//      "documentary"
-//    ],
-//    "year": 2014,
-//    "imdbId": "tt3063636",
-//    "imdbRating": 7.4,
-//    "kpId": null,
-//    "kpRating": null
-//  },
+
   {
     "type": "documentary",
     "titleEn": "Steal This Film",
@@ -1349,7 +1300,7 @@ window.CATALOG = [
     "imdbId": "tt6700846",
     "imdbRating": 7.8,
     "kpId": 1049453,
-    "kpRating": 8.1,
+    "kpRating": 8.1
   },
   {
     "type": "documentary",
@@ -1362,7 +1313,7 @@ window.CATALOG = [
     "imdbId": "tt4736550",
     "imdbRating": 7.0,
     "kpId": 1282028,
-    "kpRating": 6.4,
+    "kpRating": 6.4
   },
   {
     "type": "documentary",
@@ -1375,7 +1326,7 @@ window.CATALOG = [
     "imdbId": "tt11354168",
     "imdbRating": 7.2,
     "kpId": 1331542,
-    "kpRating": 6.5,
+    "kpRating": 6.5
   },
   {
     "type": "documentary",
@@ -1388,7 +1339,7 @@ window.CATALOG = [
     "imdbId": "tt8421554",
     "imdbRating": 7.8,
     "kpId": 1161421,
-    "kpRating": null,
+    "kpRating": null
   },
   {
     "type": "series",
@@ -1433,63 +1384,63 @@ window.CATALOG = [
     "kpRating": 7.9
   },
   {
-      "type": "series",
-      "titleEn": "12 Monkeys",
-      "titleRu": "12 обезьян",
-      "genres": [
-        "drama",
-        "scifi"
-      ],
-      "year": 2015,
-      "imdbId": "tt3148266",
-      "imdbRating": 7.7,
-      "kpId": 795260,
-      "kpRating": 6.9
+    "type": "series",
+    "titleEn": "12 Monkeys",
+    "titleRu": "12 обезьян",
+    "genres": [
+      "drama",
+      "scifi"
+    ],
+    "year": 2015,
+    "imdbId": "tt3148266",
+    "imdbRating": 7.7,
+    "kpId": 795260,
+    "kpRating": 6.9
   },
   {
-      "type": "series",
-      "titleEn": "Fringe",
-      "titleRu": "Грань",
-      "genres": [
-        "scifi",
-        "drama"
-      ],
-      "year": 2008,
-      "imdbId": "tt1119644",
-      "imdbRating": 8.4,
-      "kpId": 412342,
-      "kpRating": 8.0,
-      "fav": true
+    "type": "series",
+    "titleEn": "Fringe",
+    "titleRu": "Грань",
+    "genres": [
+      "scifi",
+      "drama"
+    ],
+    "year": 2008,
+    "imdbId": "tt1119644",
+    "imdbRating": 8.4,
+    "kpId": 412342,
+    "kpRating": 8.0,
+    "fav": true
   },
   {
-      "type": "series",
-      "titleEn": "Blade Runner 2099",
-      "titleRu": "Бегущий по лезвию 2099",
-      "genres": [
-        "cyberpunk",
-        "scifi"
-      ],
-      "year": 2026,
-      "imdbId": "tt18224594",
-      "imdbRating": null,
-      "kpId": 4855987,
-      "kpRating": null
-    },
-    {
-          "type": "series",
-          "titleEn": "Murderbot",
-          "titleRu": "Дневники киллербота",
-          "genres": [
-            "cyberpunk",
-            "scifi"
-          ],
-          "year": 2025,
-          "imdbId": "tt30444310",
-          "imdbRating": 7.4,
-          "kpId": 6802577,
-          "kpRating": 7.0
-    },
-    {
+    "type": "series",
+    "titleEn": "Blade Runner 2099",
+    "titleRu": "Бегущий по лезвию 2099",
+    "genres": [
+      "cyberpunk",
+      "scifi"
+    ],
+    "year": 2026,
+    "imdbId": "tt18224594",
+    "imdbRating": null,
+    "kpId": 4855987,
+    "kpRating": null
+  },
+  {
+    "type": "series",
+    "titleEn": "Murderbot",
+    "titleRu": "Дневники киллербота",
+    "genres": [
+      "cyberpunk",
+      "scifi"
+    ],
+    "year": 2025,
+    "imdbId": "tt30444310",
+    "imdbRating": 7.4,
+    "kpId": 6802577,
+    "kpRating": 7.0
+  },
+  {
     "type": "series",
     "titleEn": "The Scene",
     "titleRu": "Сцена",

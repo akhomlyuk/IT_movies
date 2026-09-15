@@ -55,9 +55,9 @@
     </header>
 
     <nav class="nav">
-      <a href="#movies">{{ t.movies }} <span>{{ counts.movies }}</span></a>
-      <a href="#series">{{ t.series }} <span>{{ counts.series }}</span></a>
-      <a href="#documentaries">{{ t.documentaries }} <span>{{ counts.documentaries }}</span></a>
+      <a href="#movies">{{ t.movies }}</a> <span>{{ counts.movies }}</span>
+      <a href="#series">{{ t.series }}</a> <span>{{ counts.series }}</span>
+      <a href="#documentaries">{{ t.documentaries }}</a> <span>{{ counts.documentaries }}</span>
     </nav>
     <main>
     <catalog-table id="movies" type-key="movie" :title="t.movies" :items="movies" :t="t" :lang="lang" :sort="sorts.movie" @sort="sortBy"></catalog-table>

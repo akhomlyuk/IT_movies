@@ -1,4 +1,4 @@
-const { createApp, computed, reactive, ref, watch } = Vue;
+const { createApp, computed, reactive, ref, watch, onMounted, onUnmounted } = Vue;
 
 const I18N = {
   ru: {
@@ -123,7 +123,15 @@ function kpUrl(item) {
 }
 
 const CatalogTable = {
-  props: ["id", "typeKey", "title", "items", "t", "lang", "sort"],
+  props: {
+    id: String,
+    typeKey: String,
+    title: String,
+    items: Array,
+    t: Object,
+    lang: String,
+    sort: Object
+  },
   emits: ["sort"],
   methods: {
     formatRating,
@@ -230,8 +238,16 @@ createApp({
       { immediate: true }
     );
 
-    window.addEventListener("scroll", () => {
+    function handleScroll() {
       showScrollTop.value = window.scrollY > 300;
+    }
+
+    onMounted(() => {
+      window.addEventListener("scroll", handleScroll);
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener("scroll", handleScroll);
     });
 
     const t = computed(() => I18N[lang.value]);
@@ -263,6 +279,7 @@ createApp({
       series: series.value.length,
       movies: movies.value.length,
       documentaries: documentaries.value.length,
+      all: series.value.length + movies.value.length + documentaries.value.length,
     }));
 
     function setLang(next) {
