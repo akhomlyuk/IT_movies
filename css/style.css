@@ -105,7 +105,6 @@ a {
   font-family: "Roboto", "Segoe UI", sans-serif;
   font-size: clamp(1.8rem, 3vw, 2.4rem);
   font-weight: 500;
-  letter-spacing: -0.03em;
 }
 
 .brand p {
