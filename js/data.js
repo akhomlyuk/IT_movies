@@ -1357,6 +1357,19 @@ window.CATALOG = [
   },
   {
     "type": "series",
+    "titleEn": "Lo and Behold: Reveries of the Connected World",
+    "titleRu": "О, Интернет! Грезы цифрового мира",
+    "genres": [
+      "history"
+    ],
+    "year": 2016,
+    "imdbId": "tt5275828",
+    "imdbRating": 7.0,
+    "kpId": 954061,
+    "kpRating": 6.6
+  },
+  {
+    "type": "series",
     "titleEn": "The Billion Dollar Code",
     "titleRu": "Код на миллиард долларов",
     "genres": [

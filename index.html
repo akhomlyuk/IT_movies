@@ -59,6 +59,7 @@
       <a href="#series">{{ t.series }}</a> <span>{{ counts.series }}</span>
       <a href="#documentaries">{{ t.documentaries }}</a> <span>{{ counts.documentaries }}</span>
     </nav>
+
     <main>
     <catalog-table id="movies" type-key="movie" :title="t.movies" :items="movies" :t="t" :lang="lang" :sort="sorts.movie" @sort="sortBy"></catalog-table>
     <catalog-table id="series" type-key="series" :title="t.series" :items="series" :t="t" :lang="lang" :sort="sorts.series" @sort="sortBy"></catalog-table>
@@ -66,6 +67,7 @@
     </main>
     <footer>
       Coded with <span class="heart">♥</span> by <a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a>
+      <span v-if="renderTime"> ⚡️ Render: {{ renderTime }}ms</span>
     </footer>
     <button class="scroll-top" @click="scrollToTop" v-show="showScrollTop">↑</button>
   </div>

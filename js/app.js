@@ -206,13 +206,19 @@ const CatalogTable = {
   `,
 };
 
-createApp({
+const start = performance.now();
+const app = createApp({
   components: { CatalogTable },
   setup() {
     const lang = ref(localStorage.getItem("it-movies-lang") || "ru");
     const theme = ref(localStorage.getItem("it-movies-theme") || "dark");
     const query = ref("");
     const showScrollTop = ref(false);
+    const renderTime = ref(null);
+
+    onMounted(() => {
+      renderTime.value = (performance.now() - start).toFixed(1);
+    });
     const sorts = reactive({
       series: { key: "title", dir: "asc" },
       movie: { key: "title", dir: "asc" },
@@ -309,6 +315,7 @@ createApp({
       theme,
       query,
       showScrollTop,
+      renderTime,
       sorts,
       t,
       series,
@@ -321,4 +328,6 @@ createApp({
       scrollToTop,
     };
   },
-}).mount("#app");
+});
+
+app.mount("#app");
