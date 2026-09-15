@@ -1406,6 +1406,20 @@ window.CATALOG = [
   },
   {
     "type": "series",
+    "titleEn": "The Billion Dollar Code",
+    "titleRu": "Код на миллиард долларов",
+    "genres": [
+      "drama",
+      "biography"
+    ],
+    "year": 2021,
+    "imdbId": "tt15392100",
+    "imdbRating": 7.9,
+    "kpId": 4630370,
+    "kpRating": 7.6
+  },
+  {
+    "type": "series",
     "titleEn": "Offlayn",
     "titleRu": "Оффлайн",
     "genres": [
