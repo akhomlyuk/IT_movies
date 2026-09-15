@@ -267,7 +267,7 @@ td:nth-child(5) {
 th,
 td {
   text-align: left;
-  padding: 0.62rem 0.8rem;
+  padding: 0.6rem 0.7rem;
   border-bottom: 1px solid var(--line);
 
 }
@@ -475,11 +475,6 @@ footer .heart {
   th:nth-child(2),
   td:nth-child(2) {
     display: none;
-  }
-
-  th:nth-child(1),
-  td:nth-child(1) {
-    width: 50%;
   }
 
   th:nth-child(3),
