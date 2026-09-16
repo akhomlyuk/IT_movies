@@ -331,7 +331,7 @@ tbody tr:hover {
 
 .poster-icon {
   cursor: pointer;
-  margin-right: 0.15rem;
+  margin-right: 0.1rem;
 }
 
 .poster-modal {
@@ -383,7 +383,7 @@ tbody tr:hover {
 .fav-icon {
   display: inline-flex;
   align-items: center;
-  margin-right: 0.15rem;
+  margin-right: 0.1rem;
   vertical-align: text-bottom;
 }
 

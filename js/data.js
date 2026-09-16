@@ -15,6 +15,48 @@ window.CATALOG = [
   },
   {
     "type": "movie",
+    "titleEn": "Ghost in the Shell",
+    "titleRu": "Призрак в доспехах",
+    "genres": [
+      "ai",
+      "cyberpunk"
+    ],
+    "year": 2017,
+    "imdbId": "tt1219827",
+    "imdbRating": 6.3,
+    "kpId": 843789,
+    "kpRating": 6.4
+  },
+  {
+    "type": "movie",
+    "titleEn": "H0us3",
+    "titleRu": "Пароль: Хаус",
+    "genres": [
+      "scifi",
+      "horror"
+    ],
+    "year": 2018,
+    "imdbId": "tt9055630",
+    "imdbRating": 5.5,
+    "kpId": 1212316,
+    "kpRating": 6.1
+  },
+  {
+    "type": "movie",
+    "titleEn": "Archive",
+    "titleRu": "Мой создатель",
+    "genres": [
+      "ai",
+      "drama"
+    ],
+    "year": 2020,
+    "imdbId": "tt6882604",
+    "imdbRating": 6.4,
+    "kpId": 1055319,
+    "kpRating": 6.7
+  },
+  {
+    "type": "movie",
     "titleEn": "The Creator",
     "titleRu": "Создатель",
     "genres": [
@@ -1114,7 +1156,8 @@ window.CATALOG = [
     "imdbRating": 7.2,
     "kpId": 13343,
     "kpRating": 7.2,
-    "fav": true
+    "fav": true,
+        "poster": "static/posters/revos_doc_poster.webp"
   },
   {
     "type": "documentary",
@@ -1394,6 +1437,19 @@ window.CATALOG = [
     "kpRating": 6.6
   },
   {
+    "type": "documentary",
+    "titleEn": "Steve Jobs: The Lost Interview",
+    "titleRu": "Стив Джобс. Потерянное интервью",
+    "genres": [
+      "history"
+    ],
+    "year": 2012,
+    "imdbId": "tt2104994",
+    "imdbRating": 8.0,
+    "kpId": 680925,
+    "kpRating": 7.6
+  },
+  {
     "type": "series",
     "titleEn": "Black Mirror",
     "titleRu": "Чёрное зеркало",
@@ -1406,6 +1462,47 @@ window.CATALOG = [
     "imdbRating": 8.7,
     "kpId": 655800,
     "kpRating": 8.5
+  },
+  {
+    "type": "series",
+    "titleEn": "Intelligence",
+    "titleRu": "Искусственный интеллект",
+    "genres": [
+      "ai",
+      "scifi"
+    ],
+    "year": 2014,
+    "imdbId": "tt2693776",
+    "imdbRating": 6.8,
+    "kpId": 740776,
+    "kpRating": 6.7
+  },
+  {
+    "type": "series",
+    "titleEn": "Humans",
+    "titleRu": "Люди",
+    "genres": [
+      "ai",
+      "scifi"
+    ],
+    "year": 2015,
+    "imdbId": "tt4122068",
+    "imdbRating": 7.9,
+    "kpId": 855925,
+    "kpRating": 7.3
+  },
+  {
+    "type": "series",
+    "titleEn": "Mythic Quest",
+    "titleRu": "Мистический квест",
+    "genres": [
+      "comedy"
+    ],
+    "year": 2020,
+    "imdbId": "tt8879940",
+    "imdbRating": 7.6,
+    "kpId": 1188292,
+    "kpRating": 7.2
   },
   {
     "type": "series",
@@ -1552,6 +1649,19 @@ window.CATALOG = [
   },
   {
     "type": "series",
+    "titleEn": "Koroche, plan takoy",
+    "titleRu": "Короче, план такой",
+    "genres": [
+      "comedy"
+    ],
+    "year": 2023,
+    "imdbId": "tt26656021",
+    "imdbRating": 7.3,
+    "kpId": 5134511,
+    "kpRating": 7.9
+  },
+  {
+    "type": "series",
     "titleEn": "Mr. Robot",
     "titleRu": "Мистер Робот",
     "genres": [
@@ -1562,7 +1672,8 @@ window.CATALOG = [
     "imdbId": "tt4158110",
     "imdbRating": 8.5,
     "kpId": 859908,
-    "kpRating": 7.8
+    "kpRating": 7.8,
+    "poster": "static/posters/mrrobot_series_poster.webp"
   },
   {
     "type": "series",
