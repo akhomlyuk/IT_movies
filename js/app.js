@@ -158,72 +158,87 @@ const CatalogTable = {
     withPosters: Boolean
   },
   emits: ["sort"],
-  data() {
-    return {
-      selectedPoster: null,
-    };
-  },
-  watch: {
-    selectedPoster(open) {
+  setup(props, { emit }) {
+    const selectedPoster = ref(null);
+    let onKeydown = null;
+
+    watch(selectedPoster, (open) => {
       if (open) {
-        this._onKeydown = (e) => {
-          if (e.key === "Escape") this.closePoster();
+        onKeydown = (e) => {
+          if (e.key === "Escape") closePoster();
         };
-        window.addEventListener("keydown", this._onKeydown);
-      } else if (this._onKeydown) {
-        window.removeEventListener("keydown", this._onKeydown);
-        this._onKeydown = null;
+        window.addEventListener("keydown", onKeydown);
+      } else if (onKeydown) {
+        window.removeEventListener("keydown", onKeydown);
+        onKeydown = null;
       }
-    },
-  },
-  beforeUnmount() {
-    if (this._onKeydown) {
-      window.removeEventListener("keydown", this._onKeydown);
-      this._onKeydown = null;
+    });
+
+    onUnmounted(() => {
+      if (onKeydown) {
+        window.removeEventListener("keydown", onKeydown);
+        onKeydown = null;
+      }
+    });
+
+    function displayTitle(item) {
+      return props.lang === "ru" ? item.titleRu : item.titleEn;
     }
-  },
-  methods: {
-    formatRating,
-    isHighRating,
-    imdbUrl,
-    kpUrl,
-    displayTitle(item) {
-      return this.lang === "ru" ? item.titleRu : item.titleEn;
-    },
-    altTitle(item) {
-      const primary = this.displayTitle(item);
-      const other = this.lang === "ru" ? item.titleEn : item.titleRu;
+
+    function altTitle(item) {
+      const primary = displayTitle(item);
+      const other = props.lang === "ru" ? item.titleEn : item.titleRu;
       return other && other !== primary ? other : "";
-    },
-    genreLabel(item) {
-      return item.genres.map((g) => this.t.genres[g] || g).join(" / ");
-    },
-    thClass(key) {
+    }
+
+    function genreLabel(item) {
+      return item.genres.map((g) => props.t.genres[g] || g).join(" / ");
+    }
+
+    function thClass(key) {
       return {
         sortable: true,
-        "is-asc": this.sort.key === key && this.sort.dir === "asc",
-        "is-desc": this.sort.key === key && this.sort.dir === "desc",
+        "is-asc": props.sort.key === key && props.sort.dir === "asc",
+        "is-desc": props.sort.key === key && props.sort.dir === "desc",
       };
-    },
-    ariaSort(key) {
-      if (this.sort.key !== key) return "none";
-      return this.sort.dir === "asc" ? "ascending" : "descending";
-    },
-    arrow(key) {
-      if (this.sort.key !== key) return "↕";
-      return this.sort.dir === "asc" ? "↑" : "↓";
-    },
-    openPoster(item) {
-      this.selectedPoster = item;
-    },
-    closePoster() {
-      this.selectedPoster = null;
-    },
-  },
-  computed: {
-    favIcon() {
-      return "static/favorite_32.png";
-    },
+    }
+
+    function ariaSort(key) {
+      if (props.sort.key !== key) return "none";
+      return props.sort.dir === "asc" ? "ascending" : "descending";
+    }
+
+    function arrow(key) {
+      if (props.sort.key !== key) return "↕";
+      return props.sort.dir === "asc" ? "↑" : "↓";
+    }
+
+    function openPoster(item) {
+      selectedPoster.value = item;
+    }
+
+    function closePoster() {
+      selectedPoster.value = null;
+    }
+
+    const favIcon = computed(() => "static/favorite_32.png");
+
+    return {
+      selectedPoster,
+      formatRating,
+      isHighRating,
+      imdbUrl,
+      kpUrl,
+      displayTitle,
+      altTitle,
+      genreLabel,
+      thClass,
+      ariaSort,
+      arrow,
+      openPoster,
+      closePoster,
+      favIcon,
+    };
   },
   template: `
     <section :id="id">
@@ -280,7 +295,8 @@ const CatalogTable = {
 const app = createApp({
   components: { CatalogTable },
   setup() {
-    const lang = ref(localStorage.getItem("it-movies-lang") || "ru");
+    const defaultLang = navigator.language.startsWith("ru") ? "ru" : "en";
+    const lang = ref(localStorage.getItem("it-movies-lang") || defaultLang);
     const theme = ref(localStorage.getItem("it-movies-theme") || "dark");
     const query = ref("");
     const showScrollTop = ref(false);

@@ -2037,5 +2037,20 @@ window.CATALOG = [
     "kpId": 998777,
     "kpRating": 7.3,
     "fav": true
+  },
+  {
+    "type": "movie",
+    "titleEn": "Wardriver",
+    "titleRu": "Взлом на миллион",
+    "genres": [
+      "thriller",
+      "drama"
+    ],
+    "year": 2026,
+    "imdbId": "tt5095076",
+    "imdbRating": 5.6,
+    "kpId": 11182054,
+    "kpRating": 6.5,
+    "poster": "static/posters/wardriver_film_poster.webp"
   }
 ];

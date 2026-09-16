@@ -69,14 +69,14 @@
     <catalog-table id="documentaries" type-key="documentary" :title="t.documentaries" :items="documentaries" :t="t" :lang="lang" :sort="sorts.documentary" :with-posters="isDesktop" @sort="sortBy"></catalog-table>
     </main>
     <footer>
-      {{ t.codedWith }} <span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a>
+      <span>{{ t.codedWith }}</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a></span>
       <span v-if="loadTime !== null"> ⚡️ {{ t.loadLabel }}: {{ loadTime }}ms</span>
       <span class="counts-all"> 🎬 {{ t.total }}: {{ counts.all }}</span>
     </footer>
     <button class="scroll-top" :aria-label="t.scrollTop" @click="scrollToTop" v-show="showScrollTop">↑</button>
   </div>
 
-  <script src="js/vue.global.prod.js"></script>
+  <script src="js/vue.global.prod.js" defer></script>
   <script src="js/data.js" defer></script>
   <script src="js/app.js" defer></script>
 </body>
