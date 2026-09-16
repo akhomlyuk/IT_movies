@@ -537,7 +537,8 @@ window.CATALOG = [
     "imdbId": "tt1856101",
     "imdbRating": 8.0,
     "kpId": 589290,
-    "kpRating": 7.8
+    "kpRating": 7.8,
+    "poster": "static/posters/bladerunner2049_film_poster.webp"
   },
   {
     "type": "movie",
