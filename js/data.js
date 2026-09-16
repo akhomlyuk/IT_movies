@@ -1103,8 +1103,7 @@ window.CATALOG = [
     "imdbId": "tt5818010",
     "imdbRating": 7.4,
     "kpId": 1045212,
-    "kpRating": 7.3,
-    "poster": "static/posters/doyoutrust_doc_poster.webp"
+    "kpRating": 7.3
   },
   {
     "type": "documentary",

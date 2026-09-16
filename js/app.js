@@ -269,7 +269,7 @@ const CatalogTable = {
         <div class="poster-modal" v-if="selectedPoster" role="dialog" aria-modal="true" :aria-label="displayTitle(selectedPoster)" @click.self="closePoster">
           <div class="poster-modal-inner">
             <img :src="selectedPoster.poster" :alt="displayTitle(selectedPoster)">
-            <button class="poster-close" :aria-label="t.close" @click="closePoster">x</button>
+            <button class="poster-close" :aria-label="t.close" @click="closePoster"><img src="static/close_icon.svg" alt="" width="32" height="32"></button>
           </div>
         </div>
       </Teleport>
