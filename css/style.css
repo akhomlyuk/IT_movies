@@ -345,7 +345,13 @@ tbody tr:hover {
   padding: 2rem;
 }
 
+/* Inner wrapper anchors the close button to the image, not the viewport */
+.poster-modal-inner {
+  position: relative;
+}
+
 .poster-modal img {
+  display: block;
   max-width: 90vw;
   max-height: 90vh;
   border-radius: 8px;
@@ -354,20 +360,21 @@ tbody tr:hover {
 
 .poster-close {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 40px;
-  height: 40px;
+  top: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
   border: none;
   background: var(--paper);
   color: var(--ink);
-  font-size: 1.5rem;
+  font-size: 1rem;
   cursor: pointer;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .poster-close:hover {
