@@ -271,7 +271,7 @@ window.CATALOG = [
   {
     "type": "movie",
     "titleEn": "Primer",
-    "titleRu": "Детонатор ",
+    "titleRu": "Детонатор",
     "genres": [
       "drama",
       "thriller"
@@ -945,7 +945,6 @@ window.CATALOG = [
     "kpRating": 7.3,
     "fav": true
   },
-
   {
     "type": "documentary",
     "titleEn": "Deep Web",
@@ -959,7 +958,6 @@ window.CATALOG = [
     "kpId": 808328,
     "kpRating": 6.9
   },
-
   {
     "type": "documentary",
     "titleEn": "DSKNECTD",
@@ -1043,7 +1041,7 @@ window.CATALOG = [
     "titleEn": "Hackers Wanted",
     "titleRu": "Hackers Wanted",
     "genres": [
-      "indie"
+      "documentary"
     ],
     "year": 2009,
     "imdbId": "tt2292707",
@@ -1118,7 +1116,6 @@ window.CATALOG = [
     "kpRating": 7.2,
     "fav": true
   },
-
   {
     "type": "documentary",
     "titleEn": "Steal This Film",
@@ -1216,8 +1213,7 @@ window.CATALOG = [
     "titleEn": "The Singularity",
     "titleRu": "Сингулярность",
     "genres": [
-      "drama",
-      "scifi"
+      "documentary"
     ],
     "year": 2012,
     "imdbId": "tt2073120",
@@ -1356,6 +1352,46 @@ window.CATALOG = [
     "imdbRating": 7.8,
     "kpId": 1161421,
     "kpRating": null
+  },
+  {
+    "type": "documentary",
+    "titleEn": "Dark Net",
+    "titleRu": "Даркнет",
+    "genres": [
+      "documentary"
+    ],
+    "year": 2016,
+    "imdbId": "tt5397520",
+    "imdbRating": 7.1,
+    "kpId": 1009438,
+    "kpRating": null
+  },
+  {
+    "type": "documentary",
+    "titleEn": "Durov",
+    "titleRu": "Дуров",
+    "genres": [
+      "biography"
+    ],
+    "year": 2021,
+    "imdbId": "tt14404802",
+    "imdbRating": 6.4,
+    "kpId": 4418516,
+    "kpRating": 6.3,
+    "poster": "static/posters/durov_doc_poster.webp"
+  },
+  {
+    "type": "documentary",
+    "titleEn": "Lo and Behold: Reveries of the Connected World",
+    "titleRu": "О, Интернет! Грезы цифрового мира",
+    "genres": [
+      "history"
+    ],
+    "year": 2016,
+    "imdbId": "tt5275828",
+    "imdbRating": 7.0,
+    "kpId": 954061,
+    "kpRating": 6.6
   },
   {
     "type": "series",
@@ -1498,46 +1534,6 @@ window.CATALOG = [
     "imdbRating": 5.5,
     "kpId": 840541,
     "kpRating": 6.1
-  },
-  {
-    "type": "documentary",
-    "titleEn": "Dark Net",
-    "titleRu": "Даркнет",
-    "genres": [
-      "documentary"
-    ],
-    "year": 2016,
-    "imdbId": "tt5397520",
-    "imdbRating": 7.1,
-    "kpId": 1009438,
-    "kpRating": null
-  },
-  {
-    "type": "documentary",
-    "titleEn": "Durov",
-    "titleRu": "Дуров",
-    "genres": [
-      "biography"
-    ],
-    "year": 2021,
-    "imdbId": "tt14404802",
-    "imdbRating": 6.4,
-    "kpId": 4418516,
-    "kpRating": 6.3,
-    "poster": "static/posters/durov_doc_poster.webp"
-  },
-  {
-    "type": "documentary",
-    "titleEn": "Lo and Behold: Reveries of the Connected World",
-    "titleRu": "О, Интернет! Грезы цифрового мира",
-    "genres": [
-      "history"
-    ],
-    "year": 2016,
-    "imdbId": "tt5275828",
-    "imdbRating": 7.0,
-    "kpId": 954061,
-    "kpRating": 6.6
   },
   {
     "type": "series",

@@ -4,13 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>IT Movies - Список фильмов и сериалов о компьютерах, технологиях и искусственном интеллекте</title>
-  <meta name="description" content="A list of movies and series about computers, technology and artificial intelligence">
+  <meta name="description" content="Подборка фильмов и сериалов о компьютерах, технологиях и искусственном интеллекте">
   <meta property="og:title" content="IT Movies">
-  <meta property="og:description" content="A list of movies and series about computers, technology, ai">
-  <meta property="og:image" content="static/logo.webp">
+  <meta property="og:description" content="A curated list of films and series about computers, technology and AI">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:image" content="https://akhomlyuk.github.io/IT_movies/static/logo.webp">
   <meta property="og:url" content="https://akhomlyuk.github.io/IT_movies/">
   <meta name="twitter:card" content="summary_large_image">
-  <link rel="preconnect" href="https://unpkg.com">
+  <meta name="twitter:image" content="https://akhomlyuk.github.io/IT_movies/static/logo.webp">
   <link rel="preconnect" href="https://mc.yandex.ru" crossorigin>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/webp" href="static/logo.webp">
@@ -42,15 +45,15 @@
         </div>
       </div>
       <div class="toolbar">
-        <div class="lang" role="group">
-          <button type="button" :class="{ active: lang === 'ru' }" @click="setLang('ru')">RU</button>
-          <button type="button" :class="{ active: lang === 'en' }" @click="setLang('en')">EN</button>
+        <div class="lang" role="group" :aria-label="lang === 'ru' ? 'Язык / Language' : 'Language / Язык'">
+          <button type="button" :class="{ active: lang === 'ru' }" :aria-pressed="lang === 'ru'" @click="setLang('ru')">RU</button>
+          <button type="button" :class="{ active: lang === 'en' }" :aria-pressed="lang === 'en'" @click="setLang('en')">EN</button>
         </div>
-        <div class="theme-toggle" role="group">
-          <button type="button" :class="{ active: theme === 'dark' }" @click="setTheme('dark')">🌙</button>
-          <button type="button" :class="{ active: theme === 'light' }" @click="setTheme('light')">☀️</button>
+        <div class="theme-toggle" role="group" :aria-label="t.theme">
+          <button type="button" :class="{ active: theme === 'dark' }" :aria-pressed="theme === 'dark'" :aria-label="t.themeDark" @click="setTheme('dark')">🌙</button>
+          <button type="button" :class="{ active: theme === 'light' }" :aria-pressed="theme === 'light'" :aria-label="t.themeLight" @click="setTheme('light')">☀️</button>
         </div>
-        <input id="srch" class="search" v-model="query" type="search" :placeholder="t.search">
+        <input id="srch" class="search" v-model="query" type="search" :placeholder="t.search" :aria-label="t.search">
       </div>
     </header>
 
@@ -66,13 +69,13 @@
     <catalog-table id="documentaries" type-key="documentary" :title="t.documentaries" :items="documentaries" :t="t" :lang="lang" :sort="sorts.documentary" :with-posters="isDesktop" @sort="sortBy"></catalog-table>
     </main>
     <footer>
-      Coded with <span class="heart">♥</span> by <a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a>
-      <span v-if="renderTime"> ⚡️ Render: {{ renderTime }}ms</span><span> 🎬 Всего фильмов: {{ counts.all }}</span>
+      {{ t.codedWith }}<span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a>
+      <span v-if="renderTime"> ⚡️ {{ t.renderLabel }}: {{ renderTime }}ms</span><span> 🎬 {{ t.total }}: {{ counts.all }}</span>
     </footer>
-    <button class="scroll-top" @click="scrollToTop" v-show="showScrollTop">↑</button>
+    <button class="scroll-top" :aria-label="t.scrollTop" @click="scrollToTop" v-show="showScrollTop">↑</button>
   </div>
 
-  <script src="https://unpkg.com/vue@3.5.42/dist/vue.global.prod.js"></script>
+  <script src="js/vue.global.prod.js"></script>
   <script src="js/data.js"></script>
   <script src="js/app.js"></script>
 </body>

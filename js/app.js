@@ -3,6 +3,7 @@ const { createApp, computed, reactive, ref, watch, onMounted, onUnmounted } = Vu
 const I18N = {
   ru: {
     title: "IT Movies",
+    titleFull: "IT Movies - Список фильмов и сериалов о компьютерах, технологиях и искусственном интеллекте",
     subtitle: "Подборка фильмов и сериалов о компьютерах, технологиях, ИИ и т.д.",
     invite: "Предложить фильм, сериал - <img src=\"static/telegram_32.png\" alt=\"\" width=\"16\" height=\"16\" class=\"tg-icon\"> <a href=\"https://t.me/wh_lab\" target=\"_blank\" rel=\"noopener\">Whitehat Lab</a> или в <a href=\"https://t.me/whitehat_chat\" target=\"_blank\" rel=\"noopener\">чат</a>",
     search: "Поиск по названию, жанру, году",
@@ -16,6 +17,14 @@ const I18N = {
     imdb: "IMDb",
     recommend: "Рекомендую",
     empty: "Ничего не найдено",
+    codedWith: "Сделано с",
+    total: "Всего фильмов",
+    renderLabel: "Рендер",
+    scrollTop: "Наверх",
+    close: "Закрыть",
+    theme: "Тема",
+    themeDark: "Тёмная тема",
+    themeLight: "Светлая тема",
     genres: {
       crime: "Криминал",
       ai: "ИИ",
@@ -43,6 +52,7 @@ const I18N = {
   },
   en: {
     title: "IT Movies",
+    titleFull: "IT Movies - A curated list of films and series about computers, technology and AI",
     subtitle: "A curated list of films and series about computers, technology, AI, etc",
     invite: "Suggest a film, series - <img src=\"static/telegram_32.png\" alt=\"\" width=\"16\" height=\"16\" class=\"tg-icon\"> <a href=\"https://t.me/wh_lab\" target=\"_blank\" rel=\"noopener\">Whitehat Lab</a> or in <a href=\"https://t.me/whitehat_chat\" target=\"_blank\" rel=\"noopener\">chat</a>",
     search: "Search title, genre, year",
@@ -54,8 +64,16 @@ const I18N = {
     year: "Year",
     kp: "Kinopoisk",
     imdb: "IMDb",
-    recommend:"I recommend",
+    recommend: "Recommended",
     empty: "Nothing found",
+    codedWith: "Coded with",
+    total: "Total titles",
+    renderLabel: "Render",
+    scrollTop: "Back to top",
+    close: "Close",
+    theme: "Theme",
+    themeDark: "Dark theme",
+    themeLight: "Light theme",
     genres: {
       crime: "Crime",
       ai: "AI",
@@ -94,14 +112,9 @@ function compare(a, b, key, dir, lang) {
     return a.genres.join(" ").localeCompare(b.genres.join(" ")) * mul;
   }
   if (key === "year") return ((a.year || 0) - (b.year || 0)) * mul;
-  if (key === "kp") {
-    const av = a.kpRating == null ? -1 : a.kpRating;
-    const bv = b.kpRating == null ? -1 : b.kpRating;
-    return (av - bv) * mul;
-  }
-  if (key === "imdb") {
-    const av = a.imdbRating == null ? -1 : a.imdbRating;
-    const bv = b.imdbRating == null ? -1 : b.imdbRating;
+  if (key === "kp" || key === "imdb") {
+    const av = a[key + "Rating"] == null ? -1 : a[key + "Rating"];
+    const bv = b[key + "Rating"] == null ? -1 : b[key + "Rating"];
     return (av - bv) * mul;
   }
   return 0;
@@ -116,7 +129,12 @@ function isHighRating(value) {
   return value != null && value !== "" && Number(value) >= 7;
 }
 
-const DESKTOP_QUERY = "(hover: hover) and (pointer: fine) and (min-width: 721px)";
+// Desktop media query: poster icons are rendered only on devices with
+// hover + fine pointer above the mobile breakpoint. "min-width: 720.02px"
+// is the complement of "@media (max-width: 720px)" in css/style.css and
+// covers fractional viewport widths (browser zoom, OS scaling) that a
+// plain "min-width: 721px" would miss. Keep both values in sync.
+const DESKTOP_QUERY = "(hover: hover) and (pointer: fine) and (min-width: 720.02px)";
 
 function useIsDesktop() {
   const mq = window.matchMedia(DESKTOP_QUERY);
@@ -154,6 +172,25 @@ const CatalogTable = {
       selectedPoster: null,
     };
   },
+  watch: {
+    selectedPoster(open) {
+      if (open) {
+        this._onKeydown = (e) => {
+          if (e.key === "Escape") this.closePoster();
+        };
+        window.addEventListener("keydown", this._onKeydown);
+      } else if (this._onKeydown) {
+        window.removeEventListener("keydown", this._onKeydown);
+        this._onKeydown = null;
+      }
+    },
+  },
+  beforeUnmount() {
+    if (this._onKeydown) {
+      window.removeEventListener("keydown", this._onKeydown);
+      this._onKeydown = null;
+    }
+  },
   methods: {
     formatRating,
     isHighRating,
@@ -176,6 +213,10 @@ const CatalogTable = {
         "is-asc": this.sort.key === key && this.sort.dir === "asc",
         "is-desc": this.sort.key === key && this.sort.dir === "desc",
       };
+    },
+    ariaSort(key) {
+      if (this.sort.key !== key) return "none";
+      return this.sort.dir === "asc" ? "ascending" : "descending";
     },
     arrow(key) {
       if (this.sort.key !== key) return "↕";
@@ -200,21 +241,22 @@ const CatalogTable = {
         <table>
           <thead>
             <tr>
-              <th :class="thClass('title')" @click="$emit('sort', typeKey, 'title')">{{ t.name }} <span class="arrow">{{ arrow('title') }}</span></th>
-              <th :class="thClass('genre')" @click="$emit('sort', typeKey, 'genre')">{{ t.genre }} <span class="arrow">{{ arrow('genre') }}</span></th>
-              <th :class="thClass('year')" @click="$emit('sort', typeKey, 'year')">{{ t.year }} <span class="arrow">{{ arrow('year') }}</span></th>
-              <th :class="thClass('kp')" @click="$emit('sort', typeKey, 'kp')"><span class="th-label"><img class="col-icon" src="static/favicon_kp.png" alt="" width="14" height="14"><span class="th-text">{{ t.kp }}</span></span> <span class="arrow">{{ arrow('kp') }}</span></th>
-              <th :class="thClass('imdb')" @click="$emit('sort', typeKey, 'imdb')"><span class="th-label"><img class="col-icon" src="static/favicon_imdb.png" alt="" width="14" height="14"><span class="th-text">{{ t.imdb }}</span></span> <span class="arrow">{{ arrow('imdb') }}</span></th>
+              <th :class="thClass('title')" :aria-sort="ariaSort('title')" tabindex="0" @click="$emit('sort', typeKey, 'title')" @keydown.enter="$emit('sort', typeKey, 'title')">{{ t.name }} <span class="arrow">{{ arrow('title') }}</span></th>
+              <th :class="thClass('genre')" :aria-sort="ariaSort('genre')" tabindex="0" @click="$emit('sort', typeKey, 'genre')" @keydown.enter="$emit('sort', typeKey, 'genre')">{{ t.genre }} <span class="arrow">{{ arrow('genre') }}</span></th>
+              <th :class="thClass('year')" :aria-sort="ariaSort('year')" tabindex="0" @click="$emit('sort', typeKey, 'year')" @keydown.enter="$emit('sort', typeKey, 'year')">{{ t.year }} <span class="arrow">{{ arrow('year') }}</span></th>
+              <th :class="thClass('kp')" :aria-sort="ariaSort('kp')" tabindex="0" @click="$emit('sort', typeKey, 'kp')" @keydown.enter="$emit('sort', typeKey, 'kp')"><span class="th-label"><img class="col-icon" src="static/favicon_kp.png" alt="" width="14" height="14"><span class="th-text">{{ t.kp }}</span></span> <span class="arrow">{{ arrow('kp') }}</span></th>
+              <th :class="thClass('imdb')" :aria-sort="ariaSort('imdb')" tabindex="0" @click="$emit('sort', typeKey, 'imdb')" @keydown.enter="$emit('sort', typeKey, 'imdb')"><span class="th-label"><img class="col-icon" src="static/favicon_imdb.png" alt="" width="14" height="14"><span class="th-text">{{ t.imdb }}</span></span> <span class="arrow">{{ arrow('imdb') }}</span></th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in items" :key="item.imdbId">
+            <tr v-for="item in items" :key="item.imdbId || item.kpId">
               <td class="title-cell">
                 <span class="poster-wrap" v-if="withPosters && item.poster">
                   <img class="poster-icon" src="static/poster_icon.png" alt="" width="24" height="24" @click.stop="openPoster(item)">
                 </span>
                 <span class="fav-icon" :title="t.recommend" v-if="item.fav"><img :src="favIcon" :alt="t.recommend" width="24" height="24"></span>
-                <a :href="imdbUrl(item)" target="_blank" rel="noopener">{{ displayTitle(item) }}</a>
+                <a v-if="item.imdbId" :href="imdbUrl(item)" target="_blank" rel="noopener">{{ displayTitle(item) }}</a>
+                <span v-else>{{ displayTitle(item) }}</span>
                 <span class="alt-title" v-if="altTitle(item)">{{ altTitle(item) }}</span>
               </td>
               <td class="genre">{{ genreLabel(item) }}</td>
@@ -233,9 +275,9 @@ const CatalogTable = {
         </table>
       </div>
       <Teleport to="body">
-        <div class="poster-modal" v-if="selectedPoster" @click.self="closePoster">
+        <div class="poster-modal" v-if="selectedPoster" role="dialog" aria-modal="true" :aria-label="displayTitle(selectedPoster)" @click.self="closePoster">
           <img :src="selectedPoster.poster" :alt="displayTitle(selectedPoster)">
-          <button class="poster-close" @click="closePoster">✕</button>
+          <button class="poster-close" :aria-label="t.close" @click="closePoster">✕</button>
         </div>
       </Teleport>
     </section>
@@ -253,9 +295,6 @@ const app = createApp({
     const renderTime = ref(null);
     const isDesktop = useIsDesktop();
 
-    onMounted(() => {
-      renderTime.value = (performance.now() - start).toFixed(1);
-    });
     const sorts = reactive({
       series: { key: "title", dir: "asc" },
       movie: { key: "title", dir: "asc" },
@@ -267,7 +306,7 @@ const app = createApp({
       (value) => {
         localStorage.setItem("it-movies-lang", value);
         document.documentElement.lang = value;
-        document.title = I18N[value].title;
+        document.title = I18N[value].titleFull;
       },
       { immediate: true }
     );
@@ -286,6 +325,7 @@ const app = createApp({
     }
 
     onMounted(() => {
+      renderTime.value = (performance.now() - start).toFixed(1);
       window.addEventListener("scroll", handleScroll);
     });
 
