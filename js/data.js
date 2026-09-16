@@ -15,6 +15,20 @@ window.CATALOG = [
   },
   {
     "type": "movie",
+    "titleEn": "The Creator",
+    "titleRu": "Создатель",
+    "genres": [
+      "ai",
+      "scifi"
+    ],
+    "year": 2023,
+    "imdbId": "tt11858890",
+    "imdbRating": 6.7,
+    "kpId": 4499408,
+    "kpRating": 6.7
+  },
+  {
+    "type": "movie",
     "titleEn": "Khottabych",
     "titleRu": "}{отт@бь)ч",
     "genres": [
@@ -1359,6 +1373,20 @@ window.CATALOG = [
   },
   {
     "type": "series",
+    "titleEn": "Safe Harbor",
+    "titleRu": "Тихая гавань",
+    "genres": [
+      "thriller"
+    ],
+    "year": 2025,
+    "imdbId": "tt30221618",
+    "imdbRating": 6.4,
+    "kpId": 6798442,
+    "kpRating": 7.4,
+    "poster": "static/posters/safeharbor_series_poster.webp"
+  },
+  {
+    "type": "series",
     "titleEn": "The Billion Dollar Code",
     "titleRu": "Код на миллиард долларов",
     "genres": [
@@ -1483,6 +1511,20 @@ window.CATALOG = [
     "imdbRating": 7.1,
     "kpId": 1009438,
     "kpRating": null
+  },
+  {
+    "type": "documentary",
+    "titleEn": "Durov",
+    "titleRu": "Дуров",
+    "genres": [
+      "biography"
+    ],
+    "year": 2021,
+    "imdbId": "tt14404802",
+    "imdbRating": 6.4,
+    "kpId": 4418516,
+    "kpRating": 6.3,
+    "poster": "static/posters/durov_doc_poster.webp"
   },
   {
     "type": "documentary",

@@ -346,12 +346,53 @@ tbody tr:hover {
 
 .poster-icon {
   cursor: pointer;
+  margin-right: 0.15rem;
+}
+
+.poster-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 1000;
+  padding: 2rem;
+}
+
+.poster-modal img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.poster-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 1.5rem;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.poster-close:hover {
+  background: var(--hover);
 }
 
 .poster-tooltip {
   position: absolute;
-  top: 100%;
-  margin-top: 0.25rem;
+  bottom: 100%;
+  margin-bottom: 0.25rem;
   margin-left: 18vh;
   display: block;
   width: 180px;
@@ -386,6 +427,7 @@ tbody tr:hover {
 .title-cell a {
   text-decoration: none;
   border-bottom: 1px solid var(--line-strong);
+  vertical-align: 0.15em;
 }
 
 .title-cell a:hover {
@@ -430,7 +472,6 @@ a.imdb .star {
   font-size: 0.72em;
   line-height: 1;
   vertical-align: 0.12em;
-  opacity: 0.9;
 }
 
 .ext-icon {

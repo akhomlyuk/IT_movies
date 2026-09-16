@@ -108,7 +108,7 @@ function compare(a, b, key, dir, lang) {
 }
 
 function formatRating(value) {
-  if (value == null || value === "") return "—";
+  if (value == null || value === "") return "❓";
   return Number(value).toFixed(1);
 }
 
@@ -116,8 +116,6 @@ function isHighRating(value) {
   return value != null && value !== "" && Number(value) >= 7;
 }
 
-// Posters are a hover-only feature, so they are rendered on desktop devices only
-// (fine pointer that can hover, wide enough viewport for the tooltip).
 const DESKTOP_QUERY = "(hover: hover) and (pointer: fine) and (min-width: 721px)";
 
 function useIsDesktop() {
@@ -151,6 +149,11 @@ const CatalogTable = {
     withPosters: Boolean
   },
   emits: ["sort"],
+  data() {
+    return {
+      selectedPoster: null,
+    };
+  },
   methods: {
     formatRating,
     isHighRating,
@@ -178,6 +181,12 @@ const CatalogTable = {
       if (this.sort.key !== key) return "↕";
       return this.sort.dir === "asc" ? "↑" : "↓";
     },
+    openPoster(item) {
+      this.selectedPoster = item;
+    },
+    closePoster() {
+      this.selectedPoster = null;
+    },
   },
   computed: {
     favIcon() {
@@ -202,8 +211,7 @@ const CatalogTable = {
             <tr v-for="item in items" :key="item.imdbId">
               <td class="title-cell">
                 <span class="poster-wrap" v-if="withPosters && item.poster">
-                  <img class="poster-icon" src="static/poster_icon.png" alt="" width="24" height="24">
-                  <img class="poster-tooltip" :src="item.poster" :alt="displayTitle(item)" loading="lazy" decoding="async">
+                  <img class="poster-icon" src="static/poster_icon.png" alt="" width="24" height="24" @click.stop="openPoster(item)">
                 </span>
                 <span class="fav-icon" :title="t.recommend" v-if="item.fav"><img :src="favIcon" :alt="t.recommend" width="24" height="24"></span>
                 <a :href="imdbUrl(item)" target="_blank" rel="noopener">{{ displayTitle(item) }}</a>
@@ -212,10 +220,10 @@ const CatalogTable = {
               <td class="genre">{{ genreLabel(item) }}</td>
               <td class="year">{{ item.year }}</td>
               <td class="num">
-                <img class="ext-icon" src="static/external_link_icon.png" alt=""><a class="kp" :href="kpUrl(item)" target="_blank" rel="noopener"><span v-if="item.kpRating != null">{{ formatRating(item.kpRating) }}</span><span class="star" v-if="isHighRating(item.kpRating)" aria-hidden="true">★</span></a>
+                <img class="ext-icon" src="static/external_link_icon.png" alt=""><a class="kp" :href="kpUrl(item)" target="_blank" rel="noopener"><span>{{ formatRating(item.kpRating) }}</span><span class="star" v-if="isHighRating(item.kpRating)" aria-hidden="true">★</span></a>
               </td>
               <td class="num">
-                <img class="ext-icon" src="static/external_link_icon.png" alt=""><a class="imdb" :href="imdbUrl(item)" target="_blank" rel="noopener"><span v-if="item.imdbRating != null">{{ formatRating(item.imdbRating) }}</span><span class="star" v-if="isHighRating(item.imdbRating)" aria-hidden="true">★</span></a>
+                <img class="ext-icon" src="static/external_link_icon.png" alt=""><a class="imdb" :href="imdbUrl(item)" target="_blank" rel="noopener"><span>{{ formatRating(item.imdbRating) }}</span><span class="star" v-if="isHighRating(item.imdbRating)" aria-hidden="true">★</span></a>
               </td>
             </tr>
             <tr v-if="!items.length">
@@ -224,6 +232,12 @@ const CatalogTable = {
           </tbody>
         </table>
       </div>
+      <Teleport to="body">
+        <div class="poster-modal" v-if="selectedPoster" @click.self="closePoster">
+          <img :src="selectedPoster.poster" :alt="displayTitle(selectedPoster)">
+          <button class="poster-close" @click="closePoster">✕</button>
+        </div>
+      </Teleport>
     </section>
   `,
 };
