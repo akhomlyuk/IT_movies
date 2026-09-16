@@ -19,7 +19,7 @@ const I18N = {
     empty: "Ничего не найдено",
     codedWith: "Сделано с",
     total: "Всего фильмов",
-    renderLabel: "Рендер",
+    loadLabel: "Загрузка",
     scrollTop: "Наверх",
     close: "Закрыть",
     theme: "Тема",
@@ -68,7 +68,7 @@ const I18N = {
     empty: "Nothing found",
     codedWith: "Coded with",
     total: "Total titles",
-    renderLabel: "Render",
+    loadLabel: "Load",
     scrollTop: "Back to top",
     close: "Close",
     theme: "Theme",
@@ -129,11 +129,6 @@ function isHighRating(value) {
   return value != null && value !== "" && Number(value) >= 7;
 }
 
-// Desktop media query: poster icons are rendered only on devices with
-// hover + fine pointer above the mobile breakpoint. "min-width: 720.02px"
-// is the complement of "@media (max-width: 720px)" in css/style.css and
-// covers fractional viewport widths (browser zoom, OS scaling) that a
-// plain "min-width: 721px" would miss. Keep both values in sync.
 const DESKTOP_QUERY = "(hover: hover) and (pointer: fine) and (min-width: 720.02px)";
 
 function useIsDesktop() {
@@ -286,7 +281,6 @@ const CatalogTable = {
   `,
 };
 
-const start = performance.now();
 const app = createApp({
   components: { CatalogTable },
   setup() {
@@ -294,7 +288,7 @@ const app = createApp({
     const theme = ref(localStorage.getItem("it-movies-theme") || "dark");
     const query = ref("");
     const showScrollTop = ref(false);
-    const renderTime = ref(null);
+    const loadTime = ref(null);
     const isDesktop = useIsDesktop();
 
     const sorts = reactive({
@@ -326,13 +320,24 @@ const app = createApp({
       showScrollTop.value = window.scrollY > 300;
     }
 
+    function measureLoadTime() {
+      const nav = performance.getEntriesByType("navigation")[0];
+      const ms = nav ? nav.loadEventEnd || nav.loadEventStart || performance.now() : performance.now();
+      loadTime.value = Math.round(ms);
+    }
+
     onMounted(() => {
-      renderTime.value = (performance.now() - start).toFixed(1);
       window.addEventListener("scroll", handleScroll);
+      if (document.readyState === "complete") {
+        measureLoadTime();
+      } else {
+        window.addEventListener("load", measureLoadTime, { once: true });
+      }
     });
 
     onUnmounted(() => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("load", measureLoadTime);
     });
 
     const t = computed(() => I18N[lang.value]);
@@ -394,7 +399,7 @@ const app = createApp({
       theme,
       query,
       showScrollTop,
-      renderTime,
+      loadTime,
       isDesktop,
       sorts,
       t,

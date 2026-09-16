@@ -69,8 +69,9 @@
     <catalog-table id="documentaries" type-key="documentary" :title="t.documentaries" :items="documentaries" :t="t" :lang="lang" :sort="sorts.documentary" :with-posters="isDesktop" @sort="sortBy"></catalog-table>
     </main>
     <footer>
-      {{ t.codedWith }}<span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a>
-      <span v-if="renderTime"> ⚡️ {{ t.renderLabel }}: {{ renderTime }}ms</span><span> 🎬 {{ t.total }}: {{ counts.all }}</span>
+      {{ t.codedWith }} <span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a>
+      <span v-if="loadTime !== null"> ⚡️ {{ t.loadLabel }}: {{ loadTime }}ms</span>
+      <span class="counts-all"> 🎬 {{ t.total }}: {{ counts.all }}</span>
     </footer>
     <button class="scroll-top" :aria-label="t.scrollTop" @click="scrollToTop" v-show="showScrollTop">↑</button>
   </div>

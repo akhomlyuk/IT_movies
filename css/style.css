@@ -345,7 +345,6 @@ tbody tr:hover {
   padding: 2rem;
 }
 
-/* Inner wrapper anchors the close button to the image, not the viewport */
 .poster-modal-inner {
   position: relative;
 }
@@ -484,6 +483,11 @@ footer .heart {
   margin: 2px;
 }
 
+footer .counts-all {
+  display: block;
+  margin-top: 0.3rem;
+}
+
 .scroll-top {
   position: fixed;
   bottom: 2rem;
@@ -505,12 +509,6 @@ footer .heart {
   background: var(--hover);
 }
 
-/*
- * Mobile breakpoint: 720px.
- * Must stay in sync with DESKTOP_QUERY in js/app.js: its
- * "min-width: 720.02px" is the desktop complement of this breakpoint
- * and controls rendering of poster icons.
- */
 @media (max-width: 720px) {
   .top {
     flex-direction: column;
@@ -569,7 +567,6 @@ footer .heart {
   }
 }
 
-/* Уважение к настройкам пользователя: отключаем анимации и плавный скролл */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
