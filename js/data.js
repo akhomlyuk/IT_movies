@@ -1080,6 +1080,103 @@ window.CATALOG = [
   },
   {
     "type": "documentary",
+    "titleEn": "Do You Trust This Computer?",
+    "titleRu": "Вы доверяете этому компьютеру?",
+    "genres": [
+      "documentary"
+    ],
+    "year": 2018,
+    "imdbId": "tt6152554",
+    "imdbRating": 7.3,
+    "kpId": 1078501,
+    "kpRating": 7.1,
+    "poster": "static/posters/doyoutrust_doc_poster.webp"
+  },
+  {
+    "type": "documentary",
+    "titleEn": "The Secret Rules of Modern Living: Algorithms",
+    "titleRu": "Тайные правила современной жизни: Алгоритмы",
+    "genres": [
+      "documentary"
+    ],
+    "year": 2015,
+    "imdbId": "tt5818010",
+    "imdbRating": 7.4,
+    "kpId": 1045212,
+    "kpRating": 7.3,
+    "poster": "static/posters/doyoutrust_doc_poster.webp"
+  },
+  {
+    "type": "documentary",
+    "titleEn": "Coded Bias",
+    "titleRu": "Закодированная предвзятость",
+    "genres": [
+      "documentary"
+    ],
+    "year": 2020,
+    "imdbId": "tt11394170",
+    "imdbRating": 6.8,
+    "kpId": 1335293,
+    "kpRating": null
+  },
+  {
+    "type": "documentary",
+    "titleEn": "Kill Chain: The Cyber War on America's Elections",
+    "titleRu": "Смертельная цепочка: Кибервойна на выборах в Америке",
+    "genres": [
+      "documentary"
+    ],
+    "year": 2020,
+    "imdbId": "tt12041084",
+    "imdbRating": 7.4,
+    "kpId": 1361186,
+    "kpRating": null
+  },
+  {
+    "type": "documentary",
+    "titleEn": "Agents of Chaos",
+    "titleRu": "Агенты хаоса",
+    "genres": [
+      "documentary"
+    ],
+    "year": 2020,
+    "imdbId": "tt12967950",
+    "imdbRating": 7.4,
+    "kpId": 1406190,
+    "kpRating": null,
+    "poster": "static/posters/agents_of_chaos_doc_poster.webp"
+  },
+  {
+    "type": "documentary",
+    "titleEn": "Console Wars",
+    "titleRu": "Консольные войны",
+    "genres": [
+      "documentary"
+    ],
+    "year": 2020,
+    "imdbId": "tt5215462",
+    "imdbRating": 7.0,
+    "kpId": 1405959,
+    "kpRating": 7.2,
+    "poster": "static/posters/console_wars_doc_poster.webp"
+  },
+  {
+    "type": "documentary",
+    "titleEn": "High Score",
+    "titleRu": "Рекорд",
+    "genres": [
+      "documentary"
+    ],
+    "year": 2020,
+    "imdbId": "tt12759400",
+    "imdbRating": 7.4,
+    "kpId": 1398870,
+    "kpRating": 7.3,
+    "fav": true,
+    "poster": "static/posters/high_score_doc_poster.webp"
+  },
+  {
+    "type": "documentary",
     "titleEn": "Hackers Wanted",
     "titleRu": "Hackers Wanted",
     "genres": [
@@ -1157,7 +1254,7 @@ window.CATALOG = [
     "kpId": 13343,
     "kpRating": 7.2,
     "fav": true,
-        "poster": "static/posters/revos_doc_poster.webp"
+    "poster": "static/posters/revos_doc_poster.webp"
   },
   {
     "type": "documentary",
@@ -1422,6 +1519,51 @@ window.CATALOG = [
     "kpId": 4418516,
     "kpRating": 6.3,
     "poster": "static/posters/durov_doc_poster.webp"
+  },
+  {
+    "type": "documentary",
+    "titleEn": "Don't F**k with Cats: Hunting an Internet Killer",
+    "titleRu": "Руки прочь от котиков! Охота на интернет-убийцу",
+    "genres": [
+      "documentary",
+      "crime"
+    ],
+    "year": 2019,
+    "imdbId": "tt11318602",
+    "imdbRating": 8.0,
+    "kpId": 1333556,
+    "kpRating": 7.8,
+    "poster": "static/posters/cats_doc_poster.webp"
+  },
+  {
+    "type": "documentary",
+    "titleEn": "Video Games: The Movie",
+    "titleRu": "Видеоигры: Кино",
+    "genres": [
+      "documentary",
+      "history"
+    ],
+    "year": 2014,
+    "imdbId": "tt3214002",
+    "imdbRating": 6.1,
+    "kpId": 801567,
+    "kpRating": 7.2,
+    "poster": "static/posters/video_games_doc_poster.webp"
+  },
+  {
+    "type": "documentary",
+    "titleEn": "Atari: Game Over",
+    "titleRu": "Atari: конец игры",
+    "genres": [
+      "documentary",
+      "history"
+    ],
+    "year": 2014,
+    "imdbId": "tt3715406",
+    "imdbRating": 6.7,
+    "kpId": 893791,
+    "kpRating": 6.8,
+    "poster": "static/posters/atari_doc_poster.webp"
   },
   {
     "type": "documentary",
