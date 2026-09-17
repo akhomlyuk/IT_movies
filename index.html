@@ -12,6 +12,8 @@
   <meta property="og:locale:alternate" content="en_US">
   <meta property="og:image" content="https://akhomlyuk.github.io/IT_movies/static/ogimage.webp">
   <meta property="og:url" content="https://akhomlyuk.github.io/IT_movies/">
+  <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/">
+  <meta name="theme-color" content="#f4f3ef">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://akhomlyuk.github.io/IT_movies/static/ogimage.webp">
   <link rel="preconnect" href="https://mc.yandex.ru" crossorigin>
@@ -103,6 +105,7 @@
                 </span>
                 <span class="fav-icon" :title="t.recommend" v-if="item.fav"><img :src="favIcon" :alt="t.recommend" width="24" height="24"></span>
                 <a v-if="item.imdbId" :href="imdbUrl(item)" target="_blank" rel="noopener">{{ displayTitle(item) }}</a>
+                <a v-else-if="item.kpId" :href="kpUrl(item)" target="_blank" rel="noopener">{{ displayTitle(item) }}</a>
                 <span v-else>{{ displayTitle(item) }}</span>
                 <span class="alt-title" v-if="altTitle(item)">{{ altTitle(item) }}</span>
               </td>

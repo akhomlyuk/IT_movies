@@ -8,7 +8,9 @@ function compare(a, b, key, dir, lang) {
     return av.localeCompare(bv, lang === "ru" ? "ru" : "en") * mul;
   }
   if (key === "genre") {
-    return a.genres.join(" ").localeCompare(b.genres.join(" ")) * mul;
+    const g = (item) =>
+      item.genres.map((g) => I18N[lang].genres[g] || g).join(" ");
+    return g(a).localeCompare(g(b), lang === "ru" ? "ru" : "en") * mul;
   }
   if (key === "year") return ((a.year || 0) - (b.year || 0)) * mul;
   if (key === "kp" || key === "imdb") {
@@ -142,12 +144,30 @@ const app = createApp({
   components: { CatalogTable },
   setup() {
     const defaultLang = navigator.language.startsWith("ru") ? "ru" : "en";
-    const lang = ref(localStorage.getItem("it-movies-lang") || defaultLang);
-    const theme = ref(localStorage.getItem("it-movies-theme") || "dark");
-    const query = ref("");
-    const onlyFav = ref(localStorage.getItem("it-movies-only-fav") === "1");
+    const urlParams = new URLSearchParams(location.search);
+    const paramLang = urlParams.get("lang");
+    const lang = ref(
+      (paramLang === "ru" || paramLang === "en" ? paramLang : null) ||
+        localStorage.getItem("it-movies-lang") ||
+        defaultLang
+    );
+    const paramTheme = urlParams.get("theme");
+    const savedTheme = localStorage.getItem("it-movies-theme");
+    const colorScheme = window.matchMedia("(prefers-color-scheme: light)");
+    const theme = ref(
+      paramTheme === "dark" || paramTheme === "light"
+        ? paramTheme
+        : savedTheme || (colorScheme.matches ? "light" : "dark")
+    );
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    const query = ref(urlParams.get("q") || "");
+    const onlyFav = ref(
+      urlParams.get("fav") === "1" ||
+        localStorage.getItem("it-movies-only-fav") === "1"
+    );
     const showScrollTop = ref(false);
     const loadTime = ref(null);
+    let cleanupColorScheme = null;
 
     const SORT_DEFAULTS = {
       series: { key: "title", dir: "asc" },
@@ -192,8 +212,13 @@ const app = createApp({
     watch(
       theme,
       (value) => {
-        localStorage.setItem("it-movies-theme", value);
         document.documentElement.classList.toggle("dark", value === "dark");
+        if (metaThemeColor) {
+          metaThemeColor.setAttribute(
+            "content",
+            value === "dark" ? "#1a1a1f" : "#f4f3ef"
+          );
+        }
       },
       { immediate: true }
     );
@@ -213,6 +238,18 @@ const app = createApp({
       }
     );
 
+    function syncUrl() {
+      const p = new URLSearchParams();
+      if (query.value) p.set("q", query.value);
+      if (onlyFav.value) p.set("fav", "1");
+      p.set("lang", lang.value);
+      p.set("theme", theme.value);
+      const qs = p.toString();
+      history.replaceState(null, "", location.pathname + (qs ? "?" + qs : ""));
+    }
+
+    watch([query, onlyFav, lang, theme], syncUrl);
+
     function handleScroll() {
       showScrollTop.value = window.scrollY > 300;
     }
@@ -225,6 +262,14 @@ const app = createApp({
 
     onMounted(() => {
       window.addEventListener("scroll", handleScroll);
+      const onColorScheme = (e) => {
+        if (!localStorage.getItem("it-movies-theme")) {
+          theme.value = e.matches ? "light" : "dark";
+        }
+      };
+      colorScheme.addEventListener("change", onColorScheme);
+      cleanupColorScheme = () =>
+        colorScheme.removeEventListener("change", onColorScheme);
       if (document.readyState === "complete") {
         measureLoadTime();
       } else {
@@ -235,6 +280,7 @@ const app = createApp({
     onUnmounted(() => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("load", measureLoadTime);
+      if (cleanupColorScheme) cleanupColorScheme();
     });
 
     const t = computed(() => I18N[lang.value]);
@@ -277,6 +323,7 @@ const app = createApp({
 
     function setTheme(next) {
       theme.value = next;
+      localStorage.setItem("it-movies-theme", next);
     }
 
     function sortBy(type, key) {

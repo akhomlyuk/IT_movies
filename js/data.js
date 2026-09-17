@@ -581,7 +581,8 @@ window.CATALOG = [
     "imdbRating": 8.2,
     "kpId": 403,
     "kpRating": 7.7,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/bladerunner_film_poster.webp"
   },
   {
     "type": "movie",
@@ -1233,7 +1234,7 @@ window.CATALOG = [
   },
   {
     "type": "documentary",
-    "titleEn": "Как получить доступ ко всему: Реверс-инжиниринг",
+    "titleEn": "How to Access Everything: Reverse Engineering",
     "titleRu": "Как получить доступ ко всему: Реверс-инжиниринг",
     "genres": [
       "documentary"
