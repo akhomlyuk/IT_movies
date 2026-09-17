@@ -42,6 +42,64 @@ function kpUrl(item) {
   return `https://www.kinopoisk.ru/film/${item.kpId}/`;
 }
 
+function buildLdJson(catalog) {
+  const base = location.origin + location.pathname;
+  const itemListElement = catalog.map((item, i) => {
+    const out = {
+      "@type": item.type === "series" ? "TVSeries" : "Movie",
+      position: i + 1,
+      name: item.titleRu,
+      alternateName: item.titleEn,
+      url: item.imdbId ? imdbUrl(item) : item.kpId ? kpUrl(item) : "",
+    };
+    if (item.year) out.datePublished = String(item.year);
+    const rating = hasRating(item.kpRating)
+      ? item.kpRating
+      : hasRating(item.imdbRating)
+        ? item.imdbRating
+        : null;
+    if (rating != null) {
+      out.aggregateRating = { "@type": "AggregateRating", ratingValue: Number(rating) };
+    }
+    return out;
+  });
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": base,
+        url: base,
+        name: "IT Movies",
+        inLanguage: ["ru", "en"],
+        potentialAction: {
+          "@type": "SearchAction",
+          target: {
+            "@type": "EntryPoint",
+            urlTemplate: base + "?q={search_term_string}",
+          },
+          "query-input": "required name=search_term_string",
+        },
+      },
+      {
+        "@type": "ItemList",
+        name: "Фильмы и сериалы о компьютерах, технологиях и искусственном интеллекте",
+        numberOfItems: catalog.length,
+        itemListElement,
+      },
+    ],
+  };
+}
+
+function injectLdJson(data) {
+  const script = document.createElement("script");
+  script.type = "application/ld+json";
+  script.textContent = JSON.stringify(data);
+  document.head.appendChild(script);
+}
+
+injectLdJson(buildLdJson(window.CATALOG));
+
 const CatalogTable = {
   props: {
     id: String,
