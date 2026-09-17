@@ -166,7 +166,8 @@ window.CATALOG = [
     "imdbId": "tt6499752",
     "imdbRating": 7.5,
     "kpId": 1009784,
-    "kpRating": 7.6
+    "kpRating": 7.6,
+    "poster": "static/posters/upgrade_film_poster.webp"
   },
   {
     "type": "movie",
@@ -564,7 +565,8 @@ window.CATALOG = [
     "imdbId": "tt5397194",
     "imdbRating": 6.1,
     "kpId": 979121,
-    "kpRating": 6.4
+    "kpRating": 6.4,
+    "poster": "static/posters/anon_film_poster.webp"
   },
   {
     "type": "movie",
@@ -919,6 +921,21 @@ window.CATALOG = [
     "imdbRating": 6.8,
     "kpId": 81291,
     "kpRating": 7.5
+  },
+  {
+    "type": "movie",
+    "titleEn": "Wardriver",
+    "titleRu": "Взлом на миллион",
+    "genres": [
+      "thriller",
+      "drama"
+    ],
+    "year": 2026,
+    "imdbId": "tt5095076",
+    "imdbRating": 5.6,
+    "kpId": 11182054,
+    "kpRating": 6.5,
+    "poster": "static/posters/wardriver_film_poster.webp"
   },
   {
     "type": "documentary",
@@ -2037,20 +2054,5 @@ window.CATALOG = [
     "kpId": 998777,
     "kpRating": 7.3,
     "fav": true
-  },
-  {
-    "type": "movie",
-    "titleEn": "Wardriver",
-    "titleRu": "Взлом на миллион",
-    "genres": [
-      "thriller",
-      "drama"
-    ],
-    "year": 2026,
-    "imdbId": "tt5095076",
-    "imdbRating": 5.6,
-    "kpId": 11182054,
-    "kpRating": 6.5,
-    "poster": "static/posters/wardriver_film_poster.webp"
   }
 ];
