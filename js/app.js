@@ -268,10 +268,10 @@ const CatalogTable = {
               <td class="genre">{{ genreLabel(item) }}</td>
               <td class="year">{{ item.year }}</td>
               <td class="num">
-                <img class="ext-icon" src="static/external_link_icon.png" alt=""><a class="kp" :href="kpUrl(item)" target="_blank" rel="noopener"><span>{{ formatRating(item.kpRating) }}</span><span class="star" v-if="isHighRating(item.kpRating)" aria-hidden="true">★</span></a>
+                <a class="kp" :href="kpUrl(item)" target="_blank" rel="noopener"><span>{{ formatRating(item.kpRating) }}</span><span class="star" v-if="isHighRating(item.kpRating)" aria-hidden="true">★</span></a>
               </td>
               <td class="num">
-                <img class="ext-icon" src="static/external_link_icon.png" alt=""><a class="imdb" :href="imdbUrl(item)" target="_blank" rel="noopener"><span>{{ formatRating(item.imdbRating) }}</span><span class="star" v-if="isHighRating(item.imdbRating)" aria-hidden="true">★</span></a>
+                <a class="imdb" :href="imdbUrl(item)" target="_blank" rel="noopener"><span>{{ formatRating(item.imdbRating) }}</span><span class="star" v-if="isHighRating(item.imdbRating)" aria-hidden="true">★</span></a>
               </td>
             </tr>
             <tr v-if="!items.length">

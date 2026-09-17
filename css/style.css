@@ -447,17 +447,15 @@ a.imdb .star {
   vertical-align: 0.12em;
 }
 
-.ext-icon {
+.num a::before {
+  content: "";
   display: inline-block;
+  width: 14px;
+  height: 14px;
   margin-right: 0.25em;
   vertical-align: middle;
-  opacity: 0.8;
-  width: 12px;
-  height: 12px;
-}
-
-:root.dark .ext-icon {
-  filter: brightness(2.5);
+  background: currentColor;
+  mask: url(../static/external_link_icon.png) center / contain no-repeat;
 }
 
 .empty {
