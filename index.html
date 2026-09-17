@@ -53,7 +53,12 @@
           <button type="button" :class="{ active: theme === 'dark' }" :aria-pressed="theme === 'dark'" :aria-label="t.themeDark" @click="setTheme('dark')">🌙</button>
           <button type="button" :class="{ active: theme === 'light' }" :aria-pressed="theme === 'light'" :aria-label="t.themeLight" @click="setTheme('light')">☀️</button>
         </div>
-        <input id="srch" class="search" v-model="query" type="search" :placeholder="t.search" :aria-label="t.search">
+        <div class="filter-row">
+          <button type="button" class="fav-filter" :class="{ active: onlyFav }" :aria-pressed="onlyFav" :aria-label="t.favFilter" :title="t.favFilterTitle" @click="onlyFav = !onlyFav">
+            <img src="static/favorite_32.png" alt="" width="32" height="32">
+          </button>
+          <input id="srch" class="search" v-model="query" type="search" :placeholder="t.search" :aria-label="t.search">
+        </div>
       </div>
     </header>
 
@@ -94,7 +99,7 @@
             <tr v-for="item in items" :key="item.imdbId || item.kpId">
               <td class="title-cell">
                 <span class="poster-wrap" v-if="withPosters && item.poster">
-                  <img class="poster-icon" src="static/poster_icon.png" alt="" width="24" height="24" @click.stop="openPoster(item)">
+                  <img class="poster-icon" src="static/poster_icon.png" alt="" width="24" height="24" loading="lazy" decoding="async" @click.stop="openPoster(item)">
                 </span>
                 <span class="fav-icon" :title="t.recommend" v-if="item.fav"><img :src="favIcon" :alt="t.recommend" width="24" height="24"></span>
                 <a v-if="item.imdbId" :href="imdbUrl(item)" target="_blank" rel="noopener">{{ displayTitle(item) }}</a>
@@ -119,7 +124,7 @@
       <teleport to="body">
         <div class="poster-modal" v-if="selectedPoster" role="dialog" aria-modal="true" :aria-label="displayTitle(selectedPoster)" @click.self="closePoster">
           <div class="poster-modal-inner">
-            <img :src="selectedPoster.poster" :alt="displayTitle(selectedPoster)">
+            <img :src="selectedPoster.poster" :alt="displayTitle(selectedPoster)" loading="lazy" decoding="async">
             <button class="poster-close" :aria-label="t.close" @click="closePoster"><img src="static/close_icon.png" alt="" width="24" height="24"></button>
           </div>
         </div>

@@ -158,15 +158,40 @@ const app = createApp({
     const lang = ref(localStorage.getItem("it-movies-lang") || defaultLang);
     const theme = ref(localStorage.getItem("it-movies-theme") || "dark");
     const query = ref("");
+    const onlyFav = ref(localStorage.getItem("it-movies-only-fav") === "1");
     const showScrollTop = ref(false);
     const loadTime = ref(null);
     const isDesktop = useIsDesktop();
 
-    const sorts = reactive({
+    const SORT_DEFAULTS = {
       series: { key: "title", dir: "asc" },
       movie: { key: "title", dir: "asc" },
       documentary: { key: "title", dir: "asc" },
-    });
+    };
+    const SORT_KEYS = ["title", "genre", "year", "kp", "imdb"];
+
+    function normalizeSort(raw) {
+      const out = {};
+      for (const key of Object.keys(SORT_DEFAULTS)) {
+        const d = SORT_DEFAULTS[key];
+        const r = raw && raw[key];
+        out[key] =
+          r && SORT_KEYS.includes(r.key) && (r.dir === "asc" || r.dir === "desc")
+            ? { key: r.key, dir: r.dir }
+            : { key: d.key, dir: d.dir };
+      }
+      return out;
+    }
+
+    function loadSorts() {
+      try {
+        return normalizeSort(JSON.parse(localStorage.getItem("it-movies-sorts")));
+      } catch {
+        return normalizeSort(null);
+      }
+    }
+
+    const sorts = reactive(loadSorts());
 
     watch(
       lang,
@@ -185,6 +210,21 @@ const app = createApp({
         document.documentElement.classList.toggle("dark", value === "dark");
       },
       { immediate: true }
+    );
+
+    watch(
+      sorts,
+      (value) => {
+        localStorage.setItem("it-movies-sorts", JSON.stringify(value));
+      },
+      { deep: true }
+    );
+
+    watch(
+      onlyFav,
+      (value) => {
+        localStorage.setItem("it-movies-only-fav", value ? "1" : "0");
+      }
     );
 
     function handleScroll() {
@@ -215,8 +255,10 @@ const app = createApp({
 
     const filtered = computed(() => {
       const q = query.value.trim().toLowerCase();
-      if (!q) return window.CATALOG;
+      const favOnly = onlyFav.value;
       return window.CATALOG.filter((item) => {
+        if (favOnly && !item.fav) return false;
+        if (!q) return true;
         const genres = item.genres
           .map((g) => `${I18N.ru.genres[g] || g} ${I18N.en.genres[g] || g}`)
           .join(" ");
@@ -269,6 +311,7 @@ const app = createApp({
       lang,
       theme,
       query,
+      onlyFav,
       showScrollTop,
       loadTime,
       isDesktop,
