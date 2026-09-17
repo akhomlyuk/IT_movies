@@ -19,7 +19,7 @@ const I18N = {
     empty: "Ничего не найдено",
     noData: "Нет данных",
     codedWith: "Сделано с",
-    total: "Всего фильмов",
+    total: "Всего записей",
     loadLabel: "Рендер",
     scrollTop: "Наверх",
     close: "Закрыть",

@@ -245,7 +245,7 @@ const app = createApp({
       p.set("lang", lang.value);
       p.set("theme", theme.value);
       const qs = p.toString();
-      history.replaceState(null, "", location.pathname + (qs ? "?" + qs : ""));
+      history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + location.hash);
     }
 
     watch([query, onlyFav, lang, theme], syncUrl);

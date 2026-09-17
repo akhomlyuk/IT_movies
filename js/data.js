@@ -238,7 +238,8 @@ window.CATALOG = [
     "imdbRating": 7.3,
     "kpId": 3954,
     "kpRating": 7.8,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/enemyofthestate_film_poster.webp"
   },
   {
     "type": "movie",
@@ -394,7 +395,8 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 635772,
     "kpRating": 7.8,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/theimitationgame_film_poster.webp"
   },
   {
     "type": "movie",
@@ -537,7 +539,8 @@ window.CATALOG = [
     "imdbRating": 7.4,
     "kpId": 779602,
     "kpRating": 7.4,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/whoami_film_poster.webp"
   },
   {
     "type": "movie",
@@ -753,7 +756,8 @@ window.CATALOG = [
     "imdbRating": 8.7,
     "kpId": 301,
     "kpRating": 8.5,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/matrix_film_poster.webp"
   },
   {
     "type": "movie",
