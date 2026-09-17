@@ -254,7 +254,8 @@ window.CATALOG = [
     "imdbRating": 6.2,
     "kpId": 4134,
     "kpRating": 7.1,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/hackers_film_poster.webp"
   },
   {
     "type": "movie",
@@ -453,7 +454,8 @@ window.CATALOG = [
     "imdbRating": 7.8,
     "kpId": 427198,
     "kpRating": 7.7,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/socialnetwork_film_poster.webp"
   },
   {
     "type": "movie",
@@ -468,7 +470,8 @@ window.CATALOG = [
     "imdbRating": 7.0,
     "kpId": 1086,
     "kpRating": 7.6,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/13floor_film_poster.webp"
   },
   {
     "type": "movie",
@@ -657,7 +660,8 @@ window.CATALOG = [
     "imdbRating": 8.8,
     "kpId": 447301,
     "kpRating": 8.7,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/inception_film_poster.webp"
   },
   {
     "type": "movie",
@@ -1736,7 +1740,8 @@ window.CATALOG = [
     "imdbRating": 8.4,
     "kpId": 412342,
     "kpRating": 8.0,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/fringe_series_poster.webp"
   },
   {
     "type": "series",
@@ -1808,7 +1813,8 @@ window.CATALOG = [
     "imdbRating": 8.4,
     "kpId": 719481,
     "kpRating": 7.9,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/halt_series_poster.webp"
   },
   {
     "type": "series",
@@ -1879,7 +1885,8 @@ window.CATALOG = [
     "imdbRating": 8.5,
     "kpId": 582359,
     "kpRating": 8.0,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/personofinterest_series_poster.webp"
   },
   {
     "type": "series",
@@ -1962,7 +1969,8 @@ window.CATALOG = [
     "imdbRating": 7.7,
     "kpId": 1127489,
     "kpRating": 7.4,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/upload_series_poster.webp"
   },
   {
     "type": "series",
