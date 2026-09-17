@@ -69,15 +69,67 @@
     <catalog-table id="documentaries" type-key="documentary" :title="t.documentaries" :items="documentaries" :t="t" :lang="lang" :sort="sorts.documentary" :with-posters="isDesktop" @sort="sortBy"></catalog-table>
     </main>
     <footer>
-      <span>{{ t.codedWith }}</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a></span>
+      <span>{{ t.codedWith }}</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a>
       <span v-if="loadTime !== null"> ⚡️ {{ t.loadLabel }}: {{ loadTime }}ms</span>
       <span class="counts-all"> 🎬 {{ t.total }}: {{ counts.all }}</span>
     </footer>
     <button class="scroll-top" :aria-label="t.scrollTop" @click="scrollToTop" v-show="showScrollTop">↑</button>
   </div>
 
+  <template id="tpl-catalog">
+    <section :id="id">
+      <h2>{{ title }}</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th :class="thClass('title')" :aria-sort="ariaSort('title')" tabindex="0" @click="$emit('sort', typeKey, 'title')" @keydown.enter="$emit('sort', typeKey, 'title')">{{ t.name }} <span class="arrow">{{ arrow('title') }}</span></th>
+              <th :class="thClass('genre')" :aria-sort="ariaSort('genre')" tabindex="0" @click="$emit('sort', typeKey, 'genre')" @keydown.enter="$emit('sort', typeKey, 'genre')">{{ t.genre }} <span class="arrow">{{ arrow('genre') }}</span></th>
+              <th :class="thClass('year')" :aria-sort="ariaSort('year')" tabindex="0" @click="$emit('sort', typeKey, 'year')" @keydown.enter="$emit('sort', typeKey, 'year')">{{ t.year }} <span class="arrow">{{ arrow('year') }}</span></th>
+              <th :class="thClass('kp')" :aria-sort="ariaSort('kp')" tabindex="0" @click="$emit('sort', typeKey, 'kp')" @keydown.enter="$emit('sort', typeKey, 'kp')"><span class="th-label"><img class="col-icon" src="static/favicon_kp.png" alt="" width="14" height="14"><span class="th-text">{{ t.kp }}</span></span> <span class="arrow">{{ arrow('kp') }}</span></th>
+              <th :class="thClass('imdb')" :aria-sort="ariaSort('imdb')" tabindex="0" @click="$emit('sort', typeKey, 'imdb')" @keydown.enter="$emit('sort', typeKey, 'imdb')"><span class="th-label"><img class="col-icon" src="static/favicon_imdb.png" alt="" width="14" height="14"><span class="th-text">{{ t.imdb }}</span></span> <span class="arrow">{{ arrow('imdb') }}</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in items" :key="item.imdbId || item.kpId">
+              <td class="title-cell">
+                <span class="poster-wrap" v-if="withPosters && item.poster">
+                  <img class="poster-icon" src="static/poster_icon.png" alt="" width="24" height="24" @click.stop="openPoster(item)">
+                </span>
+                <span class="fav-icon" :title="t.recommend" v-if="item.fav"><img :src="favIcon" :alt="t.recommend" width="24" height="24"></span>
+                <a v-if="item.imdbId" :href="imdbUrl(item)" target="_blank" rel="noopener">{{ displayTitle(item) }}</a>
+                <span v-else>{{ displayTitle(item) }}</span>
+                <span class="alt-title" v-if="altTitle(item)">{{ altTitle(item) }}</span>
+              </td>
+              <td class="genre">{{ genreLabel(item) }}</td>
+              <td class="year">{{ item.year }}</td>
+              <td class="num">
+                <a class="kp" :href="kpUrl(item)" target="_blank" rel="noopener"><span :class="{ 'no-data': !hasRating(item.kpRating) }">{{ formatRating(item.kpRating, t) }}</span><span class="star" v-if="isHighRating(item.kpRating)" aria-hidden="true">★</span></a>
+              </td>
+              <td class="num">
+                <a class="imdb" :href="imdbUrl(item)" target="_blank" rel="noopener"><span :class="{ 'no-data': !hasRating(item.imdbRating) }">{{ formatRating(item.imdbRating, t) }}</span><span class="star" v-if="isHighRating(item.imdbRating)" aria-hidden="true">★</span></a>
+              </td>
+            </tr>
+            <tr v-if="!items.length">
+              <td colspan="5" class="empty">{{ t.empty }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <teleport to="body">
+        <div class="poster-modal" v-if="selectedPoster" role="dialog" aria-modal="true" :aria-label="displayTitle(selectedPoster)" @click.self="closePoster">
+          <div class="poster-modal-inner">
+            <img :src="selectedPoster.poster" :alt="displayTitle(selectedPoster)">
+            <button class="poster-close" :aria-label="t.close" @click="closePoster"><img src="static/close_icon.png" alt="" width="24" height="24"></button>
+          </div>
+        </div>
+      </teleport>
+    </section>
+  </template>
+
   <script src="js/vue.global.prod.js" defer></script>
   <script src="js/data.js" defer></script>
+  <script src="js/i18n.js" defer></script>
   <script src="js/app.js" defer></script>
 </body>
 </html>

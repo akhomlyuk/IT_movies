@@ -458,6 +458,18 @@ a.imdb .star {
   mask: url(../static/external_link_icon.png) center / contain no-repeat;
 }
 
+.num .no-data {
+  color: var(--muted);
+  font-size: 0.72em;
+  line-height: 1.15;
+  white-space: normal;
+}
+
+.num a:hover .no-data {
+  color: inherit;
+}
+
+
 .empty {
   color: var(--muted);
   padding: 1rem 0.8rem;
