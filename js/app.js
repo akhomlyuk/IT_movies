@@ -32,19 +32,6 @@ function isHighRating(value) {
   return hasRating(value) && Number(value) >= 7;
 }
 
-const DESKTOP_QUERY = "(hover: hover) and (pointer: fine) and (min-width: 720.02px)";
-
-function useIsDesktop() {
-  const mq = window.matchMedia(DESKTOP_QUERY);
-  const isDesktop = ref(mq.matches);
-  const onChange = (event) => {
-    isDesktop.value = event.matches;
-  };
-  onMounted(() => mq.addEventListener("change", onChange));
-  onUnmounted(() => mq.removeEventListener("change", onChange));
-  return isDesktop;
-}
-
 function imdbUrl(item) {
   return `https://www.imdb.com/title/${item.imdbId}/`;
 }
@@ -62,7 +49,7 @@ const CatalogTable = {
     t: Object,
     lang: String,
     sort: Object,
-    withPosters: Boolean
+    withPosters: { type: Boolean, default: true }
   },
   emits: ["sort"],
   setup(props, { emit }) {
@@ -161,7 +148,6 @@ const app = createApp({
     const onlyFav = ref(localStorage.getItem("it-movies-only-fav") === "1");
     const showScrollTop = ref(false);
     const loadTime = ref(null);
-    const isDesktop = useIsDesktop();
 
     const SORT_DEFAULTS = {
       series: { key: "title", dir: "asc" },
@@ -314,7 +300,6 @@ const app = createApp({
       onlyFav,
       showScrollTop,
       loadTime,
-      isDesktop,
       sorts,
       t,
       series,
