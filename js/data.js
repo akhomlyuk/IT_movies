@@ -971,7 +971,8 @@ window.CATALOG = [
     "imdbRating": 7.7,
     "kpId": 568047,
     "kpRating": 7.5,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/download_doc_poster.webp"
   },
   {
     "type": "documentary",
@@ -1011,7 +1012,8 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 843103,
     "kpRating": 7.3,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/citizenfour_doc_poster.webp"
   },
   {
     "type": "documentary",
@@ -1238,7 +1240,8 @@ window.CATALOG = [
     "imdbRating": 7.6,
     "kpId": 661199,
     "kpRating": 7.8,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/indiegame_doc_poster.webp"
   },
   {
     "type": "documentary",
@@ -1358,7 +1361,8 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 827868,
     "kpRating": 7.8,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/internetboy_doc_poster.webp"
   },
   {
     "type": "documentary",
@@ -1450,7 +1454,8 @@ window.CATALOG = [
     "imdbRating": 7.5,
     "kpId": 4742511,
     "kpRating": 8.3,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/russianhackers_doc_poster.webp"
   },
   {
     "type": "documentary",
@@ -1464,7 +1469,8 @@ window.CATALOG = [
     "imdbRating": 7.6,
     "kpId": 1337788,
     "kpRating": 7.2,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/socialdilemma_doc_poster.webp"
   },
   {
     "type": "documentary",
@@ -1784,7 +1790,8 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 688729,
     "kpRating": 8.1,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/scene_series_poster.webp"
   },
   {
     "type": "series",
@@ -1984,7 +1991,8 @@ window.CATALOG = [
     "imdbRating": 8.5,
     "kpId": 723959,
     "kpRating": 8.4,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/siliconvalley_series_poster.webp"
   },
   {
     "type": "series",
@@ -2066,6 +2074,7 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 998777,
     "kpRating": 7.3,
-    "fav": true
+    "fav": true,
+    "poster": "static/posters/travelers_series_poster.webp"
   }
 ];
