@@ -16,6 +16,23 @@
   <meta name="twitter:image" content="https://akhomlyuk.github.io/IT_movies/static/ogimage.webp">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/films/tt11858890-the-creator/">
   <meta name="theme-color" content="#f4f3ef">
+  <script>
+    (function () {
+      var t;
+      try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
+      if (t !== "dark" && t !== "light") {
+        try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+      }
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      if (t === "dark") {
+        document.documentElement.classList.add("dark");
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", "#1a1a1f");
+      }
+    })();
+  </script>
   <link rel="icon" type="image/webp" href="../../static/logo.webp">
   <link rel="stylesheet" href="../../css/style.css">
   <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Movie", "name": "Создатель", "alternateName": "The Creator", "url": "https://akhomlyuk.github.io/IT_movies/films/tt11858890-the-creator/", "description": "В постапокалиптическом будущем военная ИИ разрабатывает первого робота с человеческими эмоциями, и за ним начинается охота. Фильм о цене технологий и о том, что делает машину «живой».", "datePublished": "2023", "genre": ["ИИ", "Фантастика"], "sameAs": ["https://www.imdb.com/title/tt11858890/", "https://www.kinopoisk.ru/film/4499408/"], "aggregateRating": {"@type": "AggregateRating", "ratingValue": 6.7, "bestRating": 10, "worstRating": 0}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "IT Movies", "item": "https://akhomlyuk.github.io/IT_movies/"}, {"@type": "ListItem", "position": 2, "name": "Создатель", "item": "https://akhomlyuk.github.io/IT_movies/films/tt11858890-the-creator/"}]}, {"@type": "ItemList", "name": "Похожее в каталоге IT Movies", "numberOfItems": 4, "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Казнить нельзя помиловать", "url": "https://akhomlyuk.github.io/IT_movies/films/tt31050594-mercy/"}, {"@type": "ListItem", "position": 2, "name": "Я, робот", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0343818-i-robot/"}, {"@type": "ListItem", "position": 3, "name": "Терминатор 2: Судный день", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0103064-terminator-2-judgment-day/"}, {"@type": "ListItem", "position": 4, "name": "Терминатор", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0088247-the-terminator/"}]}]}</script>

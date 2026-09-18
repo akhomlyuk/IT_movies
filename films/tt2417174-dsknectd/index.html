@@ -16,6 +16,23 @@
   <meta name="twitter:image" content="https://akhomlyuk.github.io/IT_movies/static/ogimage.webp">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/films/tt2417174-dsknectd/">
   <meta name="theme-color" content="#f4f3ef">
+  <script>
+    (function () {
+      var t;
+      try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
+      if (t !== "dark" && t !== "light") {
+        try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+      }
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      if (t === "dark") {
+        document.documentElement.classList.add("dark");
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", "#1a1a1f");
+      }
+    })();
+  </script>
   <link rel="icon" type="image/webp" href="../../static/logo.webp">
   <link rel="stylesheet" href="../../css/style.css">
   <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Movie", "name": "Технологии, которые нас меняют", "alternateName": "DSKNECTD", "url": "https://akhomlyuk.github.io/IT_movies/films/tt2417174-dsknectd/", "description": "Документальный фильм о том, как технологии изменили наши отношения: бесконечные ленты, цифровой детокс и граница между связью и зависимостью. Эксперимент по подключению и отключению.", "datePublished": "2013", "genre": ["Документальный"], "sameAs": ["https://www.imdb.com/title/tt2417174/", "https://www.kinopoisk.ru/film/756003/"], "aggregateRating": {"@type": "AggregateRating", "ratingValue": 6.8, "bestRating": 10, "worstRating": 0}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "IT Movies", "item": "https://akhomlyuk.github.io/IT_movies/"}, {"@type": "ListItem", "position": 2, "name": "Технологии, которые нас меняют", "item": "https://akhomlyuk.github.io/IT_movies/films/tt2417174-dsknectd/"}]}, {"@type": "ItemList", "name": "Похожее в каталоге IT Movies", "numberOfItems": 4, "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Док об ИИ: Или как я стал апокалиптимистом", "url": "https://akhomlyuk.github.io/IT_movies/films/tt39150120-the-ai-doc-or-how-i-became-an-apocaloptimist/"}, {"@type": "ListItem", "position": 2, "name": "Изобретатель: Жажда крови в Силиконовой долине", "url": "https://akhomlyuk.github.io/IT_movies/films/tt8488126-the-inventor-out-for-blood-in-silicon-valley/"}, {"@type": "ListItem", "position": 3, "name": "Глубокая паутина", "url": "https://akhomlyuk.github.io/IT_movies/films/tt3312868-deep-web/"}, {"@type": "ListItem", "position": 4, "name": "Скачано", "url": "https://akhomlyuk.github.io/IT_movies/films/tt2033981-downloaded/"}]}]}</script>

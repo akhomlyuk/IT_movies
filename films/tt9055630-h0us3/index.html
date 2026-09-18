@@ -16,6 +16,23 @@
   <meta name="twitter:image" content="https://akhomlyuk.github.io/IT_movies/static/ogimage.webp">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/films/tt9055630-h0us3/">
   <meta name="theme-color" content="#f4f3ef">
+  <script>
+    (function () {
+      var t;
+      try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
+      if (t !== "dark" && t !== "light") {
+        try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+      }
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      if (t === "dark") {
+        document.documentElement.classList.add("dark");
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", "#1a1a1f");
+      }
+    })();
+  </script>
   <link rel="icon" type="image/webp" href="../../static/logo.webp">
   <link rel="stylesheet" href="../../css/style.css">
   <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Movie", "name": "Пароль: Хаус", "alternateName": "H0us3", "url": "https://akhomlyuk.github.io/IT_movies/films/tt9055630-h0us3/", "description": "Российский хоррор о молодом хакере, чья кибератака приводит его в реальный дом, где виртуальная игра и опасность смешиваются. Прообраз сетевого этического вопроса о границе игры и жизни.", "datePublished": "2018", "genre": ["Ужасы", "Фантастика"], "sameAs": ["https://www.imdb.com/title/tt9055630/", "https://www.kinopoisk.ru/film/1212316/"], "aggregateRating": {"@type": "AggregateRating", "ratingValue": 5.5, "bestRating": 10, "worstRating": 0}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "IT Movies", "item": "https://akhomlyuk.github.io/IT_movies/"}, {"@type": "ListItem", "position": 2, "name": "Пароль: Хаус", "item": "https://akhomlyuk.github.io/IT_movies/films/tt9055630-h0us3/"}]}, {"@type": "ItemList", "name": "Похожее в каталоге IT Movies", "numberOfItems": 4, "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Создатель", "url": "https://akhomlyuk.github.io/IT_movies/films/tt11858890-the-creator/"}, {"@type": "ListItem", "position": 2, "name": "Трон: Арес", "url": "https://akhomlyuk.github.io/IT_movies/films/tt6604188-tron-ares/"}, {"@type": "ListItem", "position": 3, "name": "12 обезьян", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0114746-twelve-monkeys/"}, {"@type": "ListItem", "position": 4, "name": "Казнить нельзя помиловать", "url": "https://akhomlyuk.github.io/IT_movies/films/tt31050594-mercy/"}]}]}</script>

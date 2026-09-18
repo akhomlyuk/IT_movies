@@ -16,6 +16,23 @@
   <meta name="twitter:image" content="https://akhomlyuk.github.io/IT_movies/static/ogimage.webp">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/films/tt0317042-one-point-o/">
   <meta name="theme-color" content="#f4f3ef">
+  <script>
+    (function () {
+      var t;
+      try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
+      if (t !== "dark" && t !== "light") {
+        try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+      }
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      if (t === "dark") {
+        document.documentElement.classList.add("dark");
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", "#1a1a1f");
+      }
+    })();
+  </script>
   <link rel="icon" type="image/webp" href="../../static/logo.webp">
   <link rel="stylesheet" href="../../css/style.css">
   <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Movie", "name": "Версия 1.0", "alternateName": "One Point O", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0317042-one-point-o/", "description": "Программист, живущий один в капсульном доме, начинает получать таинственные файлы, которые управляют его жизнью. Нуар-фантастика о корпоративной паранойе и овечьей цифровой жизни.", "datePublished": "2004", "genre": ["Детектив", "Фантастика"], "sameAs": ["https://www.imdb.com/title/tt0317042/", "https://www.kinopoisk.ru/film/24773/"], "aggregateRating": {"@type": "AggregateRating", "ratingValue": 5.9, "bestRating": 10, "worstRating": 0}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "IT Movies", "item": "https://akhomlyuk.github.io/IT_movies/"}, {"@type": "ListItem", "position": 2, "name": "Версия 1.0", "item": "https://akhomlyuk.github.io/IT_movies/films/tt0317042-one-point-o/"}]}, {"@type": "ItemList", "name": "Похожее в каталоге IT Movies", "numberOfItems": 4, "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Из машины", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0470752-ex-machina/"}, {"@type": "ListItem", "position": 2, "name": "Начало", "url": "https://akhomlyuk.github.io/IT_movies/films/tt1375666-inception/"}, {"@type": "ListItem", "position": 3, "name": "Пароль: Хаус", "url": "https://akhomlyuk.github.io/IT_movies/films/tt9055630-h0us3/"}, {"@type": "ListItem", "position": 4, "name": "Создатель", "url": "https://akhomlyuk.github.io/IT_movies/films/tt11858890-the-creator/"}]}]}</script>

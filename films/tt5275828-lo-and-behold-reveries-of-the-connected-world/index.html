@@ -16,6 +16,23 @@
   <meta name="twitter:image" content="https://akhomlyuk.github.io/IT_movies/static/ogimage.webp">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/films/tt5275828-lo-and-behold-reveries-of-the-connected-world/">
   <meta name="theme-color" content="#f4f3ef">
+  <script>
+    (function () {
+      var t;
+      try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
+      if (t !== "dark" && t !== "light") {
+        try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+      }
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      if (t === "dark") {
+        document.documentElement.classList.add("dark");
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", "#1a1a1f");
+      }
+    })();
+  </script>
   <link rel="icon" type="image/webp" href="../../static/logo.webp">
   <link rel="stylesheet" href="../../css/style.css">
   <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Movie", "name": "О, Интернет! Грезы цифрового мира", "alternateName": "Lo and Behold: Reveries of the Connected World", "url": "https://akhomlyuk.github.io/IT_movies/films/tt5275828-lo-and-behold-reveries-of-the-connected-world/", "description": "Документальный фильм Вернера Херцога об интернете: от компьютеров до роботов и сетей. Философский взгляд на цифровую судьбу человечества.", "datePublished": "2016", "genre": ["История"], "sameAs": ["https://www.imdb.com/title/tt5275828/", "https://www.kinopoisk.ru/film/954061/"], "aggregateRating": {"@type": "AggregateRating", "ratingValue": 7.0, "bestRating": 10, "worstRating": 0}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "IT Movies", "item": "https://akhomlyuk.github.io/IT_movies/"}, {"@type": "ListItem", "position": 2, "name": "О, Интернет! Грезы цифрового мира", "item": "https://akhomlyuk.github.io/IT_movies/films/tt5275828-lo-and-behold-reveries-of-the-connected-world/"}]}, {"@type": "ItemList", "name": "Похожее в каталоге IT Movies", "numberOfItems": 4, "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Пираты Силиконовой долины", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0168122-pirates-of-silicon-valley/"}, {"@type": "ListItem", "position": 2, "name": "BBS: The Documentary", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0460402-bbs-the-documentary/"}, {"@type": "ListItem", "position": 3, "name": "Загрузка: Подлинная история Интернета", "url": "https://akhomlyuk.github.io/IT_movies/films/tt1684716-download-the-true-story-of-the-internet/"}, {"@type": "ListItem", "position": 4, "name": "На грани: Безумная жизнь Джона Макафи", "url": "https://akhomlyuk.github.io/IT_movies/films/tt21379574-running-with-the-devil-the-wild-world-of-john-mcafee/"}]}]}</script>

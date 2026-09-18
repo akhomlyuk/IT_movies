@@ -16,6 +16,23 @@
   <meta name="twitter:image" content="https://akhomlyuk.github.io/IT_movies/static/ogimage.webp">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/films/tt1677720-ready-player-one/">
   <meta name="theme-color" content="#f4f3ef">
+  <script>
+    (function () {
+      var t;
+      try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
+      if (t !== "dark" && t !== "light") {
+        try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+      }
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      if (t === "dark") {
+        document.documentElement.classList.add("dark");
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", "#1a1a1f");
+      }
+    })();
+  </script>
   <link rel="icon" type="image/webp" href="../../static/logo.webp">
   <link rel="stylesheet" href="../../css/style.css">
   <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Movie", "name": "Первому игроку приготовиться", "alternateName": "Ready Player One", "url": "https://akhomlyuk.github.io/IT_movies/films/tt1677720-ready-player-one/", "description": "В мире-симуляции, где люди живут в гигантском виртуальном будущем, охотник за пасхалками ищет выход из реальности умирающего мира. Экранизация по Эрнесту Клайну о спасении через игру.", "datePublished": "2018", "genre": ["Приключения", "Фантастика"], "sameAs": ["https://www.imdb.com/title/tt1677720/", "https://www.kinopoisk.ru/film/538225/"], "aggregateRating": {"@type": "AggregateRating", "ratingValue": 7.4, "bestRating": 10, "worstRating": 0}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "IT Movies", "item": "https://akhomlyuk.github.io/IT_movies/"}, {"@type": "ListItem", "position": 2, "name": "Первому игроку приготовиться", "item": "https://akhomlyuk.github.io/IT_movies/films/tt1677720-ready-player-one/"}]}, {"@type": "ItemList", "name": "Похожее в каталоге IT Movies", "numberOfItems": 4, "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Трон", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0084827-tron/"}, {"@type": "ListItem", "position": 2, "name": "Трон: Наследие", "url": "https://akhomlyuk.github.io/IT_movies/films/tt1104001-tron-legacy/"}, {"@type": "ListItem", "position": 3, "name": "Пароль: Хаус", "url": "https://akhomlyuk.github.io/IT_movies/films/tt9055630-h0us3/"}, {"@type": "ListItem", "position": 4, "name": "Создатель", "url": "https://akhomlyuk.github.io/IT_movies/films/tt11858890-the-creator/"}]}]}</script>

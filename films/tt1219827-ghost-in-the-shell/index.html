@@ -16,6 +16,23 @@
   <meta name="twitter:image" content="https://akhomlyuk.github.io/IT_movies/static/ogimage.webp">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/films/tt1219827-ghost-in-the-shell/">
   <meta name="theme-color" content="#f4f3ef">
+  <script>
+    (function () {
+      var t;
+      try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
+      if (t !== "dark" && t !== "light") {
+        try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+      }
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      if (t === "dark") {
+        document.documentElement.classList.add("dark");
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", "#1a1a1f");
+      }
+    })();
+  </script>
   <link rel="icon" type="image/webp" href="../../static/logo.webp">
   <link rel="stylesheet" href="../../css/style.css">
   <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Movie", "name": "Призрак в доспехах", "alternateName": "Ghost in the Shell", "url": "https://akhomlyuk.github.io/IT_movies/films/tt1219827-ghost-in-the-shell/", "description": "Агент Мотоко Кусанаги — человек с полностью кибернетическим телом — расследует преступления в мире, где память и личность стали цифровыми файлами. Ремейк знаменитого аниме о границе между человеком и машиной.", "datePublished": "2017", "genre": ["ИИ", "Киберпанк"], "sameAs": ["https://www.imdb.com/title/tt1219827/", "https://www.kinopoisk.ru/film/843789/"], "aggregateRating": {"@type": "AggregateRating", "ratingValue": 6.3, "bestRating": 10, "worstRating": 0}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "IT Movies", "item": "https://akhomlyuk.github.io/IT_movies/"}, {"@type": "ListItem", "position": 2, "name": "Призрак в доспехах", "item": "https://akhomlyuk.github.io/IT_movies/films/tt1219827-ghost-in-the-shell/"}]}, {"@type": "ItemList", "name": "Похожее в каталоге IT Movies", "numberOfItems": 4, "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Мой создатель", "url": "https://akhomlyuk.github.io/IT_movies/films/tt6882604-archive/"}, {"@type": "ListItem", "position": 2, "name": "Создатель", "url": "https://akhomlyuk.github.io/IT_movies/films/tt11858890-the-creator/"}, {"@type": "ListItem", "position": 3, "name": "12 обезьян", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0114746-twelve-monkeys/"}, {"@type": "ListItem", "position": 4, "name": "Казнить нельзя помиловать", "url": "https://akhomlyuk.github.io/IT_movies/films/tt31050594-mercy/"}]}]}</script>

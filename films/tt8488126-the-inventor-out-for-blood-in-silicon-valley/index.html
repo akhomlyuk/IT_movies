@@ -16,6 +16,23 @@
   <meta name="twitter:image" content="https://akhomlyuk.github.io/IT_movies/static/posters/theinventor_doc_poster.webp">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/films/tt8488126-the-inventor-out-for-blood-in-silicon-valley/">
   <meta name="theme-color" content="#f4f3ef">
+  <script>
+    (function () {
+      var t;
+      try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
+      if (t !== "dark" && t !== "light") {
+        try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+      }
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      if (t === "dark") {
+        document.documentElement.classList.add("dark");
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", "#1a1a1f");
+      }
+    })();
+  </script>
   <link rel="icon" type="image/webp" href="../../static/logo.webp">
   <link rel="stylesheet" href="../../css/style.css">
   <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Movie", "name": "Изобретатель: Жажда крови в Силиконовой долине", "alternateName": "The Inventor: Out for Blood in Silicon Valley", "url": "https://akhomlyuk.github.io/IT_movies/films/tt8488126-the-inventor-out-for-blood-in-silicon-valley/", "description": "Фильм Алекса Гибни о взлёте и падении Theranos — стартапа Элизабет Холмс, обещавшего революцию в анализе крови. История самой громкой стартап-аферы Кремниевой долины: как вера основательницы, умение продавать и страх СМИ превратились в многомиллиардный обман.", "datePublished": "2019", "genre": ["Биография", "Документальный"], "sameAs": ["https://www.imdb.com/title/tt8488126/", "https://www.kinopoisk.ru/film/1160654/"], "image": "https://akhomlyuk.github.io/IT_movies/static/posters/theinventor_doc_poster.webp", "aggregateRating": {"@type": "AggregateRating", "ratingValue": 7.2, "bestRating": 10, "worstRating": 0}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "IT Movies", "item": "https://akhomlyuk.github.io/IT_movies/"}, {"@type": "ListItem", "position": 2, "name": "Изобретатель: Жажда крови в Силиконовой долине", "item": "https://akhomlyuk.github.io/IT_movies/films/tt8488126-the-inventor-out-for-blood-in-silicon-valley/"}]}, {"@type": "ItemList", "name": "Похожее в каталоге IT Movies", "numberOfItems": 4, "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Социальная сеть", "url": "https://akhomlyuk.github.io/IT_movies/films/tt1285016-the-social-network/"}, {"@type": "ListItem", "position": 2, "name": "История Джулиана Ассанжа", "url": "https://akhomlyuk.github.io/IT_movies/films/tt2357453-underground-the-julian-assange-story/"}, {"@type": "ListItem", "position": 3, "name": "Док об ИИ: Или как я стал апокалиптимистом", "url": "https://akhomlyuk.github.io/IT_movies/films/tt39150120-the-ai-doc-or-how-i-became-an-apocaloptimist/"}, {"@type": "ListItem", "position": 4, "name": "Citizenfour: Правда Сноудена", "url": "https://akhomlyuk.github.io/IT_movies/films/tt4044364-citizenfour/"}]}]}</script>

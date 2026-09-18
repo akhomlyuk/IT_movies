@@ -16,6 +16,23 @@
   <meta name="twitter:image" content="https://akhomlyuk.github.io/IT_movies/static/posters/upgrade_film_poster.webp">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/films/tt6499752-upgrade/">
   <meta name="theme-color" content="#f4f3ef">
+  <script>
+    (function () {
+      var t;
+      try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
+      if (t !== "dark" && t !== "light") {
+        try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+      }
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      if (t === "dark") {
+        document.documentElement.classList.add("dark");
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", "#1a1a1f");
+      }
+    })();
+  </script>
   <link rel="icon" type="image/webp" href="../../static/logo.webp">
   <link rel="stylesheet" href="../../css/style.css">
   <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Movie", "name": "Апгрейд", "alternateName": "Upgrade", "url": "https://akhomlyuk.github.io/IT_movies/films/tt6499752-upgrade/", "description": "Парализованный мужчина получает экспериментальный ИИ-имплант, который возвращает ему движение и открывает способности, которых он не ждал. Жёсткий боевик о слиянии человека и технологии.", "datePublished": "2018", "genre": ["Киберпанк", "Фантастика"], "sameAs": ["https://www.imdb.com/title/tt6499752/", "https://www.kinopoisk.ru/film/1009784/"], "image": "https://akhomlyuk.github.io/IT_movies/static/posters/upgrade_film_poster.webp", "aggregateRating": {"@type": "AggregateRating", "ratingValue": 7.5, "bestRating": 10, "worstRating": 0}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "IT Movies", "item": "https://akhomlyuk.github.io/IT_movies/"}, {"@type": "ListItem", "position": 2, "name": "Апгрейд", "item": "https://akhomlyuk.github.io/IT_movies/films/tt6499752-upgrade/"}]}, {"@type": "ItemList", "name": "Похожее в каталоге IT Movies", "numberOfItems": 4, "itemListElement": [{"@type": "ListItem", "position": 1, "name": "12 обезьян", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0114746-twelve-monkeys/"}, {"@type": "ListItem", "position": 2, "name": "Бегущий по лезвию 2099", "url": "https://akhomlyuk.github.io/IT_movies/films/tt18224594-blade-runner-2099/"}, {"@type": "ListItem", "position": 3, "name": "Дневники киллербота", "url": "https://akhomlyuk.github.io/IT_movies/films/tt30444310-murderbot/"}, {"@type": "ListItem", "position": 4, "name": "Призрак в доспехах", "url": "https://akhomlyuk.github.io/IT_movies/films/tt1219827-ghost-in-the-shell/"}]}]}</script>

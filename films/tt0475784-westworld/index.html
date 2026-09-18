@@ -16,6 +16,23 @@
   <meta name="twitter:image" content="https://akhomlyuk.github.io/IT_movies/static/ogimage.webp">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/films/tt0475784-westworld/">
   <meta name="theme-color" content="#f4f3ef">
+  <script>
+    (function () {
+      var t;
+      try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
+      if (t !== "dark" && t !== "light") {
+        try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+      }
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      if (t === "dark") {
+        document.documentElement.classList.add("dark");
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", "#1a1a1f");
+      }
+    })();
+  </script>
   <link rel="icon" type="image/webp" href="../../static/logo.webp">
   <link rel="stylesheet" href="../../css/style.css">
   <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TVSeries", "name": "Мир Дикого Запада", "alternateName": "Westworld", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0475784-westworld/", "description": "Парк развлечений, где андроиды исполняют любые желания гостей до сбоя систем. Философский сериал о сознании, свободе и границах симуляции.", "datePublished": "2016", "genre": ["Детектив", "Драма"], "sameAs": ["https://www.imdb.com/title/tt0475784/", "https://www.kinopoisk.ru/film/195523/"], "aggregateRating": {"@type": "AggregateRating", "ratingValue": 8.4, "bestRating": 10, "worstRating": 0}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "IT Movies", "item": "https://akhomlyuk.github.io/IT_movies/"}, {"@type": "ListItem", "position": 2, "name": "Мир Дикого Запада", "item": "https://akhomlyuk.github.io/IT_movies/films/tt0475784-westworld/"}]}, {"@type": "ItemList", "name": "Похожее в каталоге IT Movies", "numberOfItems": 4, "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Пи", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0138704-pi/"}, {"@type": "ListItem", "position": 2, "name": "Двадцать одно", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0478087-21/"}, {"@type": "ListItem", "position": 3, "name": "Мой создатель", "url": "https://akhomlyuk.github.io/IT_movies/films/tt6882604-archive/"}, {"@type": "ListItem", "position": 4, "name": "Трон: Арес", "url": "https://akhomlyuk.github.io/IT_movies/films/tt6604188-tron-ares/"}]}]}</script>

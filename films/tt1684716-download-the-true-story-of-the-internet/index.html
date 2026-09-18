@@ -16,6 +16,23 @@
   <meta name="twitter:image" content="https://akhomlyuk.github.io/IT_movies/static/posters/download_doc_poster.webp">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/films/tt1684716-download-the-true-story-of-the-internet/">
   <meta name="theme-color" content="#f4f3ef">
+  <script>
+    (function () {
+      var t;
+      try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
+      if (t !== "dark" && t !== "light") {
+        try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+      }
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      if (t === "dark") {
+        document.documentElement.classList.add("dark");
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", "#1a1a1f");
+      }
+    })();
+  </script>
   <link rel="icon" type="image/webp" href="../../static/logo.webp">
   <link rel="stylesheet" href="../../css/style.css">
   <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Movie", "name": "Загрузка: Подлинная история Интернета", "alternateName": "Download: The True Story of the Internet", "url": "https://akhomlyuk.github.io/IT_movies/films/tt1684716-download-the-true-story-of-the-internet/", "description": "Рассказ о рождении интернета: от досок объявлений и Arpanet до браузерных войн и дотком-лихорадки. Хроника технологий, изменивших мир.", "datePublished": "2008", "genre": ["История"], "sameAs": ["https://www.imdb.com/title/tt1684716/", "https://www.kinopoisk.ru/film/568047/"], "image": "https://akhomlyuk.github.io/IT_movies/static/posters/download_doc_poster.webp", "aggregateRating": {"@type": "AggregateRating", "ratingValue": 7.7, "bestRating": 10, "worstRating": 0}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "IT Movies", "item": "https://akhomlyuk.github.io/IT_movies/"}, {"@type": "ListItem", "position": 2, "name": "Загрузка: Подлинная история Интернета", "item": "https://akhomlyuk.github.io/IT_movies/films/tt1684716-download-the-true-story-of-the-internet/"}]}, {"@type": "ItemList", "name": "Похожее в каталоге IT Movies", "numberOfItems": 4, "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Пираты Силиконовой долины", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0168122-pirates-of-silicon-valley/"}, {"@type": "ListItem", "position": 2, "name": "BBS: The Documentary", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0460402-bbs-the-documentary/"}, {"@type": "ListItem", "position": 3, "name": "На грани: Безумная жизнь Джона Макафи", "url": "https://akhomlyuk.github.io/IT_movies/films/tt21379574-running-with-the-devil-the-wild-world-of-john-mcafee/"}, {"@type": "ListItem", "position": 4, "name": "Кибербункер: Даркнет в Германии", "url": "https://akhomlyuk.github.io/IT_movies/films/tt29472617-cyberbunker-the-criminal-underworld/"}]}]}</script>

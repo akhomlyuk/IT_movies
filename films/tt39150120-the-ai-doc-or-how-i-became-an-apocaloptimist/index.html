@@ -16,6 +16,23 @@
   <meta name="twitter:image" content="https://akhomlyuk.github.io/IT_movies/static/posters/theaidoc_doc_poster.webp">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/films/tt39150120-the-ai-doc-or-how-i-became-an-apocaloptimist/">
   <meta name="theme-color" content="#f4f3ef">
+  <script>
+    (function () {
+      var t;
+      try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
+      if (t !== "dark" && t !== "light") {
+        try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+      }
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      if (t === "dark") {
+        document.documentElement.classList.add("dark");
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", "#1a1a1f");
+      }
+    })();
+  </script>
   <link rel="icon" type="image/webp" href="../../static/logo.webp">
   <link rel="stylesheet" href="../../css/style.css">
   <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Movie", "name": "Док об ИИ: Или как я стал апокалиптимистом", "alternateName": "The AI Doc: Or How I Became an Apocaloptimist", "url": "https://akhomlyuk.github.io/IT_movies/films/tt39150120-the-ai-doc-or-how-i-became-an-apocaloptimist/", "description": "В центре сюжета — личная история Дэниела Роэра, который готовится стать отцом. Чтобы понять, в каком мире предстоит жить его ребёнку, режиссёр проводит интервью с ведущими экспертами в области искусственного интеллекта. Он пытается сбалансировать тревогу и надежду, исследуя как экзистенциальные риски технологии, так и её огромный потенциал.", "datePublished": "2026", "genre": ["Документальный"], "sameAs": ["https://www.imdb.com/title/tt39150120/", "https://www.kinopoisk.ru/film/11813093/"], "image": "https://akhomlyuk.github.io/IT_movies/static/posters/theaidoc_doc_poster.webp", "aggregateRating": {"@type": "AggregateRating", "ratingValue": 6.8, "bestRating": 10, "worstRating": 0}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "IT Movies", "item": "https://akhomlyuk.github.io/IT_movies/"}, {"@type": "ListItem", "position": 2, "name": "Док об ИИ: Или как я стал апокалиптимистом", "item": "https://akhomlyuk.github.io/IT_movies/films/tt39150120-the-ai-doc-or-how-i-became-an-apocaloptimist/"}]}, {"@type": "ItemList", "name": "Похожее в каталоге IT Movies", "numberOfItems": 4, "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Изобретатель: Жажда крови в Силиконовой долине", "url": "https://akhomlyuk.github.io/IT_movies/films/tt8488126-the-inventor-out-for-blood-in-silicon-valley/"}, {"@type": "ListItem", "position": 2, "name": "Глубокая паутина", "url": "https://akhomlyuk.github.io/IT_movies/films/tt3312868-deep-web/"}, {"@type": "ListItem", "position": 3, "name": "Технологии, которые нас меняют", "url": "https://akhomlyuk.github.io/IT_movies/films/tt2417174-dsknectd/"}, {"@type": "ListItem", "position": 4, "name": "Скачано", "url": "https://akhomlyuk.github.io/IT_movies/films/tt2033981-downloaded/"}]}]}</script>

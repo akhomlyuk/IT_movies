@@ -16,6 +16,23 @@
   <meta name="twitter:image" content="https://akhomlyuk.github.io/IT_movies/static/posters/safeharbor_series_poster.webp">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/films/tt30221618-safe-harbor/">
   <meta name="theme-color" content="#f4f3ef">
+  <script>
+    (function () {
+      var t;
+      try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
+      if (t !== "dark" && t !== "light") {
+        try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+      }
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      if (t === "dark") {
+        document.documentElement.classList.add("dark");
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", "#1a1a1f");
+      }
+    })();
+  </script>
   <link rel="icon" type="image/webp" href="../../static/logo.webp">
   <link rel="stylesheet" href="../../css/style.css">
   <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "TVSeries", "name": "Тихая гавань", "alternateName": "Safe Harbor", "url": "https://akhomlyuk.github.io/IT_movies/films/tt30221618-safe-harbor/", "description": "Сериал о «тихой гавани», где личная и цифровая безопасность оказываются иллюзией, а доверие к системе — ошибкой. Триллер о пределах защиты.", "datePublished": "2025", "genre": ["Триллер"], "sameAs": ["https://www.imdb.com/title/tt30221618/", "https://www.kinopoisk.ru/film/6798442/"], "image": "https://akhomlyuk.github.io/IT_movies/static/posters/safeharbor_series_poster.webp", "aggregateRating": {"@type": "AggregateRating", "ratingValue": 6.4, "bestRating": 10, "worstRating": 0}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "IT Movies", "item": "https://akhomlyuk.github.io/IT_movies/"}, {"@type": "ListItem", "position": 2, "name": "Тихая гавань", "item": "https://akhomlyuk.github.io/IT_movies/films/tt30221618-safe-harbor/"}]}, {"@type": "ItemList", "name": "Похожее в каталоге IT Movies", "numberOfItems": 4, "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Опасная правда", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0218817-antitrust/"}, {"@type": "ListItem", "position": 2, "name": "Кибер", "url": "https://akhomlyuk.github.io/IT_movies/films/tt2717822-blackhat/"}, {"@type": "ListItem", "position": 3, "name": "Враг государства", "url": "https://akhomlyuk.github.io/IT_movies/films/tt0120660-enemy-of-the-state/"}, {"@type": "ListItem", "position": 4, "name": "Искусственный интеллект. Доступ неограничен", "url": "https://akhomlyuk.github.io/IT_movies/films/tt2679552-it/"}]}]}</script>
