@@ -10,6 +10,8 @@ function safeWrite(key, value) {
   try { localStorage.setItem(key, value); } catch {}
 }
 
+let currentLang = "ru";
+
 function compare(a, b, key, dir, lang) {
   const mul = dir === "desc" ? -1 : 1;
   if (key === "title") {
@@ -242,8 +244,7 @@ const app = createApp({
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     const query = ref(urlParams.get("q") || "");
     const onlyFav = ref(
-      urlParams.get("fav") === "1" ||
-        localStorage.getItem("it-movies-only-fav") === "1"
+      urlParams.get("fav") === "1" || safeRead("it-movies-only-fav") === "1"
     );
     const showScrollTop = ref(false);
     const loadTime = ref(null);
@@ -282,6 +283,7 @@ const app = createApp({
     watch(
       lang,
       (value) => {
+        currentLang = value;
         safeWrite("it-movies-lang", value);
         document.documentElement.lang = value;
         document.title = I18N[value].titleFull;
@@ -446,8 +448,7 @@ if (app.config) {
     console.error("[Vue error]", err, info);
     const root = document.querySelector("#app");
     if (root) {
-      root.innerHTML =
-        "<p style=\"padding:2rem;text-align:center\">Что-то пошло не так — перезагрузите страницу.</p>";
+      root.innerHTML = `<p style="padding:2rem;text-align:center">${I18N[currentLang].fatalError}</p>`;
     }
   };
 }

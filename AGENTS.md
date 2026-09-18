@@ -32,6 +32,6 @@ python -m http.server 8000
   - any new user-facing string needs keys in BOTH `ru` and `en`
   - if `poster` is set, the file must exist under `static/posters/...webp`
   - `fav: true` marks a "recommended" item
-- `scripts/verify.py` is the source of truth for data integrity. After ANY change to `js/data.js`, `js/i18n.js`, `index.html`, `css/style.css` or `js/app.js`, run it. Output must end with `✅ Всё в порядке` (no errors).
+- `scripts/verify.py` is the source of truth for data integrity. After ANY change to `js/data.js`, `js/i18n.js`, `index.html`, `css/style.css` or `js/app.js`, run it. Output must end with `✅ All good` (no errors).
 - `js/data.js` is grouped by type in blocks: `movie` → `documentary` → `series`. Keep records in their block.
 - Do NOT add code comments unless the user asks for them.
