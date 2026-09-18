@@ -920,7 +920,8 @@ window.CATALOG = [
     "imdbId": "tt0317042",
     "imdbRating": 5.9,
     "kpId": 24773,
-    "kpRating": 6.4
+    "kpRating": 6.4,
+    "poster": "static/posters/onepoint_film_poster.webp"
   },
   {
     "type": "movie",

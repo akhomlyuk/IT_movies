@@ -21,12 +21,15 @@ python -m http.server 8000
 - `js/i18n.js` — translations (`window.I18N`), keys for both `ru` and `en`
 - `js/app.js` — Vue 3 app (global prod build in `js/vue.global.prod.js`), all filtering/sorting/i18n/theme logic
 - `js/film.js` — Vue 3 film-page app (shared by all `films/*` pages; same lang/theme/i18n behavior as `app.js`)
+- `js/common.js` — shared helpers (`window.ITMoviesCommon`): slug/URL builders, lang & theme resolution, rating formatting, storage wrappers, error handler (used by both `app.js` and `film.js`)
 - `css/style.css` — all styling, CSS variables for theming
 - `static/` — images, fonts, posters (`static/posters/*.webp`)
 - `scripts/` — local Python helper scripts (gitignored):
-  - `verify.py` — integrity checker (source of truth), also regenerates `sitemap.xml`
+  - `lib.py` — shared helpers (catalog/slug/genres parsing, `SITE_BASE`) used by the scripts below
+  - `verify.py` — integrity checker (source of truth; verifies generated pages are fresh, theme head-script is in sync, also regenerates `sitemap.xml`)
   - `gen_pages.py` — regenerates `films/*` pages from `js/data.js` + `js/i18n.js`
-  - `dump_catalog.py` — dumps catalog records to a TSV (bookkeeping/debugging)
+  - `pw_kp.py` — Kinopoisk search + rating lookup via Playwright (kpId, kpRating)
+  - `show_types.py` — prints every record with its line number in `js/data.js`
 
 ## CRITICAL rules
 
@@ -38,7 +41,7 @@ python -m http.server 8000
   - any new user-facing string needs keys in BOTH `ru` and `en`
   - if `poster` is set, the file must exist under `static/posters/...webp`
   - `fav: true` marks a "recommended" item
-- `scripts/verify.py` is the source of truth for data integrity. After ANY change to `js/data.js`, `js/i18n.js`, `js/app.js`, `js/film.js`, `index.html`, `css/style.css` or `scripts/gen_pages.py`, run it (and re-run `scripts/gen_pages.py` when its template/data changed). Output must end with `✅ All good` (no errors).
+- `scripts/verify.py` is the source of truth for data integrity. After ANY change to `js/data.js`, `js/i18n.js`, `js/app.js`, `js/film.js`, `js/common.js`, `index.html`, `css/style.css`, `scripts/lib.py` or `scripts/gen_pages.py`, run it (and re-run `scripts/gen_pages.py` when its template/data changed). Output must end with `✅ All good` (no errors).
 - `films/*` pages are generated, NEVER edited by hand: change the data (or `scripts/gen_pages.py`) and re-run it.
 - Page slug = `<imdbId|kp-<kpId>>-<title-en-slug>`; editing `titleEn` renames the URL, so treat `titleEn` spelling as permanent.
 - `js/data.js` is grouped by type in blocks: `movie` → `documentary` → `series`. Keep records in their block.

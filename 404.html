@@ -25,11 +25,12 @@
           : defaultLang;
       var themeParam = params.get("theme");
       var savedTheme = read("it-movies-theme");
-      var dark = themeParam
-        ? themeParam === "dark"
-        : savedTheme
-          ? savedTheme === "dark"
-          : !window.matchMedia("(prefers-color-scheme: light)").matches;
+      var theme = themeParam === "dark" || themeParam === "light"
+        ? themeParam
+        : savedTheme === "dark" || savedTheme === "light"
+          ? savedTheme
+          : !window.matchMedia("(prefers-color-scheme: light)").matches ? "dark" : "light";
+      var dark = theme === "dark";
       if (dark) document.documentElement.classList.add("dark");
       document.documentElement.lang = window.__404Lang;
       var meta = document.querySelector('meta[name="theme-color"]');

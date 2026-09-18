@@ -56,6 +56,7 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -388,6 +389,12 @@ tbody tr:hover {
   cursor: pointer;
   vertical-align: text-bottom;
   margin-right: 0.1rem;
+}
+
+.poster-icon:focus-visible {
+  outline: 1px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .poster-modal {

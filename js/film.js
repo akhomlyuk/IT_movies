@@ -1,49 +1,28 @@
 const { createApp, computed, ref, watch, onMounted, onUnmounted } = Vue;
 
-const SUPPORTED = { lang: ["ru", "en"], theme: ["dark", "light"] };
-
-function safeRead(key) {
-  try { return localStorage.getItem(key); } catch { return null; }
-}
-
-function safeWrite(key, value) {
-  try { localStorage.setItem(key, value); } catch {}
-}
+const {
+  safeRead,
+  safeWrite,
+  itemSlug,
+  kpUrl,
+  imdbUrl,
+  formatRating,
+  langFrom,
+  themeFrom,
+  toggleThemeClass,
+  updateScrollState,
+  scrollToTop,
+  installErrorHandler,
+} = window.ITMoviesCommon;
 
 let currentLang = "ru";
 
-function makeSlug(titleEn) {
-  return titleEn
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]+/g, "")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
 function slug(item) {
-  const base = item.imdbId ? item.imdbId : `kp-${item.kpId}`;
-  return `${base}-${makeSlug(item.titleEn)}`;
+  return itemSlug(item);
 }
 
 function itemBySlug(catalog, name) {
-  return catalog.find((item) => slug(item) === name) || null;
-}
-
-function hasRating(value) {
-  return value != null && value !== "";
-}
-
-function fmtRating(value) {
-  return hasRating(value) ? Number(value).toFixed(1) : "—";
-}
-
-function kpUrl(item) {
-  return `https://www.kinopoisk.ru/film/${item.kpId}/`;
-}
-
-function imdbUrl(item) {
-  return `https://www.imdb.com/title/${item.imdbId}/`;
+  return catalog.find((item) => itemSlug(item) === name) || null;
 }
 
 function relatedItems(catalog, item, limit) {
@@ -116,30 +95,12 @@ const app = createApp({
     const parts = location.pathname.split("/").filter(Boolean);
     const item = itemBySlug(window.CATALOG, parts[parts.length - 1]);
 
-    const defaultLang = navigator.language.startsWith("ru") ? "ru" : "en";
     const urlParams = new URLSearchParams(location.search);
-    const savedLang = safeRead("it-movies-lang");
-    const lang = ref(
-      SUPPORTED.lang.includes(urlParams.get("lang"))
-        ? urlParams.get("lang")
-        : SUPPORTED.lang.includes(savedLang)
-          ? savedLang
-          : defaultLang
-    );
-
-    const savedTheme = safeRead("it-movies-theme");
-    const colorScheme = window.matchMedia("(prefers-color-scheme: light)");
-    const theme = ref(
-      SUPPORTED.theme.includes(urlParams.get("theme"))
-        ? urlParams.get("theme")
-        : SUPPORTED.theme.includes(savedTheme)
-          ? savedTheme
-          : colorScheme.matches
-            ? "light"
-            : "dark"
-    );
+    const lang = ref(langFrom(urlParams, safeRead));
 
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    const colorScheme = window.matchMedia("(prefers-color-scheme: light)");
+    const theme = ref(themeFrom(urlParams, safeRead));
     const showScrollTop = ref(false);
     let cleanupColorScheme = null;
 
@@ -152,20 +113,14 @@ const app = createApp({
 
     watch(
       theme,
-      (value) => {
-        document.documentElement.classList.toggle("dark", value === "dark");
-        if (metaThemeColor) {
-          metaThemeColor.setAttribute(
-            "content",
-            value === "dark" ? "#1a1a1f" : "#f4f3ef"
-          );
-        }
-      },
+      (value) => toggleThemeClass(value, metaThemeColor),
       { immediate: true }
     );
 
+    const onScroll = () => updateScrollState(showScrollTop);
+
     onMounted(() => {
-      window.addEventListener("scroll", handleScroll);
+      window.addEventListener("scroll", onScroll);
       const onColorScheme = (e) => {
         if (!safeRead("it-movies-theme")) {
           theme.value = e.matches ? "light" : "dark";
@@ -177,13 +132,9 @@ const app = createApp({
     });
 
     onUnmounted(() => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", onScroll);
       if (cleanupColorScheme) cleanupColorScheme();
     });
-
-    function handleScroll() {
-      showScrollTop.value = window.scrollY > 300;
-    }
 
     function setLang(next) {
       lang.value = next;
@@ -192,10 +143,6 @@ const app = createApp({
     function setTheme(next) {
       theme.value = next;
       safeWrite("it-movies-theme", next);
-    }
-
-    function scrollToTop() {
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     const t = computed(() => I18N[lang.value]);
@@ -226,8 +173,12 @@ const app = createApp({
     const kpHref = computed(() => (item ? kpUrl(item) : ""));
     const imdbHref = computed(() => (item && item.imdbId ? imdbUrl(item) : ""));
     const hasImdb = computed(() => !!(item && item.imdbId));
-    const kpRating = computed(() => (item ? fmtRating(item.kpRating) : "—"));
-    const imdbRating = computed(() => (item ? fmtRating(item.imdbRating) : "—"));
+    const kpRating = computed(() =>
+      item ? formatRating(item.kpRating, "—") : "—"
+    );
+    const imdbRating = computed(() =>
+      item ? formatRating(item.imdbRating, "—") : "—"
+    );
     const related = computed(() =>
       item ? relatedItems(window.CATALOG, item, 4) : []
     );
@@ -265,14 +216,6 @@ const app = createApp({
   template: FILM_TEMPLATE,
 });
 
-if (app.config) {
-  app.config.errorHandler = (err, instance, info) => {
-    console.error("[Vue error]", err, info);
-    const main = document.querySelector("#app main");
-    if (main) {
-      main.innerHTML = `<p class="empty">${I18N[currentLang].fatalError}</p>`;
-    }
-  };
-}
+installErrorHandler(app, () => currentLang, () => I18N);
 
 app.mount("#app");
