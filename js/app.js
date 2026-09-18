@@ -1,4 +1,14 @@
-const { createApp, computed, reactive, ref, watch, onMounted, onUnmounted } = Vue;
+const { createApp, computed, reactive, ref, watch, onMounted, onUnmounted, nextTick } = Vue;
+
+const SUPPORTED = { lang: ["ru", "en"], theme: ["dark", "light"] };
+
+function safeRead(key) {
+  try { return localStorage.getItem(key); } catch { return null; }
+}
+
+function safeWrite(key, value) {
+  try { localStorage.setItem(key, value); } catch {}
+}
 
 function compare(a, b, key, dir, lang) {
   const mul = dir === "desc" ? -1 : 1;
@@ -53,14 +63,6 @@ function buildLdJson(catalog) {
       url: item.imdbId ? imdbUrl(item) : item.kpId ? kpUrl(item) : "",
     };
     if (item.year) out.datePublished = String(item.year);
-    const rating = hasRating(item.kpRating)
-      ? item.kpRating
-      : hasRating(item.imdbRating)
-        ? item.imdbRating
-        : null;
-    if (rating != null) {
-      out.aggregateRating = { "@type": "AggregateRating", ratingValue: Number(rating) };
-    }
     return out;
   });
   return {
@@ -114,21 +116,33 @@ const CatalogTable = {
   emits: ["sort"],
   setup(props, { emit }) {
     const selectedPoster = ref(null);
+    const closeBtn = ref(null);
     let onKeydown = null;
+    let lastFocus = null;
 
-    watch(selectedPoster, (open) => {
+    watch(selectedPoster, async (open) => {
       if (open) {
+        lastFocus = document.activeElement;
+        document.body.style.overflow = "hidden";
         onKeydown = (e) => {
           if (e.key === "Escape") closePoster();
         };
         window.addEventListener("keydown", onKeydown);
-      } else if (onKeydown) {
-        window.removeEventListener("keydown", onKeydown);
-        onKeydown = null;
+        await nextTick();
+        closeBtn.value?.focus();
+      } else {
+        document.body.style.overflow = "";
+        lastFocus?.focus();
+        lastFocus = null;
+        if (onKeydown) {
+          window.removeEventListener("keydown", onKeydown);
+          onKeydown = null;
+        }
       }
     });
 
     onUnmounted(() => {
+      document.body.style.overflow = "";
       if (onKeydown) {
         window.removeEventListener("keydown", onKeydown);
         onKeydown = null;
@@ -175,10 +189,11 @@ const CatalogTable = {
       selectedPoster.value = null;
     }
 
-    const favIcon = computed(() => "static/favorite_32.png");
+    const favIcon = "static/favorite_32.png";
 
     return {
       selectedPoster,
+      closeBtn,
       formatRating,
       hasRating,
       isHighRating,
@@ -204,18 +219,25 @@ const app = createApp({
     const defaultLang = navigator.language.startsWith("ru") ? "ru" : "en";
     const urlParams = new URLSearchParams(location.search);
     const paramLang = urlParams.get("lang");
+    const savedLang = safeRead("it-movies-lang");
     const lang = ref(
-      (paramLang === "ru" || paramLang === "en" ? paramLang : null) ||
-        localStorage.getItem("it-movies-lang") ||
-        defaultLang
+      SUPPORTED.lang.includes(paramLang)
+        ? paramLang
+        : SUPPORTED.lang.includes(savedLang)
+          ? savedLang
+          : defaultLang
     );
     const paramTheme = urlParams.get("theme");
-    const savedTheme = localStorage.getItem("it-movies-theme");
+    const savedTheme = safeRead("it-movies-theme");
     const colorScheme = window.matchMedia("(prefers-color-scheme: light)");
     const theme = ref(
-      paramTheme === "dark" || paramTheme === "light"
+      SUPPORTED.theme.includes(paramTheme)
         ? paramTheme
-        : savedTheme || (colorScheme.matches ? "light" : "dark")
+        : SUPPORTED.theme.includes(savedTheme)
+          ? savedTheme
+          : colorScheme.matches
+            ? "light"
+            : "dark"
     );
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     const query = ref(urlParams.get("q") || "");
@@ -260,7 +282,7 @@ const app = createApp({
     watch(
       lang,
       (value) => {
-        localStorage.setItem("it-movies-lang", value);
+        safeWrite("it-movies-lang", value);
         document.documentElement.lang = value;
         document.title = I18N[value].titleFull;
       },
@@ -284,7 +306,7 @@ const app = createApp({
     watch(
       sorts,
       (value) => {
-        localStorage.setItem("it-movies-sorts", JSON.stringify(value));
+        safeWrite("it-movies-sorts", JSON.stringify(value));
       },
       { deep: true }
     );
@@ -292,7 +314,7 @@ const app = createApp({
     watch(
       onlyFav,
       (value) => {
-        localStorage.setItem("it-movies-only-fav", value ? "1" : "0");
+        safeWrite("it-movies-only-fav", value ? "1" : "0");
       }
     );
 
@@ -321,7 +343,7 @@ const app = createApp({
     onMounted(() => {
       window.addEventListener("scroll", handleScroll);
       const onColorScheme = (e) => {
-        if (!localStorage.getItem("it-movies-theme")) {
+        if (!safeRead("it-movies-theme")) {
           theme.value = e.matches ? "light" : "dark";
         }
       };
@@ -381,7 +403,7 @@ const app = createApp({
 
     function setTheme(next) {
       theme.value = next;
-      localStorage.setItem("it-movies-theme", next);
+      safeWrite("it-movies-theme", next);
     }
 
     function sortBy(type, key) {
@@ -418,5 +440,16 @@ const app = createApp({
     };
   },
 });
+
+if (app.config) {
+  app.config.errorHandler = (err, instance, info) => {
+    console.error("[Vue error]", err, info);
+    const root = document.querySelector("#app");
+    if (root) {
+      root.innerHTML =
+        "<p style=\"padding:2rem;text-align:center\">Что-то пошло не так — перезагрузите страницу.</p>";
+    }
+  };
+}
 
 app.mount("#app");

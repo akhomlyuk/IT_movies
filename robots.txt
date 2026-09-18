@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://akhomlyuk.github.io/IT_movies/sitemap.xml

@@ -12,6 +12,7 @@
   <meta property="og:locale:alternate" content="en_US">
   <meta property="og:image" content="https://akhomlyuk.github.io/IT_movies/static/ogimage.webp">
   <meta property="og:url" content="https://akhomlyuk.github.io/IT_movies/">
+  <meta property="og:site_name" content="IT Movies">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/">
   <meta name="theme-color" content="#f4f3ef">
   <meta name="twitter:card" content="summary_large_image">
@@ -38,7 +39,7 @@
     <header class="top">
       <div class="brand">
         <div class="logo">
-          <img src="static/logo.webp" alt="IT Movies Logo" fetchpriority="high" width="100" height="100">
+          <a href="./"><img src="static/logo.webp" alt="IT Movies Logo" fetchpriority="high" width="100" height="100"></a>
         </div>
         <div class="brand-text">
           <h1>{{ t.title }}</h1>
@@ -88,13 +89,14 @@
       <h2>{{ title }}</h2>
       <div class="table-wrap">
         <table>
+          <caption class="visually-hidden">{{ title }}</caption>
           <thead>
             <tr>
-              <th :class="thClass('title')" :aria-sort="ariaSort('title')" tabindex="0" @click="$emit('sort', typeKey, 'title')" @keydown.enter="$emit('sort', typeKey, 'title')">{{ t.name }} <span class="arrow">{{ arrow('title') }}</span></th>
-              <th :class="thClass('genre')" :aria-sort="ariaSort('genre')" tabindex="0" @click="$emit('sort', typeKey, 'genre')" @keydown.enter="$emit('sort', typeKey, 'genre')">{{ t.genre }} <span class="arrow">{{ arrow('genre') }}</span></th>
-              <th :class="thClass('year')" :aria-sort="ariaSort('year')" tabindex="0" @click="$emit('sort', typeKey, 'year')" @keydown.enter="$emit('sort', typeKey, 'year')">{{ t.year }} <span class="arrow">{{ arrow('year') }}</span></th>
-              <th :class="thClass('kp')" :aria-sort="ariaSort('kp')" tabindex="0" @click="$emit('sort', typeKey, 'kp')" @keydown.enter="$emit('sort', typeKey, 'kp')"><span class="th-label"><img class="col-icon" src="static/favicon_kp.png" alt="" width="14" height="14"><span class="th-text">{{ t.kp }}</span></span> <span class="arrow">{{ arrow('kp') }}</span></th>
-              <th :class="thClass('imdb')" :aria-sort="ariaSort('imdb')" tabindex="0" @click="$emit('sort', typeKey, 'imdb')" @keydown.enter="$emit('sort', typeKey, 'imdb')"><span class="th-label"><img class="col-icon" src="static/favicon_imdb.png" alt="" width="14" height="14"><span class="th-text">{{ t.imdb }}</span></span> <span class="arrow">{{ arrow('imdb') }}</span></th>
+              <th scope="col" :class="thClass('title')" :aria-sort="ariaSort('title')" tabindex="0" @click="$emit('sort', typeKey, 'title')" @keydown.enter="$emit('sort', typeKey, 'title')">{{ t.name }} <span class="arrow">{{ arrow('title') }}</span></th>
+              <th scope="col" :class="thClass('genre')" :aria-sort="ariaSort('genre')" tabindex="0" @click="$emit('sort', typeKey, 'genre')" @keydown.enter="$emit('sort', typeKey, 'genre')">{{ t.genre }} <span class="arrow">{{ arrow('genre') }}</span></th>
+              <th scope="col" :class="thClass('year')" :aria-sort="ariaSort('year')" tabindex="0" @click="$emit('sort', typeKey, 'year')" @keydown.enter="$emit('sort', typeKey, 'year')">{{ t.year }} <span class="arrow">{{ arrow('year') }}</span></th>
+              <th scope="col" :class="thClass('kp')" :aria-sort="ariaSort('kp')" tabindex="0" @click="$emit('sort', typeKey, 'kp')" @keydown.enter="$emit('sort', typeKey, 'kp')"><span class="th-label"><img class="col-icon" src="static/favicon_kp.png" alt="" width="14" height="14"><span class="th-text">{{ t.kp }}</span></span> <span class="arrow">{{ arrow('kp') }}</span></th>
+              <th scope="col" :class="thClass('imdb')" :aria-sort="ariaSort('imdb')" tabindex="0" @click="$emit('sort', typeKey, 'imdb')" @keydown.enter="$emit('sort', typeKey, 'imdb')"><span class="th-label"><img class="col-icon" src="static/favicon_imdb.png" alt="" width="14" height="14"><span class="th-text">{{ t.imdb }}</span></span> <span class="arrow">{{ arrow('imdb') }}</span></th>
             </tr>
           </thead>
           <tbody>
@@ -128,7 +130,7 @@
         <div class="poster-modal" v-if="selectedPoster" role="dialog" aria-modal="true" :aria-label="displayTitle(selectedPoster)" @click.self="closePoster">
           <div class="poster-modal-inner">
             <img :src="selectedPoster.poster" :alt="displayTitle(selectedPoster)" loading="lazy" decoding="async">
-            <button class="poster-close" :aria-label="t.close" @click="closePoster"><img src="static/close_icon.png" alt="" width="24" height="24"></button>
+            <button ref="closeBtn" class="poster-close" :aria-label="t.close" @click="closePoster"><img src="static/close_icon.png" alt="" width="24" height="24"></button>
           </div>
         </div>
       </teleport>
