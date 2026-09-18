@@ -662,3 +662,160 @@ footer .counts-all {
     transition: none;
   }
 }
+
+/* Film pages: shared block, matches the main page design */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: var(--ink);
+  background: var(--hover);
+}
+
+.film-main {
+  display: grid;
+  gap: 1.5rem;
+  margin: 1.5rem 0 2rem;
+  padding: 1.5rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+}
+
+.film-main .meta-row {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.film-main .meta-row:first-of-type {
+  margin-top: 0;
+}
+
+.film-poster {
+  margin: 0;
+}
+
+.film-poster img {
+  display: block;
+  max-width: min(300px, 100%);
+  height: auto;
+  border-radius: 8px;
+}
+
+.film-desc {
+  margin: 0.9rem 0 0.9rem;
+  line-height: 1.55;
+}
+
+.film-desc-alt {
+  margin-top: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid var(--line-strong);
+}
+
+.ratings {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.6rem;
+}
+
+.ratings a {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  text-decoration: none;
+  background: var(--paper);
+  font-size: 0.95rem;
+}
+
+.ratings a:hover {
+  background: var(--hover);
+}
+
+.ratings a.kp {
+  color: var(--kp);
+}
+
+.ratings a.imdb {
+  color: var(--imdb);
+}
+
+.btn-back {
+  margin: 1.1rem 0 0;
+}
+
+.btn-back a {
+  display: inline-block;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.btn-back a:hover {
+  background: var(--hover);
+}
+
+.related {
+  margin: 0 0 2.5rem;
+}
+
+.related h2 {
+  margin: 0 0 0.85rem;
+  font-size: 1.45rem;
+  font-weight: 500;
+}
+
+.related ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.related li {
+  margin-bottom: 0.4rem;
+}
+
+.related a {
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.related a:hover {
+  border-bottom-color: var(--ink);
+}
+
+@media (min-width: 721px) {
+  .film-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .film-main:has(.film-poster) {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+  }
+}
+
+@media (max-width: 720px) {
+  .film-poster img {
+    max-width: 100%;
+  }
+}

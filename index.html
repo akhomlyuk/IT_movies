@@ -106,9 +106,7 @@
                   <img class="poster-icon" src="static/poster_icon.png" alt="" width="24" height="24" loading="lazy" decoding="async" role="button" tabindex="0" :aria-label="t.openPoster" @click.stop="openPoster(item)" @keydown.enter.stop="openPoster(item)" @keydown.space.stop.prevent="openPoster(item)">
                 </span>
                 <span class="fav-icon" :title="t.recommend" v-if="item.fav"><img :src="favIcon" :alt="t.recommend" width="24" height="24"></span>
-                <a v-if="item.imdbId" :href="imdbUrl(item)" target="_blank" rel="noopener">{{ displayTitle(item) }}</a>
-                <a v-else-if="item.kpId" :href="kpUrl(item)" target="_blank" rel="noopener">{{ displayTitle(item) }}</a>
-                <span v-else>{{ displayTitle(item) }}</span>
+                <a :href="filmUrl(item)">{{ displayTitle(item) }}</a>
                 <span class="alt-title" v-if="altTitle(item)">{{ altTitle(item) }}</span>
               </td>
               <td class="genre">{{ genreLabel(item) }}</td>

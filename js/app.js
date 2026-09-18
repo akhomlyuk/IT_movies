@@ -54,15 +54,29 @@ function kpUrl(item) {
   return `https://www.kinopoisk.ru/film/${item.kpId}/`;
 }
 
+function makeSlug(titleEn) {
+  return titleEn
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]+/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function filmUrl(item) {
+  const base = item.imdbId ? item.imdbId : `kp-${item.kpId}`;
+  return `films/${base}-${makeSlug(item.titleEn)}/`;
+}
+
 function buildLdJson(catalog) {
-  const base = location.origin + location.pathname;
+  const base = location.origin + location.pathname.replace(/\/$/, "") + "/";
   const itemListElement = catalog.map((item, i) => {
     const out = {
       "@type": item.type === "series" ? "TVSeries" : "Movie",
       position: i + 1,
       name: item.titleRu,
       alternateName: item.titleEn,
-      url: item.imdbId ? imdbUrl(item) : item.kpId ? kpUrl(item) : "",
+      url: base + filmUrl(item),
     };
     if (item.year) out.datePublished = String(item.year);
     return out;
@@ -201,6 +215,7 @@ const CatalogTable = {
       isHighRating,
       imdbUrl,
       kpUrl,
+      filmUrl,
       displayTitle,
       altTitle,
       genreLabel,
@@ -446,9 +461,9 @@ const app = createApp({
 if (app.config) {
   app.config.errorHandler = (err, instance, info) => {
     console.error("[Vue error]", err, info);
-    const root = document.querySelector("#app");
-    if (root) {
-      root.innerHTML = `<p style="padding:2rem;text-align:center">${I18N[currentLang].fatalError}</p>`;
+    const main = document.querySelector("#app main");
+    if (main) {
+      main.innerHTML = `<p class="empty">${I18N[currentLang].fatalError}</p>`;
     }
   };
 }
