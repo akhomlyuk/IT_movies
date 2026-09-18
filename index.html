@@ -103,7 +103,7 @@
             <tr v-for="item in items" :key="item.imdbId || item.kpId">
               <td class="title-cell">
                 <span class="poster-wrap" v-if="withPosters && item.poster">
-                  <img class="poster-icon" src="static/poster_icon.png" alt="" width="24" height="24" loading="lazy" decoding="async" role="button" tabindex="0" :aria-label="t.openPoster" @click.stop="openPoster(item)" @keydown.enter.stop="openPoster(item)" @keydown.space.stop.prevent="openPoster(item)">
+                  <button type="button" class="poster-icon" :aria-label="t.openPoster" @click.stop="openPoster(item)"><img src="static/poster_icon.png" alt="" width="24" height="24" loading="lazy" decoding="async"></button>
                 </span>
                 <span class="fav-icon" :title="t.recommend" v-if="item.fav"><img :src="favIcon" :alt="t.recommend" width="24" height="24"></span>
                 <a :href="filmUrl(item)">{{ displayTitle(item) }}</a>

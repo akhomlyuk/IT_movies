@@ -381,7 +381,12 @@ tbody tr:hover {
 }
 
 .poster-icon {
+  padding: 0;
+  border: 0;
+  background: none;
+  line-height: 0;
   cursor: pointer;
+  vertical-align: text-bottom;
   margin-right: 0.1rem;
 }
 
