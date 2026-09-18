@@ -31,6 +31,18 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://akhomlyuk.github.io/IT_movies/films/tt0088247-the-terminator/</loc>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://akhomlyuk.github.io/IT_movies/films/tt0103064-terminator-2-judgment-day/</loc>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0104692-the-lawnmower-man/</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
@@ -170,6 +182,12 @@
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0337978-live-free-or-die-hard/</loc>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://akhomlyuk.github.io/IT_movies/films/tt0343818-i-robot/</loc>
     <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

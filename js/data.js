@@ -333,6 +333,25 @@ window.CATALOG = [
   },
   {
     "type": "movie",
+    "titleEn": "I, Robot",
+    "titleRu": "Я, робот",
+    "desc": {
+      "ru": "Чикаго, 2035 год: человекоподобные роботы стали привычной частью жизни, а детектив подозревает одного из них в убийстве. Погоня за правдой в мире, где «Три закона робототехники» Азимова превратились в рекламный слоган корпорации, вскрывает страх перед машинами, способными думать.",
+      "en": "Chicago, 2035: humanoid robots are part of everyday life, and a detective suspects one of murder. A chase for the truth in a world where Asimov's Three Laws of Robotics became a corporate slogan, exposing the fear of machines that can think."
+    },
+    "genres": [
+      "scifi",
+      "ai"
+    ],
+    "year": 2004,
+    "imdbId": "tt0343818",
+    "imdbRating": 7.1,
+    "kpId": 4886,
+    "kpRating": 7.8,
+    "poster": "static/posters/irobot_film_poster.webp"
+  },
+  {
+    "type": "movie",
     "titleEn": "I.T.",
     "titleRu": "Искусственный интеллект. Доступ неограничен",
     "desc": {
@@ -1192,6 +1211,46 @@ window.CATALOG = [
     "imdbRating": 6.8,
     "kpId": 81291,
     "kpRating": 7.5
+  },
+  {
+    "type": "movie",
+    "titleEn": "Terminator 2: Judgment Day",
+    "titleRu": "Терминатор 2: Судный день",
+    "desc": {
+      "ru": "Сопротивление отправляет в 1995 год защитника юного Джона Коннора — терминатора, которому придётся противостоять усовершенствованному киборгу из жидкого металла. Но Т-800 учит и своему уроку: машина, в которую вложили человечность, способна изменить собственную программу.",
+      "en": "The resistance sends a Terminator back to 1995 to protect a young John Connor from the shape-shifting T-1000. But the T-800 teaches its own lesson: a machine raised with humanity can change its own program."
+    },
+    "genres": [
+      "scifi",
+      "ai"
+    ],
+    "year": 1991,
+    "imdbId": "tt0103064",
+    "imdbRating": 8.6,
+    "kpId": 444,
+    "kpRating": 8.4,
+    "fav": true,
+    "poster": "static/posters/terminator2_film_poster.webp"
+  },
+  {
+    "type": "movie",
+    "titleEn": "The Terminator",
+    "titleRu": "Терминатор",
+    "desc": {
+      "ru": "В 2029 году машины, поработившие человечество, воюют с остатками людей. В прошлое отправляют киборга-убийцу, чтобы уничтожить мать будущего лидера сопротивления. Камерный триллер о самосознающем военном ИИ — история «Скайнета» начинается здесь.",
+      "en": "In 2029 the machines that subjugated humanity are at war with the last survivors. A cyborg assassin is sent to the past to kill the mother of the future resistance leader. The low-budget thriller that gave birth to the myth of Skynet, a self-aware military AI."
+    },
+    "genres": [
+      "scifi",
+      "ai"
+    ],
+    "year": 1984,
+    "imdbId": "tt0088247",
+    "imdbRating": 8.1,
+    "kpId": 507,
+    "kpRating": 8.0,
+    "fav": true,
+    "poster": "static/posters/terminator_film_poster.webp"
   },
   {
     "type": "movie",
