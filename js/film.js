@@ -17,10 +17,6 @@ const {
 
 let currentLang = "ru";
 
-function slug(item) {
-  return itemSlug(item);
-}
-
 function itemBySlug(catalog, name) {
   return catalog.find((item) => itemSlug(item) === name) || null;
 }
@@ -78,7 +74,7 @@ const FILM_TEMPLATE = `
     <section class="related" :aria-label="t.relatedH">
       <h2>{{ t.relatedH }}</h2>
       <ul v-if="related.length">
-        <li v-for="r in related" :key="slug(r)"><a :href="'../' + slug(r) + '/'">{{ relatedTitle(r) }}</a></li>
+        <li v-for="r in related" :key="itemSlug(r)"><a :href="'../' + itemSlug(r) + '/'">{{ relatedTitle(r) }}</a></li>
       </ul>
       <p class="empty" v-else>{{ t.empty }}</p>
     </section>
@@ -93,7 +89,12 @@ const FILM_TEMPLATE = `
 const app = createApp({
   setup() {
     const parts = location.pathname.split("/").filter(Boolean);
-    const item = itemBySlug(window.CATALOG, parts[parts.length - 1]);
+    const pageData = window.FILM_PAGE || null;
+    const item = pageData
+      ? pageData.item || null
+      : window.CATALOG
+        ? itemBySlug(window.CATALOG, parts[parts.length - 1] || "")
+        : null;
 
     const urlParams = new URLSearchParams(location.search);
     const lang = ref(langFrom(urlParams, safeRead));
@@ -103,13 +104,6 @@ const app = createApp({
     const theme = ref(themeFrom(urlParams, safeRead));
     const showScrollTop = ref(false);
     let cleanupColorScheme = null;
-
-    watch(lang, (value) => {
-      currentLang = value;
-      safeWrite("it-movies-lang", value);
-      document.documentElement.lang = value;
-      document.title = `${title.value} — ${I18N[value].title}`;
-    });
 
     watch(
       theme,
@@ -146,7 +140,6 @@ const app = createApp({
     }
 
     const t = computed(() => I18N[lang.value]);
-    const notFound = !item;
 
     const title = computed(() =>
       item ? (lang.value === "ru" ? item.titleRu : item.titleEn) : ""
@@ -179,8 +172,21 @@ const app = createApp({
     const imdbRating = computed(() =>
       item ? formatRating(item.imdbRating, "—") : "—"
     );
-    const related = computed(() =>
-      item ? relatedItems(window.CATALOG, item, 4) : []
+    const related = pageData
+      ? pageData.related || []
+      : item && window.CATALOG
+        ? relatedItems(window.CATALOG, item, 4)
+        : [];
+
+    watch(
+      lang,
+      (value) => {
+        currentLang = value;
+        safeWrite("it-movies-lang", value);
+        document.documentElement.lang = value;
+        document.title = `${title.value} — ${I18N[value].title}`;
+      },
+      { immediate: true }
     );
 
     function relatedTitle(r) {
@@ -191,7 +197,6 @@ const app = createApp({
       lang,
       theme,
       t,
-      notFound,
       title,
       altTitle,
       desc,
@@ -205,7 +210,7 @@ const app = createApp({
       kpRating,
       imdbRating,
       related,
-      slug,
+      itemSlug,
       relatedTitle,
       showScrollTop,
       setLang,

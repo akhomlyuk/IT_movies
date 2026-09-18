@@ -37,8 +37,11 @@ function compare(a, b, key, dir, lang) {
   }
   if (key === "year") return ((a.year || 0) - (b.year || 0)) * mul;
   if (key === "kp" || key === "imdb") {
-    const av = a[key + "Rating"] == null ? -1 : a[key + "Rating"];
-    const bv = b[key + "Rating"] == null ? -1 : b[key + "Rating"];
+    const av = hasRating(a[key + "Rating"]) ? a[key + "Rating"] : null;
+    const bv = hasRating(b[key + "Rating"]) ? b[key + "Rating"] : null;
+    if (av === null && bv === null) return 0;
+    if (av === null) return 1;
+    if (bv === null) return -1;
     return (av - bv) * mul;
   }
   return 0;

@@ -8,9 +8,28 @@
   <meta name="description" content="Page not found. Back to the curated list of films and series about computers, technology and AI.">
   <meta name="theme-color" content="#f4f3ef">
   <link rel="icon" type="image/webp" href="static/logo.webp">
+  <!-- begin:theme-script -->
   <script>
     (function () {
-      var SUPPORTED = { lang: ["ru", "en"], theme: ["dark", "light"] };
+      var t;
+      try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
+      if (t !== "dark" && t !== "light") {
+        try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+      }
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      if (t === "dark") {
+        document.documentElement.classList.add("dark");
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", "#1a1a1f");
+      }
+    })();
+  </script>
+<!-- end:theme-script -->
+  <script>
+    (function () {
+      var SUPPORTED = { lang: ["ru", "en"] };
       function read(key) {
         try { return localStorage.getItem(key); } catch (e) { return null; }
       }
@@ -23,18 +42,7 @@
         : SUPPORTED.lang.indexOf(savedLang) !== -1
           ? savedLang
           : defaultLang;
-      var themeParam = params.get("theme");
-      var savedTheme = read("it-movies-theme");
-      var theme = themeParam === "dark" || themeParam === "light"
-        ? themeParam
-        : savedTheme === "dark" || savedTheme === "light"
-          ? savedTheme
-          : !window.matchMedia("(prefers-color-scheme: light)").matches ? "dark" : "light";
-      var dark = theme === "dark";
-      if (dark) document.documentElement.classList.add("dark");
       document.documentElement.lang = window.__404Lang;
-      var meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute("content", dark ? "#1a1a1f" : "#f4f3ef");
     })();
   </script>
   <link rel="stylesheet" href="css/style.css">

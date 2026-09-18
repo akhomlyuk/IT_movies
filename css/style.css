@@ -539,6 +539,19 @@ a.imdb .star {
   padding: 1rem 0.8rem;
 }
 
+.no-js-catalog h3 {
+  margin: 1.4rem 0 0.45rem;
+}
+
+.no-js-catalog ul {
+  margin: 0 0 0.25rem;
+  padding-left: 1.25rem;
+}
+
+.no-js-catalog li {
+  margin-bottom: 0.35rem;
+}
+
 footer {
   margin-top: 1rem;
   padding-top: 1rem;
