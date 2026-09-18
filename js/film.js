@@ -77,14 +77,13 @@ const FILM_TEMPLATE = `
         <button type="button" :class="{ active: theme === 'dark' }" :aria-pressed="theme === 'dark'" :aria-label="t.themeDark" @click="setTheme('dark')">🌙</button>
         <button type="button" :class="{ active: theme === 'light' }" :aria-pressed="theme === 'light'" :aria-label="t.themeLight" @click="setTheme('light')">☀️</button>
       </div>
-      <a class="back-link" href="../../" :title="t.backToCatalog" :aria-label="t.backToCatalog">←</a>
     </div>
   </header>
 
   <main>
     <article class="film-main">
       <figure class="film-poster" v-if="posterSrc">
-        <a :href="posterSrc"><img :src="posterSrc" :alt="title" loading="lazy" decoding="async"></a>
+        <img :src="posterSrc" :alt="title" loading="lazy" decoding="async">
       </figure>
       <div class="film-info">
         <p class="meta-row">{{ typeLabel }} · {{ year }} · {{ genreLabel }}</p>

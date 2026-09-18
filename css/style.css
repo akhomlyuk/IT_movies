@@ -664,26 +664,6 @@ footer .counts-all {
 }
 
 /* Film pages: shared block, matches the main page design */
-.back-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--line-strong);
-  border-radius: 4px;
-  background: var(--paper);
-  color: var(--muted);
-  font-size: 1.1rem;
-  line-height: 1;
-  text-decoration: none;
-}
-
-.back-link:hover {
-  color: var(--ink);
-  background: var(--hover);
-}
-
 .film-main {
   display: grid;
   gap: 1.5rem;
