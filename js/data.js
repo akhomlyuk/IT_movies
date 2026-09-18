@@ -1231,6 +1231,43 @@ window.CATALOG = [
   },
   {
     "type": "documentary",
+    "titleEn": "The AI Doc: Or How I Became an Apocaloptimist",
+    "titleRu": "Док об ИИ: Или как я стал апокалиптимистом",
+    "desc": {
+      "ru": "В центре сюжета — личная история Дэниела Роэра, который готовится стать отцом. Чтобы понять, в каком мире предстоит жить его ребёнку, режиссёр проводит интервью с ведущими экспертами в области искусственного интеллекта. Он пытается сбалансировать тревогу и надежду, исследуя как экзистенциальные риски технологии, так и её огромный потенциал.",
+      "en": "At its heart is Daniel Roher's personal story as he prepares to become a father. To understand the world his child will grow up in, the director interviews leading AI experts, trying to balance anxiety and hope as he explores both the existential risks of the technology and its enormous potential."
+    },
+    "genres": [
+      "documentary"
+    ],
+    "year": 2026,
+    "imdbId": "tt39150120",
+    "imdbRating": 6.8,
+    "kpId": 11813093,
+    "kpRating": null,
+    "poster": "static/posters/theaidoc_doc_poster.webp"
+  },
+  {
+    "type": "documentary",
+    "titleEn": "The Inventor: Out for Blood in Silicon Valley",
+    "titleRu": "Изобретатель: Жажда крови в Силиконовой долине",
+    "desc": {
+      "ru": "Фильм Алекса Гибни о взлёте и падении Theranos — стартапа Элизабет Холмс, обещавшего революцию в анализе крови. История самой громкой стартап-аферы Кремниевой долины: как вера основательницы, умение продавать и страх СМИ превратились в многомиллиардный обман.",
+      "en": "Alex Gibney's documentary about the rise and fall of Theranos, Elizabeth Holmes' startup promising a revolution in blood testing. The story of Silicon Valley's most notorious startup fraud: how a founder's conviction, salesmanship and media fear combined into a multi-billion-dollar deception."
+    },
+    "genres": [
+      "documentary",
+      "biography"
+    ],
+    "year": 2019,
+    "imdbId": "tt8488126",
+    "imdbRating": 7.2,
+    "kpId": 1160654,
+    "kpRating": 7.2,
+    "poster": "static/posters/theinventor_doc_poster.webp"
+  },
+  {
+    "type": "documentary",
     "titleEn": "Download: The True Story of the Internet",
     "titleRu": "Загрузка: Подлинная история Интернета",
     "desc": {
