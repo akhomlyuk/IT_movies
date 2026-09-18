@@ -105,7 +105,8 @@ window.CATALOG = [
     "imdbId": "tt0466043",
     "imdbRating": 6.2,
     "kpId": 161085,
-    "kpRating": 6.4
+    "kpRating": 6.4,
+    "poster": "static/posters/khottabych_film_poster.webp"
   },
   {
     "type": "movie",
