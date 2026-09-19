@@ -1,4 +1,5 @@
 .gigacode/
 .gigaide/
 .idea/
-scripts/
+__pycache__/
+*.pyc
