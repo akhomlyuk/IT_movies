@@ -249,6 +249,10 @@ def render(item, related):
 
     poster_abs = f"{SITE_BASE}/{poster}" if poster else f"{SITE_BASE}/static/ogimage.webp"
 
+    preload_poster = ""
+    if poster:
+        preload_poster = f'  <link rel="preload" as="image" href="../../{poster}" fetchpriority="high">\n'
+
     noscript_poster = ""
     if poster:
         dims = f' width="{poster_dims[0]}" height="{poster_dims[1]}"' if poster_dims else ""
@@ -292,7 +296,7 @@ def render(item, related):
   <meta name="twitter:image" content="{poster_abs}">
   <link rel="canonical" href="{page_url}">
   <meta name="theme-color" content="#f4f3ef">
-{THEME_SCRIPT}
+{preload_poster}{THEME_SCRIPT}
   <link rel="manifest" href="../../static/site.webmanifest">
   <link rel="icon" href="../../static/favicons/favicon.ico" sizes="48x48">
   <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicons/favicon-16x16.png">
