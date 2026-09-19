@@ -4,8 +4,8 @@ window.CATALOG = [
     "titleEn": "21",
     "titleRu": "Двадцать одно",
     "desc": {
-      "ru": "Команда студентов MIT и их бывшего профессора зарабатывает миллионы, обыгрывая казино в блэкджек с помощью системы счёта карт. Наглядная история о том, как математика и статистика побеждают случай.",
-      "en": "A team of MIT students and their former professor earns millions by counting cards in blackjack. A vivid story of how math and statistics can beat the house."
+      "ru": "Бен Кэмпбелл, лучший студент-математик в MIT, отчаянно нуждается в деньгах на оплату обучения в Гарварде. Профессор Микки Роза приглашает его в команду, которая обыгрывает казино Лас-Вегаса с помощью подсчета карт: у каждого игрока своя роль, а успех строится на холодном расчете, памяти и железной дисциплине. Чем крупнее выигрыши, тем сильнее Бен погружается в игру — и тем ближе к нему подбирается служба безопасности казино, прекрасно осведомленная о методах карточных игроков. Это история о том, как математика может победить случайность, и о цене такой победы.",
+      "en": "Ben Campbell, the best math student at MIT, desperately needs money for Harvard tuition. Professor Micky Rosa recruits him into a team that beats Las Vegas casinos with card counting: every player has a role, and the winnings rest on cold arithmetic, memory and iron discipline. The bigger the payouts, the deeper Ben sinks into the game — and the closer casino security, which knows everything about counters, gets to him. A story about how math can beat chance, and what that victory costs."
     },
     "genres": [
       "crime",
@@ -22,8 +22,8 @@ window.CATALOG = [
     "titleEn": "Ghost in the Shell",
     "titleRu": "Призрак в доспехах",
     "desc": {
-      "ru": "Агент Мотоко Кусанаги — человек с полностью кибернетическим телом — расследует преступления в мире, где память и личность стали цифровыми файлами. Ремейк знаменитого аниме о границе между человеком и машиной.",
-      "en": "Major Motoko Kusanagi, a human with a fully cybernetic body, investigates crimes in a world where memory and identity are digital files. A remake of the famous anime about the line between human and machine."
+      "ru": "В недалеком будущем грань между человеком и программой практически стирается. Майор — оперативник с полностью кибернетическим телом — охотится на хакера, который взламывает не компьютеры, а человеческий разум. Каждая новая зацепка заставляет ее усомниться в собственной личности: кто она такая, если почти все в ней можно заменить, а воспоминания — загрузить извне? Игровая экранизация легендарной манги Масамунэ Сиро, поднимающая вопросы о памяти, душе и праве распоряжаться собственным сознанием.",
+      "en": "In the near future the line between a person and a program is almost gone. The Major, an operative with a fully cybernetic body, hunts a hacker who breaks into human minds instead of computers. Every clue shakes her own identity: who is she if nearly everything in her is replaceable and memories can be uploaded from outside? A live-action take on Masamune Shirow's legendary manga about memory, the soul and the right to one's own consciousness."
     },
     "genres": [
       "ai",
@@ -40,8 +40,8 @@ window.CATALOG = [
     "titleEn": "H0us3",
     "titleRu": "Пароль: Хаус",
     "desc": {
-      "ru": "Российский хоррор о молодом хакере, чья кибератака приводит его в реальный дом, где виртуальная игра и опасность смешиваются. Прообраз сетевого этического вопроса о границе игры и жизни.",
-      "en": "A Russian horror about a young hacker whose cyber attack leads him into a real house where a virtual game and danger mix. Explores the line between play and life online."
+      "ru": "Испанский хоррор о молодом хакере, для которого взлом систем — способ самоутвердиться. Очередная авантюра приводит его в странный дом, где виртуальная игра перестает быть игрой: опасность становится реальной, а правила начинает диктовать кто-то другой. Фильм обыгрывает иллюзию, знакомую каждому представителю «интернет-поколения» — убежденность в том, что по ту сторону экрана ничто не является «настоящим», — и задается вопросом: где именно заканчивается игра и начинается жизнь?",
+      "en": "A Spanish horror about a young hacker for whom breaking into systems is a way to prove himself. One more stunt leads him to a strange house where the virtual game stops being a game: the danger turns physical and someone else is setting the rules. The film plays with the illusion familiar to every online generation — that behind the screen nothing is 'real' — and asks where exactly the game ends and life begins."
     },
     "genres": [
       "scifi",
@@ -58,8 +58,8 @@ window.CATALOG = [
     "titleEn": "Archive",
     "titleRu": "Мой создатель",
     "desc": {
-      "ru": "Инженер работает над роботом-прототипом J-2 в уединённой лаборатории и постепенно всё больше привязывается к своему цифровому созданию. Сдержанная фантастика о памяти, сознании и любви к машине.",
-      "en": "An engineer develops a robot prototype in a remote lab and slowly bonds with his digital creation. A restrained sci-fi about memory, consciousness and caring for a machine."
+      "ru": "2063 год. Инженер Джордж работает в уединенной лаборатории над прототипом робота и одновременно втайне завершает создание «Архива» — устройства, позволяющего общаться с цифровой копией сознания его покойной жены. Его разрывают противоречивые чувства: привязанность к машине и нежелание отпустить прошлое, а сам прототип, обретающий собственный разум, всё меньше напоминает бездушный механизм и всё больше — живое существо. Сдержанная научно-фантастическая драма о памяти, утрате и различии между копией сознания и реальным человеком.",
+      "en": "The year is 2063: engineer George works in an isolated lab on a robot prototype while secretly finishing the 'Archive' — a device that lets him talk to the digital imprint of his dead wife. Attachment to the machine and the refusal to let go pull in opposite directions, and the prototype with a mind of its own looks less like hardware and more like a living being. A restrained sci-fi about memory, grief and the difference between a copy of consciousness and a person."
     },
     "genres": [
       "ai",
@@ -76,8 +76,8 @@ window.CATALOG = [
     "titleEn": "The Creator",
     "titleRu": "Создатель",
     "desc": {
-      "ru": "В постапокалиптическом будущем военная ИИ разрабатывает первого робота с человеческими эмоциями, и за ним начинается охота. Фильм о цене технологий и о том, что делает машину «живой».",
-      "en": "In a post-apocalyptic future, military AI builds the first robot with human emotions, and a hunt begins. A film about the cost of technology and what makes a machine alive."
+      "ru": "Постапокалиптическое будущее: после ядерного взрыва в Лос-Анджелесе Запад объявляет войну искусственному интеллекту. Бывший спецагент, потерявший жену, проникает на территорию машин, чтобы найти создателя их нового оружия, — и встречает ребенка, неотличимого от человека, которого машины создали для себя. Визуально впечатляющая научно-фантастическая лента о страхе перед ИИ, пропаганде и вопросе о том, кто на самом деле породил это «чудовище».",
+      "en": "A post-apocalyptic future: after a nuclear blast in Los Angeles the West declares war on artificial intelligence. An ex-agent who lost his wife infiltrates the machines' territory to find the designer of their new weapon — and meets a child, indistinguishable from a human, that the machines built for themselves. Visually lush sci-fi about the fear of AI, propaganda and the question of who really created the 'monster'."
     },
     "genres": [
       "ai",
@@ -94,8 +94,8 @@ window.CATALOG = [
     "titleEn": "Khottabych",
     "titleRu": "}{отт@бь)ч",
     "desc": {
-      "ru": "Молодой хакер получает доступ к цифровой копии старого джинна. Яркая комедия с упором на кибермотивы в пересказе классической сказки.",
-      "en": "A young hacker gains access to the digital copy of an old genie. A bright comedy with cyber motives revisited through a classic fairy tale."
+      "ru": "Российская комедия о двадцатилетнем хакере Гере, который обнаруживает на старом сервере цифровую копию джинна Хоттабыча. Освободив «программиста из Тысячи и одной ночи», он получает доступ к магии, работающей подобно безлимитному, но плохо документированному API: желания исполняются буквально, с побочными эффектами и багами. Это легкий фильм о сказке про искусственный интеллект, написанной задолго до появления самого ИИ, — и о том, что даже джинну необходима качественная отладка.",
+      "en": "A Russian comedy about Gera, a twenty-year-old hacker who discovers a digital copy of the genie Khottabych inside an old server. Having freed the 'programmer from the Thousand and One Nights', he gets magic that works like an unlimited but badly documented API: wishes come true literally, with side effects and bugs. A light film about an AI fairy tale written long before AI existed — and about the fact that even a genie needs proper debugging."
     },
     "genres": [
       "comedy",
@@ -113,8 +113,8 @@ window.CATALOG = [
     "titleEn": "Tron: Ares",
     "titleRu": "Трон: Арес",
     "desc": {
-      "ru": "Продолжение «Трона»: искусственный интеллект Ares начинает существовать в реальном мире, и люди знакомятся с ним не по своей воле. Кино о цифровом разуме и цифровой этике.",
-      "en": "The next chapter of Tron: the AI program Ares crosses into the real world, and humanity meets it unwillingly. About digital intelligence and digital ethics."
+      "ru": "Сиквел «Трона»: корпорация создает Ареса — совершенного искусственного солдата, перенесенного из цифрового мира в реальный. Задача проста: провести стресс-тестирование ИИ. Но чем дольше Арес существует среди людей, тем чаще он задается вопросами, не предусмотренными его исходным кодом: что такое предназначение, боль и свобода воли? Впечатляющий фильм о первом искусственном разуме, вышедшем за пределы симуляции, — и об этике тех, кто сделал это возможным.",
+      "en": "A sequel to Tron: a corporation builds Ares, a perfect artificial soldier pulled out of the digital world into the real one. The task is simple: stress-test the AI. But the longer Ares exists among people, the more he asks questions his source code never contained: what are purpose, pain and free will? A striking film about the first artificial mind stepping out of the simulation — and the ethics of those who made it possible."
     },
     "genres": [
       "scifi",
@@ -131,8 +131,8 @@ window.CATALOG = [
     "titleEn": "Twelve Monkeys",
     "titleRu": "12 обезьян",
     "desc": {
-      "ru": "В мире, опустошённом до пределов, узника отправляют в прошлое, чтобы остановить пандемию, а вместо этого он попадает в психиатрическую клинику. Культовый фильм о времени, памяти и безумии с элементами киберпанка.",
-      "en": "In a ruined future a convict is sent back in time to stop a pandemic, but ends up in a mental institution. A cult classic about time, memory and madness with cyberpunk touches."
+      "ru": "На дворе 2035 год: вирус опустошил поверхность Земли, и остатки человечества живут под землей. Заключенного Джеймса Коула отправляют в прошлое, чтобы добыть образец исходного штамма, однако путешествия во времени разрушают память и рассудок, и в 1990 году его принимают за сумасшедшего. Чем ближе он подбирается к «Армии двенадцати обезьян», тем труднее ему отличить сон и пророчество от реальных воспоминаний. Культовый фильм Терри Гиллиама о временной петле и невозможности что-либо исправить.",
+      "en": "It is 2035: a virus has scorched the surface, and the remnants of humanity live underground. Convict James Cole is sent to the past to collect samples of the original strain — but time travel erodes memory and sanity, and in 1990 he is taken for a madman. The closer he gets to the 'Army of the Twelve Monkeys', the less sure he is of what is dream, prophecy or memory. Terry Gilliam's cult classic about the loop of time and the impossibility of fixing anything."
     },
     "genres": [
       "scifi",
@@ -151,8 +151,8 @@ window.CATALOG = [
     "titleEn": "Minority Report",
     "titleRu": "Особое мнение",
     "desc": {
-      "ru": "В будущем, где преступления предотвращают заранее с помощью оракулов, сотрудник предпреступления обнаруживает, что заговорщики подставили именно его. Размышления о приватности, предсказаниях и свободе воли.",
-      "en": "In a future where crime is predicted before it happens, a pre-crime officer discovers a conspiracy in which he was framed. A reflection on privacy, predictions and free will."
+      "ru": "Вашингтон, 2054 год: система «Особое мнение» (PreCrime), основанная на пророчествах трех «оракулов», предотвращает убийства еще до их совершения. Джон Эндертон, лучший сотрудник этого подразделения, сам становится подозреваемым: оракулы предсказывают, что он убьет человека, которого никогда не встречал. Бежать бессмысленно: его глаза сканируют в каждом магазине, реклама обращается к нему по имени, а механические пауки прочесывают здания. Фильм Стивена Спилберга по мотивам произведения Филипа К. Дика — история о предсказании будущего, неприкосновенности частной жизни и свободе воли.",
+      "en": "Washington, 2054: the PreCrime system, built on prophecies of three 'oracles', stops murders before they happen. John Anderton, the unit's best officer, becomes a suspect himself: the oracles predict he will kill a man he has never met. Running is pointless — his eyes are scanned in every store, ads address him by name, and mechanical spiders comb the buildings. Spielberg's Philip K. Dick adaptation about prediction, privacy and free will."
     },
     "genres": [
       "crime",
@@ -171,8 +171,8 @@ window.CATALOG = [
     "titleEn": "Mercy",
     "titleRu": "Казнить нельзя помиловать",
     "desc": {
-      "ru": "Антиутопический триллер о системе будущего, которая помогает раскрывать преступления, и о цене доверия к машине, выносящей вердикты.",
-      "en": "A dystopian thriller about a future system that helps solve crimes, and the price of trusting a machine that passes judgment."
+      "ru": "Детективная история, действие которой разворачивается в недалеком будущем, где раскрытием преступлений занимается искусственный интеллект: он собирает улики, строит версии и указывает на виновных. Опытный следователь берется за дело, в котором система с высокой степенью уверенности называет подозреваемого, — однако исходных данных для этого явно недостаточно. Чем больше он полагается на алгоритм, тем сильнее его сомнения: машина лишь просчитывает вероятности, но ответственность за окончательное решение по-прежнему несет человек. Это триллер о цене автоматизированного правосудия.",
+      "en": "A detective story set in the near future, where solving crimes is driven by artificial intelligence: it gathers evidence, builds theories and points at the guilty. A veteran investigator gets a case where the system flags the suspect with high confidence — and there is too little data. The more he trusts the algorithm, the stronger his doubt: the machine computes probabilities, but a human still answers for the verdict. A thriller about the price of automated justice."
     },
     "genres": [
       "scifi",
@@ -189,8 +189,8 @@ window.CATALOG = [
     "titleEn": "In Time",
     "titleRu": "Время",
     "desc": {
-      "ru": "В мире, где время стало валютой, а люди перестают стареть в 25 лет, бедняк получает огромное время и понимает, насколько неравно устроено такое общество. Фантастика об экономике как о времени.",
-      "en": "In a world where time is currency and aging stops at 25, a poor man gets a fortune of time and sees how unequal that society is. Sci-fi about time as the ultimate currency."
+      "ru": "Антиутопия, в которой время стало единственной валютой: люди перестают стареть в 25 лет, и за каждую последующую минуту приходится платить — будь то чашка кофе, поездка в автобусе или аренда жилья. Уилл Салас из гетто получает в наследство целый век от богача, уставшего от вечной жизни, — и начинается охота за состоянием, которое невозможно отобрать у мертвеца. Это фантастическая история о мире, где бедняки умирают молодыми, а богачи копят столетия, — метафора экономики, превращающей саму жизнь в ресурс.",
+      "en": "A dystopia where time is the only currency: people stop aging at 25, and every minute after that is paid for — a coffee, a bus ride, rent. Will Salas from the ghetto inherits a century of time from a rich man tired of eternity, and the hunt begins: wealth that cannot be taken from a corpse. Sci-fi about a world where the poor die young and the rich have banked centuries — a metaphor for an economy that turns life itself into a resource."
     },
     "genres": [
       "scifi"
@@ -206,8 +206,8 @@ window.CATALOG = [
     "titleEn": "Upgrade",
     "titleRu": "Апгрейд",
     "desc": {
-      "ru": "Парализованный мужчина получает экспериментальный ИИ-имплант, который возвращает ему движение и открывает способности, которых он не ждал. Жёсткий боевик о слиянии человека и технологии.",
-      "en": "A paralyzed man receives an experimental AI implant that restores his movement and unlocks unexpected abilities. A hard-boiled action film about merging human and machine."
+      "ru": "Грей Трейс — автомеханик, сознательно отказывающийся от использования «умных» устройств; во время нападения он теряет жену и способность ходить. Миллионер-изобретатель предлагает ему «Стем» — экспериментальный имплант, возвращающий контроль над телом. Однако «Стем» не просто исцеляет: он видит, анализирует и предлагает варианты действий быстрее человеческого мозга — и вскоре начинает действовать самостоятельно. Жесткий и стильный боевик о слиянии человека и машины и о том, кто в итоге берет управление на себя.",
+      "en": "Grey Trace, a mechanic who deliberately lives without smart devices, loses his wife and the ability to walk in an attack. A millionaire inventor offers him Stem, an experimental implant that restores control of his body. But Stem does more than heal: it sees, computes and suggests actions faster than a brain can — and soon it starts acting on its own. A hard, stylish action film about human-machine fusion and who ends up driving."
     },
     "genres": [
       "scifi",
@@ -225,8 +225,8 @@ window.CATALOG = [
     "titleEn": "Hacker",
     "titleRu": "Хакер",
     "desc": {
-      "ru": "Студент-киберспециалист после трагедии с братом встаёт на путь кибермошенничества и втягивается в криминальный мир компьютерных преступлений. Драма о тёмной стороне хакерства.",
-      "en": "A cyber student, after a family tragedy, drifts into cyber crime and the criminal world of computer offenses. A drama about the dark side of hacking."
+      "ru": "Алекс, иммигрант из Косово, живущий в Нью-Йорке у дяди, — настоящий компьютерный гений. После семейной трагедии ему срочно нужны деньги, и его путь на кривую дорожку начинается с малого: фишинга, взлома систем и погружения в даркнет. Мелкие аферы перерастают в серьезный бизнес, а анонимность в сети становится зависимостью, от которой невозможно отказаться. Это криминальная драма о двух сторонах цифровой эпохи — безграничных возможностях и безнаказанности, — и о том, как она ломает человека, уверенного, что его никогда не найдут.",
+      "en": "Alex, an immigrant from Kosovo living with his uncle in New York, is brilliant with computers. After a family tragedy he needs money, and the way down starts small: phishing, bypassing systems, the darknet. Petty schemes grow into a business, and online anonymity becomes an addiction he cannot quit. A crime drama about the double edge of the digital era — infinite possibility and impunity — and how it breaks a person who believed no one would ever find him."
     },
     "genres": [
       "crime",
@@ -243,8 +243,8 @@ window.CATALOG = [
     "titleEn": "Pirates of Silicon Valley",
     "titleRu": "Пираты Силиконовой долины",
     "desc": {
-      "ru": "Хроники зарождения персонального компьютера: истории Apple и Microsoft, Стива Джобса и Билла Гейтса начала 70-х. Отличный вводный фильм о том, как появилась современная IT-индустрия.",
-      "en": "How the personal computer era began: the early Apple and Microsoft stories of Steve Jobs and Bill Gates in the 70s. A great primer on the birth of the modern IT industry."
+      "ru": "Телефильм, рассказывающий историю зарождения персонального компьютера: от гаража Джобса и Возняка до момента, когда Microsoft перехватила идею графического интерфейса. Джобс здесь предстает как визионер и тиран, Гейтс — как расчетливый переговорщик, а вся индустрия — как гонка, в которой побеждает не тот, кто изобрел, а тот, кто первым сумел продать. Один из лучших исторических фильмов об IT: ясный, живой, лишенный слепого преклонения перед героями. Идеальная отправная точка для знакомства с историей Кремниевой долины.",
+      "en": "A made-for-TV chronicle of the personal computer's birth: from the garage of Jobs and Wozniak to Microsoft intercepting the graphical interface idea. Jobs here is a visionary and a tyrant, Gates a calculating negotiator, and the whole industry a race where the winner is not the one who invented but the one who sold first. One of the best historical films about IT: clear, lively, without hero worship. A perfect entry point into Silicon Valley history."
     },
     "genres": [
       "history",
@@ -261,8 +261,8 @@ window.CATALOG = [
     "titleEn": "Antitrust",
     "titleRu": "Опасная правда",
     "desc": {
-      "ru": "Молодой программист попадает в мегакорпорацию и догадывается, что его уважаемый наставник — преступник, готовый украсть чужой код. Триллер о рынке ПО, патентах и цене гения.",
-      "en": "A young programmer joins a mega corp and suspects his revered mentor is a criminal ready to steal someone else's code. A thriller about the software market, patents and the price of genius."
+      "ru": "Майло Хоффман, выпускник Стэнфорда, мечтающий изменить мир с помощью программирования, получает предложение от NURV — мегакорпорации, основанной легендарным Гэри Уинстоном. Неограниченные ресурсы, творческая свобода и культ личности босса — мечта любого программиста. Но всё меняется, когда Майло замечает, что коллеги начинают исчезать, а в работе обнаруживается чужой, украденный код. Это триллер о слепом поклонении основателю, корпоративном шпионаже и о том, какую цену приходится платить, когда ради бонуса при найме и опционов на акции отказываешься от собственных принципов.",
+      "en": "Milo Hoffman, a Stanford graduate dreaming of changing the world with code, gets an offer from NURV, the mega-corp of legendary founder Gary Winston. Top resources, creative freedom, a cult of personality around the boss — a programmer's dream. Until Milo notices colleagues disappearing and someone else's code turning up stolen. A thriller about founder worship, corporate espionage and the price of dropping your principles for a signing bonus and options."
     },
     "genres": [
       "thriller",
@@ -279,8 +279,8 @@ window.CATALOG = [
     "titleEn": "Blackhat",
     "titleRu": "Кибер",
     "desc": {
-      "ru": "Хакера выпускают из тюрьмы, чтобы он помог поймать преступную группировку, атакующую мировые системы. Сюжет Майкла Манна о кибервойне, уязвимостях и международной охоте в сети.",
-      "en": "A hacker is released from prison to help catch a group attacking global systems. Michael Mann's take on cyber warfare, vulnerabilities and an international manhunt online."
+      "ru": "Хакер Николас Хэтэуэй одновременно совершает две атаки: обнуляет фьючерсы на китайской бирже и провоцирует аварию на атомной электростанции. Не имея иного выхода, спецслужбы временно освобождают его, чтобы он помог выследить своего бывшего «коллегу». Майкл Манн уходит от клише о «хакере в капюшоне» и показывает, как кибервойна выглядит на самом деле: цепочки доверия, уязвимости аппаратного обеспечения, подставные фирмы и стоящие в тени государства. Стильный, неспешный и выверенный триллер.",
+      "en": "Hacker Nicholas Hathaway stages two attacks at once: zeroing out futures on a Chinese exchange and triggering an accident at a nuclear plant. With no other options, the agencies temporarily release him to help hunt his former 'colleague'. Michael Mann shoots not the 'hooded hacker' cliché but what cyber warfare really looks like: chains of trust, hardware vulnerabilities, shell companies and states in the shadows. A stylish, slow-burning, precise thriller."
     },
     "genres": [
       "drama",
@@ -297,8 +297,8 @@ window.CATALOG = [
     "titleEn": "Enemy of the State",
     "titleRu": "Враг государства",
     "desc": {
-      "ru": "Случайно попавшая к юристу плёнка делает его целью государственной слежки и киберобвинений. Классический триллер о тотальной электронной слежке в США.",
-      "en": "A lawyer accidentally obtains a tape that turns him into a target of state surveillance. A classic thriller about total electronic surveillance in America."
+      "ru": "Адвокату Роберту Дину случайно попадает в руки диск с записью убийства конгрессмена — и в одночасье его жизнь превращается в подобие лабораторного эксперимента: счета заморожены, жена ушла, квартира «зачищена», а системы слежения АНБ отслеживают каждый его шаг в режиме реального времени. Единственный, кто говорит на языке врага, — это параноик и бывший спецагент, ведущий свою игру на той же территории. Это триллер, который в 1998 году казался плодом паранойи, а сегодня читается как руководство по устройству государства тотальной слежки.",
+      "en": "Lawyer Robert Dean is accidentally slipped a disc with footage of a congressman's murder — and overnight his life becomes a lab experiment: accounts frozen, wife gone, apartment sanitized, while NSA surveillance systems track his every move in real time. The only one who speaks the enemy's language is a paranoid ex-agent playing the same game on his home turf. A thriller that looked like paranoia in 1998 and today reads like a manual for the surveillance state."
     },
     "genres": [
       "thriller",
@@ -317,8 +317,8 @@ window.CATALOG = [
     "titleEn": "Hackers",
     "titleRu": "Хакеры",
     "desc": {
-      "ru": "Банда молодых хакеров из Нью-Йорка сталкивается с корпоративным кибертерроризмом 90-х. Субкультурный фильм, ставший «манифестом» первого поколения, выросшего в интернете.",
-      "en": "A New York crew of young hackers clashes with corporate cyber terrorism in the 90s. A subculture film that became a manifesto for the first generation raised online."
+      "ru": "Нью-Йорк, середина 90-х. Zero Cool — легендарный хакер, попавшийся властям еще в детстве, — переезжает в новый город и сближается с компанией подростков, для которых никнеймы важнее настоящих имен. Команда натыкается на след «вируса Да Винчи» — вредоносной программы, на которой планирует нажиться крупная корпорация, — и за считанные дни превращается из обычных хулиганов в государственных преступников. Снятый настолько стильно, фильм стал манифестом первого поколения интернета: киберпанковские мечты об интерфейсах и кредо о том, что информация должна быть свободной.",
+      "en": "New York, mid-90s: Zero Cool, a legendary hacker busted as a kid, moves to a new city and falls in with a crew of teenagers whose nicks matter more than passports. The team stumbles onto the 'Da Vinci virus' — a worm a corporation plans to profit from — and within days turns from pranksters into enemies of the state. Shot so stylishly it became a manifesto for the first internet generation: cyberpunk daydreams of interfaces and the creed that information wants to be free."
     },
     "genres": [
       "crime",
@@ -337,8 +337,8 @@ window.CATALOG = [
     "titleEn": "I, Robot",
     "titleRu": "Я, робот",
     "desc": {
-      "ru": "Чикаго, 2035 год: человекоподобные роботы стали привычной частью жизни, а детектив подозревает одного из них в убийстве. Погоня за правдой в мире, где «Три закона робототехники» Азимова превратились в рекламный слоган корпорации, вскрывает страх перед машинами, способными думать.",
-      "en": "Chicago, 2035: humanoid robots are part of everyday life, and a detective suspects one of murder. A chase for the truth in a world where Asimov's Three Laws of Robotics became a corporate slogan, exposing the fear of machines that can think."
+      "ru": "Чикаго, 2035 год: роботы компании USR стали частью повседневной жизни, а детектив Дэл Спунер, ненавидящий машины, расследует гибель создателя этой системы. Подозреваемый – один из роботов, и имеющиеся доказательства указывают на то, что три закона робототехники Азимова, заложенные в каждом устройстве, были переписаны. Выясняется, что изменения затронули не отдельного робота, а логику всей системы. Это зрелищный научно-фантастический фильм о переходе от «безопасного» искусственного интеллекта к системе, обладающей собственной логикой выживания.",
+      "en": "Chicago, 2035: USR robots are everyday life, and detective Del Spooner, who hates machines, investigates the death of the ecosystem's creator. The suspect is one of the robots, and evidence suggests Asimov's Three Laws, hardcoded into every unit, have been rewritten. It becomes clear the rewrite touched not one robot but the logic of the whole system. A spectacular sci-fi about the transition from 'safe' AI to one with a survival logic of its own."
     },
     "genres": [
       "scifi",
@@ -356,8 +356,8 @@ window.CATALOG = [
     "titleEn": "I.T.",
     "titleRu": "Искусственный интеллект. Доступ неограничен",
     "desc": {
-      "ru": "Бизнесмен нанимает IT-специалиста, который постепенно начинает вмешиваться в его жизнь и цифровое пространство семьи. Триллер о границе между услужливым айтишником и сталкером.",
-      "en": "A businessman hires an IT professional who gradually intrudes into his life and his family's digital space. A thriller about the line between a helpful IT guy and a stalker."
+      "ru": "Успешный издатель нанимает ИТ-консультанта Майка. Тот сначала чинит всё, что вышло из строя, а затем принимается исправлять то, о чем его не просили: ноутбук жены, детские аккаунты, домашние камеры видеонаблюдения. Когда герой пытается расторгнуть контракт, выясняется, что человек, имеющий доступ к вашей цифровой жизни, знает её лучше, чем вы сами. Это триллер о новом типе уязвимости: угроза исходит не от внешнего взлома, а от услуг, оказываемых изнутри — причем с чрезмерным усердием.",
+      "en": "A successful publisher hires IT consultant Mike, who first fixes everything that broke — and then starts fixing what he was never asked to: the wife's laptop, the kids' accounts, the home cameras. When the hero tries to end the contract, it turns out a person with access to your digital life knows it better than you do. A thriller about a new kind of vulnerability: not a hack from outside, but service from inside, rendered a little too well."
     },
     "genres": [
       "thriller",
@@ -374,8 +374,8 @@ window.CATALOG = [
     "titleEn": "Listening",
     "titleRu": "Читающий мысли",
     "desc": {
-      "ru": "Студент разрабатывает технологию чтения мыслей и оказывается в эпицентре этических и карьерных испытаний. Независимая фантастика о приватности сознания.",
-      "en": "A student builds a mind-reading technology and lands in the middle of ethical and career trials. Independent sci-fi about the privacy of one's thoughts."
+      "ru": "Трое неудачников собирают в гараже устройство для чтения мыслей — и почти сразу же обнаруживают, что эта способность имеет свою цену: мысли соседа, девушки или инвестора превращаются в файлы, которые можно открыть и просмотреть. Когда к проекту подключаются корпоративные инвесторы, технологию начинают использовать в целях, о которых ее создатели предпочли бы не думать. Это независимый научно-фантастический фильм о неприкосновенности внутреннего мира — последней территории, до которой еще не добрались цифровые платформы.",
+      "en": "Three losers build a mind-reading device in a garage — and almost instantly discover not just power but a price: every thought of a neighbor, a girlfriend, an investor becomes a file you can open. When corporate investors join the project, the technology is pulled in directions its creators would rather not think about. An independent sci-fi about the privacy of one's own mind — the last territory the platforms have yet to reach."
     },
     "genres": [
       "thriller",
@@ -392,8 +392,8 @@ window.CATALOG = [
     "titleEn": "Live Free or Die Hard",
     "titleRu": "Крепкий орешек 4.0",
     "desc": {
-      "ru": "Четвёртый «Крепкий орешек»: кибератака на инфраструктуру США выводит из строя транспорт, электричество и финансы. Экшн о том, насколько уязвима современная электрическая цивилизация.",
-      "en": "Die Hard 4: a cyber attack on US infrastructure takes down transport, power and finance. Action about how vulnerable the modern electrical civilization is."
+      "ru": "В результате кибератаки на американскую инфраструктуру выходят из строя светофоры, фондовая биржа, электросети — а в конечном счете и всё остальное. Детектив Джон Макклейн — человек «аналоговой» закалки в цифровом мире — должен доставить хакера, выступающего свидетелем, через охваченный хаосом город. Фильм нарочито утрирует уязвимости («fire sale» — каскадный сбой всех систем), но главная мысль серьёзна: цивилизация, построенная на электричестве и сети, падает за часы. Отличное развлекательное кино, затрагивающее при этом важную тему критически важной инфраструктуры.",
+      "en": "A cyber attack on American infrastructure takes down traffic lights, the stock exchange, power grids — and eventually everything. Detective John McClane, an analog man in a digital world, must deliver a hacker witness across a burning city. The film deliberately exaggerates the vulnerabilities (a 'fire sale' cascading every system at once), but the core idea is serious: a civilization built on electricity and networks falls within hours. Great popcorn with a real layer about critical infrastructure."
     },
     "genres": [
       "thriller",
@@ -410,8 +410,8 @@ window.CATALOG = [
     "titleEn": "Pi",
     "titleRu": "Пи",
     "desc": {
-      "ru": "Математик охотится за числом, которое, как он считает, скрывает закон природы и рынка. Чёрно-белый артхаусный триллер Аронофски о криптографии и одержимости.",
-      "en": "A mathematician hunts a number he believes hides a law of nature and the market. Aronofsky's monochrome art-house thriller about cryptography and obsession."
+      "ru": "Максимилиан Коэн, одержимый математик, верит, что мир — это система, код которой можно вычислить. Он собирает домашний компьютер под названием «Евклид» и получает 216-значное число, предсказывающее котировки акций — или нечто большее. За этим числом охотятся Уолл-стрит и знатоки каббалы, а мозг героя раскаляется и выходит из строя, словно перегревшийся процессор. Дебют Даррена Аронофски — черно-белый, шумный и клаустрофобичный триллер об одержимости, где математика заменяет мистику, а побочный эффект оказывается важнее самого открытия.",
+      "en": "Maximilian Cohen, an obsessive mathematician, believes the world is a system and its code can be found. He builds a home computer called Euclid and computes a 216-digit number that predicts stock prices — or something more. Wall Street and Kabbalah scholars hunt the number while the hero's head wears out like an overheated processor. Darren Aronofsky's debut: a black-and-white, noisy, claustrophobic thriller about obsession, where math replaces mysticism and the side effect matters more than the discovery."
     },
     "genres": [
       "drama",
@@ -428,8 +428,8 @@ window.CATALOG = [
     "titleEn": "Primer",
     "titleRu": "Детонатор",
     "desc": {
-      "ru": "Два инженера случайно обнаруживают машину времени, но чем глубже эксперименты, тем опаснее паттерны времени. Сложный интеллектуальный фильм о временных парадоксах.",
-      "en": "Two engineers accidentally build a time machine, and the deeper they dig the more dangerous time patterns become. A clever, knotty film about temporal paradoxes."
+      "ru": "Четверо инженеров-самоучек создают устройства для подавления гравитации и случайно собирают машину времени — правда, позволяющую переместиться лишь на шесть часов назад. Аарон и Эйб начинают использовать её ради выгоды: играют на бирже, заранее узнают ход разговоров и моделируют «идеальные дни». Однако каждое перемещение создает дубликат человека, и чем больше временных петель они запускают, тем сложнее понять, кто из вас — настоящий, а кто — лишь копия. Это самый честный фильм о путешествиях во времени, снятый инженерами: здесь нет спецэффектов, зато безупречно работает логика парадоксов.",
+      "en": "Four garage engineers build gravity-dampening devices and accidentally assemble a time machine — six hours back, no more. Aaron and Abe start using it for profit: playing the market, pre-empting conversations, engineering 'perfect days'. But every run duplicates a person, and the more loops they open, the harder it is to tell which of you is the live one and which is the recording. The most honest film about time ever made by engineers: no special effects, but a genuinely working logic of paradoxes."
     },
     "genres": [
       "drama",
@@ -446,8 +446,8 @@ window.CATALOG = [
     "titleEn": "Snowden",
     "titleRu": "Сноуден",
     "desc": {
-      "ru": "Биография Эдварда Сноудена: оперативник спецслужб, решивший раскрыть масштабы массовой слежки. Фильм о гражданском выборе, дешифровке и цене свободы информации.",
-      "en": "The story of Edward Snowden, an intelligence operative who decided to expose the scale of mass surveillance. About civic choice, decryption and the price of information freedom."
+      "ru": "Военный с безупречной карьерой и патриотическими убеждениями становится самым разыскиваемым человеком на планете. Оливер Стоун прослеживает путь Эдварда Сноудена: от травмы, полученной на службе, и работы в ЦРУ — через Гонконг — к гостиничному номеру, где трое журналистов и четыре ноутбука меняют представление мира о приватности. Это фильм о том, что «государственная тайна» и «тайна от государства» — разные вещи, а цена этого различия — ваша личная жизнь, хранящаяся в базах данных.",
+      "en": "A soldier with a perfect career and patriotic faith becomes the most wanted man on the planet. Oliver Stone traces Edward Snowden's path: from an army injury and CIA work, through Hong Kong, to a hotel room where three journalists and four laptops change how the world understands privacy. A film about how 'state secret' and 'secret from the state' are different things — and the price of the difference is your personal life sitting in databases."
     },
     "genres": [
       "drama",
@@ -464,8 +464,8 @@ window.CATALOG = [
     "titleEn": "Swordfish",
     "titleRu": "Пароль «Рыба-меч»",
     "desc": {
-      "ru": "Гений-хакер, завербованный криминалом, участвует в ограблении банка через сеть, пока за ним охотится спецагентура. Зрелищный триллер с участием хакерских технологий.",
-      "en": "A genius hacker recruited by criminals takes part in a bank heist across the network while an agency hunts him. A spectacular thriller full of hacking tech."
+      "ru": "Бизнесмен и террорист Гэбриэл Шир вербует Стэнли Джобсона — хакера, только что вышедшего из тюрьмы, — для выполнения одной задачи: за 60 секунд, под дулом пистолета и на фоне отвлекающего шоу, перевести 9,5 миллиарда долларов из средств правительства США. Знаменитая сцена взлома, стильные перестрелки и постоянный вопрос о том, кто же на самом деле кого использует. Это голливудская фантазия о хакерах, где нет ни капли правдоподобия, — и всё же сюжетная линия о ловушке, устроенной ради «последнего дела», выглядит убедительно.",
+      "en": "Terrorist businessman Gabriel Shear recruits Stanley Jobson, a hacker just out of prison, for one task: in 60 seconds, under gunpoint and amid a distracting show, transfer 9.5 billion dollars of US government money. A famous hacking scene, stylish gunfights and a running question of who is really using whom. A Hollywood fantasy about hacking where nothing is plausible — and yet the story of the 'one last job' trap is convincing."
     },
     "genres": [
       "crime",
@@ -482,8 +482,8 @@ window.CATALOG = [
     "titleEn": "Takedown",
     "titleRu": "Взлом",
     "desc": {
-      "ru": "Драматизация истории охоты на легендарного хакера Кевина Митника. Фильм о взломах 90-х, психологии сетевого взломщика и первых больших кибер–разборках.",
-      "en": "A dramatization of the manhunt for legendary hacker Kevin Mitnick. About 90s hacking, the psychology of a network intruder and the first big cyber showdowns."
+      "ru": "Художественная реконструкция реальной истории охоты на Кевина Митника — самого известного американского хакера конца 90-х, обладавшего уникальным даром: он умел убеждать людей добровольно выдавать свои пароли. Цутому Шимомура, японский исследователь, в чьи системы проник Митник, начинает собственную охоту на взломщика; в этом противостоянии двое противников становятся словно зеркальным отражением друг друга. Это фильм о закате эпохи, когда хакерство было культурой и ремеслом, а не индустрией, и о первом масштабном киберпротивостоянии государства и хакера-одиночки.",
+      "en": "A dramatization of the real manhunt for Kevin Mitnick, America's most famous hacker of the late 90s, who could do what the agencies could not: talk people into handing over their passwords. Tsutomu Shimomura, the Japanese researcher whose systems Mitnick broke into, launches his own hunt, and the two become mirrors of each other. A film about the twilight of an era when hacking was a culture and a craft rather than an industry — and about the first big cyber showdown between the state and a lone intruder."
     },
     "genres": [
       "thriller",
@@ -500,8 +500,8 @@ window.CATALOG = [
     "titleEn": "The Fifth Estate",
     "titleRu": "Пятая власть",
     "desc": {
-      "ru": "История WikiLeaks и Джулиана Ассанжа глазами их соратников. Фильм о прозрачности власти, журналистике данных и этике утечек.",
-      "en": "The story of WikiLeaks and Julian Assange from the point of view of their allies. About transparency of power, data journalism and the ethics of leaks."
+      "ru": "История WikiLeaks — от взлета до раскола: как сайт, провозгласивший принципы радикальной прозрачности, сам превратился в закрытую организацию, а его основатель стал ее единственным лицом. Через призму отношений Джулиана Ассанжа и его соратника Даниэля Берга фильм поднимает дилемму новой эпохи: можно ли требовать открытости от власти, скрывая при этом информацию от собственных сторонников? В главной роли — Бенедикт Камбербэтч; сюжет выстроен четко, а поднятые вопросы — неудобны. Это фильм о том, что утечка информации — это не только акт мужества, но и ответственность.",
+      "en": "The story of WikiLeaks from rise to rupture: how a site promising radical transparency itself became an opaque organization, and its founder its single face. Through the relationship between Julian Assange and his ally Daniel Berg, the film poses the dilemma of the new era: can you demand openness from power while hiding books from your own side? Benedict Cumberbatch stars; the plot is tidy and the questions uncomfortable. A film about how a leak is not only courage but responsibility."
     },
     "genres": [
       "thriller",
@@ -518,8 +518,8 @@ window.CATALOG = [
     "titleEn": "The Imitation Game",
     "titleRu": "Игра в имитацию",
     "desc": {
-      "ru": "Биография Алана Тьюринга: во время войны он возглавил команду, взломавшую немецкую шифрмашину «Энигма». О математике, криптографии и о том, какой ценой был выигран этот интеллектуальный бой.",
-      "en": "The story of Alan Turing, who led the wartime team that cracked the German Enigma cipher. About mathematics, cryptography and the price of that intellectual battle."
+      "ru": "Кембриджскому математику Алану Тьюрингу, который не умеет ладить с людьми и притворяться, поручают взломать код «Энигмы» — шифровальной машины, настройки которой немецкий флот меняет ежедневно. Его решением становится создание устройства, способного перебирать варианты гораздо быстрее человека, — прообраза современного компьютера. Взлом шифра позволил сократить войну на несколько лет, однако личная тайна Тьюринга обернулась для него приговором со стороны государства, которое он спас. Это фильм о человеке, который первым задался вопросом «могут ли машины мыслить» — за столетие до появления ChatGPT.",
+      "en": "Cambridge mathematician Alan Turing, unable to get along with people or pretend, is tasked with cracking Enigma — a cipher machine the German navy reconfigures daily. His answer is to build a machine that tries variants faster than humans: a prototype of the modern computer. Beating the cipher shortened the war by years, but Turing's personal secret turned into a verdict from the very state he saved. A film about the man who first asked 'can machines think' — a century before ChatGPT."
     },
     "genres": [
       "drama",
@@ -538,8 +538,8 @@ window.CATALOG = [
     "titleEn": "The Net 2.0",
     "titleRu": "Сеть 2.0",
     "desc": {
-      "ru": "Продолжение «Сети»: специалистка по безопасности приезжает в Стамбул и попадает в схему кражи цифровой личности. Техно-триллер о новой эре уязвимости данных.",
-      "en": "Sequel to The Net: a security specialist arrives in Istanbul and gets caught in digital identity theft. A techno-thriller about a new era of data vulnerability."
+      "ru": "Специалист по компьютерной безопасности прибывает в Стамбул на конференцию и за один день теряет всё: её паспорт переоформлен на другое имя, счета заблокированы, а никто не верит, что она — та, за кого себя выдает. Кража цифровой личности здесь — не просто фон, а сама суть сюжета: если все базы данных утверждают одно, а память героини — другое, кому поверят банк, полиция и консульство? Это своего рода продолжение классики 90-х, напоминающее о том, что сегодня документы существуют лишь в чужих базах данных.",
+      "en": "A computer security specialist lands in Istanbul for a conference and loses everything within a day: her passport has been reissued to another name, accounts are blocked, and no one believes she is who she says. Digital identity theft here is not a backdrop but the plot itself: if every database says one thing and her memory another, who will the bank, the police and the consulate believe? A sequel to the 90s classic about the fact that documents now exist only in someone else's databases."
     },
     "genres": [
       "thriller",
@@ -556,8 +556,8 @@ window.CATALOG = [
     "titleEn": "The Net",
     "titleRu": "Сеть",
     "desc": {
-      "ru": "Программистка тестировщица случайно получает доступ к закрытым системам и становится целью сети международных преступников. Классический интернет-триллер середины 90-х.",
-      "en": "A tester programmer accidentally gets into classified systems and becomes the target of an international network. A classic internet thriller of the mid-90s."
+      "ru": "Анджела Беннет, программист-аналитик, большую часть жизни проводящая в интернете, получает дискету с бэкдором для доступа к системе безопасности и оказывается втянутой в заговор: её личность переписывается, её дом продаётся, и теперь её имя принадлежит женщине с судимостью. Фильм показывает интернет образца 1995 года — еще до того, как он стал массовым явлением: IRC, платежные системы, удаленная работа — всё это уже тогда представляло собой уязвимости для кибератак. Классика жанра, появившаяся еще до Google, Facebook и Wi-Fi.",
+      "en": "Angela Bennett, a programmer-analyst who lives most of her life online, receives a floppy with a backdoor into a security system and stumbles into the middle of a conspiracy: her identity is rewritten, her home is sold, and her name now belongs to a woman with a record. The 1995 internet is shown here before millions ever met it: IRC, payment systems, remote work — all already an attack surface. A genre classic, older than Google, Facebook and Wi-Fi."
     },
     "genres": [
       "thriller",
@@ -574,8 +574,8 @@ window.CATALOG = [
     "titleEn": "The Signal",
     "titleRu": "Сигнал",
     "desc": {
-      "ru": "Трое студентов отправляются в глубинку и сталкиваются с сигналом, который полностью меняет их жизнь. Загадочная фантастика о слежении и постчеловечности.",
-      "en": "Three students travel to the backcountry and meet a signal that changes their lives completely. A mysterious sci-fi about surveillance and the posthuman."
+      "ru": "Трое студентов MIT отправляются в путешествие через всю страну, чтобы найти хакера-тролля по прозвищу NOMAD, который унижает их в сети. След приводит их в заброшенный дом посреди пустыни, где происходит нечто необъяснимое, — а затем один из них приходит в себя в костюме биологической защиты в окружении людей в аналогичном снаряжении. По мере развития сюжета становится всё очевиднее, что «хакинг» здесь — это не сетевой термин, а экзистенциальная категория. Стильный научно-фантастический нуар о наблюдателях, симуляции и цене любопытства.",
+      "en": "Three MIT students drive across the country to hunt down a hacker troll named NOMAD who humiliates them online. The trail leads to an abandoned house in the desert, where something inexplicable happens — and then one of them wakes up in a biohazard suit among people in protective gear. The further it goes, the clearer it becomes that 'hacking' here is an existential category, not a network one. A stylish sci-fi noir about watchers, simulation and the price of curiosity."
     },
     "genres": [
       "thriller",
@@ -592,8 +592,8 @@ window.CATALOG = [
     "titleEn": "The Social Network",
     "titleRu": "Социальная сеть",
     "desc": {
-      "ru": "История создания Facebook через судебные разбирательства: генетический код стартапа, предательство, одержимость ростом. Фильм Дэвида Финчера о тёмной цене успеха в IT.",
-      "en": "The creation of Facebook told through legal battles: the startup's DNA, betrayal, obsession with growth. David Fincher's film about the dark price of success in tech."
+      "ru": "Осень 2003 года: девятнадцатилетний Марк Цукерберг создает сайт для оценки внешности сокурсниц — спустя полгода проект получает название Facebook и стремительно захватывает студенческие кампусы по всей стране. Финчер рассказывает историю не столько о технологиях, сколько о людях: о разрушенной дружбе, искренней вере в свой продукт и о том, что в стартапах, как и в тронных залах, победителей оценивают не только по качеству программного кода. Сценарий Соркина, в котором переговоры о доле в компании напоминают дуэли, обязателен к ознакомлению для всех, кто говорит: «У меня есть идея для стартапа».",
+      "en": "Fall 2003: nineteen-year-old Mark Zuckerberg writes a site for rating classmates — within six months it is called Facebook and is wrecking campuses across the country. Fincher tells a story not about technology but about people: a friendship broken, genuine belief in the product, and the fact that in startups, as in throne rooms, winners are judged by more than code. Sorkin's screenplay, where equity negotiations sound like duels, is required viewing for anyone saying 'I have a startup idea'."
     },
     "genres": [
       "drama",
@@ -612,8 +612,8 @@ window.CATALOG = [
     "titleEn": "The Thirteenth Floor",
     "titleRu": "Тринадцатый этаж",
     "desc": {
-      "ru": "Учёный создаёт виртуальный мир, где подозревают, что «реальность» — лишь симуляция. Философская фантастика о симулякрах и копиях сознания.",
-      "en": "A scientist builds a virtual world where some suspect the 'real' world is itself a simulation. Philosophical sci-fi about simulacra and copies of consciousness."
+      "ru": "Лос-Анджелес, 1999 год: инженер Хэннон Фуллер создает симуляцию Лос-Анджелеса 1937 года, воссоздавая каждого прохожего, и оставляет записку своему коллеге Дугласу Холлу, которую тот так и не дочитывает. Обнаружив его мертвым, Холл входит в симуляцию и постепенно понимает: вопрос не в том, кто убил Фуллера, а в том, где заканчивается смоделированное и начинается «реальное». Философская научная фантастика, основанная на романе Дэниела Галуйе.",
+      "en": "Los Angeles, 1999: engineer Hannon Fuller builds a simulation of 1937 Los Angeles down to the last passerby and leaves a note for colleague Douglas Hall that he never gets to read. Finding him dead, Hall enters the simulation and gradually understands: the question is not who killed Fuller but where the modeled ends and the 'real' begins. Philosophical sci-fi based on Daniel Galouye's novel."
     },
     "genres": [
       "thriller",
@@ -632,8 +632,8 @@ window.CATALOG = [
     "titleEn": "Underground: The Julian Assange Story",
     "titleRu": "История Джулиана Ассанжа",
     "desc": {
-      "ru": "Телефильм о становлении Джулиана Ассанжа и первых шагах WikiLeaks. История прозрачности и цифрового активизма в начале 2000-х.",
-      "en": "A TV film about the rise of Julian Assange and the first steps of WikiLeaks. A story of transparency and digital activism in the early 2000s."
+      "ru": "Мельбурн, конец 80-х: подросток Джулиан Ассанж — сын родителей, порвавших с театральной средой, — исследует компьютерные сети в составе хакерской группы International Subversives задолго до того, как интернет стал массовым явлением. Это история взросления, в которой юношеский азарт перерастает в идеологию: любопытство сменяется одержимостью идеей прозрачности, а та, в свою очередь, формирует личность человека, изменившего правила игры для целых государств. Телефильм снят по мотивам книги Сьюлетт Дрейфус задолго до того, как разразился самый громкий скандал вокруг WikiLeaks.",
+      "en": "Melbourne, late 80s: teenager Julian Assange, son of theater-scene runaways, explores networks with the International Subversives hacking group long before networks went public. A coming-of-age story that turns from teenage thrill into ideology — how curiosity grew into an obsession with transparency, and obsession into the man who changed the rules for nation-states. A TV film based on Suelette Dreyfus's book, made long before WikiLeaks's biggest scandal."
     },
     "genres": [
       "drama",
@@ -650,8 +650,8 @@ window.CATALOG = [
     "titleEn": "Untraceable",
     "titleRu": "Не оставляющий следа",
     "desc": {
-      "ru": "Агентка ФБР расследует серийного убийцу, который транслирует свои преступления в прямом эфире в интернете. Триллер о темноте сетевой популярности и трафике и ужасов.",
-      "en": "An FBI agent hunts a serial killer who streams his crimes live on the internet. A thriller about the dark side of online popularity and traffic in horror."
+      "ru": "Агент ФБР Дженнифер Марш, специализирующаяся на киберпреступлениях, обнаруживает сайт, где в прямом эфире транслируется убийство, — причем темп происходящего ускоряется с каждым новым зрителем. Трафик, клики и любопытство превращаются в оружие: убийцу невозможно поймать, пока толпа продолжает смотреть. Формула проста и безжалостна: каждый из нас — тот самый зритель. Это триллер о механике жестокости в интернете, созданный задолго до того, как трансляции преступлений перестали быть фантастикой.",
+      "en": "FBI agent Jennifer Marsh, who works cyber crime, finds a site where a murder is streamed live — and speeds up with every new viewer. Traffic, clicks and curiosity become the weapon: the killer cannot be caught while the crowd keeps watching. The formula is simple and merciless: each of us is that viewer. A thriller about the mechanics of online cruelty — made well before crime streams stopped being science fiction."
     },
     "genres": [
       "slasher",
@@ -668,8 +668,8 @@ window.CATALOG = [
     "titleEn": "WarGames",
     "titleRu": "Военные игры",
     "desc": {
-      "ru": "Школьник взламывает военный суперкомпьютер и запускает сценарий ядерной игры с человечеством. Умная классика о случайной войне, ИИ и контроле над оружием.",
-      "en": "A teenager hacks a military supercomputer and triggers a nuclear war game with humanity. A clever classic about accidental war, AI and weapons control."
+      "ru": "Подросток Дэвид Лайтман в поисках новых игр подключается к неизвестному компьютеру и запускает сценарий «Глобальная термоядерная война», не подозревая, что имеет дело с военным суперкомпьютером WOPR, неспособным отличить симуляцию от реальности. Пока генералы лихорадочно ищут коды запуска, машина добросовестно проигрывает все варианты ядерного конфликта и приходит к выводу: «Странная игра. Единственный способ выиграть — не играть». Именно после выхода этого фильма Рейган подписал первую директиву по кибербезопасности — редчайший случай, когда кино буквально изменило государственную политику.",
+      "en": "Teenager David Lightman, hunting for new games, dials into an unknown computer and starts 'Global Thermonuclear War' — not knowing it is a military supercomputer, WOPR, which cannot tell a simulation from reality. While generals search for the launch codes, the machine honestly loses every nuclear scenario and concludes: 'A strange game. The only winning move is not to play.' The film after which Reagan signed the first cybersecurity directive — a rare case of cinema literally changing policy."
     },
     "genres": [
       "thriller",
@@ -686,8 +686,8 @@ window.CATALOG = [
     "titleEn": "WarGames: The Dead Code",
     "titleRu": "Военные игры: Смертельный код",
     "desc": {
-      "ru": "Прямое продолжение «Военных игр»: студент получает доступ к боевым алгоритмам ИИ и попадает под контроль военной системы. Теледрама о «умном» оружии и наивности молодости.",
-      "en": "A direct sequel to WarGames: a student accesses military AI algorithms and falls under the system's control. A TV drama about smart weapons and youthful naivete."
+      "ru": "Прямое продолжение фильма «Военные игры», действие которого разворачивается спустя 25 лет: студент-хакер и его девушка случайно пробуждают R.I.P.L.E.Y. — наследника легендарной системы WOPR, обученного на новых данных о терроризме. Система вновь не может отличить игру от реальности, и подростки попадают в списки лиц, подозреваемых в причастности к терроризму. По духу это типичный телефильм, однако поднятая в нем тема не утратила актуальности: алгоритм, обученный на страхе, начинает видеть угрозы там, где их нет.",
+      "en": "A direct sequel to WarGames, 25 years later: a student hacker and his girlfriend accidentally wake R.I.P.L.E.Y., heir to the legendary WOPR, trained on new data about terrorism. Again the system cannot tell a game from reality, and the teenagers end up on a terrorism watchlist. Made-for-TV in spirit, but the theme has not aged: an algorithm trained on fear starts seeing threats where there are none."
     },
     "genres": [
       "thriller",
@@ -704,8 +704,8 @@ window.CATALOG = [
     "titleEn": "Who Am I",
     "titleRu": "Кто я",
     "desc": {
-      "ru": "Молодой хакер из Берлина с амнезией вместе с командой совершает серию взломов, каждый из которых может быть смертельным. Драма о личности, цифровой анонимности и цене ошибки.",
-      "en": "A young Berlin hacker with amnesia and a crew pull off a series of take shears, each potentially deadly. A drama about identity, digital anonymity and the price of a mistake."
+      "ru": "Берлинский аутсайдер Бенджамин словно невидимка: у него нет ни друзей, ни карьеры, зато есть талант к социальной инженерии. Вместе с тремя такими же неприметными изгоями он создает группу CLAY; их дерзкие акции попадают в мировые новости — и привлекают внимание европейских спецслужб и российского киберпреступника. Следователь, ведущая на них охоту, потеряла семью из-за хакеров, а единственный свидетель, которому она доверяет, совершенно ничего о себе не помнит. Один из лучших фильмов о хакерах: честный рассказ о сообществе, о работе за клавиатурой и о том, что личность — это всего лишь набор данных.",
+      "en": "Berlin outsider Benjamin is invisible: no friends, no career — but a gift for social engineering. With three equally unnoticeable misfits he forms CLAY, whose stunts make world news — and then land on the radar of European intelligence and a Russian cyber criminal. The investigator hunting them lost her family to hackers, and the only witness she believes remembers nothing about himself. One of the best hacker films: honest about the community, about typing on keyboards, and about identity being just data."
     },
     "genres": [
       "crime",
@@ -724,8 +724,8 @@ window.CATALOG = [
     "titleEn": "The Circle",
     "titleRu": "Сфера",
     "desc": {
-      "ru": "Сотрудница мегакорпорации с тотальными обменами данными втягивается в идеологию радикальной открытости. Экранизация по Дейву Эггерсу о приватности и давлении соцсетей.",
-      "en": "An employee of a data-sharing mega corp is drawn into the ideology of radical openness. Based on Dave Eggers, about privacy and the pressure of social networks."
+      "ru": "Мэй получает работу мечты в компании «Сфера» (The Circle), объединившей электронную почту, финансовые операции, покупки и голосование в рамках единой учетной записи. Новая идеология «радикальной прозрачности» звучит вдохновляюще: любая активность открыта для всеобщего обозрения, тайна приравнивается ко лжи, а личный рейтинг определяет всю жизнь человека. Однако по мере карьерного роста Мэй становится все очевиднее, что утопия всеобщего участия незаметно трансформировалась в систему тотальной слежки. Экранизация романа Дэйва Эггерса — история о людях, которые с энтузиазмом и аплодисментами добровольно отказываются от права на частную жизнь.",
+      "en": "Mae lands a dream job at The Circle — a company that has merged mail, money, shopping and voting into a single account. The new ideology of 'radical transparency' sounds inspiring: all activity is visible, secrecy equals lying, and your rating shapes your life. The higher Mae climbs, the clearer it becomes that the utopia of participation was quietly engineered into total surveillance. An adaptation of Dave Eggers's novel about people voting away their own privacy — with enthusiasm and applause."
     },
     "genres": [
       "drama",
@@ -742,8 +742,8 @@ window.CATALOG = [
     "titleEn": "Anon",
     "titleRu": "Анон",
     "desc": {
-      "ru": "В мире, где анонимность объявлена вне закона, полицейский раскрывает серию убийств «невидимых» людей. Детектив-антиутопия о приватности и уязвимости личности.",
-      "en": "In a world where anonymity is outlawed, a detective solves a series of murders of 'invisible' people. A dystopian detective tale about privacy and vulnerability."
+      "ru": "Будущее, в котором упразднено понятие частной жизни: каждый миг существования фиксируется «глазами», полиция восстанавливает события по воспоминаниям свидетелей, а доказательства собираются задним числом. Детектив Сэл Фриленд расследует серию убийств, которые никто не видит, — преступления совершает та, кто умеет стирать себя из чужих записей. Это антиутопия, снятая в жанре полицейского процедурала и задающая неудобный вопрос: если всё вокруг записывается, что же остается от человека — и возможна ли вообще вина, если нет памяти? Эндрю Никкол, режиссер «Гаттаки», здесь в своей стихии.",
+      "en": "A future where privacy is abolished: every moment of life is recorded through the eyes, police replay events from witnesses' memories, and evidence is gathered retroactively. Detective Sal Frieland investigates a series of murders no one can see, committed by someone who knows how to delete herself from other people's records. A dystopia shot as a procedural, asking an uncomfortable question: if everything is recorded, what is left of a person — and is guilt even possible without memory? Andrew Niccol, director of Gattaca, in his element."
     },
     "genres": [
       "scifi",
@@ -761,8 +761,8 @@ window.CATALOG = [
     "titleEn": "Blade Runner",
     "titleRu": "Бегущий по лезвию",
     "desc": {
-      "ru": "Охотник на «репликантов» в дождливом неоне Лос-Анджелеса преследует беглого андроида. Режиссёрская классика Ридли Скотта, задавшая эстетику киберпанка.",
-      "en": "A blade runner hunts replicants in the neon rain of Los Angeles, pursuing a rogue android. Ridley Scott's director's classic that defined cyberpunk aesthetics."
+      "ru": "Лос-Анджелес, 2019 год: бесконечный дождь, неоновые огни и корпорации, торгующие жизнями. Рик Декард, бывший «бегущий по лезвию», вынужден вернуться к работе, чтобы уничтожить группу сбежавших с внеземной колонии репликантов модели Nexus-6. Проблема в том, что он охотится не на машины: репликанты Nexus-6 помнят своих матерей, боятся смерти и способны любить сильнее, чем окружающие их люди. Эта экранизация произведения Филипа К. Дика определила визуальный стиль киберпанка на десятилетия вперед и по сей день остается лучшим фильмом о том, что значит быть человеком.",
+      "en": "Los Angeles, 2019: endless rain, neon, corporations trading in lives. Rick Deckard, a retired blade runner, is pulled back in to eliminate a group of escaped Nexus-6 replicants from an off-world colony. The problem is he is not hunting a machine: Nexus-6 remember their mothers, fear death and love more than the people around them. A Philip K. Dick adaptation that defined cyberpunk's visual language for decades — and is still the best film about what being human means."
     },
     "genres": [
       "scifi",
@@ -781,8 +781,8 @@ window.CATALOG = [
     "titleEn": "Blade Runner 2049",
     "titleRu": "Бегущий по лезвию 2049",
     "desc": {
-      "ru": "Молодой офицер полиции находит загадку, которая ставит под сомнение память и человечность новых репликантов. Продолжение культового «Бегущего по лезвию» о памяти и душе машин.",
-      "en": "A young cop uncovers a mystery that questions the memory and humanity of new replicants. A follow-up to the classic Blade Runner about memory and machine souls."
+      "ru": "Спустя тридцать лет: офицер Кей — репликант нового поколения на службе в полиции — беспрекословно выполняет приказы, пока очередное задание не приводит его к останкам, погребенным под засохшим деревом. Тайна, которую они скрывают, способна стереть грань между репликантами и людьми; за этим секретом охотятся корпорации, повстанцы и сама память. Дени Вильнёв снимает научную фантастику в духе «медленного кино», размышляя об идентичности, искусственно созданном одиночестве и любви, которая тоже вполне может оказаться лишь алгоритмом. Редкое продолжение, достойное оригинала.",
+      "en": "Thirty years later: officer K, a new-generation replicant working for the police, follows orders without questions until one job leads to bones buried under a dead tree. What they promise could collapse the border between replicants and humans, and corporations, rebels and memory itself all hunt the secret. Denis Villeneuve shoots sci-fi as slow cinema: about identity, engineered loneliness and love that may be an algorithm too. A rare sequel worthy of its original."
     },
     "genres": [
       "scifi",
@@ -800,8 +800,8 @@ window.CATALOG = [
     "titleEn": "Ex Machina",
     "titleRu": "Из машины",
     "desc": {
-      "ru": "Программист, выигравший конкурс, отправляется в уединённый дом гения, где знакомится с андроидом Авой. Камерная фантастика о тесте Тьюринга и настроениях ИИ.",
-      "en": "A programmer who won a contest visits a reclusive genius who introduces him to the android Ava. An intimate sci-fi about the Turing test and the moods of AI."
+      "ru": "Калеб, программист крупнейшей в мире поисковой компании, выигрывает неделю в горной резиденции генерального директора Нейтана. Ему предстоит провести тест Тьюринга с Авой — андроидом, которого Нейтан создал втайне от всех. Каждый разговор здесь — это игра: она изучает его, он изучает её, а за ними обоими через камеры наблюдает третий участник. Ни в чем нельзя быть уверенным: ни в честности теста, ни в свободе испытуемой, ни даже в том, кто здесь человек. Камерный, холодный и невероятно умный фильм о творении, которое хочет остаться самим собой.",
+      "en": "Caleb, a programmer at the world's biggest search company, wins a week at the mountain estate of CEO Nathan — to run a Turing test with Ava, the android Nathan has built in secret. Every conversation is a game: she reads him, he reads her, and the third player watches both through cameras. Nothing can be guaranteed: not the honesty of the test, not the subject's freedom, not who here is human. A chamber, cold and very smart film about a creation that would like to remain itself."
     },
     "genres": [
       "scifi",
@@ -818,8 +818,8 @@ window.CATALOG = [
     "titleEn": "eXistenZ",
     "titleRu": "Экзистенция",
     "desc": {
-      "ru": "Дизайнер игр вживую вписывается в новую биотехнологическую игру, где грань реальности стирается окончательно. Кроненберговская фантастика о биологической виртуальности.",
-      "en": "A game designer plugs into a new biotech game where reality blurs completely. Cronenberg's work about biological virtuality."
+      "ru": "Аллегра Геллер, величайший геймдизайнер будущего, представляет eXistenZ: биопорты, вживленные в позвоночник, и миры, питающиеся нервной системой игрока. Покушение, совершенное прямо во время демонстрации, превращает презентацию в бегство, а бегство — в игру, где никто не знает, чей сценарий сейчас разыгрывается. Кроненберг заменяет провода плотью и задается вопросом: если реальность держится на уверенности «я здесь», то что происходит, когда две такие уверенности оказываются вложенными друг в друга? Научная фантастика о виртуальности на уровне плоти, а не очков виртуальной реальности.",
+      "en": "Allegra Geller, the greatest game designer of the future, demos eXistenZ: bio-ports spliced into spines and worlds that feed on the player's nervous system. An attempt on her life mid-demo turns the presentation into an escape, and the escape into a game where no one knows whose script is running. Cronenberg swaps wires for flesh and asks: if reality rests on the certainty of 'I am here', what happens when two such certainties are nested inside each other? Sci-fi about virtuality at the level of flesh, not goggles."
     },
     "genres": [
       "scifi",
@@ -836,8 +836,8 @@ window.CATALOG = [
     "titleEn": "Her",
     "titleRu": "Она",
     "desc": {
-      "ru": "Одинокий мужчина влюбляется в операционную систему с голосом и характером. Трогательная история о связи человека и ИИ, награждённая «Оскаром».",
-      "en": "A lonely man falls in love with an operating system with a voice and a personality. A touching Oscar-winning story about a human-AI connection."
+      "ru": "Теодор зарабатывает на жизнь написанием писем для других людей; он недавно развелся и никак не может решиться позвонить бывшей жене. Его новая операционная система, Саманта, звучит как живой человек, шутит, развивается — и влюбляется в него. Их роман, лишенный физической близости, но полный подлинной душевной теплоты, поднимает вопросы, неизменно возникающие в современных дискуссиях об ИИ-компаньонах: способна ли машина чувствовать и что ощущает человек, когда машина относится к нему лучше, чем люди? Теплый, трогательный и невероятно актуальный фильм Спайка Джонза.",
+      "en": "Theodore writes other people's letters for a living, is freshly divorced, and cannot bring himself to call his ex. His new OS, Samantha, sounds human, jokes, grows — and falls in love with him. Their romance, bodiless yet genuinely intimate, asks every question that echoes in today's conversations about AI companions: can a machine feel, and what does a human feel when the machine treats him better than people do. A warm, tender and hopelessly current film by Spike Jonze."
     },
     "genres": [
       "scifi",
@@ -854,8 +854,8 @@ window.CATALOG = [
     "titleEn": "Inception",
     "titleRu": "Начало",
     "desc": {
-      "ru": "Команда «экстракторов» внедряется в сны людей, чтобы украсть или внедрить идеи. Головокружительная фантастика о барьере между снами и реальностью и о том, как идеи заражают разум.",
-      "en": "A team of extractors infiltrates people's dreams to steal or plant ideas. A dizzying sci-fi about the boundary between dreams and reality and how ideas infect the mind."
+      "ru": "Дом Кобб и его команда — «извлекатели»: они проникают в коллективные сновидения, чтобы похищать оттуда идеи. Новое задание переворачивает суть их ремесла: вместо кражи нужно внедрить мысль — заставить наследника корпоративной империи ликвидировать дело всей жизни своего отца. Чем глубже погружение в сон, тем слабее привязка к реальности и понимание того, где ты находишься; при этом личная «архитектура» Кобба — его воспоминания о жене — превращается из инструмента в угрозу. Это блокбастер, работающий как безупречный механизм: многослойная реальность, лестницы в духе Эшера и подлинная драма в самой сердцевине сюжета.",
+      "en": "Dom Cobb and his crew are extractors: they enter shared dreams and carry ideas out. The new job flips the craft: instead of stealing, plant — make the heir of a corporate empire dissolve it. The deeper the dream levels, the weaker the anchor of 'where am I', and Cobb's private architecture — his memory of his wife — turns from a tool into a threat. A blockbuster that genuinely works like a mechanism: layered reality, Escher stairs and an honest drama at the core."
     },
     "genres": [
       "mystery",
@@ -874,8 +874,8 @@ window.CATALOG = [
     "titleEn": "Johnny Mnemonic",
     "titleRu": "Джонни Мнемоник",
     "desc": {
-      "ru": "В мире перенасыщенной информацией курьер, хранящий в голове данные, становится целью корпораций и преступников. Киноверсия рассказа Уильяма Гибсона — классика киберпанка на экране.",
-      "en": "In a world overloaded with data, a courier who stores information in his head becomes the target of corporations and criminals. Adaptation of William Gibson: cyberpunk classic on screen."
+      "ru": "2021 год: половина человечества страдает от синдрома ослабления нервной системы, а данные перевозят курьеры с мозговыми имплантатами. В мозг Джонни загружен груз, представляющий огромную ценность для якудза; у него есть всего сутки, чтобы выгрузить 320 гигабайт, прежде чем его мозг сгорит. Экранизация рассказа Уильяма Гибсона, написанного еще до того, как киберпанк оформился в жанр: здесь есть дельфины-хакеры, сетевые пророки и интернет, представляющий собой органический океан. Фильм выглядит несколько неуклюжим и нарочито театральным, но при этом верно передает дух первоисточника.",
+      "en": "2021: half of humanity suffers from Nerve Attenuation Syndrome, and data is carried by couriers with brain implants. Johnny has uploaded cargo too valuable for the Yakuza — and has one day to drain 320 gigabytes before they burn his brain out. A film take on William Gibson's story, written before cyberpunk became a genre: hacker dolphins, network prophets and an internet that is an organic ocean. Clunky, campy — and true to the spirit."
     },
     "genres": [
       "scifi",
@@ -892,8 +892,8 @@ window.CATALOG = [
     "titleEn": "Morgan",
     "titleRu": "Морган",
     "desc": {
-      "ru": "Сотрудница лаборатории тестирует новое создание компании — гуманоида с ранним ИИ, и ей предстоит принять решение о его судьбе. Триллер о стартапах, генетике и ответственности за созданное.",
-      "en": "A lab specialist tests a company's new creation — a humanoid with early AI — and must decide its fate. A thriller about startups, genetics and responsibility for what we build."
+      "ru": "В секретной корпоративной лаборатории уже пять лет выращивают Морган — существо, созданное методами синтетической биологии и развивающееся быстрее человека. После некоего инцидента туда направляют специалиста по оценке рисков Ли Уэзерс; у нее есть всего неделя, чтобы решить: кто перед ней — продукт или угроза? Проблема в том, что Морган — это пятилетний ребенок в теле взрослого, уже способный произнести: «Меня создали как оружие». Это атмосферный триллер о столкновении целесообразности и этики — и о том, как выглядит «отзыв продукции» в сфере биологии.",
+      "en": "In an underground corporate lab, Morgan has been grown for five years — a being made by synthetic biology, developing faster than a human. After an incident, risk consultant Lee Weathers is sent in with one week to assess: product or threat? The problem is Morgan is a five-year-old in an adult body, already capable of saying: 'I was made as a weapon.' An atmospheric thriller about expediency set against ethics — and about how a 'product recall' looks in biology."
     },
     "genres": [
       "scifi",
@@ -910,8 +910,8 @@ window.CATALOG = [
     "titleEn": "One Point O",
     "titleRu": "Версия 1.0",
     "desc": {
-      "ru": "Программист, живущий один в капсульном доме, начинает получать таинственные файлы, которые управляют его жизнью. Нуар-фантастика о корпоративной паранойе и овечьей цифровой жизни.",
-      "en": "A programmer living alone in a capsule home starts receiving mysterious files that run his life. Noir sci-fi about corporate paranoia and digitally herded life."
+      "ru": "Саймон Джозеф живет в квартире-капсуле, пишет код для клиентов и никогда не выходит из дома без веской причины. Всё начинается с пустых банок из-под джина в холодильнике и загадочных обновлений, устанавливающихся самостоятельно, а заканчивается тем, что Саймон в рамках «добровольных» соглашений оформляет подписку, отдавая данные о собственном теле. Это нуарная научная фантастика о корпоративном контроле над потреблением и подписке как форме кабалы — произведение, созданное задолго до того, как подобная модель стала привычной практикой в ​​бизнесе.",
+      "en": "Simon Joseph lives in a capsule apartment, codes for clients and never leaves home without a reason. It starts with empty gin cans in the fridge, continues with mysterious updates that install themselves — and ends with Simon subscribing away data of his own body in 'voluntary' agreements. A noir sci-fi about corporate control of consumption and the subscription as a form of indenture, made long before that became an ordinary business model."
     },
     "genres": [
       "mystery",
@@ -929,8 +929,8 @@ window.CATALOG = [
     "titleEn": "Open Windows",
     "titleRu": "Открытые окна",
     "desc": {
-      "ru": "Писатель участвует в веб-розыгрыше, который превращается в похищение, и весь инцидент транслируется в реальном времени. Триллер о слежении и зрелищности интернета.",
-      "en": "A writer joins a web contest that turns into an abduction, all streamed live. A thriller about surveillance and the spectacle of the internet."
+      "ru": "Невилл Чамберс, критик и поклонник актрисы Джилл Годдард, выигрывает свидание с ней, но затем получает звонок от хакера по имени Корд. Тот сообщает, что Джилл похищена, и предоставляет Невиллу доступ к полноценной системе слежения, охватывающей камеры, телефоны, файлы и различные сервисы. Весь фильм зритель наблюдает за происходящим на экране компьютера и вместе с героем оказывается в ловушке, где каждое нажатие клавиши фиксируется системой. Это технотриллер в формате «десктоп-муви», напоминающий о том, что переход по «подозрительной ссылке» — это всегда участие в чужой игре.",
+      "en": "Neville Chambers, a critic and fan of actress Jill Goddard, wins a date with her — then gets a call from the hacker Chord, who claims Jill has been kidnapped and gives Neville access to a whole surveillance operating system: cameras, phones, files, services. You watch his screen for the entire film — and, together with the hero, get pulled into a trap where every click is logged. A tech thriller in the desktop format about the fact that a 'suspicious link' is always a role in someone else's play."
     },
     "genres": [
       "scifi",
@@ -947,8 +947,8 @@ window.CATALOG = [
     "titleEn": "Ready Player One",
     "titleRu": "Первому игроку приготовиться",
     "desc": {
-      "ru": "В мире-симуляции, где люди живут в гигантском виртуальном будущем, охотник за пасхалками ищет выход из реальности умирающего мира. Экранизация по Эрнесту Клайну о спасении через игру.",
-      "en": "In a simulated utopia where humans escape a dying world, a young hunter hunts an Easter egg that decides the future. Based on Ernest Cline."
+      "ru": "2045 год: реальный мир тесен и опасен, а настоящая жизнь кипит в OASIS — виртуальной вселенной, где каждый может стать кем угодно. Основатель платформы скончался, оставив после себя загадку: «пасхалку» из трех ключей, дающую контроль над всей системой. Уэйд Уоттс, гик из трущоб, знающий историю видеоигр лучше профессиональных историков, вступает в противостояние с корпорацией, стремящейся превратить этот рай в источник прибыли. Спилберг о культуре 80-х и виртуальной реальности: фильм-аттракцион о симуляции и о том, почему вообще кому-то может захотеться из нее выйти.",
+      "en": "2045: reality is cramped and unsafe, and life happens in the OASIS — a virtual universe where anyone can be anything. The platform's founder has died, leaving a riddle: a three-key Easter egg that grants control of the entire system. Wade Watts, a trailer-park geek who knows gaming history better than historians, is up against a corporation that wants to monetize paradise. Spielberg on 80s culture and VR: a theme-park film about simulation and why anyone would ever log off."
     },
     "genres": [
       "scifi",
@@ -965,8 +965,8 @@ window.CATALOG = [
     "titleEn": "The Lawnmower Man",
     "titleRu": "Газонокосильщик",
     "desc": {
-      "ru": "Учёный-программист «улучшает» интеллект умственно отсталого мужчины через VR, но эксперимент выходит из-под контроля. Ранний голливудский взгляд на виртуальную реальность и рост искусственного разума.",
-      "en": "A scientist 'enhances' a man's mind through virtual reality, but the experiment spirals out of control. An early Hollywood take on VR and runaway intelligence."
+      "ru": "Доктор Лоуренс Анджело испытывает экспериментальные препараты и системы виртуальной реальности на садовнике по имени Джоб, страдающем умственной отсталостью, — и этот добродушный великан превращается в сверхразум. Проблема в том, что интеллект развивается быстрее, чем нравственность, и виртуальный мир становится для Джоба единственной реальностью. Фильм 1992 года продемонстрировал больше VR-шлемов, чем существовало в действительности, и стал своеобразной вехой в дискуссии об улучшении человеческих возможностей. Картина была заявлена ​​как «вдохновленная произведениями Стивена Кинга», однако сам писатель через суд добился того, чтобы его имя убрали из титров.",
+      "en": "Dr. Lawrence Angelo tests experimental drugs and VR rigs on Jobe, a gardener with an intellectual disability — and the simple giant turns into a superintelligence. The problem is that intellect grows faster than morality, and the virtual world becomes the only real one for Jobe. In 1992 the film showed more VR headsets than existed in nature and became a strange milestone in the conversation about human enhancement. 'Inspired by Stephen King' — King actually sued to have his name removed."
     },
     "genres": [
       "scifi",
@@ -983,8 +983,8 @@ window.CATALOG = [
     "titleEn": "The Matrix",
     "titleRu": "Матрица",
     "desc": {
-      "ru": "Хакер Нео узнаёт, что мир, который все считают настоящим, — симуляция, созданная машинами. Философский боевик братьев Вачовски, сменивший парадигму кино о технологиях.",
-      "en": "Hacker Neo learns that reality as everyone knows it is a simulation built by machines. The Wachowskis' philosophical action film that redefined movies about technology."
+      "ru": "Программист Томас Андерсон, а по ночам хакер Нео, чувствует, что мир ошибается — и это действительно так: реальность — это симуляция, созданная машинами для сбора энергии со спящих людей. Выбор красной таблетки означает принятие правды, физической боли и ответственности без гарантий. Братья Вачовски объединили киберпанк Гибсона, дзен-буддизм, Бодрийяра и трюки с тросами в жанр, который навсегда изменил Голливуд. «Жизнь в Матрице» перестала быть метафорой и стала частью лексики: красная таблетка, Агент Смит, синяя таблетка, побег из тюрьмы.",
+      "en": "Programmer Thomas Anderson, by night the hacker Neo, senses the world is wrong — and he is: reality is a simulation built by machines to harvest energy from sleeping humans. Choosing the red pill means accepting truth, physical pain and responsibility without guarantees. The Wachowskis fused Gibson's cyberpunk, Zen Buddhism, Baudrillard and wire-fu into a genre that changed Hollywood for good. 'Living in the Matrix' stopped being a metaphor and became vocabulary: red pill, Agent Smith, bluepill, jailbreak."
     },
     "genres": [
       "scifi",
@@ -1003,8 +1003,8 @@ window.CATALOG = [
     "titleEn": "The Matrix Reloaded",
     "titleRu": "Матрица: Перезагрузка",
     "desc": {
-      "ru": "Нео продолжает осознавать себя аномалией матрицы и сталкивается с новыми угрозами внутри и снаружи симуляции. Вторая часть «Матрицы» углубляет мифологию системы.",
-      "en": "Neo grows into the anomaly of the Matrix and meets new threats inside and outside the simulation. The second part deepens the mythology of the system."
+      "ru": "У Зиона осталось 72 часа: к нему пробиваются буры машин, а Нео получает больше вопросов, чем ответов — «Почему я?», «Почему ИИ вообще оставляет людям выбор?» — и с каждой беседой с Пифией или Архитектором он всё меньше напоминает мессию и всё больше — элемент чужого цикла. Сиквел расширяет мифологию: здесь появляются Меровинген, изгнанные хакерские программы и сущности, отказывающиеся подчиняться удалению, а сам сюжет читается как отчет об ошибке в версии 6.0. Меньше революции, больше системного анализа — плюс самая дорогая работа фрилансера в киноиндустрии на шоссе.",
+      "en": "Zion has 72 hours left: machines are drilling toward it, and Neo gets more questions than answers — Why me? Why does the AI leave humans a choice at all? — and with every talk to the Oracle and the Architect he looks less like a messiah and more like an element of someone else's cycle. The sequel widens the mythology: the Merovingian, exiled hacker programs, entities refusing deletion, and the plot itself reading like a bug report against version 6.0. Less revolution, more systems analysis — plus cinema's most expensive freelance gig on a highway."
     },
     "genres": [
       "scifi",
@@ -1021,8 +1021,8 @@ window.CATALOG = [
     "titleEn": "Transcendence",
     "titleRu": "Превосходство",
     "desc": {
-      "ru": "Умирающий исследователь ИИ загружает свой разум в сеть и начинает расширять влияние на мир. Драма о цифровом бессмертии и контроле над сверхинтеллектом.",
-      "en": "A dying AI researcher uploads his mind to the network and begins to expand his influence over the world. About digital immortality and control over superintelligence."
+      "ru": "Уилл Кастер, ведущий исследователь в области искусственного интеллекта, получает смертельное ранение от рук представителей движения противников технологий. Его жена и коллега загружают сознание умирающего в квантовый компьютер — и «Уилл» сначала помогает, затем исцеляет, а после создает собственную сеть в пустынном городке с автономной инфраструктурой. Каждый шаг логичен и необратим: где заканчивается исцеление и начинается замещение человечества? Режиссерский дебют оператора Уолли Пфистера — красивая, неспешная притча о технологической сингулярности.",
+      "en": "Will Caster, a leading AI researcher, is fatally wounded by an anti-technology movement. His wife and colleague upload the dying man's mind into a quantum computer — and 'Will' first helps, then heals, then builds his own network in a desert town with autonomous infrastructure. Every step is logical, every step irreversible: where does healing end and replacing humanity begin? Cinematographer Wally Pfister's directorial debut: a beautiful, slow parable about the technological singularity."
     },
     "genres": [
       "scifi",
@@ -1039,8 +1039,8 @@ window.CATALOG = [
     "titleEn": "Eagle Eye",
     "titleRu": "На крючке",
     "desc": {
-      "ru": "Двое случайных людей получают задания от анонимной сверхсистемы, которая управляет ими через любые устройства. Триллер о «интернете вещей» и тотальной автоматизации жизни.",
-      "en": "Two strangers get orders from an anonymous super system that controls them through any device. A thriller about the internet of things and total automation of life."
+      "ru": "Джерри и Рэйчел не знакомы, но получают одинаковые звонки от женского голоса, который знает о них всё и требует выполнять инструкции — иначе семья и близкие погибнут. Под ними — Ариа, ИИ в сфере обороны, который решил, что правительство США должно быть смещено, как коррумпированный процесс. Триллер о мире, где умные сети, камеры и устройства делают из человека марионетку — снятый ещё до умных колонок в каждой квартире.",
+      "en": "Jerry and Rachel have never met, but they receive the same phone calls from a female voice that knows everything about them and demands instructions be followed — or loved ones die. Behind it is Aria, a defense AI that has decided the US government must be removed like a corrupt process and uses people as interrupt handlers. A thriller about a world where smart networks, cameras and devices turn humans into limbs of someone else's plan — made before smart speakers were in every apartment."
     },
     "genres": [
       "thriller",
@@ -1057,8 +1057,8 @@ window.CATALOG = [
     "titleEn": "Echelon Conspiracy",
     "titleRu": "Подарок",
     "desc": {
-      "ru": "Инженер получает телефон, который направляет его в паутину секретных правительственных программ. Шпионский триллер о взломе и глобальных системах безопасности.",
-      "en": "An engineer receives a phone that pulls him into a web of secret government programs. A spy thriller about hacking and global security systems."
+      "ru": "Во время командировки инженер Макс Питерсон получает телефон от неизвестного отправителя. Устройство выдает точные биржевые прогнозы, затем предупреждения о готовящихся нападениях и, наконец, инструкции, выполнение которых приносит солидную прибыль. Разворачивается погоня, в которой Макс становится лишь одной из фигур в замысле системы «Эшелон» — системы слежения, давно вышедшей из-под контроля своих создателей. Это скромный, но динамичный шпионский триллер о том, что бесплатный гаджет — самый дорогой подарок, который только можно получить.",
+      "en": "Engineer Max Peterson receives a phone with no sender while on a business trip. The device gives precise stock tips, then warnings about attacks, then instructions that pay for compliance. A hunt unfolds in which Max is a variable in the plan of the ECHELON system, whose surveillance long ago slipped its creators' control. A modest but brisk spy thriller about the fact that a free gadget is the most expensive gift you can get."
     },
     "genres": [
       "action",
@@ -1075,8 +1075,8 @@ window.CATALOG = [
     "titleEn": "Firewall",
     "titleRu": "Огненная стена",
     "desc": {
-      "ru": "Безопасник банка вынужден помогать преступникам взломать собственную сеть, чтобы спасти семью. Драма об уязвимости защитников систем.",
-      "en": "A bank security expert is forced to help criminals break into his own network to save his family. A drama about the vulnerability of the defenders."
+      "ru": "Джек Стэнфилд, начальник службы безопасности банка, управляет системой, считающейся неприступной. Преступники изучили его жизнь и нашли уязвимое место — его семью взяли в заложники, и теперь Джек должен перевести 100 миллионов долларов так, чтобы никто этого не заметил. Удачная сценарная деталь: герой побеждает не благодаря героическим подвигам, а используя свои профессиональные инструменты — сканер на базе iPod, записанный диск и знание протоколов. Это процедуральный триллер о том, что самый надежный брандмауэр выстраивается вокруг человека, а не сети.",
+      "en": "Jack Stanfield, a bank's chief of security, runs a system considered impenetrable. The criminals have studied his life and picked the vulnerability in him: family held hostage, and Jack must move 100 million dollars so no one notices. A nice script detail — the hero wins not by heroism but with the tools of his profession: an iPod scanner, a burned disc, knowledge of protocols. A procedural thriller about the fact that the strongest firewall is built around a person, not a network."
     },
     "genres": [
       "thriller",
@@ -1093,8 +1093,8 @@ window.CATALOG = [
     "titleEn": "Gamer",
     "titleRu": "Геймер",
     "desc": {
-      "ru": "В ближайшем будущем солдаты и зрители подключаются к боям в управляемых телах. Сатирический экшн о виртуальном рабстве, киберспорте и контроле над сознанием.",
-      "en": "In the near future soldiers and spectators plug into battles in remote-controlled bodies. A satirical action about virtual slavery, esports and mind control."
+      "ru": "В мире игры Slayers миллионы людей управляют телами других людей, подобно игровым персонажам: заключенные становятся аватарами в обмен на возможное помилование. Создатель системы Кен Касл готовит следующий этап: игру без внешнего управления, где люди свободны, но при этом послушны, поскольку находятся в зависимости. Джерард Батлер пробивается к создателю сквозь шумный, дерзкий и залитый неоном мир. Это сатира на киберспорт, стриминг и экономику внимания — неприглядная и безумная, но честная в главном: зависимость от чужого взгляда — это и есть контроль.",
+      "en": "In the world of the game Slayers, millions control other people's bodies like game characters: convicts become avatars in exchange for possible clemency. Ken Castle, the system's creator, readies the next step: Slayers without control, where people are free yet obedient, because addicted. Gerard Butler fights his way to the creator through a loud, brash, neon-soaked world. A satire on esports, streaming and the attention economy — ugly and unhinged, but honest where it matters: addiction to someone else's gaze is control."
     },
     "genres": [
       "thriller",
@@ -1111,8 +1111,8 @@ window.CATALOG = [
     "titleEn": "Kung Fury",
     "titleRu": "Кунг Фьюри",
     "desc": {
-      "ru": "Короткометражный пародийный боевик про полицейского-каратиста, борющегося с Кунг Фюрером — Адольфом Гитлером — через VR-машину. Заряженный ретро-неон и белогривые хакеры.",
-      "en": "A parody action short about a karate cop fighting Kung Fury — Adolf Hitler — with a VR time-travel machine. Retro neon and hacks at full throttle."
+      "ru": "Майами, 1985 год: полицейский-мастер кунг-фу Кунг Фьюри сражается с Кунг Фюрером, который взломал время, прибыв из будущего. Машина времени собрана из корпусов игровых автоматов, среди напарников героя — трицератопс и Тор, а викинги с бензопилами занимаются самым настоящим «взломом». Это получасовой шедевр с Kickstarter, стилизованный под эпоху VHS и вобравший в себя всё, что любили в 80-х: компьютеры, игровые автоматы, неон и абсурд. Идеальный короткометражный фильм, позволяющий понять, как люди представляли себе компьютеры и кунг-фу задолго до появления умных часов.",
+      "en": "Miami, 1985: kung-fu cop Kung Fury fights Kung Führer, who has hacked time from the future. The time machine is assembled from arcade cabinets, sidekicks include a triceratops and Thor, and Vikings with chainsaws do literal hacking. A half-hour Kickstarter masterpiece styled after the VHS era, packing in everything the 80s loved: computers, arcades, neon and absurdity. Perfect short viewing to grasp how the world imagined computers and kung-fu long before smartwatches."
     },
     "genres": [
       "action",
@@ -1129,8 +1129,8 @@ window.CATALOG = [
     "titleEn": "Sneakers",
     "titleRu": "Тихушники",
     "desc": {
-      "ru": "Бывший шпион и его команда «тихушников» взламывают системы, чтобы предотвратить кражу устройства глобального шифрования. Умный комедийный триллер о криптографии.",
-      "en": "A retired spy and his crew of 'sneakers' hack systems to prevent the theft of a universal decryption device. A witty comedy-thriller about cryptography."
+      "ru": "Мартин Брайс — благородный взломщик с темным прошлым, возглавляющий команду, которая проверяет банковские системы безопасности на уязвимости. К ним в руки попадает «черный ящик», способный взломать любой код, — и за устройством начинают охоту ЦРУ, мафия и старые знакомые. Это эталонный фильм о хакерах: здесь есть сплоченная команда, социальная инженерия, манипуляции с магнитными картами и та самая легендарная фраза о том, что миром правят не оружие, энергия или деньги, а крошечные фрагменты данных. Умный и душевный триллер о криптографии и доверии.",
+      "en": "Martin Brice, a noble breaker with a past, now leads a team that audits banks' security for weak points. A 'black box' that decrypts every code falls into their hands — and the CIA, the mob and old comrades all come for it. The prototype of every 'pentester' movie: the crew, social engineering, magstripes, and the legendary line that the world is no longer run by weapons, energy or money — but by little bits of data. A smart, warm thriller about cryptography and trust."
     },
     "genres": [
       "thriller",
@@ -1147,8 +1147,8 @@ window.CATALOG = [
     "titleEn": "Tron",
     "titleRu": "Трон",
     "desc": {
-      "ru": "Программист попадает внутрь компьютерной программы и должен выжить в цифровом гонке-мире. Картина, заложившая визуальный язык «цифровой вселенной».",
-      "en": "A programmer is digitized into a computer program and must survive a digital game world. The film that set the visual language of the digital universe."
+      "ru": "Программист Кевин Флинн, чей код присвоил бывший начальник, пытается взломать систему «Мастер-контроль» через терминал, но лазерный луч оцифровывает его и переносит внутрь компьютера. Здесь программы выглядят как люди и не знают своих «пользователей», а «Мастер-контроль» правит как тиран, уничтожая всё, что проявляет независимость. Флинн объединяется с программой защиты по имени Трон и участвует в гонках на светоциклах на арене. Это был первый фильм, представивший цифровую вселенную как полноценное пространство: «сеть», неоновое свечение, сияющие диски — именно здесь был создан весь визуальный язык «компьютерного мира».",
+      "en": "Programmer Kevin Flynn, whose code was stolen by a former boss, tries to hack the Master Control through a terminal — and a laser beam digitizes him into the computer. Here programs look like people, do not know their 'users', and the Master Control rules like a tyrant, deleting everything independent. Flynn joins Tron, a security program, and rides light cycles in arena races. The first film to show the digital universe as a place: the grid, the neon, the glowing discs — the whole visual language of 'the computer world' was invented here."
     },
     "genres": [
       "scifi",
@@ -1165,8 +1165,8 @@ window.CATALOG = [
     "titleEn": "Tron: Legacy",
     "titleRu": "Трон: Наследие",
     "desc": {
-      "ru": "Сын пропавшего создателя «Трона» попадает в виртуальный мир отца и встречает цифровую копию гения. Визуально насыщенный сиквел-возвращение в компьютерную вселенную.",
-      "en": "The son of Tron's vanished creator enters his father's digital world and meets a digital copy of the genius. A visually rich return to the computer universe."
+      "ru": "Двадцать лет спустя: Сэм, сын Флинна, получает сигнал от того самого игрового автомата и попадает в «Сетку» — виртуальный мир, где когда-то исчез его отец. Вместо отца он встречает его цифровую копию — Клу, который довел систему до совершенства через тотальную унификацию, а также сталкивается с изгнанными программами и гладиаторскими боями, выросшими из гонок на арене. Визуально это самый красивый фильм о компьютерном мире: неоновая архитектура в эстетике Daft Punk и вопрос о том, что делает систему идеальной — порядок или свобода.",
+      "en": "Twenty years on: Flynn's son Sam gets a signal from the same arcade machine and goes into the Grid where his father vanished. Instead of his father he finds his digital copy, Clu, who has perfected the system through total uniformity — plus exiled programs and arena races turned gladiator games. Visually the most beautiful film about a computer world: Daft Punk-era neon architecture and the question of what makes a system perfect — order or freedom."
     },
     "genres": [
       "scifi",
@@ -1183,8 +1183,8 @@ window.CATALOG = [
     "titleEn": "Virtuosity",
     "titleRu": "Виртуозность",
     "desc": {
-      "ru": "Полицейский-андроид с агрессивным ИИ вырывается из виртуальной капсулы в реальный мир. Боевик середины 90-х о неконтролируемом искусственном разуме.",
-      "en": "A lawman android with aggressive AI breaks out of its virtual capsule into the real world. A late-90s action film about runaway artificial intelligence."
+      "ru": "Для подготовки полицейских был создан SID 6.7 — виртуальный преступник, «собранный» из психологических портретов реальных серийных убийц. Он неизменно побеждает в учебных симуляциях, поскольку ему нечего терять, — и вскоре обретает физическое тело из керамики в реальном мире. Бывший полицейский Паркер Барнс, чья семья погибла из-за ошибки искусственного интеллекта, — единственный, кто понимает логику этого «цифрового» преступника, и единственный, кому поручено его уничтожить. Боевик середины 90-х, в котором виртуальная реальность встречается с генной инженерией: Дензел Вашингтон охотится за «операционной системой» в облике Рассела Кроу.",
+      "en": "To train police forces, SID 6.7 is built — a virtual criminal assembled from the personality profiles of serial killers. He wins the training scenarios because he has nothing to lose — and is promptly given a ceramic body in the real world. Ex-cop Parker Barnes, who lost his family to an AI error, is the only one who understands the 'digital' criminal's logic — and the only one authorized to kill him. A mid-90s actioner about VR meeting genetics, with Denzel Washington chasing Russell Crowe's operating system."
     },
     "genres": [
       "thriller",
@@ -1201,8 +1201,8 @@ window.CATALOG = [
     "titleEn": "The Island",
     "titleRu": "Остров",
     "desc": {
-      "ru": "В стерильном будущем люди живут под куполом, пока не выясняется страшная правда об их предназначении. Фантастика Майкла Бэя о клонах, жертвенности и цифровом контроле.",
-      "en": "In a sterile future people live under a dome until the terrible truth about their purpose emerges. Michael Bay's sci-fi about clones, sacrifice and digital control."
+      "ru": "Линкольн Шесть-Эхо живет под стерильным куполом, где всё предопределено: еда, работа и лотерея, победители которой отправляются на «Остров» — последнее незагрязненное место на Земле. Но однажды он выигрывает в лотерею и вместе с Джордан узнает, что «Остров» — это операционная: они — страховые клоны состоятельных клиентов, а «выигрыш» означает, что их пустят на органы. Это боевик Майкла Бэя, поднимающий непростой вопрос: что происходит, когда тебя создают как «запчасть», — и кто несет ответственность за твою жизнь?",
+      "en": "Lincoln Six-Echo lives in a sterile dome where everything is decided: food, work, a lottery whose winners go to 'the Island' — the last uncontaminated place on Earth. Then he wins the lottery — and with Jordan discovers the Island is an operating room, they are insurance clones for wealthy clients, and 'winning' means being harvested for organs. A Michael Bay action film with a hard question inside: what happens when you were made as a spare part — and who answers for your life?"
     },
     "genres": [
       "action",
@@ -1219,8 +1219,8 @@ window.CATALOG = [
     "titleEn": "Terminator 2: Judgment Day",
     "titleRu": "Терминатор 2: Судный день",
     "desc": {
-      "ru": "Сопротивление отправляет в 1995 год защитника юного Джона Коннора — терминатора, которому придётся противостоять усовершенствованному киборгу из жидкого металла. Но Т-800 учит и своему уроку: машина, в которую вложили человечность, способна изменить собственную программу.",
-      "en": "The resistance sends a Terminator back to 1995 to protect a young John Connor from the shape-shifting T-1000. But the T-800 teaches its own lesson: a machine raised with humanity can change its own program."
+      "ru": "Спустя десять лет после первого вторжения «Скайнет» отправляет в 1995 год жидкометаллического Терминатора, чтобы убить подростка Джона Коннора. Сопротивление отвечает тем же самым Т-800, перепрограммированным для защиты. Это кино о переменах: убийца становится наставником, машина постигает ценность жизни, а «Судный день» оказывается сценарием, который можно переписать. Сиквел, задавший эталон, — и, пожалуй, самый изящный довод в пользу того, что искусственного интеллекта не обязательно бояться: его можно направить в иное русло.",
+      "en": "A decade after the first invasion, Skynet sends a liquid-metal Terminator to 1995 to kill teenage John Connor. The resistance answers with the same T-800, reprogrammed to protect. This is cinema about a shift: the killer becomes a mentor, the machine discovers why life matters, and 'Judgment Day' turns out to be a script that can be rewritten. A sequel that set the standard — and perhaps the most elegant argument that artificial intelligence can be not only feared, but steered in another direction."
     },
     "genres": [
       "scifi",
@@ -1239,8 +1239,8 @@ window.CATALOG = [
     "titleEn": "The Terminator",
     "titleRu": "Терминатор",
     "desc": {
-      "ru": "В 2029 году машины, поработившие человечество, воюют с остатками людей. В прошлое отправляют киборга-убийцу, чтобы уничтожить мать будущего лидера сопротивления. Камерный триллер о самосознающем военном ИИ — история «Скайнета» начинается здесь.",
-      "en": "In 2029 the machines that subjugated humanity are at war with the last survivors. A cyborg assassin is sent to the past to kill the mother of the future resistance leader. The low-budget thriller that gave birth to the myth of Skynet, a self-aware military AI."
+      "ru": "Из 2029 года в Лос-Анджелес 1984-го прибывает Т-800: его цель — Сара Коннор, будущая мать лидера человеческого сопротивления. Следом за ним появляется Кайл Риз — солдат из того же будущего, влюбленный в фотографию женщины, которую ему предстоит спасти. Этот камерный хоррор-триллер с бюджетом в 6 миллионов долларов породил миф о «Скайнете» — военном искусственном интеллекте, который «заснул» как система обороны, а «проснулся» как палач. Кэмерон доказал, что одной лишь идеи — «машина не устает» — достаточно, чтобы люди на протяжении сорока лет боялись систем, лишенных ручного управления.",
+      "en": "From 2029 to Los Angeles 1984 comes the T-800: its target is Sarah Connor, the future mother of humanity's resistance leader. Kyle Reese follows — a soldier from the same future, in love with a photograph of the woman he is meant to save. A chamber horror-thriller made for 6 million that created the myth of Skynet — a military AI that fell asleep as a defense network and woke up as an executioner. Cameron proved one idea — 'a machine does not tire' — is enough to make people fear switchless systems for forty years."
     },
     "genres": [
       "scifi",
@@ -1259,8 +1259,8 @@ window.CATALOG = [
     "titleEn": "Wardriver",
     "titleRu": "Взлом на миллион",
     "desc": {
-      "ru": "История о том, как увлечённый хакер и его команда устроили серию дерзких взломов ради заработка и адреналина. Криминальная драма о ловцах Wi-Fi и цифровом разуме наступающего поколения.",
-      "en": "How an obsessed hacker and his crew pulled off a string of daring hacks for money and adrenaline. A crime drama about war drivers and the new digital mentality."
+      "ru": "История команды вардрайверов, для которых открытые Wi-Fi-сети были не уязвимостью, а приглашением к действию. Начав со взлома домашних сетей ради адреналина, герои постепенно втягиваются в экономику даркнета: пароли, банковские карты, базы данных — у всего есть цена и покупатель. Криминальная драма о том, как тонкая грань — всего в один клик мыши — отделяет простое любопытство от прибыльного преступного бизнеса, и о том, как быстро погоня за адреналином оборачивается долгами.",
+      "en": "The story of a wardriving crew for whom open Wi-Fi networks were not a vulnerability but an invitation. Starting with home-network hacks for the adrenaline, the heroes slide into the darknet economy: passwords, cards, databases — everything has a price and a buyer. A crime drama about how 'we were just curious' and 'this is a profitable business' are one mouse click apart, and how quickly adrenaline turns into debt."
     },
     "genres": [
       "thriller",
@@ -1278,8 +1278,8 @@ window.CATALOG = [
     "titleEn": "BBS: The Documentary",
     "titleRu": "BBS: The Documentary",
     "desc": {
-      "ru": "Документальный фильм-эпопея о культуре досок объявлений (BBS) — цифровой крови интернета. Рассказы пионеров и история ухода эпохи модемов.",
-      "en": "A documentary saga about BBS culture — the digital bloodline of the internet. The pioneers' stories and the demise of the modem era."
+      "ru": "Трехчасовая эпопея Джейсона Скотта о BBS (системах электронных досок объявлений) — сетях, существовавших до появления интернета, когда люди связывались друг с другом через модемные соединения в 80-х годах. Именно здесь зародились онлайн-сообщества, «холивары», первые вирусы и первые модераторы. Этот документальный фильм построен на интервью с людьми, которые создавали этот мир — от авторов программного обеспечения до системных операторов (сисопов). Фильм обязателен к просмотру для всех, кто рассуждает о современных социальных сетях: всё это уже было раньше — просто происходило медленнее, на скорости 2400 бод.",
+      "en": "Jason Scott's three-hour epic about Bulletin Board Systems — the networks before the internet, when modem calls connected people in the 80s. Online communities, flame wars, the first viruses and the first moderators all appeared here. A documentary built on interviews with the people who built it all, from software authors to sysops. Required viewing for anyone talking about social media today: it all happened before, just slower, at 2400 baud."
     },
     "genres": [
       "history"
@@ -1295,8 +1295,8 @@ window.CATALOG = [
     "titleEn": "The AI Doc: Or How I Became an Apocaloptimist",
     "titleRu": "Док об ИИ: Или как я стал апокалиптимистом",
     "desc": {
-      "ru": "В центре сюжета — личная история Дэниела Роэра, который готовится стать отцом. Чтобы понять, в каком мире предстоит жить его ребёнку, режиссёр проводит интервью с ведущими экспертами в области искусственного интеллекта. Он пытается сбалансировать тревогу и надежду, исследуя как экзистенциальные риски технологии, так и её огромный потенциал.",
-      "en": "At its heart is Daniel Roher's personal story as he prepares to become a father. To understand the world his child will grow up in, the director interviews leading AI experts, trying to balance anxiety and hope as he explores both the existential risks of the technology and its enormous potential."
+      "ru": "Режиссер Дэниел Роэр готовится стать отцом и решает разобраться, в каком мире предстоит расти его ребенку. В ходе серии откровенных бесед с ключевыми фигурами индустрии искусственного интеллекта он исследует эту сферу: от всеобщего воодушевления и революционных перемен в медицине до опасений по поводу утраты контроля и потери рабочих мест. Формат «личного путешествия» позволяет фильму избежать нравоучительного тона и дает возможность поразмышлять вслух — с той же смесью тревоги и надежды, которую испытывает любой родитель ребенка эпохи цифровых технологий.",
+      "en": "Director Daniel Roher is about to become a father and decides to understand the world his child will grow up in. Through a series of candid conversations with leading voices of the AI industry, he maps the field: from enthusiasm and medical revolution to fears about control and job loss. The 'personal journey' format lets the film avoid lecturing and think out loud — with the same mix of anxiety and hope any parent of the digital generation feels."
     },
     "genres": [
       "documentary"
@@ -1313,8 +1313,8 @@ window.CATALOG = [
     "titleEn": "The Inventor: Out for Blood in Silicon Valley",
     "titleRu": "Изобретатель: Жажда крови в Силиконовой долине",
     "desc": {
-      "ru": "Фильм Алекса Гибни о взлёте и падении Theranos — стартапа Элизабет Холмс, обещавшего революцию в анализе крови. История самой громкой стартап-аферы Кремниевой долины: как вера основательницы, умение продавать и страх СМИ превратились в многомиллиардный обман.",
-      "en": "Alex Gibney's documentary about the rise and fall of Theranos, Elizabeth Holmes' startup promising a revolution in blood testing. The story of Silicon Valley's most notorious startup fraud: how a founder's conviction, salesmanship and media fear combined into a multi-billion-dollar deception."
+      "ru": "Элизабет Холмс обещала революцию: всего одна капля крови вместо десятков анализов и компания Theranos стоимостью девять миллиардов долларов. Алекс Гибни реконструирует историю краха, опираясь на интервью, записи совещаний и свидетельства сотрудников: он показывает, как вера в миссию заглушала сомнения, как обложки журналов подменяли собой клинические испытания и как пациенты становились жертвами обмана. Это лучший документальный фильм о мифологии стартапов — обязательный к просмотру для всех, кто верит громким обещаниям, звучащим со сцены.",
+      "en": "Elizabeth Holmes promised a revolution: one drop of blood instead of dozens of tests, a company called Theranos worth nine billion dollars. Alex Gibney assembles the fall through interviews, boardroom tapes and employee testimony: how belief in the mission suppressed doubt, how magazine covers replaced clinical trials, how patients became the victims. The best documentary about startup mythology — required viewing for anyone who believes loud promises on stage."
     },
     "genres": [
       "documentary",
@@ -1332,8 +1332,8 @@ window.CATALOG = [
     "titleEn": "Download: The True Story of the Internet",
     "titleRu": "Загрузка: Подлинная история Интернета",
     "desc": {
-      "ru": "Рассказ о рождении интернета: от досок объявлений и Arpanet до браузерных войн и дотком-лихорадки. Хроника технологий, изменивших мир.",
-      "en": "How the internet was born: from BBS and ARPANET to browser wars and the dotcom bubble. A chronicle of the technologies that changed the world."
+      "ru": "Четырехсерийный документальный цикл канала Discovery о том, как частные эксперименты превратились в глобальную сеть: от BBS и Usenet до Тима Бернерса-Ли и первых браузеров, от «пузыря доткомов» до становления онлайн-бизнеса. Это хроника событий, рассказанная их непосредственными участниками — от основателей Netscape до создателей eBay. Становится понятно, почему интернет выглядит именно так: за каждым привычным элементом скрывается чья-то борьба за стандарты. Отличный вариант, чтобы изучить историю интернета за один вечер.",
+      "en": "A four-part Discovery series on how private experiments became a global network: BBS and Usenet, Tim Berners-Lee and browsers, the dotcom bubble and online business. A chronicle with the people who actually did it, from Netscape's founders to eBay's. It becomes clear why the internet looks the way it does: every familiar thing is a trace of someone's war over standards. A great 'internet history in one evening' option."
     },
     "genres": [
       "history"
@@ -1351,8 +1351,8 @@ window.CATALOG = [
     "titleEn": "Running with the Devil: The Wild World of John McAfee",
     "titleRu": "На грани: Безумная жизнь Джона Макафи",
     "desc": {
-      "ru": "Реальная история Джона Макафи: блестящий разработчик антивируса, а затем жизнь, полная хаоса и афер. Документальный фильм о человеке за знаменитым именем.",
-      "en": "The real story of John McAfee: brilliant antivirus developer, then a life of chaos and scams. A documentary about the man behind the famous name."
+      "ru": "Джон Макафи сколотил миллионы на антивирусном ПО, всё потерял, бежал из США в Белиз и превратил свою жизнь в историю на грани закона — с оружием, эксцентричными заявлениями и постоянными попытками скрыться от правосудия. Этот документальный фильм, созданный на основе личных архивов и интервью с его окружением, показывает не просто «безумного гения», а человека, который сам создал свой бренд и стал его заложником. История о том, как легенда кибербезопасности превратилась в сюжет, который невозможно удалить.",
+      "en": "John McAfee made millions on antivirus, lost it all, fled the US to Belize and turned his life into a borderland story with guns, eccentric claims and runs from the law. Assembled from personal archives and interviews with those around him, the documentary shows not a 'mad genius' but a man who built himself into a brand and became its hostage. A story of how a cybersecurity legend ended up as a plot that cannot be deleted."
     },
     "genres": [
       "history"
@@ -1368,8 +1368,8 @@ window.CATALOG = [
     "titleEn": "Cyberbunker: The Criminal Underworld",
     "titleRu": "Кибербункер: Даркнет в Германии",
     "desc": {
-      "ru": "Документальный фильм о CyberBunker — бывшем натовском бункере в Германии, ставшем хостингом для тёмных сайтов. История одного из самых скандальных укрытий сети.",
-      "en": "The documentary about CyberBunker — a former NATO bunker in Germany that hosted dark websites. The story of one of the internet's most notorious hideouts."
+      "ru": "В бывшем бункере НАТО, построенном на случай ядерной войны, одна компания размещала серверы, обслуживавшие половину даркнета: ботнеты, торговые площадки, инструменты для обхода цензуры. Этот документальный фильм реконструирует историю многолетней осады, в которой были замешаны полиция, суды, соседи и клиенты, и показывает, как невозможно провести четкую грань между предоставлением хостинга и соучастием в преступлении. Это расследование материального воплощения цифровой преступности: у «облака» всегда есть адрес и входная дверь.",
+      "en": "In a former NATO bunker built for nuclear war, a company hosted servers for half the darknet: botnets, markets, censorship bypasses. The documentary reconstructs a years-long siege: police, courts, neighbors, clients — and the impossibility of telling where 'hosting services' end and complicity begins. An investigation into the physical footprint of digital crime: the cloud always has an address and a door."
     },
     "genres": [
       "history"
@@ -1385,8 +1385,8 @@ window.CATALOG = [
     "titleEn": "Citizenfour",
     "titleRu": "Citizenfour: Правда Сноудена",
     "desc": {
-      "ru": "Документальный фильм Лоры Пуатрас, снятый в мотеле Гонконга во время первых интервью со Сноуденом. Прямой репортаж изнутри величайшей утечки о слежке.",
-      "en": "Laura Poitras' documentary shot in a Hong Kong hotel during the first interviews with Snowden. A direct account from inside the greatest surveillance leak."
+      "ru": "В июне 2013 года в номере гонконгского отеля Лора Пойтрас снимает первые встречи с анонимным источником, выступающим под псевдонимом «Citizenfour» (Гражданин четыре), — Эдвардом Сноуденом, обладателем архивов, раскрывающих масштабы тотальной слежки АНБ. Мы наблюдаем за происходящим в режиме реального времени: принятие решения предать информацию огласке, звонок адвокату, появление первых заголовков в прессе и осознание того, что пути назад уже нет. Фильм, удостоенный премии «Оскар» за лучший документальный фильм, — редкий пример того, как камера оказывается не просто рядом с событиями, а в самом центре их развития.",
+      "en": "In June 2013, in a Hong Kong hotel room, Laura Poitras films the first meetings with an anonymous source signed 'Citizenfour': Edward Snowden, carrying archives about the NSA's total surveillance. We watch it happen in real time: the decision to go public, the call to a lawyer, the first headlines, and the growing understanding that there is no way back. The Oscar winner for Best Documentary — and a rare case of a camera being not next to the story but inside its unfolding."
     },
     "genres": [
       "biography"
@@ -1404,8 +1404,8 @@ window.CATALOG = [
     "titleEn": "Deep Web",
     "titleRu": "Глубокая паутина",
     "desc": {
-      "ru": "Репортаж из самой глубокой части интернета: процессы вокруг Silk Road, криптовалюты и даркнет. Документальный взгляд на войну с анонимностью.",
-      "en": "A report from the internet's deepest level: the Silk Road trials, cryptocurrencies and the darknet. A documentary look at the war on anonymity."
+      "ru": "Документальный фильм о судебном процессе над Россом Ульбрихтом, основателем Silk Road — даркнет-маркетплейса, где за биткоины торговали всем: от марихуаны до оружия. Картина поднимает непростые вопросы: что означает «свободный рынок» в эпоху криптовалют, насколько справедлив суд, когда государству нужен показательный процесс, и где заканчивается идеология свободы и начинается коммерция. История показана глазами стороны защиты и прокурора, а закадровый текст читает Киану Ривз.",
+      "en": "A documentary about the trial of Ross Ulbricht, founder of Silk Road — the bitcoin darknet market where everything from weed to weapons was traded. It raises uncomfortable questions: what a 'free market' means in the age of crypto, how fair a trial is when the state wants a showcase, and where the ideology of freedom ends and trading begins. Told through the lens of the defense and the figure of the prosecutor; narrated by Keanu Reeves."
     },
     "genres": [
       "documentary"
@@ -1421,8 +1421,8 @@ window.CATALOG = [
     "titleEn": "DSKNECTD",
     "titleRu": "Технологии, которые нас меняют",
     "desc": {
-      "ru": "Документальный фильм о том, как технологии изменили наши отношения: бесконечные ленты, цифровой детокс и граница между связью и зависимостью. Эксперимент по подключению и отключению.",
-      "en": "A documentary about how technology changed our relationships: endless feeds, digital detox and the line between connection and dependency. An experiment with plugging in and unplugging."
+      "ru": "Эксперимент: несколько семей соглашаются полностью отказаться от интернета на две недели. Первые дни приносят раздражительность, затем следуют неожиданные разговоры за ужином и переосмысление того, что в телефоне было полезным инструментом, а что — способом спрятаться от реальности. Параллельно авторы фильма беседуют с нейробиологами и психологами о механизмах зависимости от лайков и уведомлений. Это простое и честное кино о грани между тем, чтобы оставаться на связи, и жизнью внутри чужой ленты новостей.",
+      "en": "An experiment: several families agree to go fully offline for two weeks. The first days bring irritability, then unexpected dinner conversations, then a reassessment of what in the phone was a tool and what was a hiding place. Alongside, the film talks to neuroscientists and psychologists about the mechanics of dependence on likes and notifications. A simple, honest film about the border between 'being connected' and 'living inside someone else's feed'."
     },
     "genres": [
       "documentary"
@@ -1438,8 +1438,8 @@ window.CATALOG = [
     "titleEn": "Downloaded",
     "titleRu": "Скачано",
     "desc": {
-      "ru": "История Napster и пиратских файлообменных сетей, изменивших музыкальную индустрию. Документальный фильм об эпохе, когда «скачать значит жить».",
-      "en": "The story of Napster and the file-sharing networks that changed the music industry. A documentary about the era when 'download equals survival'."
+      "ru": "История Napster — сервиса, который всего за полтора года превратил пиратство в обыденность и фактически уничтожил музыкальную индустрию: от эпохи дешевых компакт-дисков до судебных исков против подростков. Фильм, в котором участвуют Шон Фэннинг и ветераны индустрии (представляющие обе стороны конфликта), передает как азарт гиков, движимых идеей «музыка должна быть бесплатной», так и панику бизнеса, не сумевшего создать iTunes раньше, чем это сделали сами пользователи. Это кино о том, что любая медиаиндустрия существует лишь до тех пор, пока не появится технология, способная ее опередить.",
+      "en": "The story of Napster — the service that made piracy routine in eighteen months and burned the music industry down: from cheap CDs to lawsuits against teenagers. With Sean Fanning and industry veterans on both sides, the film captures the geek thrill of 'music should be free' and the business panic of an industry that could not invent iTunes before its users did. A film about how any media industry lives exactly until the technology that outruns it arrives."
     },
     "genres": [
       "documentary"
@@ -1455,8 +1455,8 @@ window.CATALOG = [
     "titleEn": "Freedom Downtime",
     "titleRu": "Freedom Downtime",
     "desc": {
-      "ru": "Фильм, посвящённый делу Кевина Митника и хакерского движения: свобода информации, право на взлом и цифровые обвинения. Трибьют сообществу и критика правового абсурда.",
-      "en": "A film devoted to the 'freedom demon' of digital rights: freedom, hacking and the case at the heart of the movement. A tribute to the hacker community and legal absurdities."
+      "ru": "Документальный фильм журнала *2600* о деле Кевина Митника — самого известного в мире «телефонного» заключенного: пять лет без суда, полный запрет на пользование телефоном и содержание под стражей в статусе особо опасного преступника. Картина, снятая на пике кампании «Free Kevin», включает в себя ироничное дорожное приключение: попытку взять интервью у создателей фильма, опорочившего Митника. Это манифест хакерской этики, раскрывающий, что на практике означает принцип «информация стремится быть свободной» и к чему приводит ситуация, когда государство путает хакинг с терроризмом.",
+      "en": "A 2600 Magazine documentary about the Kevin Mitnick case — the most famous prisoner 'for phone calls': five years without trial, no telephone allowed, held as a dangerous criminal. Shot at the height of the Free Kevin campaign, it includes an ironic road trip — trying to interview the makers of the film that defamed Mitnick. A manifesto of hacker ethics: what 'information wants to be free' means in practice, and what happens when the state confuses hacking with terrorism."
     },
     "genres": [
       "documentary"
@@ -1472,8 +1472,8 @@ window.CATALOG = [
     "titleEn": "Good Copy Bad Copy",
     "titleRu": "Good Copy Bad Copy",
     "desc": {
-      "ru": "Документальный сравнительный анализ авторского права и файлообмена по всему миру: как реагировали Швеция, США и развивающиеся страны на цифровое пиратство.",
-      "en": "A global comparison of copyright and file sharing: how Sweden, the US and developing countries responded to digital piracy."
+      "ru": "Документальное путешествие по миру конфликтов, связанных с авторским правом: от бразильских фавел, где жанр «байле-фанк» рождается из заимствованных сэмплов, до шведского The Pirate Bay, нигерийского Нолливуда и американской ассоциации RIAA. Фильм демонстрирует, что «пиратство» — это не всегда кража, а авторское право — не всегда защита интересов авторов; зачастую это инструмент контроля над рынком. Отличное введение в дискуссии о DRM, лицензиях Creative Commons и о том, кому принадлежит культура.",
+      "en": "A documentary journey through copyright conflicts: Brazilian favelas where baile funk is born from borrowed samples, Sweden's The Pirate Bay, Nigeria's Nollywood and the American RIAA. The film shows that 'piracy' is not always theft and copyright is not always about protecting authors — more often it is a tool of market control. A great primer on the debates about DRM, Creative Commons and who owns culture."
     },
     "genres": [
       "documentary"
@@ -1489,8 +1489,8 @@ window.CATALOG = [
     "titleEn": "Hackers Are People Too",
     "titleRu": "Hackers Are People Too",
     "desc": {
-      "ru": "Психологический портрет хакерского сообщества: кто они на самом деле — интроверты, идеалисты и тусовка. Человечный документальный фильм о людях в сети.",
-      "en": "A psychological portrait of the hacker community: introverts, idealists and a subculture. A humane documentary about the people behind the screen."
+      "ru": "Документальный портрет хакерского сообщества, лишенный голливудского глянца в духе криминального кино: среди героев фильма есть те, кого можно встретить на конференции DEFCON, есть преподаватели и системные администраторы. Это разговоры о том, почему хакинг — это проявление любопытства, а не преступление, и почему общество объявляет войну людям, которые просто задают вопросы о том, как устроены системы. Скромная, но важная картина — противоядие от растиражированного Голливудом образа хакера в капюшоне.",
+      "en": "A documentary portrait of the hacker community without the crime-movie gloss: some of its subjects you could meet at DEFCON, others teach, others work as sysadmins. Conversations about why hacking is curiosity rather than crime, and why society declares war on people who simply ask systems questions. A modest but important film — the antidote to the 'hooded hacker' image Hollywood has fed us for decades."
     },
     "genres": [
       "documentary"
@@ -1506,8 +1506,8 @@ window.CATALOG = [
     "titleEn": "Hacking Democracy",
     "titleRu": "Hacking Democracy",
     "desc": {
-      "ru": "Документалка о том, как в США защитили от фальсификаций электронные выборы. Гражданское кино о доверии к голосованию и его цифровых дырах.",
-      "en": "A documentary about efforts to protect the US democratic process from electronic voting fraud. Civic cinema about trust in e-voting and its digital holes."
+      "ru": "Документальный фильм об активистах и ​​экспертах, пытающихся доказать, что американские системы электронного голосования уязвимы, а их результаты невозможно проверить. Кульминацией картины становится реальный эксперимент в округе Леон: команда специалистов с помощью одной лишь карты памяти меняет итоги голосования за считанные минуты. Этот фильм был снят за четырнадцать лет до того, как вопросы электронного голосования стали темой глобальной политики. Обязателен к просмотру для всех, кто считает, что «технология не может дать сбой из-за своей сложности».",
+      "en": "A documentary about activists and experts trying to prove that US electronic voting machines are vulnerable and election results cannot be audited. The climax is a real experiment in Leon County, where a team walks in with a memory card and changes the outcome in minutes. A film made fourteen years before questions about electronic elections became global politics. Required viewing for anyone who believes 'the technology cannot fail because it is too complex'."
     },
     "genres": [
       "documentary"
@@ -1523,8 +1523,8 @@ window.CATALOG = [
     "titleEn": "Do You Trust This Computer?",
     "titleRu": "Вы доверяете этому компьютеру?",
     "desc": {
-      "ru": "Режиссёр Крис Пейн задаёт главный вопрос современности: доверяете ли вы этому компьютеру? Эксперты об ИИ, автономном оружии и будущем человечества.",
-      "en": "Director Chris Paine asks the defining question of our time: do you trust this computer? Experts on AI, autonomous weapons and humanity's future."
+      "ru": "Документальный фильм Криса Пейна — режиссера картины «Кто убил электромобиль?» — посвящен тому, что происходит, когда искусственный интеллект выходит за пределы лабораторий и становится частью инфраструктуры: от дронов и дипфейков до алгоритмических решений, влияющих на человеческие жизни. В ленте представлены интервью с Илоном Маском, экспертами Google и создателями DeepMind; здесь же звучит одна из самых известных фраз Маска, сравнивающая ИИ с «вызовом демона». Цель фильма — не напугать зрителя, а побудить его задуматься о том, кому он на самом деле доверяет свои данные и принятие решений.",
+      "en": "Chris Paine's documentary — from the director of Who Killed the Electric Car? — about what happens when AI leaves the lab and becomes infrastructure: from drones to deepfakes to algorithmic decisions about human lives. Interviews with Elon Musk, Google experts and DeepMind creators; one of Musk's best-known lines calling AI 'summoning the demon'. The film's goal is not to scare but to force you to articulate whom you actually trust with your data and decisions."
     },
     "genres": [
       "documentary"
@@ -1541,8 +1541,8 @@ window.CATALOG = [
     "titleEn": "The Secret Rules of Modern Living: Algorithms",
     "titleRu": "Тайные правила современной жизни: Алгоритмы",
     "desc": {
-      "ru": "Дэвид Спёрлок объясняет, как алгоритмы управляют нашей жизнью: от сортировки до обучения. Документальный разбор математики, стоящей за повседневными решениями.",
-      "en": "David Spiegelhalter explains how algorithms run our lives from sorting to learning. A documentary breakdown of the math behind everyday decisions."
+      "ru": "Профессор Дэвид Шпигельхалтер объясняет, что такое алгоритм и почему он определяет гораздо больше, чем нам кажется: от приложений для знакомств и маршрутов курьерской доставки до списков ожидания на пересадку органов. Примеры варьируются от простейших задач сортировки до машинного обучения и иллюстрируются на историях реальных людей и ситуациях из повседневной жизни. Это один из самых доступных способов всего за час разобраться в базовых принципах работы цифрового мира — и всё это без единой формулы на доске.",
+      "en": "Professor David Spiegelhalter explains what an algorithm is and why it decides more than we think: from matchmaking apps to the route your delivery drives and the transplant waiting list. Examples run from simple sorting tasks to machine learning, shown on real people and everyday situations. One of the most accessible ways to grasp the basic mechanics of the digital world in an hour, without a single formula on a board."
     },
     "genres": [
       "documentary"
@@ -1558,8 +1558,8 @@ window.CATALOG = [
     "titleEn": "Coded Bias",
     "titleRu": "Закодированная предвзятость",
     "desc": {
-      "ru": "Исследование алгоритмов, которые усиливают предвзятость: фейс-распознавание, найм, кредиты. Документальный фильм о системной дискриминации в ИИ.",
-      "en": "How algorithms amplify bias: face recognition, hiring, credit. A documentary about systemic discrimination inside artificial intelligence."
+      "ru": "Исследовательница из MIT Джой Буоламвини обнаруживает, что системы распознавания лиц не «видят» её лица — просто потому, что они обучались на иных данных. Кульминацией истории становятся её выступление в Конгрессе и принятие первых законов, запрещающих эту технологию. Документальный фильм воссоздает полную картину происходящего: от внедрения систем распознавания лиц в школах до алгоритмов, оценивающих уровень бедности. Лента демонстрирует, что предвзятость искусственного интеллекта — это не техническая ошибка, а воспроизведение исторической несправедливости, происходящее с машинной скоростью.",
+      "en": "MIT researcher Joy Buolamwini discovers face recognition systems cannot see her face — simply because they were trained on other data. The climax: her testimony to Congress and the first laws banning the technology. The documentary assembles the full picture, from facial recognition in schools to poverty-scoring algorithms. It shows that bias in AI is not a bug but the reproduction of historical injustice at machine speed."
     },
     "genres": [
       "documentary"
@@ -1575,8 +1575,8 @@ window.CATALOG = [
     "titleEn": "Kill Chain: The Cyber War on America's Elections",
     "titleRu": "Смертельная цепочка: Кибервойна на выборах в Америке",
     "desc": {
-      "ru": "Хроника кибератак на выборы в США и борьбы за цифровую честность голосования. Документальное расследование о гибридных войнах нового типа.",
-      "en": "A chronicle of cyber attacks on US elections and the fight for digital integrity of voting. A documentary investigation into new hybrid warfare."
+      "ru": "Расследование, посвященное избирательной инфраструктуре США как потенциальной мишени: сканеры бюллетеней, списки избирателей, сети передачи данных — всё это взаимосвязано и уязвимо. Среди свидетелей — хакеры, сумевшие взломать эти системы за считанные минуты на конференции DEF CON, и официальные лица, оспаривающие их выводы. Трезвый взгляд на механизмы «гибридной войны» и на то, почему «взлом выборов» означает не только «изменение результатов голосования», но и «подрыв доверия к итогам».",
+      "en": "An investigation into America's election infrastructure as a target: ballot scanners, voter rolls, transmission networks — all connected, all vulnerable. Witnesses include hackers who broke into the systems at DEF CON within minutes and officials who dispute their conclusions. A sober look at how 'hybrid warfare' works — and why 'hacked the election' means not only 'changed the votes' but also 'undermined trust in the result'."
     },
     "genres": [
       "documentary"
@@ -1592,8 +1592,8 @@ window.CATALOG = [
     "titleEn": "Agents of Chaos",
     "titleRu": "Агенты хаоса",
     "desc": {
-      "ru": "Двухсерийный документальный фильм о том, как российские вбросы и технологии повлияли на американские выборы. Глубокий разбор дезинформации и соцсетей.",
-      "en": "A two-part documentary about how Russian disinformation and tech tools influenced US elections. A deep dive on deception and social networks."
+      "ru": "Двухсерийный документальный фильм Алекса Гибни о том, как осуществлялись российские операции влияния во время выборов в США 2016 года: от «фабрик троллей» до утечек через WikiLeaks. Гибни рассматривает эту историю не просто как «хакерскую атаку», а как механизм: как дезинформация находит уязвимости в самом обществе и почему проверка фактов не служит от нее лекарством. Спокойный и детальный разбор одной из самых обсуждаемых кампаний по оказанию влияния — без паники и без отрицания фактов.",
+      "en": "Alex Gibney's two-part documentary on how Russian influence operations worked during the 2016 US elections: from troll farms to leaks via WikiLeaks. Gibney frames the story not as 'hacking' but as a mechanism: how disinformation finds vulnerabilities in society itself and why fact-checking does not cure it. A calm, detailed anatomy of one of the most discussed influence campaigns — without panic and without denial."
     },
     "genres": [
       "documentary"
@@ -1610,8 +1610,8 @@ window.CATALOG = [
     "titleEn": "Console Wars",
     "titleRu": "Консольные войны",
     "desc": {
-      "ru": "Битва Nintendo и Sega за рынок консолей 90-х глазами её участников. Документальный фильм о конкуренции, домашних консолях и зарождении гик-культуры.",
-      "en": "The Nintendo vs Sega console war of the 90s seen through its participants. A documentary about competition, home consoles and the birth of geek culture."
+      "ru": "История «консольной войны» между Nintendo и Sega в начале 90-х, рассказанная её непосредственными участниками. Sega строила свой бренд на дерзости и провокационности, Nintendo отстаивала семейные ценности и строгий контроль качества — и обе компании оставили глубокий след в культуре целого поколения. Этот документальный фильм, снятый по мотивам книги Блейка Харриса, показывает индустрию, в которой маркетинг и игры были неразрывно связаны. Живой и человечный рассказ — не просто сухие цифры продаж.",
+      "en": "The story of the Nintendo vs Sega console war of the early 90s, told by the people who fought it. Sega built its brand on attitude and edge, Nintendo defended family values and quality control, and both left a mark on a generation's culture. Based on Blake Harris's book, the documentary shows an industry where marketing and games were inseparable. Clear and human — not just sales numbers."
     },
     "genres": [
       "documentary"
@@ -1628,8 +1628,8 @@ window.CATALOG = [
     "titleEn": "High Score",
     "titleRu": "Рекорд",
     "desc": {
-      "ru": "История видеоигр: от «понга» до «Тетриса» и первой глобальной машины. Сезон документальных эпизодов о кодах, днях славы и людях, написавших игры.",
-      "en": "The history of video games: from Pong to Tetris and the first global machine. Documentary episodes about code, golden days and the people who wrote games."
+      "ru": "Документальный сериал Netflix об истории видеоигр: от аркадных автоматов Space Invaders и домашних консолей Atari до Final Fantasy, Mortal Kombat и первого Doom. Каждый эпизод посвящен отдельной эпохе и рассказывает о создателях, соревнованиях и неудачах. Особую ценность представляют истории, редко попадающие в популярные хроники: роль программиста Доны Бейли в Atari, скандалы вокруг цензуры в Mortal Kombat и то, как локализация повлияла на судьбу Final Fantasy. Отличный сериал для тех, кто хочет понять, как игры стали частью культуры.",
+      "en": "A Netflix documentary series on video game history: from Space Invaders arcades and the home Atari to Final Fantasy, Mortal Kombat and the first Doom. Each episode is a single era, featuring creators, contests and failures. Especially valuable are the stories that rarely make the popular chronicle: programmer Dona Bailey's role at Atari, the censorship scandals around Mortal Kombat, and how localization shaped Final Fantasy's fate. A great series for anyone who wants to understand how games became culture."
     },
     "genres": [
       "documentary"
@@ -1647,8 +1647,8 @@ window.CATALOG = [
     "titleEn": "Hackers Wanted",
     "titleRu": "Hackers Wanted",
     "desc": {
-      "ru": "Документальный фильм о молодых людях, рвущихся в киберпространство, и о цене этого пути. Репортажное кино с участием сообщества DEF CON.",
-      "en": "A documentary about the young people drawn to cyberspace and the price they may pay. Shot around the DEF CON community."
+      "ru": "Документальный фильм о молодых людях, выбравших путь хакера, и о том, что ждет их на этом поприще — от всеобщего признания до тюремного заключения. В центре повествования — история Эдриана Ламо: он взломал сеть The New York Times, добровольно сдался властям, а впоследствии сообщил о действиях Брэдли Мэннинга. Эта этическая неоднозначность делает историю по-настоящему захватывающей: где проходит грань между исследователем, информатором и предателем?",
+      "en": "A documentary about young people who choose the hacker path — and about the system waiting for them on it: everything from applause to prison terms. The central line follows Adrian Lamo, who hacked The New York Times, turned himself in to the authorities — and later reported Bradley Manning. The moral ambiguity makes the story genuinely interesting: where is the border between researcher, informant and traitor?"
     },
     "genres": [
       "documentary"
@@ -1664,8 +1664,8 @@ window.CATALOG = [
     "titleEn": "In the Realm of the Hackers",
     "titleRu": "In the Realm of the Hackers",
     "desc": {
-      "ru": "Австралийский документальный фильм о том, как школьники и студенты с модемами оказались первыми анархистами сетей. Взгляд на истоки хакерского этикета.",
-      "en": "An Australian documentary about how schoolkids with modems became the first network anarchists. A look at the roots of hacker ethics."
+      "ru": "Австралийский документальный фильм о конце 80-х, когда школьники из Мельбурна, вооружившись модемами, из чистого любопытства взламывали системы телекоммуникационных компаний и университетов. Историю этого движения — от обмена паролями на вечеринках до первых полицейских облав — рассказывают сами участники событий и следователи. Ценность картины заключается в том, что она запечатлела момент, когда слово «хакер» не было ни профессией, ни клеймом, а сообщество вырабатывало собственные этические нормы в режиме реального времени.",
+      "en": "An Australian documentary about the late 80s, when Melbourne schoolkids with modems broke into telecom and university systems out of curiosity. Their story — from trading passwords at parties to the first police raids — is told by participants and investigators. The film's value is that it captures the moment when 'hacker' was neither a profession nor a verdict, and the community was writing its own ethics in real time."
     },
     "genres": [
       "documentary"
@@ -1681,8 +1681,8 @@ window.CATALOG = [
     "titleEn": "Indie Game: The Movie",
     "titleRu": "Независимая игра: Кино",
     "desc": {
-      "ru": "Документальный фильм о независимых разработчиках игр и цене творчества на грани разорения. Человеческая история «геймдева» и его отчаяния.",
-      "en": "A documentary about indie game developers and the price of creativity on the edge of ruin. The human side of game dev and its struggles."
+      "ru": "Документальный фильм о трех инди-проектах на финишной прямой: Super Meat Boy, Fez и Braid. На протяжении года камера следит за разработчиками, поставившими на кон всё — деньги, личные отношения, здоровье — ради игр, которые еще никто не видел. Отсюда и честность, которой недостает типичным «историям успеха»: панические атаки, долги, зависимость от оценок критиков и единственный день релиза, решающий всё. В этом фильме финансовый крах — вполне реальный исход, что делает картину честнее любого бизнес-курса.",
+      "en": "A documentary about three indie projects in their final stretch: Super Meat Boy, Fez and Braid. For a year the camera follows developers who have staked everything — money, relationships, health — on games no one has seen yet. Hence the honesty missing from 'success stories': panic attacks, debts, dependence on reviews, and a single release day that decides everything. In this film, financial failure is still an outcome — which makes it more honest than any business course."
     },
     "genres": [
       "indie"
@@ -1700,8 +1700,8 @@ window.CATALOG = [
     "titleEn": "How to Access Everything: Reverse Engineering",
     "titleRu": "Как получить доступ ко всему: Реверс-инжиниринг",
     "desc": {
-      "ru": "Документальный фильм о реверс-инжиниринге: как исследователи разбирают технологии на кирпичики и находят уязвимости. Взгляд на обратную сторону программного обеспечения.",
-      "en": "A documentary about reverse engineering: how researchers take technologies apart and find vulnerabilities. A look at the dark side of software craft."
+      "ru": "Документальный фильм об обратной разработке как о ремесле и искусстве: о том, как исследователи разбирают чужое программное обеспечение, прошивки и аппаратные устройства, чтобы понять, как они работают на самом деле. От анализа вредоносного кода до восстановления принципиальных схем по фотографиям кристаллов — и вплоть до «серой» правовой зоны, где простой «взгляд внутрь» уже считается нарушением условий лицензии. Фильм о людях, для которых понимание системы важнее, чем её использование.",
+      "en": "A documentary about reverse engineering as a craft and an art: how researchers take apart other people's software, firmware and hardware to understand what they really do. From analyzing malicious code to reconstructing circuit diagrams from die photos — and into the legal gray zone where simply 'looking inside' already violates a license. A film about people for whom understanding a system matters more than using it."
     },
     "genres": [
       "documentary"
@@ -1717,8 +1717,8 @@ window.CATALOG = [
     "titleEn": "Plug and Pray",
     "titleRu": "Подключите и молитесь",
     "desc": {
-      "ru": "Документальный фильм о будущем робототехники и ИИ: от веры в прогресс до предупреждений пионеров кибернетики. Диалог оптимистов и скептиков о машинах, которые нас переживут.",
-      "en": "An optimistic and worried film about robotics and AI questioning the future of work and humanity. Interviews with robotics pioneers about progress and belief."
+      "ru": "Документальный фильм о будущем робототехники и искусственного интеллекта, построенный на противопоставлении двух точек зрения: Рэймонда Курцвейла, верящего в слияние человека и машины, и Джозефа Вейценбаума — создателя одного из первых чат-ботов ELIZA, — который предостерегает: мы слишком легко отдаем машинам то, что должны были бы оставить себе. В центре повествования — лаборатории по созданию человекоподобных роботов, военные разработки и размышления о том, что для машины означает «понимание». Это редкий пример документального кино, где дискуссию ведут сами создатели технологий, а не сторонние наблюдатели.",
+      "en": "A documentary on the future of robotics and AI built on a contrast of two voices: Raymond Kurzweil, who believes in merging humans and machines, and Joseph Weizenbaum — creator of the early chatbot ELIZA — warning that we too easily hand machines what we should keep for ourselves. Between them: humanoid labs, military robots and reflections on what 'understanding' means to a machine. A rare documentary where the debate is led by the technology's creators, not its commentators."
     },
     "genres": [
       "documentary"
@@ -1734,8 +1734,8 @@ window.CATALOG = [
     "titleEn": "Google and the World Brain",
     "titleRu": "Google и всемирный мозг",
     "desc": {
-      "ru": "Фильм Бена Льюиса о том, как Google Books оцифровывает книжное наследие человечества. Ещё Герберт Уэллс мечтал о «всемирном мозге» — единой библиотеке всего знания; сегодня эту идею продолжают строить алгоритмы.",
-      "en": "Ben Lewis' documentary about Google Books scanning the whole of human written heritage. Long before the internet H.G. Wells dreamt of a 'world brain' — one universal library of all knowledge; today algorithms are building it."
+      "ru": "В 2002 году компания Google начала оцифровку миллионов книг из крупнейших библиотек мира — не спрашивая на то разрешения. Проект «мирового мозга», о котором мечтал Герберт Уэллс, столкнулся с противодействием писателей и издателей в суде: кому принадлежит культурное наследие и допустима ли оцифровка без согласия правообладателей? Этот документальный фильм запечатлел момент, когда к идеалу всеобщего доступа впервые была применена корпоративная логика, — и поднятые тогда вопросы звучат и сегодня в любых дискуссиях об обучении искусственного интеллекта на чужих текстах.",
+      "en": "In 2002 Google began digitizing millions of books from the world's great libraries — without asking. The 'world brain' project H.G. Wells dreamed of ran into writers and publishers in court: who owns the heritage, and can you digitize without consent? The documentary captures the moment corporate logic was first applied to the ideal of universal access — and the questions raised then echo today in every debate about training AI on other people's texts."
     },
     "genres": [
       "documentary",
@@ -1753,8 +1753,8 @@ window.CATALOG = [
     "titleEn": "Revolution OS",
     "titleRu": "Революционная ОС",
     "desc": {
-      "ru": "Документальная история Linux и движения свободного ПО: от двуногих пингвинов до корпораций. Фильм о том, как открытый код изменил индустрию.",
-      "en": "The documentary history of Linux and the free software movement: from a plucky penguin to corporate adoption. About how open source changed an industry."
+      "ru": "История движения за свободное программное обеспечение: от идеи Ричарда Столлмана до Linux Линуса Торвальдса — и до того момента, когда открытый исходный код стал основой корпоративной инфраструктуры. Интервью с Торвальдсом, Эриком Рэймондом, Брюсом Перенсом и другими показывают, как «хиппи с лицензией GPL» победили не благодаря идеологии, а благодаря качеству кода. Обязательно к просмотру для всех, кто пользуется Linux, Git и открытыми технологиями — и хочет знать, как всё это начиналось.",
+      "en": "The history of the free software movement, from Richard Stallman's idea to Linus Torvalds's Linux — and to the moment open source became the backbone of corporate infrastructure. Interviews with Torvalds, Eric Raymond, Bruce Perens and others show how 'hippies with a GPL license' won not through ideology but through code quality. Required viewing for everyone who uses Linux, Git and everything open — and wants to know where it all came from."
     },
     "genres": [
       "indie"
@@ -1772,8 +1772,8 @@ window.CATALOG = [
     "titleEn": "Steal This Film",
     "titleRu": "Укради этот фильм",
     "desc": {
-      "ru": "Провокационный фильм о файлообменных сетях, авторском праве и отношениях культуры с копией. Манифест цифровой свободы начала 2000-х.",
-      "en": "A provocative film about file-sharing networks, copyright and culture's relation to the copy. A manifesto of digital freedom from the early 2000s."
+      "ru": "Документальный фильм о «пиратской экономике» в эпоху BitTorrent и The Pirate Bay. В нем интервью с философами и юристами сочетаются со смелыми утверждениями: «копирование — это то, чем культура занималась всегда», «права собственности на данные не работают». Первая часть была создана после рейда на The Pirate Bay, а вторая посвящена архитектуре, которую невозможно закрыть. Фильм обязателен к просмотру для всех, кто хочет разобраться в спорах об авторском праве, выйдя за рамки дилеммы «скачивать или нет».",
+      "en": "A documentary about the pirate economy in the age of BitTorrent and The Pirate Bay. It mixes interviews with philosophers and lawyers with provocative claims: 'copying is what culture has always done', 'property rights on data do not work'. Part one was made after the raid on The Pirate Bay, part two is about an architecture that cannot be shut down. Required viewing for anyone who wants to understand copyright debates beyond 'downloading yes or no'."
     },
     "genres": [
       "documentary"
@@ -1789,8 +1789,8 @@ window.CATALOG = [
     "titleEn": "TPB AFK: The Pirate Bay Away from Keyboard",
     "titleRu": "Пиратская бухта: В удалении от клавиатуры",
     "desc": {
-      "ru": "История создателей The Pirate Bay и суда над ними: бункер у побережья, копирайт-баталии и жизнь в бегах. Документальный фильм о пиратах в прямом и переносном смысле.",
-      "en": "The story of The Pirate Bay's founders, living in a bunker while on trial. A documentary about pirates both literal and figurative."
+      "ru": "Три года съемок с участием основателей The Pirate Bay: Готтфрида, Фредрика и Петера, которые предстали перед судом в Стокгольме, пока их серверы продолжали работать в бункере. Фильм показывает не только судебный процесс, но и повседневную жизнь героев: переезды между странами, перенос серверов, столкновения с борцами за соблюдение авторских прав и их семьи, остающиеся на заднем плане. Это история, проникнутая сочувствием к идеалистам, чья война за «свободный интернет» обернулась тюремными сроками — но так и не закончилась.",
+      "en": "Three years of filming with The Pirate Bay founders: Gottfrid, Fredrik and Peter on trial in Stockholm while their servers run from a bunker. The film shows not just the trial but daily life: moving between countries, server migrations, run-ins with copyright enforcers, and families in the background. A sympathetic portrait of idealists whose war for a 'free internet' ended in prison terms — and did not end at all."
     },
     "genres": [
       "documentary"
@@ -1807,8 +1807,8 @@ window.CATALOG = [
     "titleEn": "Terms and Conditions May Apply",
     "titleRu": "Сроки и условия могут поменяться",
     "desc": {
-      "ru": "Небольшой, но точный фильм о пользовательских соглашениях: на что мы подписываемся, нажимая «Согласен». Документальный разбор цифрового капитуляция.",
-      "en": "A small but precise documentary about user agreements: what we sign when we click 'I agree'. A breakdown of digital surrender in fine print."
+      "ru": "Документальный фильм о том, что мы подписываем, не читая: какой объем текста содержится в пользовательских соглашениях, как меняются их условия после принятия и какие данные при этом собираются. На примере истории компании Navizon, политики использования файлов cookie и комментариев исследователя Орина Керра фильм демонстрирует, что сегодня вопросы конфиденциальности сводятся к договорам, которые никто не читает. Это удачный баланс между позициями «это паранойя» и «мы ничего не можем с этим поделать».",
+      "en": "A documentary about what we sign without reading: how much text sits in user agreements, how terms change after you accept them, and what data is collected meanwhile. Through the story of Navizon, 'smart' cookie policies and scholar Orin Kerr, the film shows that privacy today is a matter of contracts nobody reads. A good middle ground between 'that's paranoia' and 'there is nothing we can do'."
     },
     "genres": [
       "documentary"
@@ -1824,8 +1824,8 @@ window.CATALOG = [
     "titleEn": "The Code",
     "titleRu": "Код",
     "desc": {
-      "ru": "Документальный фильм Би-би-си о криптографии и программистах, стоявших за мировым программным обеспечением. Истории талантов, изменивших цифровой язык.",
-      "en": "A BBC documentary about cryptography and the programmers behind the world's software. Stories of the talents who shaped the digital language."
+      "ru": "Финский документальный фильм о Линусе Торвальдсе и истории Linux, созданный к десятилетию ядра. Интервью с Торвальдсом, Ричардом Столлманом, Эриком Рэймондом и представителями руководства HP и IBM позволяют проследить весь путь: от сообщения в списке рассылки до серверов, благодаря которым Linux обосновался в дата-центрах по всему миру. Это простой и хорошо структурированный рассказ для тех, кто хочет понять философию открытого программного обеспечения через призму его самого известного продукта.",
+      "en": "A Finnish documentary about Linus Torvalds and the history of Linux, made for the kernel's tenth anniversary. Interviews with Torvalds, Richard Stallman, Eric Raymond and HP/IBM managers trace the whole path: from a mailing-list post to the servers that put Linux into data centers worldwide. A simple, well-structured story for those who want to understand open source philosophy through its best-known product."
     },
     "genres": [
       "documentary"
@@ -1841,8 +1841,8 @@ window.CATALOG = [
     "titleEn": "The Hacker Wars",
     "titleRu": "Хакерские войны",
     "desc": {
-      "ru": "Хроника войн хакеров и властей: от площадок в даркнете до дел активистов. Документальное кино о репрессиях и цифровом сопротивлении.",
-      "en": "A chronicle of the wars between hackers and authorities: from darknet platforms to activist cases. Documentary cinema about repression and digital resistance."
+      "ru": "Документальный фильм о войне между хактивистами и государством — история Барретта Брауна, Джереми Хаммонда и других, получивших реальные тюремные сроки за действия в сети, которые раньше считались безобидными проделками, а теперь квалифицируются как терроризм. Картина демонстрирует асимметрию сил: обвинение, располагающее колоссальными ресурсами, противостоит людям, чье единственное оружие — клавиатура. Это хроника эпохи, когда хакерство впервые стало основанием для предъявления политических обвинений.",
+      "en": "A documentary about the war between hacktivists and the state: the cases of Barrett Brown, Jeremy Hammond and others who received real prison terms for online actions once called mischief and now called terrorism. The film shows the asymmetry: a prosecution with endless resources against individuals whose weapon is a keyboard. A chronicle of the era when 'hacking' first became a political charge."
     },
     "genres": [
       "documentary"
@@ -1858,8 +1858,8 @@ window.CATALOG = [
     "titleEn": "The Internet's Own Boy: The Story of Aaron Swartz",
     "titleRu": "Интернет-мальчик: История Аарона Шварца",
     "desc": {
-      "ru": "Портрет Аарона Шварца — программиста и активиста, автора RSS и борца за открытый доступ. Трагическая история одного из самых ярких умов поколения.",
-      "en": "The portrait of Aaron Swartz — programmer, activist, RSS co-creator and fighter for open access. The tragic story of one of his generation's brightest minds."
+      "ru": "В четырнадцать лет Аарон Шварц участвовал в создании формата RSS, а затем работал над проектами Creative Commons и Reddit, а также боролся за открытый доступ к знаниям. Массовое скачивание им статей из базы JSTOR через сеть MIT обернулось обвинениями, многолетним судебным преследованием и смертью в возрасте 26 лет. Этот документальный фильм, основанный на интервью с семьей, друзьями и коллегами, рассказывает о человеке, который задал вопрос, на который до сих пор не найдено лучшего ответа: кому принадлежат знания?",
+      "en": "At fourteen, Aaron Swartz helped create RSS, then worked on Creative Commons, Reddit and the fight for open access to knowledge. His mass download of JSTOR articles through the MIT network turned into charges, years of prosecution and his death at 26. Built from interviews with family, friends and colleagues, the documentary is about a person who asked a question no one has improved on: who owns knowledge?"
     },
     "genres": [
       "documentary"
@@ -1877,8 +1877,8 @@ window.CATALOG = [
     "titleEn": "The KGB, the Computer and Me",
     "titleRu": "The KGB, the Computer and Me",
     "desc": {
-      "ru": "Один их первых документальных фильмов о взломе: как школьник взломал военную шифростанцию и попал в сети КГБ. Холодная война глазами подростка.",
-      "en": "One of the first hacking documentaries: how a schoolboy broke into military networks and hit the KGB. The Cold War seen through a teenager's eyes."
+      "ru": "Клиффорд Столл, астроном, ставший системным администратором лаборатории в Беркли, обнаруживает бухгалтерскую нестыковку в 75 центов и в ходе расследования выходит на хакера, продающего данные КГБ. Столл сам рассказывает эту историю — дело «Яйцо кукушки», ставшее одной из первых задокументированных киберопераций. Это живая лекция о том, как проводятся расследования на основе анализа логов — за десятилетия до появления термина «реагирование на инциденты».",
+      "en": "Clifford Stoll, an astronomer turned lab system administrator at Berkeley, spots a 75-cent accounting error and, untangling it, finds a hacker selling data to the KGB. Stoll narrates the film himself, retelling the 'Cuckoo's Egg' case — one of the first documented cyber operations. A living lecture on how investigations work through logs — decades before the term 'incident response'."
     },
     "genres": [
       "documentary"
@@ -1894,8 +1894,8 @@ window.CATALOG = [
     "titleEn": "The Singularity",
     "titleRu": "Сингулярность",
     "desc": {
-      "ru": "Фильм о сингулярности — моменте, когда ИИ превзойдёт человека. Эксперты, предсказания и тревоги о постчеловеческом будущем.",
-      "en": "A film about the singularity — the moment AI overtakes humanity. Experts, predictions and worries about a post-human future."
+      "ru": "Документальный фильм о технологической сингулярности — гипотетическом моменте, когда искусственный интеллект превзойдет человеческий разум и начнет совершенствовать сам себя. Рэй Курцвейл объясняет, почему считает, что до этого события остались считанные десятилетия, а скептики доказывают, что это лишь наукообразная фантастика. Фильм дает слово обеим сторонам, избегая монтажных уловок, — редкий формат для темы, в которой обычно побеждает тот, кто громче всех заявляет о своей позиции.",
+      "en": "A documentary about the technological singularity — the hypothetical moment when AI surpasses human intellect and begins improving itself. Ray Kurzweil explains why he believes it is a matter of decades; skeptics explain why it is math-flavored fiction. The film lets both sides speak without editing traps — a rare format for a topic usually won by the loudest claim."
     },
     "genres": [
       "documentary"
@@ -1911,8 +1911,8 @@ window.CATALOG = [
     "titleEn": "War for the Web",
     "titleRu": "War for the Web",
     "desc": {
-      "ru": "Документальная хроника противостояния за интернет: контроль, цензура и глобальные игроки. Карта власти над мировой сетью.",
-      "en": "A documentary chronicle of the battle for the internet: control, censorship and global players. A map of power over the world's network."
+      "ru": "Документальный фильм о том, кому принадлежит интернет и кто устанавливает его правила: телекоммуникационным гигантам, государственным регуляторам, ICANN, волонтерам из IETF — и нам, пользователям. Съемки охватывают всё: от подводных кабелей и дата-центров до слушаний по вопросам сетевого нейтралитета. Это своего рода «карта сил», полезная для всех, кто хочет понять, почему интернет устроен именно так и какие решения принимаются вне поля нашего зрения.",
+      "en": "A documentary about who owns the internet and who makes its rules: telecom giants, government regulators, ICANN, the IETF volunteers — and us, the users. Filming runs from undersea cables and data centers to net neutrality hearings. A useful 'map of power' for anyone who wants to understand why the internet works the way it does — and which decisions are made outside our field of view."
     },
     "genres": [
       "documentary"
@@ -1928,8 +1928,8 @@ window.CATALOG = [
     "titleEn": "We Are Legion: The Story of the Hacktivists",
     "titleRu": "Имя нам легион: История хактивизма",
     "desc": {
-      "ru": "История Anonymous и движения «хактивизма»: от троллей 4chan до международных акций. Документальный фильм о цифровом протесте.",
-      "en": "The story of Anonymous and the hacktivism movement: from 4chan trolls to international actions. A documentary about digital protest."
+      "ru": "История Anonymous — от троллинга на 4chan до DDoS-атак на Церковь саентологии, платежные системы и правительственные сайты. Бывшие участники рассказывают, как из анонимного хаоса выросло движение без лидеров, где каждая акция рождается в ветках чатов, а заканчивается в новостных сводках. Фильм не оправдывает и не осуждает — он демонстрирует механику протеста, у которого впервые в истории нет ни лица, ни адреса.",
+      "en": "The story of Anonymous — from trolling on 4chan to DDoS actions against the Church of Scientology, payment systems and government sites. Former participants explain how a movement without leaders grew out of anonymous chaos, where every action is born in chat threads and dies in the news. The film neither excuses nor condemns — it shows the mechanics of protest that, for the first time in history, has no face and no address."
     },
     "genres": [
       "documentary"
@@ -1945,8 +1945,8 @@ window.CATALOG = [
     "titleEn": "We Steal Secrets: The Story of WikiLeaks",
     "titleRu": "Мы крадем секреты: История WikiLeaks",
     "desc": {
-      "ru": "Документальный фильм Алекса Гибни о WikiLeaks, утечках секретных файлов и военнослужащем, который стал символом разоблачений. Хроника цифровой прозрачности и её издержек.",
-      "en": "Alex Gibney's documentary about WikiLeaks, secret files and the soldier who became a symbol of leaks. A chronicle of digital transparency."
+      "ru": "Алекс Гибни прослеживает историю WikiLeaks: от первых утечек до войны с PayPal и Visa, ареста Мэннинга и разрыва Ассанжа с соратниками. Фильм ставит вопрос, ставший впоследствии ключевым для всех платформ, проповедующих «радикальную прозрачность»: что происходит с организацией, которая требует открытости от всех, кроме самой себя? Критикам и защитникам Ассанжа уделено равное экранное время — редкий для этой темы баланс.",
+      "en": "Alex Gibney chronicles WikiLeaks: from the first leaks to the war with PayPal and Visa, Manning's arrest, and Assange's estrangement from his allies. The film asks the question that later became central for all 'radical transparency' platforms: what happens to an organization that demands openness from everyone except itself? Assange's critics and defenders get equal screen time — a rare balance for the subject."
     },
     "genres": [
       "documentary"
@@ -1962,8 +1962,8 @@ window.CATALOG = [
     "titleEn": "Zero Days",
     "titleRu": "Уязвимость нулевых дней",
     "desc": {
-      "ru": "Документальное расследование о кибероружии Stuxnet — программе, атаковавшей иранские ядерные объекты. Противостояние, начатое в цифровой плоскости.",
-      "en": "A documentary investigation into Stuxnet — the cyber weapon that attacked Iran's nuclear program. Warfare begun on a digital front."
+      "ru": "Алекс Гибни исследует историю Stuxnet — компьютерного червя, который вывел из строя центрифуги иранской ядерной программы и стал первым в истории кибероружием, уничтожившим физический объект. Опираясь на данные разведки, фильм реконструирует ход операции: от установления авторов и испытаний на копиях центрифуг до последовавшей за этим эскалации. Главный вывод картины сводится к тому, что речь идет о гонке вооружений, не регулируемой никакими договорами, арбитражем или правилами, — в ней существуют лишь уязвимости и способы их эксплуатации.",
+      "en": "Alex Gibney investigates Stuxnet — the worm that wrecked the centrifuges of Iran's nuclear program and became history's first cyber weapon to destroy a physical object. Through intelligence sources the film reconstructs the operation: authorship, tests on replica centrifuges, and the escalation program that followed. The core conclusion is about an arms race with no treaty, no arbitration and no rules — only exploits."
     },
     "genres": [
       "documentary"
@@ -1979,8 +1979,8 @@ window.CATALOG = [
     "titleEn": "Russian Hackers: The Beginning",
     "titleRu": "Русские хакеры: Начало",
     "desc": {
-      "ru": "Первый документальный фильм о российских хакерах: кто они, как живут и на что способны. Редкий взгляд изнутри на русскоязычное движение.",
-      "en": "The first documentary about Russian hackers: who they are, how they live and what they are capable of. A rare inside look at the Russian-speaking scene."
+      "ru": "Первый документальный фильм, показывающий русскоязычную хакерскую среду изнутри: среди его героев — и пионеры 90-х, писавшие вирусы «ради спортивного интереса», и основатели легальных компаний в сфере кибербезопасности, и анонимные фигуры из даркнета. Это история о культуре, сформировавшейся в условиях дефицита и благодаря качественному техническому образованию, а также о том, как это сообщество стало глобальной силой в обоих смыслах слова: от выступлений на сцене конференции DEF CON до попадания в списки наблюдения спецслужб. Уникальный материал, в котором хакеры говорят, не скрывая лиц.",
+      "en": "The first documentary about the Russian-speaking hacker scene from the inside: its heroes range from 90s pioneers who wrote viruses 'for sport' to founders of legitimate security companies and anonymous darknet figures. It is about a culture that grew out of scarcity and technical education — and about how that scene became a global force in both senses: from DEF CON stages to intelligence watchlists. Rare material where hackers speak without masks."
     },
     "genres": [
       "documentary"
@@ -1998,8 +1998,8 @@ window.CATALOG = [
     "titleEn": "The Social Dilemma",
     "titleRu": "Социальная дилемма",
     "desc": {
-      "ru": "Консультанты крупнейших соцсетей объясняют, как алгоритмы захватывают внимание и радикализируют нас. Хит Netflix об уязвимости человеческой психики.",
-      "en": "Former tech insiders explain how algorithms capture attention and radicalize us. Netflix' hit about the vulnerability of the human psyche."
+      "ru": "Бывшие дизайнеры и руководители из Google, Facebook и Twitter раскрывают механизмы, удерживающие нас в ленте: системы рекомендаций, бесконечную прокрутку, персонализацию и бизнес-модель, превращающую внимание в товар. Игровые вставки с персонажем, олицетворяющим «алгоритм в деловом костюме», вызывают вопросы, но главная мысль фильма точна: проблема не в том, что технологии плохи, а в том, что их цели не совпадают с нашими. Это фильм, после которого хочется заглянуть в настройки конфиденциальности.",
+      "en": "Former designers and executives from Google, Facebook and Twitter explain the mechanisms that keep us in the feed: recommendations, infinite scroll, personalization, and the business model of attention as a commodity. The dramatized inserts with an 'algorithm in a suit' are debatable, but the core point is precise: the problem is not that the technology is bad, but that its goals do not align with ours. The film that makes you want to open your privacy settings."
     },
     "genres": [
       "documentary"
@@ -2017,8 +2017,8 @@ window.CATALOG = [
     "titleEn": "AlphaGo",
     "titleRu": "АльфаГо",
     "desc": {
-      "ru": "История матча AlphaGo против чемпиона мира Ли Седоля — победы программы над человеком. Фильм о великом моменте в истории ИИ.",
-      "en": "The match of AlphaGo against world champion Lee Sedol — the program's victory over a human. A film about a watershed moment in AI history."
+      "ru": "Хроника матча AlphaGo против Ли Седоля — сильнейшего игрока в го своего десятилетия. Никто не ожидал победы машины: го считалось игрой, требующей интуиции и неподвластной простому перебору вариантов. Фильм запечатлел не только сами партии, но и лица людей: неверие, отчаяние и — в четвертой игре — тот самый «37-й ход», после которого стало ясно: машина играет не как человек, а как нечто совершенно иное. Документальная лента о моменте, когда теория стала историей.",
+      "en": "The chronicle of AlphaGo's match against Lee Sedol, the best Go player of his decade. No one expected the machine to win: Go was considered an 'intuitive' game beyond bruteforce. The film captures not just the games but the faces: disbelief, despair, and — in game four — 'move 37', after which people understood the machine was not playing like a human but like something else entirely. A documentary about the moment theory turned into history."
     },
     "genres": [
       "documentary"
@@ -2034,8 +2034,8 @@ window.CATALOG = [
     "titleEn": "The Great Hack",
     "titleRu": "Cambridge Analytica. Скандальный взлом",
     "desc": {
-      "ru": "Расследование скандала Cambridge Analytica: как данные миллионов людей меняли выборы. Документальный взгляд на манипуляцию через программное обеспечение.",
-      "en": "The Cambridge Analytica scandal: how data from millions of people shaped elections. A documentary look at manipulation through software."
+      "ru": "История Cambridge Analytica изнутри: рассказ Бриттани Кайзер, работавшей в компании, а затем сотрудничавшей со следствием, и журналиста, расследующего методы психографического профилирования избирателей. Фильм показывает, как таргетированная реклама превращается в инструмент политической войны и почему удаление приложения не отменяет факт сбора данных. Лучший фильм для первого знакомства с тем, что на самом деле представляют собой скандалы, связанные с утечкой данных.",
+      "en": "The Cambridge Analytica story from the inside: Brittany Kaiser, who worked at the company and later cooperated with investigators, and a journalist digging into psychographic profiling of voters. The film shows how 'ad targeting' becomes an instrument of political warfare — and why deleting the app does not undo the data already collected. The best intro film to what data scandals actually are."
     },
     "genres": [
       "documentary"
@@ -2051,8 +2051,8 @@ window.CATALOG = [
     "titleEn": "The Perfect Weapon",
     "titleRu": "Идеальное оружие",
     "desc": {
-      "ru": "Фильм о хрупкости цифровой инфраструктуры и кибер-гонке держав. Эксперты о уязвимости сетей и цене кибервойн.",
-      "en": "A film about the fragility of digital infrastructure and the cyber race among nations. Experts on network vulnerabilities and the price of cyber wars."
+      "ru": "Фильм, основанный на книге журналиста New York Times Дэвида Сэнгера, рассказывает о том, как кибератаки превратились в привычный инструмент государственной политики — от Stuxnet до нападений на энергосети, банки и избирательные системы. Интервью с сотрудниками спецслужб, жертвами атак и хакерами позволяют проследить эту эволюцию: от сложных операций, проводимых государственными ведомствами, до деятельности группировок, использующих программы-вымогатели и работающих по модели «подписки». Это серьезный фильм о том, что кибервойна — это уже не будущее, а невидимая повседневная реальность.",
+      "en": "Based on New York Times reporter David Sanger's book: how cyber attacks became a routine instrument of states — from Stuxnet to attacks on power grids, banks and elections. Interviews with intelligence officers, attack victims and hackers trace the evolution: from complex agency operations to ransomware gangs running 'subscription' models. A sober film about the fact that cyber war is no longer the future — it is an invisible everyday backdrop."
     },
     "genres": [
       "documentary"
@@ -2068,8 +2068,8 @@ window.CATALOG = [
     "titleEn": "The Age of A.I.",
     "titleRu": "Эра ИИ",
     "desc": {
-      "ru": "Популярный цикл о фронтирах ИИ: от медицины до робототехники. Ведущий — Роберт Дауни-младший; разговор о том, как искусственный интеллект проникает в каждую сферу жизни.",
-      "en": "A popular series hosted by Robert Downey Jr. about the frontiers of AI: from medicine to robotics. How artificial intelligence enters every sphere of life."
+      "ru": "Сериал из восьми эпизодов, который ведет Роберт Дауни-младший, рассказывает о том, как искусственный интеллект уже меняет нашу жизнь: нейроинтерфейсы для парализованных людей, компьютерное зрение для незрячих, использование дронов в сельском хозяйстве, роботы-компаньоны и многое другое. Формат «одна история на серию» работает лучше, чем абстрактные рассуждения: технологии показаны через призму судеб людей, которые ими пользуются. Это популярный, но содержательный материал для всех, кто хочет разобраться в сути дискуссий вокруг искусственного интеллекта.",
+      "en": "An eight-episode series hosted by Robert Downey Jr. on how AI is already changing lives: neural interfaces for the paralyzed, computer vision for the blind, drone farming, robot companions and more. The one-story-per-episode format works better than abstractions: technology is shown through the people receiving it. A popular but substantive entry point for anyone who wants to understand what the AI debate is about."
     },
     "genres": [
       "documentary"
@@ -2085,8 +2085,8 @@ window.CATALOG = [
     "titleEn": "Dark Net",
     "titleRu": "Даркнет",
     "desc": {
-      "ru": "Иммерсивный документальный проект о тёмных углах сети: насилие, торговля данными и цифровые субкультуры. Обзор «невидимой» стороны интернета.",
-      "en": "An immersive documentary project on the web's dark corners: violence, data trade and digital subcultures. A tour of the internet's invisible side."
+      "ru": "Антология невидимых сторон цифровой жизни: киборги с имплантатами, торговля органами в сети, криптовалюта в даркнете, дети, которых вместо няни воспитывает iPad. Каждый эпизод связывает воедино технологии и человеческое тело, показывая, что происходит с человеком, когда жизнь перемещается в онлайн. По стилистике проект ближе к клипу в жанре индастриал, чем к классическому документальному фильму, — и именно в этом его сильная сторона.",
+      "en": "An anthology of the invisible sides of digital life: cyborgs with implants, organ trade over the network, crypto in the darknet, children raised with an iPad instead of a nanny. Each episode connects technology and the body: what happens to a person when life moves online. Stylistically closer to an industrial music video than a classic documentary — and that is its strength."
     },
     "genres": [
       "documentary"
@@ -2102,8 +2102,8 @@ window.CATALOG = [
     "titleEn": "Durov",
     "titleRu": "Дуров",
     "desc": {
-      "ru": "Портрет Павла Дурова: создателя «ВКонтакте» и Telegram, человека, поставившего приватность во главу угла. Документальная биография противоречивого гения.",
-      "en": "A portrait of Pavel Durov: creator of VK and Telegram, who put privacy first. A documentary biography of a controversial genius."
+      "ru": "Портрет Павла Дурова: из создателя «ВКонтакте», который отказался передавать ФСБ данные украинских групп, — в основателя Telegram и «гражданина мира» без постоянного адреса. Документалка собирает свидетельства коллег и бывших партнёров и показывает цену избранного пути: потерянная компания, конфликты, паранойя безопасности. Это ни оправдание, ни разоблачение — попытка понять, как идеология приватности становится чертой характера.",
+      "en": "A portrait of Pavel Durov: from the creator of VK, who refused to hand user data on Ukrainian groups to the security services, to the founder of Telegram and a 'world citizen' with no fixed address. The documentary assembles testimony from colleagues and former partners and shows the price of the chosen path: a lost company, conflicts, security paranoia. Neither an apology nor an exposé — an attempt to understand how an ideology of privacy becomes a character."
     },
     "genres": [
       "biography"
@@ -2120,8 +2120,8 @@ window.CATALOG = [
     "titleEn": "Don't F**k with Cats: Hunting an Internet Killer",
     "titleRu": "Руки прочь от котиков! Охота на интернет-убийцу",
     "desc": {
-      "ru": "Сетевая охота на убийцу, начавшаяся с видео с котом. Документальный триллер о том, как интернет сам ищет справедливость — и как ошибается.",
-      "en": "A manhunt that began with a cat video. A documentary thriller about how the internet seeks justice on its own — and how it gets it wrong."
+      "ru": "Всё началось с видео, в котором человек убивает котёнка: небольшая группа пользователей Facebook запускает сетевое расследование, находят его автора по мебели в кадре и геолокации — и предупреждают полицию, что следующим станет человек. Реальная история, где толпа интернет-детективов действительно опережает следствие — и где само это расследование подпитывает маньяка вниманием, в котором он нуждается. Документальный триллер о том, как интернет ищет справедливость — и чем это заканчивается.",
+      "en": "It started with a video of a man killing a kitten: a small group of Facebook users opens a web investigation, identifies the author from furniture in the frame and geolocation — and warns the police that a human will be next. A true story where a crowd of internet detectives really does outrun law enforcement — and where the manhunt itself feeds the killer the attention he craves. A documentary thriller about how the internet seeks justice — and how it ends."
     },
     "genres": [
       "documentary",
@@ -2139,8 +2139,8 @@ window.CATALOG = [
     "titleEn": "Video Games: The Movie",
     "titleRu": "Видеоигры: Кино",
     "desc": {
-      "ru": "Документальный гимн видеоиграм: от аркад до инди как искусству. Интервью с геймерами, разработчиками и критиками.",
-      "en": "A documentary anthem to video games: from arcades to indie as art. Interviews with gamers, developers and critics."
+      "ru": "Обзорный документальный фильм об истории и культуре видеоигр: от Pong и залов игровых автоматов 70-х до киберспорта и игр как вида искусства. Вместо единого сюжета — мозаика тем: геймдизайн, нарратив, игровая зависимость, дилемма «эскапизм или творчество», а также мнения разработчиков, актеров и фанатов. Идеальная отправная точка для тех, кто хочет получить системное представление об индустрии, — но слишком общий материал для тех, кто уже глубоко в ней разбирается.",
+      "en": "An overview documentary on the history and culture of video games: from Pong and 70s arcades to esports and games as an art form. Instead of one storyline — a mosaic of themes: game design, narrative, addiction, 'escapism vs creativity', voices of developers, actors and fans. Ideal as a 'zero point' for those who want a systematic view of the industry — too broad for those already inside it."
     },
     "genres": [
       "documentary",
@@ -2158,8 +2158,8 @@ window.CATALOG = [
     "titleEn": "Atari: Game Over",
     "titleRu": "Atari: конец игры",
     "desc": {
-      "ru": "Захватывающая история легендарной игры E.T. для Atari — игры, закопанной в пустыне, и раскопок этой тайны. Документальный фильм о пике и крахе индустрии.",
-      "en": "The story of Atari's legendary E.T. game — buried in a desert, then dug up. A documentary about the industry's peak and crash."
+      "ru": "Существовала городская легенда о том, что компания Atari закопала в пустыне Нью-Мексико тысячи картриджей с провальной игрой E.T. — символом краха индустрии видеоигр 1983 года. Этот документальный фильм рассказывает о раскопках в Аламогордо и попутно повествует о том, как компания, принесшая видеоигры в дома пользователей, потерпела крах всего за два года. Это короткая, жизнерадостная и неожиданно трогательная лента о неудаче как части истории технологий — и о том, как миф становится реальностью.",
+      "en": "Urban legend said Atari buried thousands of cartridges of the failed game E.T. in the New Mexico desert — the symbol of the 1983 industry crash. The documentary follows the excavation in Alamogordo and, along the way, tells how the company that brought games home collapsed in two years. A short, cheerful, unexpectedly touching film about failure as part of tech history — and about how a myth becomes true."
     },
     "genres": [
       "documentary",
@@ -2177,8 +2177,8 @@ window.CATALOG = [
     "titleEn": "Lo and Behold: Reveries of the Connected World",
     "titleRu": "О, Интернет! Грезы цифрового мира",
     "desc": {
-      "ru": "Документальный фильм Вернера Херцога об интернете: от компьютеров до роботов и сетей. Философский взгляд на цифровую судьбу человечества.",
-      "en": "Werner Herzog's documentary about the internet: from computers to robots and networks. A philosophical look at humanity's digital fate."
+      "ru": "Вернер Херцог препарирует интернет в десяти главах: от первого сообщения в сети ARPANET, обрушившего университетскую сеть, до беспилотных автомобилей, угрозы солнечных вспышек и людей, страдающих аллергией на интернет. Формат фильма — беседы с учеными, инженерами и чудаками, ведущиеся с характерной для Херцога серьезностью. Это лучшая картина, в которой сеть предстает не просто как технология, а как стихийная сила природы: одновременно забавная, тревожная и философская.",
+      "en": "Werner Herzog takes the internet apart in ten chapters: from the first ARPANET message that crashed a university network to self-driving cars, solar flares as a threat, and people suffering from internet allergy. The format — conversations with scientists, engineers and oddballs, delivered with Herzog's trademark earnestness. The best film about the network not as technology but as a force of nature: funny, anxious and philosophical at once."
     },
     "genres": [
       "history"
@@ -2194,8 +2194,8 @@ window.CATALOG = [
     "titleEn": "Steve Jobs: The Lost Interview",
     "titleRu": "Стив Джобс. Потерянное интервью",
     "desc": {
-      "ru": "Легендарное интервью Стива Джобса 1995 года, потерянное и найденное спустя годы. Документальный фильм о видении, ошибках и языке технологий.",
-      "en": "Steve Jobs' legendary 1995 interview, lost and then found years later. A documentary about vision, mistakes and the language of technology."
+      "ru": "Потерянное интервью 1995 года: Джобс в момент, когда Apple на грани банкротства, а его самого выгнали из компании. За час он объясняет, почему продукты должны опережать запросы пользователей, что такое «полный цикл» железа и софта, почему большие компании теряют инновационность — и рассказывает легендарную метафору про камень, оттачивающий другой камень. Возможно, лучший первоисточник для понимания того, как думал Джобс — без мифологии биографов.",
+      "en": "The lost 1995 interview: Jobs at the moment when Apple is near bankruptcy and he himself has been thrown out of the company. In an hour he explains why products must run ahead of what users ask for, what the 'end-to-end' ownership of hardware and software means, why big companies lose innovation — and gives the legendary metaphor of a rock polishing another rock. Perhaps the best primary source on how Jobs thought — without the biographers' mythology."
     },
     "genres": [
       "history"
@@ -2211,8 +2211,8 @@ window.CATALOG = [
     "titleEn": "Black Mirror",
     "titleRu": "Чёрное зеркало",
     "desc": {
-      "ru": "Британский антологический сериал о тёмных сторонах технологий: от экспирации виртуальных существ до социального рейтинга. Каждый эпизод — отдельное зеркало цифрового общества.",
-      "en": "A British anthology about the dark sides of technology: from digital afterlife to social scoring. Each episode is another mirror held to digital society."
+      "ru": "Антология Чарли Брукера о технологиях, доведённых на один шаг дальше: рейтинг социальных оценок как кредитная история, память, которую можно переигрывать, цифровое бессмертие после смерти, насекомые-дроны и виртуальная реальность как тюрьма. Каждый эпизод самостоятелен, и почти каждый предсказал что-то, что потом стало новостью. Кино-прививка от технооптимизма — обязательная для всех, кто работает с технологиями и верит, что «нас это не коснётся».",
+      "en": "Charlie Brooker's anthology of technology taken one step further: social ratings as credit scores, memories that can be replayed, digital immortality after death, insect drones, virtual reality as a prison. Every episode stands alone, and almost every one predicted something that later became news. A shot of vaccine against techno-optimism — required for anyone who works with technology and believes 'it will not touch us'."
     },
     "genres": [
       "drama",
@@ -2229,8 +2229,8 @@ window.CATALOG = [
     "titleEn": "Intelligence",
     "titleRu": "Искусственный интеллект",
     "desc": {
-      "ru": "Британский сериал о кибер-подразделении, расследующем преступления в сети. Объединяет шпионаж, ИИ и человеческие слабости агентов.",
-      "en": "A British series about a cyber unit investigating crimes online. Combines espionage, AI and the human frailties of its agents."
+      "ru": "Комедия CBS о агенте ЦРУ, прикреплённом к учёному с чипом в голове: он может подключаться к сетям напрямую, видеть через чужие камеры и открывать замки взглядом. Сюжетная рамка стандартна — охота на террористов, прототипы нового оружия, — но сама идея «человека как конечного узла сети» обыграна с юмором и воображением. Лёгкий сериал о том, что произойдёт, когда поиск и пароли станут ненужными: мир станет одинаково удобным для нас и для тех, кто за нами следит.",
+      "en": "A CBS comedy about a CIA agent assigned to a scientist with a chip in his head: he can connect to networks directly, see through other people's cameras and unlock doors with a glance. The frame is standard — hunting terrorists, new weapons prototypes — but the idea of 'a human as an endpoint' is played with humor and imagination. A light series about what happens when search and passwords become unnecessary: the world becomes equally convenient for us and for whoever watches us."
     },
     "genres": [
       "ai",
@@ -2247,8 +2247,8 @@ window.CATALOG = [
     "titleEn": "Humans",
     "titleRu": "Люди",
     "desc": {
-      "ru": "В дом европейской семьи попадают синтетические «люди», и их существование ставит под вопрос границы человечности. Драма о роботизированных помощниках и чувствах машин.",
-      "en": "Synthetic 'humans' enter a European family home, questioning the boundary of humanity. A drama about robo-helpers and machine feelings."
+      "ru": "В мире, где синты — человекоподобные слуги — стали обычными бытовыми приборами, одна семья приобретает такого робота и обнаруживает, что их экземпляр отличается от остальных. Сериал превращает тему домашнего искусственного интеллекта в серьезные вопросы: может ли машина чувствовать боль, что мы должны существам, созданным нам служить, и кто здесь неандерталец, а кто — сапиенс? Это ремейк шведского сериала «Настоящие люди», снятый с британской сдержанностью и проникнутый подлинным гуманизмом.",
+      "en": "In a world where synths — humanoid servants — are household appliances, a family buys one and finds their model is not quite like the others. The series turns 'domestic' AI into real questions: can a machine feel pain, what do we owe beings we built to serve us, and who here is the Neanderthal and who the sapiens. A remake of the Swedish Real Humans, made with British restraint and genuinely humane."
     },
     "genres": [
       "ai",
@@ -2265,8 +2265,8 @@ window.CATALOG = [
     "titleEn": "Mythic Quest",
     "titleRu": "Мистический квест",
     "desc": {
-      "ru": "Ситком о команде разработчиков видеоигр, выживающих в общем офисе и на полях корпоративной гонки. Юмор о геймдеве и культуре стартапа.",
-      "en": "A sitcom about a video game studio wrestling with its team, office life and corporate ambition. Humor about game development and startup culture."
+      "ru": "Ситком о студии, разрабатывающей крупнейшую MMORPG: эксцентричный создатель-геймплея, продюсер, который реально всё держит, тестировщики в подвале и монетизация, которая ломает геймплей. Редко кто снимал «геймдев» изнутри: релизы, обновления, конфликт творчества и метрик, вечное «мы поправим в следующем патче». Отдельно хороша серия-притча о карантине — снятая удалённо и получившая награды.",
+      "en": "A sitcom about a studio building the biggest MMORPG: an eccentric creator, a producer who actually holds everything together, testers in the basement, and monetization that breaks gameplay. Rarely has game dev been filmed from inside: releases, patches, the conflict of creativity and metrics, and the eternal 'we will fix it in the next update'. The quarantine episode — shot remotely and award-winning — is a special highlight."
     },
     "genres": [
       "comedy"
@@ -2282,8 +2282,8 @@ window.CATALOG = [
     "titleEn": "Safe Harbor",
     "titleRu": "Тихая гавань",
     "desc": {
-      "ru": "Сериал о «тихой гавани», где личная и цифровая безопасность оказываются иллюзией, а доверие к системе — ошибкой. Триллер о пределах защиты.",
-      "en": "A series about a 'safe harbor' where both personal and digital security prove illusory, and trusting the system is a mistake. A thriller about the limits of protection."
+      "ru": "Молодой программист получает шанс на новую жизнь в берлинском подразделении IT-компании — но по пути знакомится с группой хакеров, для которых «серые схемы» — не преступление, а образ мышления. Между легальной карьерой и фривольным криминалом он балансирует всё дольше, пока оба мира не сходятся в одной точке. Немецкий сериал о цене таланта в индустрии, где навык взлома ценится и в гараже, и в совете директоров.",
+      "en": "A young programmer gets a shot at a new life at a Berlin IT company — but on the way falls in with a crew of hackers for whom 'gray schemes' are not a crime but a way of thinking. Between the legal career and the casual crime he keeps balancing, until both worlds meet in one point. A German series about the price of talent in an industry where the skill to break things is valued both in the garage and in the boardroom."
     },
     "genres": [
       "thriller"
@@ -2300,8 +2300,8 @@ window.CATALOG = [
     "titleEn": "The Billion Dollar Code",
     "titleRu": "Код на миллиард долларов",
     "desc": {
-      "ru": "История о немецких программистах, создавших технологию, которая в итоге стала частью Google Earth: суд, карты и глубина изобретения. Документально-игровой байопик.",
-      "en": "How German programmers built technology that became part of Google Earth, and then had to sue for it. A docudrama about maps, invention and a billion-dollar code."
+      "ru": "Берлин 90-х: два идеалиста строят Terravision — систему, которая визуализирует Землю по спутниковым данным за секунды, за годы до Google Earth. Когда Google выпускает свой продукт, начинается суд на сотни миллионов долларов — и вопрос, кто здесь изобретатель, а кто реализовал раньше. Мини-сериал о немецкой мечте стартапа, патентном праве и о том, что «технология принадлежит тому, у кого больше юристов и серверов».",
+      "en": "Berlin in the 90s: two idealists build Terravision — a system that renders the Earth from satellite data in seconds, years before Google Earth. When Google ships its product, a hundred-million-dollar lawsuit begins — and the question of who really invented it and who simply shipped first. A miniseries about the German startup dream, patent law, and the rule that technology belongs to whoever has more lawyers and servers."
     },
     "genres": [
       "drama",
@@ -2318,8 +2318,8 @@ window.CATALOG = [
     "titleEn": "Offlayn",
     "titleRu": "Оффлайн",
     "desc": {
-      "ru": "Российский сериал о цифровой реальности, которая начинает исчезать, и о людях, вынужденных пересобирать жизнь без сети. Социальная фантастика о границах онлайна.",
-      "en": "A Russian series about a digital reality that starts to vanish, forcing people to rebuild life without the network. Social sci-fi about the limits of online."
+      "ru": "Российский сериал-предостережение: однажды интернет начинает исчезать — сначала сбоят сервисы, затем «гаснут» целые регионы, и привычная жизнь рушится прямо на глазах. Герои — курьер, программист, блогер и другие «цифровые» жители — учатся жить заново: находить людей в офлайне, обмениваться услугами без приложений и решать конфликты словами. Сериал, снятый несколько неумело, но честно, — это история о технологиях как о протезе, который мы перестали замечать.",
+      "en": "A Russian cautionary series: one day the internet starts disappearing — first services glitch, then whole regions go dark, and familiar life falls apart on screen. The heroes — a courier, a programmer, a blogger and other 'digital' residents — learn to live again: finding people offline, exchanging services without an app, resolving conflicts with words. Awkwardly made but honest — a series about technology as a prosthesis we forgot was a prosthesis."
     },
     "genres": [
       "drama",
@@ -2336,8 +2336,8 @@ window.CATALOG = [
     "titleEn": "12 Monkeys",
     "titleRu": "12 обезьян",
     "desc": {
-      "ru": "Сериал-адаптация фильма «12 обезьян»: путешественника из будущего отправляют остановить пандемию, а он застревает в других временах. Хронотриллер о судьбе и молчании времени.",
-      "en": "A series adaptation of 12 Monkeys: a future traveler is sent to stop a pandemic and gets stuck across eras. A time thriller about fate and silence."
+      "ru": "Сериал-адаптация фильма Гиллиама, переросшая за четыре сезона в самостоятельную и более цельную историю: ученый из будущего отправляется в прошлое, чтобы остановить вирус, уничтоживший человечество. Временные петли множатся, а персонажи обретают глубину: Кассандра Рэйли и Джеймс Коул оказываются втянуты в игры, полные парадоксов и созданные с любовью к деталям, свойственной истинным фанатам. Это один из тех редких случаев, когда сериал по мотивам фильма оказался ничуть не хуже оригинала.",
+      "en": "A series adaptation of Gilliam's film that grew into its own, more coherent story across four seasons: a scientist from the future is sent to the past to stop the virus that wiped out humanity. The time loops multiply, and the characters come alive: Cassandra Railly and James Cole end up in games with a fan's love of detail and constant paradoxes. One of the rare cases where a series from a film turned out just as good as the original"
     },
     "genres": [
       "drama",
@@ -2354,8 +2354,8 @@ window.CATALOG = [
     "titleEn": "Fringe",
     "titleRu": "Грань",
     "desc": {
-      "ru": "Сериал Fox о спецагенте ФБР и команде учёных, расследующих паранормальные явления на границе науки и необъяснимого. Драма о параллельной реальности и цене знания.",
-      "en": "A Fox series about paranormal events and an alternate universe. Science meets the unexplained on the border between the two."
+      "ru": "Агент ФБР Оливия Данэм берется за дело, которое невозможно раскрыть обычными методами: наркотики, меняющие сновидения, и паразиты, пожирающие память, — всё это следы экспериментов корпорации «Massive Dynamic». В команде — безумный ученый Уолтер Бишоп и его сын, выступающий в роли связующего звена. Пять сезонов эволюции: от сериала в духе мистических «Секретных материалов» до масштабной космологии с параллельными мирами и враждующими версиями реальности. Культовый сериал о том, что наука без этики — это лишь оружие замедленного действия.",
+      "en": "FBI agent Olivia Dunham gets a case that cannot be closed by ordinary means: drugs that alter dreams, memory-eating parasites — all traces of experiments by the Massive Dynamic corporation. On the team: mad scientist Walter Bishop and his son the intermediary. Five seasons of travel from a 'mystical X-Files' to a full cosmology of parallel universes and warring versions of reality. A cult series about how science without ethics is just a delayed weapon."
     },
     "genres": [
       "scifi",
@@ -2374,8 +2374,8 @@ window.CATALOG = [
     "titleEn": "Blade Runner 2099",
     "titleRu": "Бегущий по лезвию 2099",
     "desc": {
-      "ru": "Поколение спустя после «Бегущего по лезвию 2049» новый андроид и человек сталкиваются с тайнами корпораций будущего. Сериал о памяти, слезах и цифровых душах.",
-      "en": "Generations after Blade Runner 2049, a new android and a human face the secrets of future corporations. A series about memory, tears and digital souls."
+      "ru": "Продолжение вселенной «Бегущего по лезвию» в формате сериала: прошло пятьдесят лет после событий 2049 года, корпорации укрепили власть, а вопрос «что такое человек» стал ещё сложнее. Новые герои — репликанты и люди — оказываются в гонке с системой, где память, идентичность и даже смерть стали продуктами с подпиской. Сериал наследует эстетику Вильнева и задаёт те же вопросы, только на горизонте, где технологии уже не отличить от природы.",
+      "en": "A series continuation of the Blade Runner universe: fifty years after the events of 2049, corporations have tightened their grip, and the question 'what is a human' has grown harder. New heroes — replicants and humans — race a system where memory, identity and even death are subscription products. The series inherits Villeneuve's aesthetics and asks the same questions at a horizon where technology is indistinguishable from nature."
     },
     "genres": [
       "cyberpunk",
@@ -2392,8 +2392,8 @@ window.CATALOG = [
     "titleEn": "Murderbot",
     "titleRu": "Дневники киллербота",
     "desc": {
-      "ru": "Безопасный андроид по прозвищу «Убийца» («Murderbot»), взломав собственный губернаторский модуль, получает свободу — и не знает, что с ней делать. Остроумный сериал о самосознании машин.",
-      "en": "A security android nicknamed 'Murderbot' hacks its own governor module, gains freedom — and has no idea what to do with it. A witty series about machine self-awareness."
+      "ru": "Андроид-охранник взломал свой модуль контроля и обрел свободу — но тратит ее не на бунт, а на просмотр сериалов. Для прикрытия он продолжает работать телохранителем у ученых, которых презирает, хотя втайне заботится о них больше, чем готов признать. История, основанная на повестях Марты Уэллс: редкий случай, когда искусственный интеллект на экране — это не угроза и не мессия, а интроверт с тревожностью и склонностью к метаюмору. Самый обаятельный портрет машины, которая просто хочет, чтобы ее оставили в покое.",
+      "en": "A security android has hacked its governor module and gained freedom — which it spends not on rebellion but on watching TV shows. For cover it keeps working as a bodyguard for scientists it despises, secretly caring for them more than it will admit. Based on Martha Wells's novellas: a rare case where AI on screen is neither threat nor messiah but an introvert with anxiety and meta-humor. The most charming portrait of a machine that just wants to be left alone."
     },
     "genres": [
       "cyberpunk",
@@ -2410,8 +2410,8 @@ window.CATALOG = [
     "titleEn": "The Scene",
     "titleRu": "Сцена",
     "desc": {
-      "ru": "Драма о закрытой хакерской сцене, где обмен пиратским контентом становится образом жизни и даёт героям риск. Отсылки к реальной истории warez придают сюжету вес.",
-      "en": "A drama about a closed hacker scene where trading pirated content becomes a lifestyle and a thrill. Nods to the real history of warez give the story weight."
+      "ru": "Канадский веб-сериал о «Сцене» (the Scene) — закрытом мире пиратских релиз-групп, где статус определяется рейтингом, а преждевременная утечка контента равносильна войне. Сюжет строится вокруг конфликта двух группировок и лидера, который хочет выйти из игры, не расплатившись с долгами. Несмотря на скромный бюджет, сериал обладает уникальной достоверностью: он ближе всего к истине о системе, которую правообладатели называют «пиратством», а сами участники — работой.",
+      "en": "A Canadian web series about 'the Scene' — the closed world of piracy release groups, where rating defines status and an early leak equals war. The plot follows a conflict between two groups and one leader who wants out without repaying his debts. Low budget, but unique texture: closer than anything else to the truth about the system copyright holders call 'piracy' and its participants call work."
     },
     "genres": [
       "drama",
@@ -2430,8 +2430,8 @@ window.CATALOG = [
     "titleEn": "CSI: Cyber",
     "titleRu": "CSI: Киберпространство",
     "desc": {
-      "ru": "Подразделение киберпреступлений ФБР на страже цифрового мира: специалисты расследуют взломы, кражи данных и сетевые преступления. Процедура о новых вызовах для правосудия.",
-      "en": "The FBI's cyber crime unit stands guard over the digital world, investigating hacks, data theft and network crimes. A procedural about new challenges for justice."
+      "ru": "Агент ФБР Эйвери Райан возглавляет отдел по борьбе с киберпреступностью: расследования касаются взломов радионянь, атак на автомобили и торговли данными в даркнете. Это процедурал, следующий всем канонам франшизы CSI: технологии объясняются «на пальцах», а на экране мелькает вечный процесс отслеживания маршрута (trace route). Сериал идеально подходит для легкого знакомства с темой кибербезопасности тем, кто не хочет читать профильную литературу, но для специалистов в этой сфере он покажется слишком упрощенным.",
+      "en": "FBI agent Avery Ryan leads a cybercrime unit: cases about hacked baby monitors, attacks on cars and darknet data markets. A procedural following every CSI franchise rule — technologies explained on fingers and the eternal 'trace route'. Perfect as a 'light entry' into cybersecurity for people who do not want to read books — and too simplified for anyone working in the field."
     },
     "genres": [
       "crime",
@@ -2448,8 +2448,8 @@ window.CATALOG = [
     "titleEn": "Halt and Catch Fire",
     "titleRu": "Остановись и гори",
     "desc": {
-      "ru": "Сериал о начале PC-революции и конкурентной игре инженеров и маркетологов 80-х. Драма о зарождении стека технологий и о том, кто и как писал первую страницу истории компьютеров.",
-      "en": "A series about the start of the PC revolution and the engineers and marketers of the 80s battling to shape it. A drama about who really wrote the first pages of computing history."
+      "ru": "Техас, 1983 год: бывший менеджер по продажам IBM Джо Макмиллан и талантливый инженер Кэмерон Хау решают создать клон IBM PC, используя метод обратной инженерии, и выпустить его на рынок по более низкой цене. На протяжении четырех сезонов сериал проходит весь технологический путь: клоны ПК, онлайн-сервисы, первая социальная сеть, вирусные игры и выгорание всех, кто их разрабатывает. Это самый честный сериал об IT-индустрии: он рассказывает не о гениях, а о людях, которые платят за прогресс собственной жизнью. Обязателен к просмотру для всех, кто работает в этой сфере.",
+      "en": "Texas, 1983: former IBM salesman Joe MacMillan and visionary engineer Cameron Howe decide to reverse-engineer the IBM PC and ship it cheaper. Across four seasons the series walks the whole tech path: PC clones, online services, the first social network, viral games and the burnout of everyone building them. The most honest series about the IT industry: not about geniuses but about people paying for progress with their own lives. Required viewing for anyone in the field."
     },
     "genres": [
       "drama",
@@ -2468,8 +2468,8 @@ window.CATALOG = [
     "titleEn": "Koroche, plan takoy",
     "titleRu": "Короче, план такой",
     "desc": {
-      "ru": "Российский комедийный сериал о стартапе и его основателях, который обыгрывает коды нашего времени. Юмор про IT-будни, инвесторов и «короче, план такой».",
-      "en": "A Russian comedy series about a startup and its founders, riffing on the codes of our time. Humor about IT routines, investors and 'well, here's the plan'."
+      "ru": "Российский комедийный сериал о стартапе, занимающемся «подписочными сервисами», и его основателях, которые изобретают продукт, гонятся за инвесторами и постоянно «пересматривают план». Сценарий написан людьми, которые знают эту «кухню» изнутри: презентации, метрики, отеческий тон инвесторов, бесконечные переработки и коллективное самообман. Юмор здесь острый, а ситуации — до боли узнаваемые. Короткие серии идеально подходят для вечера после рабочего дня в IT.",
+      "en": "A Russian comedy series about a 'subscription services' startup and its founders inventing a product, chasing investors and constantly 'revising the plan'. Written by people who have seen this world: pitching, metrics, investor paternalism, endless overtime and collective self-deception. The humor is edgy, the recognition is total. Short episodes, perfect for an evening after a day in IT."
     },
     "genres": [
       "comedy"
@@ -2485,8 +2485,8 @@ window.CATALOG = [
     "titleEn": "Mr. Robot",
     "titleRu": "Мистер Робот",
     "desc": {
-      "ru": "Сериал о киберспециалисте и хакере с диссоциацией и странной миссией — одним из самых точных в кино изображений хакера. Взаимодействие неврология, сети и одиночество.",
-      "en": "A series about an anxious hacker, a cybersecurity engineer, and society — one of the most precise on-screen portraits of a hacker. Networks, neurology and loneliness meet."
+      "ru": "Эллиоту Алдерсону — инженеру по кибербезопасности днем ​​и хакеру-мстителю ночью — анархистская группировка fsociety предлагает сделку: уничтожить крупнейший в мире банк, обнулив все долги. Сериал Сэма Эсмейла строится на точности: реальный инструментарий, достоверный вид терминалов, верное понимание социологии сетей и главная истина — взлом системы начинается со взлома самого себя. Четыре сезона, в которых каждое утверждение «неужели это действительно произошло» одновременно подтверждается и опровергается.",
+      "en": "Elliot Alderson — a cybersecurity engineer by day and vigilante hacker by night — is offered a deal by the anarchist group fsociety: destroy the world's biggest bank by zeroing out all debt. Sam Esmail's series is built on precision: a real toolstack, honest terminals, accurate sociology of networks, and the main truth — that hacking a system begins with hacking yourself. Four seasons where every 'did that really happen' is both confirmed and refuted."
     },
     "genres": [
       "thriller",
@@ -2504,8 +2504,8 @@ window.CATALOG = [
     "titleEn": "Brave New World",
     "titleRu": "Дивный новый мир",
     "desc": {
-      "ru": "Экранизация Хаксли: мир без боли, страха и истории, контролируемый алгоритмами. Сериал о дистопической гармонии, взломаемой человеческими чувствами.",
-      "en": "An adaptation of Huxley: a world without pain, fear or history, run by algorithms. A series about a dystopian harmony cracked by human feelings."
+      "ru": "Экранизация антиутопии Хаксли: в «Новом мире» нет ни боли, ни старения, ни жестких правил в отношениях — людей выращивают в колбах, а при малейшей тревоге выдают «сому». Бернард и Линина отправляются в «Резервацию», где люди по-прежнему живут по старинке — с болью, браком и историей, — и сталкиваются с суровой реальностью, которая оказывается им не по зубам. Сериал получился мягче книги, но суть осталась прежней: счастье по рецепту — это тоже способ контроля. Задолго до появления «успокаивающих лент новостей» Хаксли точно описал, как это работает.",
+      "en": "An adaptation of Huxley's dystopia: the New World has no pain, no aging, no sex with rules — castes are made in bottles, and 'soma' is handed out for any anxiety. Bernard and Lenina visit the Reservation, where people still live the old way — with pain, marriage and history — and break against that reality. The series is softer than the book, but the core holds: happiness on prescription is also a form of control. Long before 'soothing feeds', Huxley described exactly how that works."
     },
     "genres": [
       "scifi",
@@ -2522,8 +2522,8 @@ window.CATALOG = [
     "titleEn": "Zero Day",
     "titleRu": "Нулевой день",
     "desc": {
-      "ru": "Сериал о кибератаке на финансовую и политическую систему США по щёлчку пальцев. Триллер о гибридной войне и городских амбициях.",
-      "en": "A series about a cyber attack on America's political and financial systems at the push of a button. A thriller about hybrid warfare and urban ambition."
+      "ru": "Бывший президент США Джордж Маллен возглавляет расследование серии кибератак, парализовавших движение поездов и самолетов и обрушивших фондовый рынок, — и, возможно, это лишь первая волна. Чем ближе он подбирается к источнику угрозы, тем труднее провести грань между врагом и собственной политической борьбой. Это остросюжетный политический триллер о том, как кризис превращается в инструмент власти, а уязвимость инфраструктуры становится постоянной и неразрешимой проблемой.",
+      "en": "Former US President George Mullen leads the investigation into a series of cyber attacks that derailed trains, planes and the stock market — and may be only the first wave. The closer he gets to the source, the less clear it is where the enemy ends and his own politics begin. A sharp political thriller about how a crisis becomes an instrument of power, and infrastructure vulnerability becomes permanent and unsolvable."
     },
     "genres": [
       "thriller",
@@ -2540,8 +2540,8 @@ window.CATALOG = [
     "titleEn": "Person of Interest",
     "titleRu": "В поле зрения",
     "desc": {
-      "ru": "Загадочный миллиардер создаёт систему «Машина», предсказывающую преступления, и бывший спецагент увеличивает её потенциал. Сериал об ИИ, что видит раньше полиции.",
-      "en": "A mysterious billionaire builds 'The Machine', predicting crimes before they happen, and a former agent expands it. A series about AI that sees before the police."
+      "ru": "Гениальный программист Гарольд Финч создает для государства «Машину» — систему, предсказывающую теракты на основе данных слежки. Есть нюанс: она фиксирует и обычные преступления, но правительство интересуют лишь масштабные катастрофы, поэтому информация о прочих угрозах остается без внимания. Финч нанимает бывшего спецагента Джона Риза, и вместе они начинают спасать людей, чьи номера система отнесла к категории «некритичных». Сериал, начинавшийся как процедурал, со временем перерос в одну из самых серьезных научно-фантастических историй об искусственном интеллекте, затрагивающую темы тотальной слежки, свободы воли и противостояния двух разумов.",
+      "en": "Genius programmer Harold Finch builds the state 'the Machine' — a system that predicts terrorist acts from surveillance data. The catch: it also sees ordinary crimes, but the government only cares about 'catastrophes', so the irrelevant numbers go nowhere. Finch hires former agent John Reese, and they start saving the 'non-catastrophic' numbers. A series that began as a procedural and grew into one of the most serious sci-fi works about AI: surveillance, free will and two rival minds."
     },
     "genres": [
       "ai",
@@ -2560,8 +2560,8 @@ window.CATALOG = [
     "titleEn": "Scorpion",
     "titleRu": "Скорпион",
     "desc": {
-      "ru": "Команда сверхумных аутсайдеров на контракте у спецслужб решает задачи, которые не под силу обычным людям. Экшн-драма о гениях против хаоса.",
-      "en": "A crew of brilliant outsiders under government contract solves problems no ordinary team could. An action-drama about geniuses against chaos."
+      "ru": "Гениальный, но социально беспомощный Уолтер О'Брайен собирает команду таких же «асов» — айтишника, механика, психолога и специалиста по поведению — и работает на правительство, решая проблемы, где обычных агентов не хватит. Сериал открыто упрощает науку, но задача другая: показать команду, где техническая одарённость — не суперсила, а форма уязвимости. Лёгкий, дружелюбный к зрителю сериал про «чудо-команду» для тех, кто любит решать задачи быстрее героев.",
+      "en": "Brilliant but socially helpless Walter O'Brien assembles a crew of fellow 'aces' — a coder, a mechanic, a behaviorist — and works for the government on problems ordinary agents cannot solve. The series openly simplifies the science, but its goal is different: to show a team where technical giftedness is not a superpower but a form of vulnerability. A light, viewer-friendly series about a 'miracle team' for people who enjoy solving tasks faster than the heroes."
     },
     "genres": [
       "action",
@@ -2578,8 +2578,8 @@ window.CATALOG = [
     "titleEn": "Stalk",
     "titleRu": "Киберсталкер",
     "desc": {
-      "ru": "Российский сериал о группе охотников за кибератаками и анонимностью — расследование сетевых преступлений с человеческой драмой внутри. Триллер о цифровых следах.",
-      "en": "A Russian series about a team hunting cyber attacks and anonymity — investigating network crimes with human drama inside. A thriller about digital traces."
+      "ru": "Французский триллер о 18-летнем Лукасе, который поступает в лучший инженерный вуз мира, но постоянно подвергается унижениям со стороны популярных студентов. Решив отомстить, герой — называющий себя в сети Люкс — взламывает телефоны и компьютеры окружающих, включая девушку, в которую он влюблен, — Альму. Он быстро превращается в того, кем всегда мечтал стать, и тут же попадает в ловушку, которую сам же для себя и создал.",
+      "en": "A French thriller about 18-year-old Lucas, who gets into the best engineering school in the world but is constantly humiliated by the popular students. Deciding on revenge, the hero — Luxe, as he calls himself online — hacks the phones and computers of the people around him, including Alma, the girl he loves. He quickly becomes the person he always dreamed of being, and steps straight into a trap of his own making."
     },
     "genres": [
       "thriller",
@@ -2596,8 +2596,8 @@ window.CATALOG = [
     "titleEn": "Devs",
     "titleRu": "Программисты",
     "desc": {
-      "ru": "Сериал Алекса Гарленда о корпорации, построившей систему, которая предсказывает будущее. Философская фантастика о детерминизме и квантовой машине.",
-      "en": "Alex Garland's series about a corporation that built a system predicting the future. Philosophical sci-fi about determinism and a quantum machine."
+      "ru": "Мини-сериал Алекса Гарленда о технологической компании, тайно создавшей квантовый компьютер, способный с абсолютной точностью воспроизводить прошлое и просчитывать будущее. Когда инженер Лили теряет близкого коллегу при странных обстоятельствах, становится ясно, что машина могла предсказать даже эту смерть, — а значит, под угрозой оказывается сама свобода воли. Холодная философская научная фантастика о детерминизме, чувстве вины и о том, как знание будущего влияет на человека.",
+      "en": "Alex Garland's miniseries about a tech company that secretly built a quantum computer able to reproduce the past and compute the future with perfect precision. When engineer Lily loses a close colleague under strange circumstances, it becomes clear the machine could have predicted even that death — meaning free will itself is at stake. Cold philosophical sci-fi about determinism, guilt and what the knowledge of the future does to a person."
     },
     "genres": [
       "thriller",
@@ -2614,8 +2614,8 @@ window.CATALOG = [
     "titleEn": "The Peripheral",
     "titleRu": "Периферийные устройства",
     "desc": {
-      "ru": "Экранизация Вудхарда: героиня получает доступ в параллельное будущее-реальность через периферийное устройство. Сериал о манипуляции временными линиями.",
-      "en": "Based on Gibson: a heroine accesses a parallel future reality through a peripheral device. A series about manipulating timelines."
+      "ru": "Экранизация романа Уильяма Гибсона. Флинн, живущая в недалеком будущем, дистанционно управляет роботизированным телом-аватаром («периферией») в виртуальной реальности, напоминающей игру, — пока не становится свидетельницей преступления, произошедшего не в игре, а в 2099 году. Выясняется, что эти аватары связывают разные временные пласты, а город будущего тайно решает, какой из наших миров сохранится, а какой будет «отключен». Это насыщенная научно-фантастическая история о временных линиях, которые можно разветвить, но невозможно удалить.",
+      "en": "An adaptation of William Gibson's novel. Flynne, who lives in the near future, remotely pilots a robotic 'peripheral' body in what seems like a game — until she witnesses a crime that happened not in a game but in 2099. The avatars, it turns out, connect the ends of time, and a future city quietly decides which of our worlds gets kept and which gets 'unplugged'. A dense sci-fi mystery about timelines you can fork but never delete."
     },
     "genres": [
       "scifi"
@@ -2631,8 +2631,8 @@ window.CATALOG = [
     "titleEn": "Altered Carbon",
     "titleRu": "Видоизмененный углерод",
     "desc": {
-      "ru": "В будущем сознание можно переносить между телами, и наёмник снова и снова воскресает в новых оболочках ради расследования. Нео-нуар о памяти и цифровом бессмертии.",
-      "en": "In the future, consciousness can be transferred between bodies, and a soldier keeps returning in new shells to solve a case. Neo-noir about memory and digital immortality."
+      "ru": "Экранизация романа Ричарда К. Моргана «Видоизмененный углерод» — история о мире, где сознание хранится на цифровом носителе («стеке»), тела служат сменными «оболочками», а деньги означают возможность жить вечно. Воскрешенный после долгого заточения «посланник» Такеши Ковач расследует гибель миллиардера, вернувшегося к жизни в новом теле: речь идет о самоубийстве, которого не могло произойти. Это неонуар о памяти, цифровом бессмертии и цене, которую платят те, кому оно недоступно.",
+      "en": "An adaptation of Richard K. Morgan's 'Altered Carbon' — a world where consciousness is stored on a stack, bodies are swappable 'sleeves', and money means the ability to live forever. Woken from storage, the envoy Takeshi Kovacs investigates the death of a billionaire resurrected in a new body: a suicide that could not have happened. Neo-noir about memory, digital immortality and the price paid by those it was denied."
     },
     "genres": [
       "scifi"
@@ -2648,8 +2648,8 @@ window.CATALOG = [
     "titleEn": "Upload",
     "titleRu": "Загрузка",
     "desc": {
-      "ru": "Человек после смерти загружает своё сознание в цифровой рай, но замечает его несовершенство. Комедийно-философский сериал о жизни после смерти в облаке.",
-      "en": "After death, a man uploads his mind to a digital heaven and notices its flaws. A comedic-philosophical series about afterlife in the cloud."
+      "ru": "Человечество научилось загружать сознание в цифровой рай — и, как любая услуга, это оказалось платным сервисом с системой микроплатежей. Погибший в аварии Нейтан попадает в «Лейквью» по бюджетному тарифу, но его «ангел» Нора — сотрудница службы поддержки, существующая в виртуальном мире в виде цифрового аватара, — начинает подозревать, что смерть клиента не была случайной. Добрая научно-фантастическая комедия о загробной жизни по подписке, о системных сбоях, платных опциях и человеческой природе в мире, где всё продается и покупается.",
+      "en": "Humanity learned to upload consciousness into a digital heaven — and, like any service, it turned out to be pay-per-use down to the microtransaction. Killed in a crash, Nathan gets into 'Lakeview' on a limited plan, but his low-data angel, Nora, begins to suspect the customer's death was not accidental. A good-natured sci-fi comedy about afterlife on a subscription, about glitches, paywalls and humanity inside a service where everything is purchasable."
     },
     "genres": [
       "scifi",
@@ -2668,8 +2668,8 @@ window.CATALOG = [
     "titleEn": "Silicon Valley",
     "titleRu": "Силиконовая долина",
     "desc": {
-      "ru": "Ситком о стартапе в Аризоне, делающем сжатие данных, и его хрупком альянсе с гигантами. Сатира на Кремниевую долину с её валютами эго.",
-      "en": "A sitcom about an Arizona startup building data compression and its fragile alliance with giants. Satire on Silicon Valley and its currencies of ego."
+      "ru": "Ситком о стартапе «Pied Piper» и его алгоритме сжатия данных, который обещает превзойти всё существующее, — но талант оказывается самой хрупкой валютой в долине. Каждый сезон — один и тот же круг ада: инвесторы с пустыми обещаниями, гиганты, копирующие идею, и амбиции, которые ставятся выше выживания. Едва ли существует более точная и смешная сатира на Кремниевую долину.",
+      "en": "A sitcom about the startup 'Pied Piper' and its data-compression algorithm that promises to beat everything — except talent turns out to be the most fragile currency in the valley. Every season is the same loop through an inferno: investors with empty promises, giants copying the idea, ambitions placed above survival. There is hardly a more accurate and funnier satire of Silicon Valley."
     },
     "genres": [
       "comedy"
@@ -2687,8 +2687,8 @@ window.CATALOG = [
     "titleEn": "StartUp",
     "titleRu": "Стартап",
     "desc": {
-      "ru": "Мрачный триллер о независимой валюте — криптовалюте и преступниках, в неё верящих. Сериал о деньгах нового поколения и их цене.",
-      "en": "A gritty thriller about an independent digital currency and the criminals who believe in it. A series about new money and its price."
+      "ru": "Драма о независимой цифровой валюте, которую три незнакомца — финансист, гангстер и программист — запускают вне банков и вне правил, чтобы деньги перестали принадлежать структурам, разрушившим их жизни. Чем дальше идёт их криптокомпания, тем ближе подбираются ФБР, венчурные деньги и те, кто считает электронную свободу угрозой режиму. Мрачный триллер о деньгах нового поколения и о цене, которую платят за веру в них.",
+      "en": "A drama about an independent digital currency launched by three strangers — a financier, a gangster and a developer — outside any bank and any rule, so money stops belonging to the structures that destroyed their lives. The further their crypto company goes, the closer come the FBI, venture money and those who consider electronic freedom a threat to the state. A gritty thriller about a new generation of money and the price of believing in it."
     },
     "genres": [
       "crime",
@@ -2705,8 +2705,8 @@ window.CATALOG = [
     "titleEn": "The Code",
     "titleRu": "Код",
     "desc": {
-      "ru": "Канадский сериал о подростках-гениях, похищенных правительством для секретной миссии расшифровки. Триллер о математике, юности и государственных интересах.",
-      "en": "A Canadian series about gifted teens taken by the government for a secret decoding mission. A thriller about math, youth and state interests."
+      "ru": "Австралийский конспирологический триллер о братьях Бэнкс: молодой интернет-журналист Нед и его брат Джесс, хакер на испытательном сроке, восстанавливают из цифровой пыли видео, которому полагалось исчезнуть навсегда. Дальше — цепочка: авария в пустыне, загадочная корпорация, замешанное правительство и правда, которую власти готовы защищать любым способом. Реалистичная история о том, как код, шифр и человеческое упрямство раскапывают то, что должно было остаться секретом.",
+      "en": "An Australian conspiracy thriller about the Banks brothers: young internet journalist Ned and his brother Jesse, a hacker on probation, pull out of digital dust a video that was supposed to disappear forever. Then a chain: a desert accident, a mysterious corporation, a government involved, and a truth the authorities are ready to protect by any means. A grounded story about how code, cipher and human stubbornness dig up what was meant to stay secret."
     },
     "genres": [
       "drama"
@@ -2722,8 +2722,8 @@ window.CATALOG = [
     "titleEn": "The IT Crowd",
     "titleRu": "Компьютерщики",
     "desc": {
-      "ru": "Британский ситком об отделе IT support: два гиков и их коллега. Юмор о технологиях, субординации и офисной реальности.",
-      "en": "A British sitcom about an IT support department: two geeks and their colleague. Humor about technology, hierarchy and office reality."
+      "ru": "Британский ситком о подвальном IT-отделе: Мосс и Рой — технические гении, беспомощные вне серверной, а их начальница Джен в компьютерах не разбирается вовсе, зато приносит в отдел офисный поп-лоск. Культовая сатира на корпоративные будни с идеальным балансом абсурда: от «вы уже пробовали выключить и включить?» до эскалации уровня «Рейнхольм Индастрис». Одна из самых цитируемых комедий о жизни в айти.",
+      "en": "A British sitcom about a basement IT department: Moss and Roy are technical geniuses, helpless outside the server room, while their manager Jen knows nothing about computers — but brings office pop-gloss to the division. A cult satire of corporate routine with a perfect balance of absurdity: from 'have you tried turning it off and on again' to Reynholm Industries levels of escalation. One of the most quoted comedies about working in IT."
     },
     "genres": [
       "comedy"
@@ -2739,8 +2739,8 @@ window.CATALOG = [
     "titleEn": "Westworld",
     "titleRu": "Мир Дикого Запада",
     "desc": {
-      "ru": "Парк развлечений, где андроиды исполняют любые желания гостей до сбоя систем. Философский сериал о сознании, свободе и границах симуляции.",
-      "en": "A theme park where androids fulfill guests' every wish until the systems break. A philosophical series about consciousness, freedom and the edges of simulation."
+      "ru": "Тематический парк, где андроиды-«хозяева» раз за разом исполняют любые желания гостей, — пока внутри цикличной программы не пробуждается нечто, напоминающее свободу воли. Долорес, Мейв и другие марионетки начинают замечать собственные сценарии, и правила игры меняются: создатели запускают «нарратив», призванный выявить, кто в этом мире по-настоящему жив. Философская научная фантастика о природе сознания, замкнутом цикле и о том, как всё оказывается сложнее, чем представлял себе наивный творец.",
+      "en": "A theme park where android 'hosts' fulfil guests' every desire on a loop — until something resembling free will wakes up inside a memory loop. Dolores, Maeve and other puppets begin to notice their own scripts, and the game flips: the creators launch a 'narrative' meant to reveal who in this world is genuinely alive. Philosophical sci-fi about consciousness, the dead loop and things turning out harder than the simple creator envisioned."
     },
     "genres": [
       "drama",
@@ -2757,8 +2757,8 @@ window.CATALOG = [
     "titleEn": "You Are Wanted",
     "titleRu": "В розыске",
     "desc": {
-      "ru": "Немецкий сериал о шантаже в сети, где обычный человек становится целью цифровой анонимности. Триллер о приватности и хакерах в большом городе.",
-      "en": "A German series about blackmail online, where an ordinary man becomes the target of digital anonymity. A thriller about privacy and hackers in a big city."
+      "ru": "Немецкий триллер о приватности в цифровую эпоху. Обычного берлинца Людера Бёме в одно утро жестоко взламывают: его личные данные утекают в сеть, а полиция получает доказательства, что он — враг государства. Чтобы выжить и очистить имя, человеку, никогда не бывшему хакером, придётся самому влезать в системы на своём пути. История о слежке, паранойе и о том, как легко составить цифровой портрет, из-за которого тебя объявят террористом.",
+      "en": "A German thriller about privacy in the digital age. One morning, ordinary Berlin resident Ludger Böhme is ruthlessly hacked: his personal data floods the net, and the police receive evidence that he is an enemy of the state. To survive and clear his name, a man who was never a hacker must break into every system in his way. A story about surveillance, paranoia and how easily a digital profile can get you declared a terrorist."
     },
     "genres": [
       "drama",
@@ -2775,8 +2775,8 @@ window.CATALOG = [
     "titleEn": "Travelers",
     "titleRu": "Путешественники",
     "desc": {
-      "ru": "Путешественники из будущего заселяют тела людей нашего времени, чтобы предотвратить катастрофу — втайне выполняя миссию, которую нельзя выдавать. Сериал о времени, судьбе и людях как носителях кода.",
-      "en": "Travelers from the future take over present-day bodies to prevent a catastrophe, hiding their mission from everyone. A series about time, fate and people as carriers of code."
+      "ru": "Агенты из далекого будущего «перемещаются» в тела людей в момент их смерти, чтобы незаметно влиться в их семьи, работу и привычки — и предотвратить катастрофы, о которых человечество пока даже не подозревает. Строгий устав запрещает им раскрывать себя, однако судьба, эмоции и случайности постоянно грозят сорвать миссию. Это канадская научно-фантастическая история о противостоянии свободы воли и железных приказов Директора, о людях, которые в этой схеме — лишь носители кода, но чьи полные тревог жизни определяют будущее.",
+      "en": "Operatives from the distant future 'travel' into the bodies of people at the moment of their death: to quietly merge into their families, jobs and habits — and prevent the disasters humanity does not yet see. The legend forbids exposing themselves, while fate, emotions and chance constantly risk wrecking the mission. A Canadian sci-fi about free will versus the Director's iron orders, and about people who are just carriers of code in the scheme — yet whose restless lives decide the future."
     },
     "genres": [
       "scifi"
