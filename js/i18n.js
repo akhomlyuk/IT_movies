@@ -30,6 +30,8 @@ const I18N = {
     themeLight: "Светлая тема",
     relatedH: "Похожее в каталоге",
     backToCatalog: "Вернуться в каталог",
+    share: "Поделиться",
+    shareNative: "Поделиться через систему",
     typeLabels: {
       movie: "Фильм",
       series: "Сериал",
@@ -89,6 +91,8 @@ const I18N = {
     themeLight: "Light theme",
     relatedH: "Related in the catalog",
     backToCatalog: "Back to catalog",
+    share: "Share",
+    shareNative: "Share via system",
     typeLabels: {
       movie: "Movie",
       series: "Series",

@@ -687,7 +687,8 @@ footer .counts-all {
   }
 
   .poster-close,
-  .scroll-top {
+  .scroll-top,
+  .share-btn {
     transition: none;
   }
 }
@@ -696,8 +697,8 @@ footer .counts-all {
 .film-main {
   display: grid;
   gap: 1.5rem;
-  margin: 1.5rem 0 2rem;
-  padding: 1.5rem;
+  margin: 1rem 0 1rem;
+  padding: 1rem;
   background: var(--paper);
   border: 1px solid var(--line);
 }
@@ -784,7 +785,7 @@ footer .counts-all {
 }
 
 .related {
-  margin: 0 0 2.5rem;
+  margin: 0 0 1.5rem;
 }
 
 .related h2 {
@@ -811,6 +812,46 @@ footer .counts-all {
 .related a:hover {
   border-bottom-color: var(--ink);
 }
+
+.share-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.9rem 0 0;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.share-btn:hover {
+  background: var(--hover);
+}
+
+.share-ico {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: currentColor;
+}
+
+.share-btn[data-net="telegram"]:hover .share-ico { color: #26a5e4; }
+.share-btn[data-net="whatsapp"]:hover .share-ico { color: #25d366; }
+.share-btn[data-net="vk"]:hover .share-ico { color: #0077ff; }
+.share-btn[data-net="x"]:hover .share-ico { color: var(--ink); }
+.share-btn[data-net="linkedin"]:hover .share-ico { color: #0a66c2; }
+.share-btn[data-net="reddit"]:hover .share-ico { color: #ff4500; }
+.share-btn[data-net="native"]:hover .share-ico { color: var(--accent); }
 
 @media (min-width: 721px) {
   .film-main {

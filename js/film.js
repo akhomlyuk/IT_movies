@@ -67,6 +67,16 @@ const FILM_TEMPLATE = `
           <a class="kp" :href="kpHref" target="_blank" rel="noopener">{{ t.kp }}: {{ kpRating }}</a>
           <a class="imdb" v-if="hasImdb" :href="imdbHref" target="_blank" rel="noopener">{{ t.imdb }}: {{ imdbRating }}</a>
         </div>
+        <div class="share-row" role="group" :aria-label="t.share">
+          <a v-for="n in shareNets" :key="n.key" class="share-btn" :data-net="n.key" :href="n.href"
+             target="_blank" rel="noopener" :title="n.label" :aria-label="n.label">
+            <svg class="share-ico" aria-hidden="true" viewBox="0 0 24 24"><use :href="'../../static/share.svg#icon-' + n.key"></use></svg>
+          </a>
+          <button v-if="nativeShare" type="button" class="share-btn share-native" data-net="native"
+            :aria-label="t.shareNative" :title="t.shareNative" @click="doNativeShare">
+            <svg class="share-ico" aria-hidden="true" viewBox="0 0 24 24"><use href="../../static/share.svg#icon-native"></use></svg>
+          </button>
+        </div>
         <p class="btn-back"><a href="../../">← {{ t.backToCatalog }}</a></p>
       </div>
     </article>
@@ -180,6 +190,43 @@ const app = createApp({
         ? relatedItems(window.CATALOG, item, 4)
         : [];
 
+    const SHARE_NETS = {
+      telegram: { label: "Telegram", href: (url, title) => `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${title}` },
+      whatsapp: { label: "WhatsApp", href: (url, title) => `https://wa.me/?text=${title}%0A%0A${encodeURIComponent(url)}` },
+      vk: { label: "VK", href: (url, title) => `https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${title}` },
+      x: { label: "X", href: (url, title) => `https://x.com/intent/post?url=${encodeURIComponent(url)}&text=${title}` },
+      linkedin: { label: "LinkedIn", href: (url) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}` },
+      reddit: { label: "Reddit", href: (url, title) => `https://www.reddit.com/submit?url=${encodeURIComponent(url)}&title=${title}` },
+    };
+    const SHARE_ORDER = ["telegram", "whatsapp", "vk", "x", "linkedin", "reddit"];
+
+    function shareUrl() {
+      const canon = typeof document !== "undefined" && document.querySelector
+        ? document.querySelector('link[rel="canonical"]')
+        : null;
+      return canon && canon.href ? canon.href : location.href;
+    }
+
+    const shareNets = computed(() => {
+      const url = shareUrl();
+      const shareTitle = encodeURIComponent(title.value);
+      return SHARE_ORDER.map((key) => ({
+        key,
+        label: SHARE_NETS[key].label,
+        href: SHARE_NETS[key].href(url, shareTitle),
+      }));
+    });
+    const nativeShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
+
+    function doNativeShare() {
+      if (typeof navigator === "undefined" || typeof navigator.share !== "function") return;
+      navigator.share({
+        title: document.title,
+        text: title.value,
+        url: shareUrl(),
+      }).catch(() => {});
+    }
+
     watch(
       lang,
       (value) => {
@@ -217,6 +264,9 @@ const app = createApp({
       itemSlug,
       relatedTitle,
       showScrollTop,
+      shareNets,
+      nativeShare,
+      doNativeShare,
       setLang,
       setTheme,
       scrollToTop,
