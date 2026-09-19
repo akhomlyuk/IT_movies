@@ -58,7 +58,7 @@ const FILM_TEMPLATE = `
   <main>
     <article class="film-main">
       <figure class="film-poster" v-if="posterSrc">
-        <img :src="posterSrc" :alt="title" loading="lazy" decoding="async">
+        <img :src="posterSrc" :alt="title" :width="posterW" :height="posterH" loading="eager" fetchpriority="high" decoding="async">
       </figure>
       <div class="film-info">
         <p class="meta-row">{{ typeLabel }} · {{ year }} · {{ genreLabel }}</p>
@@ -163,6 +163,8 @@ const app = createApp({
     const posterSrc = computed(() =>
       item && item.poster ? "../../" + item.poster.replace(/^\//, "") : ""
     );
+    const posterW = computed(() => (pageData && pageData.posterW) || null);
+    const posterH = computed(() => (pageData && pageData.posterH) || null);
     const kpHref = computed(() => (item ? kpUrl(item) : ""));
     const imdbHref = computed(() => (item && item.imdbId ? imdbUrl(item) : ""));
     const hasImdb = computed(() => !!(item && item.imdbId));
@@ -204,6 +206,8 @@ const app = createApp({
       genreLabel,
       year,
       posterSrc,
+      posterW,
+      posterH,
       kpHref,
       imdbHref,
       hasImdb,

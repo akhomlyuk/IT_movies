@@ -47,56 +47,6 @@ function compare(a, b, key, dir, lang) {
   return 0;
 }
 
-function buildLdJson(catalog) {
-  const base = location.origin + location.pathname.replace(/\/$/, "") + "/";
-  const itemListElement = catalog.map((item, i) => {
-    const out = {
-      "@type": item.type === "series" ? "TVSeries" : "Movie",
-      position: i + 1,
-      name: item.titleRu,
-      alternateName: item.titleEn,
-      url: base + filmUrl(item),
-    };
-    if (item.year) out.datePublished = String(item.year);
-    return out;
-  });
-  return {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebSite",
-        "@id": base,
-        url: base,
-        name: "IT Movies",
-        inLanguage: ["ru", "en"],
-        potentialAction: {
-          "@type": "SearchAction",
-          target: {
-            "@type": "EntryPoint",
-            urlTemplate: base + "?q={search_term_string}",
-          },
-          "query-input": "required name=search_term_string",
-        },
-      },
-      {
-        "@type": "ItemList",
-        name: "Фильмы и сериалы о компьютерах, технологиях и искусственном интеллекте",
-        numberOfItems: catalog.length,
-        itemListElement,
-      },
-    ],
-  };
-}
-
-function injectLdJson(data) {
-  const script = document.createElement("script");
-  script.type = "application/ld+json";
-  script.textContent = JSON.stringify(data).replace(/</g, "\\u003c");
-  document.head.appendChild(script);
-}
-
-injectLdJson(buildLdJson(window.CATALOG));
-
 const CatalogTable = {
   props: {
     id: String,
@@ -262,7 +212,7 @@ const app = createApp({
 
     function loadSorts() {
       try {
-        return normalizeSort(JSON.parse(localStorage.getItem("it-movies-sorts")));
+        return normalizeSort(JSON.parse(safeRead("it-movies-sorts") ?? "null"));
       } catch {
         return normalizeSort(null);
       }

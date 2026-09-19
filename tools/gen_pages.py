@@ -11,7 +11,7 @@ import re
 import shutil
 import sys
 
-from lib import ROOT, SITE_BASE, load_catalog, make_slug, item_slug, ru_genres, has_rating, fmt_rating
+from lib import ROOT, SITE_BASE, load_catalog, make_slug, item_slug, ru_genres, has_rating, fmt_rating, webp_size
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -63,6 +63,67 @@ THEME_SCRIPT = """  <script>
 
 THEME_MARK = ("<!-- begin:theme-script -->", "<!-- end:theme-script -->")
 NSCRIPT_MARK = ("<!-- begin:catalog-noscript -->", "<!-- end:catalog-noscript -->")
+LD_MARK = ("<!-- begin:index-ld -->", "<!-- end:index-ld -->")
+
+
+def index_ld_json(catalog):
+    base = SITE_BASE + "/"
+    items = []
+    for i, item in enumerate(catalog):
+        entry = {
+            "@type": "TVSeries" if item["type"] == "series" else "Movie",
+            "position": i + 1,
+            "name": item["titleRu"],
+            "alternateName": item["titleEn"],
+            "url": base + "films/" + item_slug(item) + "/",
+        }
+        if item.get("year"):
+            entry["datePublished"] = str(item["year"])
+        items.append(entry)
+    graph = [
+        {
+            "@type": "WebSite",
+            "@id": base,
+            "url": base,
+            "name": "IT Movies",
+            "inLanguage": ["ru", "en"],
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": base + "?q={search_term_string}",
+                },
+                "query-input": "required name=search_term_string",
+            },
+        },
+        {
+            "@type": "ItemList",
+            "name": "Фильмы и сериалы о компьютерах, технологиях и искусственном интеллекте",
+            "numberOfItems": len(catalog),
+            "itemListElement": items,
+        },
+    ]
+    return json.dumps({"@context": "https://schema.org", "@graph": graph}, ensure_ascii=False).replace("<", "\\u003c")
+
+
+def inject_ld(src, catalog):
+    n = src.count(LD_MARK[0]) + src.count(LD_MARK[1])
+    if n != 2:
+        raise SystemExit(f"index-ld markers ({n}/2) not found in index.html")
+    block = (
+        LD_MARK[0]
+        + '\n  <script type="application/ld+json">'
+        + index_ld_json(catalog)
+        + "</script>\n"
+        + LD_MARK[1]
+    )
+    return re.sub(
+        re.escape(LD_MARK[0]) + r".*?" + re.escape(LD_MARK[1]),
+        lambda m: block,
+        src,
+        count=1,
+        flags=re.S,
+    )
 
 
 def inject_theme(src):
@@ -117,10 +178,12 @@ def render(item, related):
     desc_en = item["desc"]["en"]
     type_label = TYPE_LABELS.get(item["type"], item["type"])
     poster = (item.get("poster") or "").lstrip("/")
+    poster_dims = webp_size(ROOT / poster) if poster else None
     genres_ru = sorted(RU_GENRES.get(g, g) for g in item["genres"])
     genre_list = ", ".join(genres_ru)
 
     schema_type = "TVSeries" if item["type"] == "series" else "Movie"
+    og_type = "video.tv_show" if item["type"] == "series" else "video.movie"
     graph = []
     movie = {
         "@type": schema_type,
@@ -175,16 +238,23 @@ def render(item, related):
     json_ld = json.dumps({"@context": "https://schema.org", "@graph": graph}, ensure_ascii=False).replace("<", "\\u003c")
 
     page_data = json.dumps(
-        {"item": item, "related": related}, ensure_ascii=False
+        {
+            "item": item,
+            "related": related,
+            "posterW": poster_dims[0] if poster_dims else None,
+            "posterH": poster_dims[1] if poster_dims else None,
+        },
+        ensure_ascii=False,
     ).replace("<", "\\u003c")
 
     poster_abs = f"{SITE_BASE}/{poster}" if poster else f"{SITE_BASE}/static/ogimage.webp"
 
     noscript_poster = ""
     if poster:
+        dims = f' width="{poster_dims[0]}" height="{poster_dims[1]}"' if poster_dims else ""
         noscript_poster = (
             f'      <figure class="film-poster">\n'
-            f'        <img src="../../{poster}" alt="{esc(title_ru)}">\n'
+            f'        <img src="../../{poster}" alt="{esc(title_ru)}"{dims}>\n'
             "      </figure>\n"
         )
 
@@ -212,7 +282,7 @@ def render(item, related):
   <meta name="description" content="{esc(desc_ru)}">
   <meta property="og:title" content="{esc(title_ru)} — IT Movies">
   <meta property="og:description" content="{esc(desc_ru)}">
-  <meta property="og:type" content="video.movie">
+  <meta property="og:type" content="{og_type}">
   <meta property="og:locale" content="ru_RU">
   <meta property="og:locale:alternate" content="en_US">
   <meta property="og:url" content="{page_url}">
@@ -225,6 +295,8 @@ def render(item, related):
 {THEME_SCRIPT}
   <link rel="icon" type="image/webp" href="../../static/logo.webp">
   <link rel="stylesheet" href="../../css/style.css">
+  <link rel="preload" href="../../static/fonts/roboto-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../static/fonts/roboto-latin.woff2" as="font" type="font/woff2" crossorigin>
   <script type="application/ld+json">{json_ld}</script>
 </head>
 <body>
@@ -293,10 +365,10 @@ def main():
     index_path = ROOT / "index.html"
     if index_path.exists():
         idx_src = index_path.read_text(encoding="utf-8")
-        idx_new = inject_noscript(inject_theme(idx_src), catalog)
+        idx_new = inject_noscript(inject_ld(inject_theme(idx_src), catalog), catalog)
         if idx_new != idx_src:
             index_path.write_text(idx_new, encoding="utf-8")
-            print("index.html: theme + noscript catalog blocks updated")
+            print("index.html: theme + JSON-LD + noscript catalog blocks updated")
         else:
             print("index.html: up to date")
     else:

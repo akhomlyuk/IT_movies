@@ -15,6 +15,7 @@ from lib import ROOT, SITE_BASE, make_slug, item_slug, load_catalog, known_genre
 
 sys.stdout.reconfigure(encoding="utf-8")
 errors = []
+NO_WRITE = "--no-write" in sys.argv
 
 # 1. Parse data.js as JSON (array between the first '[' and last ']')
 raw = (ROOT / "js" / "data.js").read_text(encoding="utf-8")
@@ -161,7 +162,8 @@ print(f"url() references in style.css: {len(css_urls)}")
 def site_lastmod():
     try:
         res = subprocess.run(
-            ["git", "log", "-1", "--format=%cs"],
+            ["git", "log", "-1", "--format=%cs", "--",
+             "js/data.js", "js/i18n.js", "tools/gen_pages.py", "tools/lib.py"],
             capture_output=True,
             text=True,
             errors="replace",
@@ -175,10 +177,19 @@ def site_lastmod():
     return date.today().isoformat()
 
 lastmod = site_lastmod()
+def alt_links(url):
+    return (
+        f'    <xhtml:link rel="alternate" hreflang="ru" href="{url}"/>\n'
+        f'    <xhtml:link rel="alternate" hreflang="en" href="{url}"/>\n'
+        f'    <xhtml:link rel="alternate" hreflang="x-default" href="{url}"/>\n'
+    )
+
+
 film_urls = "".join(
     "  <url>\n"
     f"    <loc>{SITE_BASE}/films/{slug}/</loc>\n"
-    f"    <lastmod>{lastmod}</lastmod>\n"
+    + alt_links(f"{SITE_BASE}/films/{slug}/")
+    + f"    <lastmod>{lastmod}</lastmod>\n"
     "    <changefreq>monthly</changefreq>\n"
     "    <priority>0.7</priority>\n"
     "  </url>\n"
@@ -186,10 +197,12 @@ film_urls = "".join(
 )
 sitemap_xml = (
     '<?xml version="1.0" encoding="UTF-8"?>\n'
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
+    ' xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
     "  <url>\n"
     f"    <loc>{SITE_BASE}/</loc>\n"
-    f"    <lastmod>{lastmod}</lastmod>\n"
+    + alt_links(SITE_BASE + "/")
+    + f"    <lastmod>{lastmod}</lastmod>\n"
     "    <changefreq>monthly</changefreq>\n"
     "    <priority>1.0</priority>\n"
     "  </url>\n"
@@ -197,13 +210,17 @@ sitemap_xml = (
     + "</urlset>\n"
 )
 sitemap_file = ROOT / "sitemap.xml"
-sitemap_note = "checked"
+sitemap_note = "up to date"
 if not sitemap_file.exists():
     sitemap_note = "missing"
     errors.append("sitemap.xml is missing")
 elif sitemap_file.read_text(encoding="utf-8").strip() != sitemap_xml.strip():
-    sitemap_file.write_text(sitemap_xml, encoding="utf-8")
-    sitemap_note = f"generated (lastmod={lastmod})"
+    sitemap_note = f"stale (lastmod={lastmod})"
+    if NO_WRITE:
+        errors.append("sitemap.xml is stale — run verify.py without --no-write to regenerate")
+    else:
+        sitemap_file.write_text(sitemap_xml, encoding="utf-8")
+        sitemap_note = f"generated (lastmod={lastmod})"
 
 loc = ElementTree.fromstring(sitemap_xml).findtext(
     "{http://www.sitemaps.org/schemas/sitemap/0.9}url/"
@@ -218,13 +235,17 @@ robots_target = (
     "Allow: /\n"
     f"\nSitemap: {SITE_BASE}/sitemap.xml\n"
 )
-robots_note = "checked"
+robots_note = "up to date"
 if not robots_path.exists():
-    robots_path.write_text(robots_target, encoding="utf-8")
-    robots_note = "missing, generated"
+    robots_note = "missing"
+    errors.append("robots.txt is missing")
 elif robots_path.read_text(encoding="utf-8").strip() != robots_target.strip():
-    robots_path.write_text(robots_target, encoding="utf-8")
-    robots_note = f"generated ({SITE_BASE})"
+    robots_note = "stale"
+    if NO_WRITE:
+        errors.append("robots.txt is stale — run verify.py without --no-write to regenerate")
+    else:
+        robots_path.write_text(robots_target, encoding="utf-8")
+        robots_note = "generated"
 robots_txt = robots_path.read_text(encoding="utf-8")
 if f"Sitemap: {SITE_BASE}/sitemap.xml" not in robots_txt:
     errors.append(f"robots.txt: missing 'Sitemap: {SITE_BASE}/sitemap.xml'")
@@ -315,50 +336,55 @@ if shutil.which("node"):
 else:
     print("node not found, JS syntax check skipped")
 
-# 9b. JSON-LD: generation and injection (if node is installed)
+# 9b. app.js smoke test: boots the catalog app setup with mocked Vue globals
 if shutil.which("node"):
     harness = r'''
         const fs = require("fs");
-        const assert = require("assert");
-        function read(p) { return fs.readFileSync("__ROOT__" + "/" + p, "utf8"); }
+        const ROOT = __ROOT_PATH__;
+        function read(p) { return fs.readFileSync(ROOT + "/" + p, "utf8"); }
         global.window = global;
-        global.location = { origin: "https://example.org", pathname: "/IT_movies/" };
-        global.document = {
-          createElement: () => ({ type: "", textContent: "" }),
-          head: { appendChild: (el) => { global.__ldScript = el; } },
+        global.location = {
+          pathname: "/IT_movies/",
+          search: "",
+          href: "https://example.org/IT_movies/",
         };
-        global.Vue = {};
-        for (const k of ["createApp", "computed", "reactive", "ref", "watch", "onMounted", "onUnmounted"]) {
-          global.Vue[k] = k === "createApp" ? () => ({ mount() {} }) : function(){};
+        global.navigator = { language: "ru" };
+        global.document = {
+          querySelector: () => ({ setAttribute() {} }),
+          documentElement: { classList: { add() {}, toggle() {} }, lang: "" },
+          title: "",
+          body: {},
+        };
+        global.history = { replaceState() {} };
+        global.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
+        const noop = () => {};
+        let captured;
+        global.Vue = {
+          createApp: (opts) => { captured = opts.setup; return { components: {}, config: {}, mount: noop }; },
+          computed: (fn) => ({ value: fn() }),
+          reactive: (o) => o,
+          ref: (v) => ({ value: v }),
+          watch: noop,
+          onMounted: noop,
+          onUnmounted: noop,
+          nextTick: () => Promise.resolve(),
+        };
+        eval(
+          read("js/i18n.js") + "\n" +
+          read("js/common.js") + "\n" +
+          read("js/data.js") + "\n" +
+          read("js/app.js")
+        );
+        const state = captured();
+        if (!state || typeof state.movies.value.length !== "number" || !state.setLang) {
+          throw new Error("app.js setup() returned invalid state");
         }
-        eval(read("js/data.js"));
-        eval(read("js/i18n.js"));
-        eval(read("js/common.js"));
-        eval(read("js/app.js"));
-        const catalog = window.CATALOG;
-        const ld = buildLdJson(catalog);
-        const json = JSON.stringify(ld);
-        JSON.parse(json);
-        assert.ok(global.__ldScript, "JSON-LD script not injected");
-        assert.strictEqual(global.__ldScript.type, "application/ld+json");
-        assert.strictEqual(global.__ldScript.textContent, json);
-        const ws = ld["@graph"].find((n) => n["@type"] === "WebSite");
-        const list = ld["@graph"].find((n) => n["@type"] === "ItemList");
-        assert.ok(ws && ws.potentialAction, "WebSite/SearchAction missing");
-        assert.ok(ws.url && ws.url.startsWith("https://"), "WebSite url invalid");
-        assert.ok(ws.potentialAction.target.urlTemplate.includes("?q={search_term_string}"), "SearchAction target invalid");
-        assert.strictEqual(list.numberOfItems, catalog.length);
-        assert.strictEqual(list.itemListElement.length, catalog.length);
-        list.itemListElement.forEach((el, i) => {
-          assert.strictEqual(el.position, i + 1);
-          assert.ok(el.name, "name empty at " + i);
-          assert.ok(el.url && el.url.startsWith("https://") && !el.url.includes("undefined"), "url invalid at " + i + ": " + el.url);
-          if (el.aggregateRating) {
-            assert.strictEqual(typeof el.aggregateRating.ratingValue, "number", "bad rating at " + i);
-          }
-        });
-        console.log("JSON-LD: OK (" + catalog.length + " items)");
-    '''.replace("__ROOT__", ROOT.as_posix())
+        const total = state.movies.value.length + state.series.value.length + state.documentaries.value.length;
+        if (total !== global.CATALOG.length) {
+          throw new Error("sections total " + total + " != CATALOG.length " + global.CATALOG.length);
+        }
+        console.log("app.js smoke (sections sum == CATALOG): OK");
+    '''.replace("__ROOT_PATH__", json.dumps(ROOT.as_posix()))
     res = subprocess.run(
         ["node", "-e", harness],
         capture_output=True,
@@ -366,11 +392,11 @@ if shutil.which("node"):
         errors="replace",
     )
     if res.returncode != 0:
-        errors.append(f"JSON-LD: failed:\n{(res.stdout + res.stderr).strip()}")
+        errors.append(f"app.js smoke failed:\n{(res.stdout + res.stderr).strip()}")
     else:
         print(res.stdout.strip())
 else:
-    print("node not found, JSON-LD check skipped")
+    print("node not found, app.js smoke check skipped")
 
 # 9b2. Slug parity: Python item_slug must equal common.js itemSlug for every record
 if shutil.which("node"):
@@ -501,6 +527,27 @@ if nscript_m is None or _norm_ws(nscript_m.group(1)) != _norm_ws(expected_nscrip
     errors.append(
         "index.html noscript catalog block is stale — run gen_pages.py"
     )
+
+ld_m = re.search(r"<!-- begin:index-ld -->(.*?)<!-- end:index-ld -->", index_src, re.S)
+if ld_m is None:
+    errors.append("index.html: index-ld markers not found")
+else:
+    inner = re.sub(r"<script[^>]*>|</script>", "", ld_m.group(1)).strip()
+    if inner != gen_pages.index_ld_json(catalog):
+        errors.append("index.html JSON-LD block is stale — run gen_pages.py")
+    else:
+        graph = json.loads(inner).get("@graph", [])
+        ws = next((n for n in graph if n.get("@type") == "WebSite"), None)
+        il = next((n for n in graph if n.get("@type") == "ItemList"), None)
+        if (
+            not ws
+            or not ws.get("potentialAction")
+            or not il
+            or il.get("numberOfItems") != len(catalog)
+        ):
+            errors.append("index.html JSON-LD: unexpected structure")
+        else:
+            print(f"JSON-LD index: OK ({len(catalog)} items, static)")
 
 # 9e. Hardcoded site URLs must stay under lib.SITE_BASE (single source)
 for fname, txt in (("index.html", index_src), ("404.html", notfound_src)):

@@ -80,6 +80,10 @@ a {
   padding: 2.25rem 1.25rem;
 }
 
+html.js #app[v-cloak] > :not(noscript) {
+  visibility: hidden;
+}
+
 .top {
   display: flex;
   align-items: flex-start;
