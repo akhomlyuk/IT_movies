@@ -293,7 +293,19 @@ def render(item, related):
   <link rel="canonical" href="{page_url}">
   <meta name="theme-color" content="#f4f3ef">
 {THEME_SCRIPT}
-  <link rel="icon" type="image/webp" href="../../static/logo.webp">
+  <link rel="manifest" href="../../static/site.webmanifest">
+  <link rel="icon" href="../../static/favicons/favicon.ico" sizes="48x48">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicons/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="../../static/favicons/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="../../static/favicons/favicon-64x64.png">
+  <link rel="icon" type="image/png" sizes="128x128" href="../../static/favicons/favicon-128x128.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="../../static/favicons/favicon-256x256.png">
+  <link rel="apple-touch-icon" sizes="57x57" href="../../static/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="../../static/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="../../static/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" href="../../static/favicons/apple-touch-icon.png">
+  <meta name="msapplication-TileColor" content="#f4f3ef">
   <link rel="stylesheet" href="../../css/style.css">
   <link rel="preload" href="../../static/fonts/roboto-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../static/fonts/roboto-latin.woff2" as="font" type="font/woff2" crossorigin>
