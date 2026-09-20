@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="title">Политика конфиденциальности — IT Movies</title>
+  <meta name="description" data-i18n="desc" content="Политика конфиденциальности сайта IT Movies: какие данные обрабатываются, файлы cookie Яндекс.Метрики, права и способы отказа.">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:title" content="Privacy policy — IT Movies">
+  <meta property="og:url" content="https://akhomlyuk.github.io/IT_movies/privacy.html">
+  <meta property="og:site_name" content="IT Movies">
+  <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/privacy.html">
+  <meta name="theme-color" content="#f4f3ef">
+  <!-- begin:theme-script -->
+  <script>
+    (function () {
+      var t;
+      try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
+      if (t !== "dark" && t !== "light") {
+        try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+      }
+      if (t !== "dark" && t !== "light") {
+        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      if (t === "dark") {
+        document.documentElement.classList.add("dark");
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute("content", "#1a1a1f");
+      }
+    })();
+  </script>
+<!-- end:theme-script -->
+  <link rel="manifest" href="static/site.webmanifest">
+  <link rel="icon" href="static/favicons/favicon.ico" sizes="48x48">
+  <link rel="icon" type="image/png" sizes="16x16" href="static/favicons/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="static/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="static/favicons/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="static/favicons/favicon-64x64.png">
+  <link rel="icon" type="image/png" sizes="128x128" href="static/favicons/favicon-128x128.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="static/favicons/favicon-256x256.png">
+  <link rel="apple-touch-icon" sizes="57x57" href="static/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="static/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="static/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" href="static/favicons/apple-touch-icon.png">
+  <meta name="msapplication-TileColor" content="#f4f3ef">
+  <!-- begin:metrika -->
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112571181', 'ym');
+
+    ym(112571181, 'init', {ssr:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/112571181" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+<!-- end:metrika -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preload" href="static/fonts/roboto-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="static/fonts/roboto-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <style>
+    .wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 2.25rem 1.25rem;
+    }
+    .privacy {
+      margin: 2.5rem 0 3rem;
+      padding: 2rem 1.5rem;
+      background: var(--paper);
+      border: 1px solid var(--line);
+    }
+    .privacy h1 {
+      margin: 0 0 0.35rem;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 500;
+    }
+    .privacy .updated {
+      margin: 0 0 1.5rem;
+      color: var(--muted);
+    }
+    .privacy h2 {
+      margin: 1.6rem 0 0.5rem;
+      font-size: 1.15rem;
+      font-weight: 500;
+    }
+    .privacy p, .privacy ul {
+      margin: 0.5rem 0;
+      line-height: 1.6;
+    }
+    .privacy ul {
+      padding-left: 1.25rem;
+    }
+    .privacy li {
+      margin: 0.3rem 0;
+    }
+    .privacy code {
+      font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
+    }
+    .privacy a {
+      color: var(--ink);
+      text-decoration: underline;
+      text-decoration-color: var(--line-strong);
+    }
+    .privacy a:hover {
+      text-decoration-color: var(--ink);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">
+        <div class="logo">
+          <a href="./"><img src="static/logo.webp" alt="IT Movies Logo" width="100" height="100"></a>
+        </div>
+        <div class="brand-text">
+          <h1>IT Movies</h1>
+          <p data-i18n="subtitle">Политика конфиденциальности / Privacy policy</p>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="lang" role="group" aria-label="Язык / Language">
+          <button type="button" data-lang="ru">RU</button>
+          <button type="button" data-lang="en">EN</button>
+        </div>
+        <div class="theme-toggle" role="group" aria-label="Тема / Theme">
+          <button type="button" data-theme="dark" aria-label="Тёмная тема">🌙</button>
+          <button type="button" data-theme="light" aria-label="Светлая тема">☀️</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="privacy" data-lang-block="ru">
+      <h1 data-i18n="heading">Политика конфиденциальности</h1>
+      <p class="updated" data-i18n="updated">Актуально с 20 сентября 2026 года</p>
+
+      <h2 data-i18n="whoH">Кто управляет сайтом</h2>
+      <p data-i18n="whoP">IT Movies — личный некоммерческий каталог фильмов, сериалов и документальных фильмов о компьютерах, технологиях и искусственном интеллекте. Сайт не является юридическим лицом и не занимается коммерческой деятельностью. Контакты администратора: <a href="https://t.me/wh_lab" target="_blank" rel="noopener">Telegram @wh_lab</a>. Сайт размещён на GitHub Pages; при открытии страниц IP-адрес посетителя обрабатывается инфраструктурой GitHub (Microsoft) по её собственным правилам.</p>
+
+      <h2 data-i18n="noneH">Что сайт не собирает</h2>
+      <p data-i18n="noneP">На сайте нет форм, регистрации, комментариев, личных кабинетов и рассылок. Сайт не запрашивает и не хранит имен, адресов электронной почты, телефонных номеров и иных персональных данных в смысле 152-ФЗ. На файлах cookie и аналитике, перечисленных ниже, сайт не строит рекламных профилей.</p>
+
+      <h2 data-i18n="metrikaH">Яндекс.Метрика</h2>
+      <p data-i18n="metrikaP">На всех страницах сайта (включая эту) при загрузке подключается счётчик Яндекс.Метрики (номер счётчика 112571181) и в Яндекс передаётся обезличенная статистика посещений: число просмотров и визитов, страница-источник перехода, приблизительная география (страна/город), тип устройства и браузер, пути движения по сайту, клики (clickmap) и переходы по внешним ссылкам (trackLinks). Метрика сохраняет в браузере файлы cookie, в том числе <code>_ym_uid</code>, <code>_ym_d</code>, <code>_ym_isad</code>, срок жизни — до 2 лет. Обрабатывает собранные данные ООО «Яндекс» (РФ) по <a href="https://yandex.ru/legal/confidential/" target="_blank" rel="noopener">правилам Яндекс.Метрики</a>.</p>
+
+      <h2 data-i18n="basisH">Правовые основания и безопасность</h2>
+      <p data-i18n="basisP">Для посетителей из России обработка организуется в соответствии с 152-ФЗ на основе законного интереса в улучшении сайта (ст. 6, 7). Для посетителей из ЕС/ЕЭЗ — на основании законного интереса (GDPR, ст. 6(1)(f)) с выполнением информационной обязанности (ст. 13). Яндекс расположен за пределами ЕЭЗ, поэтому возможна передача аналитических данных за пределы Европейского союза. На этой странице прямо указано, что аналитические файлы cookie устанавливаются без отдельного предварительного согласия посетителя — требование согласия, предусмотренное для аналитики (ePrivacy), сайтом не реализуется.</p>
+
+      <h2 data-i18n="rightsH">Права и отказ от аналитики</h2>
+      <p data-i18n="rightsP">Вы вправе возразить против обработки данных в целях аналитики (GDPR, ст. 21) и в любой момент отказаться от неё любым из способов:</p>
+      <ul>
+        <li data-i18n="right1">удалить файлы cookie сайта и домена <code>mc.yandex.ru</code> в настройках браузера;</li>
+        <li data-i18n="right2">заблокировать запросы к домену <code>mc.yandex.ru</code> с помощью расширений-блокировщиков или файрвола;</li>
+        <li data-i18n="right3">отключить файлы cookie и/или JavaScript в браузере;</li>
+        <li data-i18n="right4">использовать закрытый (инкогнито) режим просмотра.</li>
+      </ul>
+      <p data-i18n="rightsP2">Прекращение загрузки счётчика останавливает передачу данных в Яндекс; хранящиеся в браузере cookie можно удалить в любой момент. На агрегированную статистику в системах Яндекса нужно влиять через его собственные инструменты — у Яндекса их нет по этому каталогу, сайт не может удалить данные из систем Яндекса за вас.</p>
+
+      <h2 data-i18n="repoH">Открытый код</h2>
+      <p data-i18n="repoP">Исходный код каталога открыт в репозитории <a href="https://github.com/akhomlyuk/IT_movies" target="_blank" rel="noopener">GitHub</a>, поэтому любые заявленные принципы обработки можно проверить прямо в коде.</p>
+
+      <h2 data-i18n="changesH">Изменения и контакты</h2>
+      <p data-i18n="changesP">Политика может обновляться; актуальная версия всегда находится на этой странице. По вопросам, связанным с обработкой данных, пишите в <a href="https://t.me/wh_lab" target="_blank" rel="noopener">Telegram</a>.</p>
+    </main>
+
+    <main class="privacy" data-lang-block="en" hidden>
+      <h1 data-i18n="heading">Privacy Policy</h1>
+      <p class="updated" data-i18n="updated">Effective as of September 20, 2026</p>
+
+      <h2 data-i18n="whoH">Who runs the site</h2>
+      <p data-i18n="whoP">IT Movies is a personal, non-commercial catalog of films, series and documentaries about computers, technology and AI. The site is not a legal entity and carries out no commercial activity. Contact the administrator: <a href="https://t.me/wh_lab" target="_blank" rel="noopener">Telegram @wh_lab</a>. The site is hosted on GitHub Pages; when pages load, visitors' IP addresses are handled by GitHub's (Microsoft) infrastructure under its own rules.</p>
+
+      <h2 data-i18n="noneH">What the site does not collect</h2>
+      <p data-i18n="noneP">The site has no forms, registration, comments, accounts or newsletters. It does not ask for or store names, email addresses, phone numbers or any other personal data. It does not build advertising profiles from the cookies and analytics listed below.</p>
+
+      <h2 data-i18n="metrikaH">Yandex.Metrika</h2>
+      <p data-i18n="metrikaP">On every page of the site (including this one) a Yandex.Metrika counter (account 112571181) is loaded on page load, and anonymized visit statistics are sent to Yandex: page views and visits, the referring page, approximate geography (country/city), device type and browser, in-page navigation, clicks (clickmap) and outbound link clicks (trackLinks). Metrika stores cookies in the browser, including <code>_ym_uid</code>, <code>_ym_d</code>, <code>_ym_isad</code>, with a lifetime of up to 2 years. The collected data is processed by Yandex LLC (Russia) under <a href="https://yandex.com/legal/confidential/" target="_blank" rel="noopener">Yandex.Metrika rules</a>.</p>
+
+      <h2 data-i18n="basisH">Legal basis and disclosure</h2>
+      <p data-i18n="basisP">For visitors in Russia, processing follows the legitimate interest of improving the site under 152-FZ (arts. 6, 7). For visitors in the EU/EEA it relies on legitimate interest (GDPR art. 6(1)(f)) with the information duty fulfilled (art. 13). Yandex is located outside the EEA, so analytics data may be transferred outside the European Union. This page states openly that analytics cookies are set without separate prior consent — the consent requirement that analytics normally triggers (ePrivacy) is not implemented on this site.</p>
+
+      <h2 data-i18n="rightsH">Your rights and opting out</h2>
+      <p data-i18n="rightsP">You may object to analytics processing (GDPR art. 21) and stop it at any time by:</p>
+      <ul>
+        <li data-i18n="right1">deleting the site's and <code>mc.yandex.ru</code> cookies in your browser settings;</li>
+        <li data-i18n="right2">blocking requests to <code>mc.yandex.ru</code> with a content blocker or firewall;</li>
+        <li data-i18n="right3">turning off cookies and/or JavaScript in the browser;</li>
+        <li data-i18n="right4">using a private (incognito) browsing window.</li>
+      </ul>
+      <p data-i18n="rightsP2">Stopping the counter from loading halts data transfers to Yandex; cookies already stored in the browser can be deleted any time. To impact aggregate statistics already in Yandex's systems you must use Yandex's own tools — this catalog has none, and the site cannot delete data from Yandex's systems on your behalf.</p>
+
+      <h2 data-i18n="repoH">Open source</h2>
+      <p data-i18n="repoP">The catalog's source code is open in the <a href="https://github.com/akhomlyuk/IT_movies" target="_blank" rel="noopener">GitHub repository</a>, so any data-handling claim made here can be verified in the code itself.</p>
+
+      <h2 data-i18n="changesH">Changes and contact</h2>
+      <p data-i18n="changesP">This policy may be updated; the current version always lives on this page. For data-related questions, write to <a href="https://t.me/wh_lab" target="_blank" rel="noopener">Telegram</a>.</p>
+    </main>
+
+    <footer>
+      <span data-i18n="codedWith">Сделано с</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a>
+      <span> · </span><a href="./">IT Movies</a>
+      <span> · </span><a href="privacy.html" data-i18n="privacyCurrent">Политика конфиденциальности</a>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var I18N = {
+        ru: {
+          title: "Политика конфиденциальности — IT Movies",
+          desc: "Политика конфиденциальности сайта IT Movies: какие данные обрабатываются, файлы cookie Яндекс.Метрики, права и способы отказа.",
+          subtitle: "Политика конфиденциальности / Privacy policy",
+          heading: "Политика конфиденциальности",
+          updated: "Актуально с 20 сентября 2026 года",
+          whoH: "Кто управляет сайтом",
+          whoP: "IT Movies — личный некоммерческий каталог фильмов, сериалов и документальных фильмов о компьютерах, технологиях и искусственном интеллекте. Сайт не является юридическим лицом и не занимается коммерческой деятельностью. Контакты администратора: <a href='https://t.me/wh_lab' target='_blank' rel='noopener'>Telegram @wh_lab</a>. Сайт размещён на GitHub Pages; при открытии страниц IP-адрес посетителя обрабатывается инфраструктурой GitHub (Microsoft) по её собственным правилам.",
+          noneH: "Что сайт не собирает",
+          noneP: "На сайте нет форм, регистрации, комментариев, личных кабинетов и рассылок. Сайт не запрашивает и не хранит имен, адресов электронной почты, телефонных номеров и иных персональных данных в смысле 152-ФЗ. На файлах cookie и аналитике, перечисленных ниже, сайт не строит рекламных профилей.",
+          metrikaH: "Яндекс.Метрика",
+          metrikaP: "На всех страницах сайта (включая эту) при загрузке подключается счётчик Яндекс.Метрики (номер счётчика 112571181) и в Яндекс передаётся обезличенная статистика посещений: число просмотров и визитов, страница-источник перехода, приблизительная география (страна/город), тип устройства и браузер, пути движения по сайту, клики (clickmap) и переходы по внешним ссылкам (trackLinks). Метрика сохраняет в браузере файлы cookie, в том числе <code>_ym_uid</code>, <code>_ym_d</code>, <code>_ym_isad</code>, срок жизни — до 2 лет. Обрабатывает собранные данные ООО «Яндекс» (РФ) по <a href='https://yandex.ru/legal/confidential/' target='_blank' rel='noopener'>правилам Яндекс.Метрики</a>.",
+          basisH: "Правовые основания и безопасность",
+          basisP: "Для посетителей из России обработка организуется в соответствии с 152-ФЗ на основе законного интереса в улучшении сайта (ст. 6, 7). Для посетителей из ЕС/ЕЭЗ — на основании законного интереса (GDPR, ст. 6(1)(f)) с выполнением информационной обязанности (ст. 13). Яндекс расположен за пределами ЕЭЗ, поэтому возможна передача аналитических данных за пределы Европейского союза. На этой странице прямо указано, что аналитические файлы cookie устанавливаются без отдельного предварительного согласия посетителя — требование согласия, предусмотренное для аналитики (ePrivacy), сайтом не реализуется.",
+          rightsH: "Права и отказ от аналитики",
+          rightsP: "Вы вправе возразить против обработки данных в целях аналитики (GDPR, ст. 21) и в любой момент отказаться от неё любым из способов:",
+          right1: "удалить файлы cookie сайта и домена <code>mc.yandex.ru</code> в настройках браузера;",
+          right2: "заблокировать запросы к домену <code>mc.yandex.ru</code> с помощью расширений-блокировщиков или файрвола;",
+          right3: "отключить файлы cookie и/или JavaScript в браузере;",
+          right4: "использовать закрытый (инкогнито) режим просмотра.",
+          rightsP2: "Прекращение загрузки счётчика останавливает передачу данных в Яндекс; хранящиеся в браузере cookie можно удалить в любой момент. На агрегированную статистику в системах Яндекса нужно влиять через его собственные инструменты — у Яндекса их нет по этому каталогу, сайт не может удалить данные из систем Яндекса за вас.",
+          repoH: "Открытый код",
+          repoP: "Исходный код каталога открыт в репозитории <a href='https://github.com/akhomlyuk/IT_movies' target='_blank' rel='noopener'>GitHub</a>, поэтому любые заявленные принципы обработки можно проверить прямо в коде.",
+          changesH: "Изменения и контакты",
+          changesP: "Политика может обновляться; актуальная версия всегда находится на этой странице. По вопросам, связанным с обработкой данных, пишите в <a href='https://t.me/wh_lab' target='_blank' rel='noopener'>Telegram</a>.",
+          codedWith: "Сделано с",
+          privacyCurrent: "Политика конфиденциальности",
+        },
+        en: {
+          title: "Privacy Policy — IT Movies",
+          desc: "Privacy policy of the IT Movies site: what data is processed, Yandex.Metrika cookies, your rights and ways to opt out.",
+          subtitle: "Privacy policy / Политика конфиденциальности",
+          heading: "Privacy Policy",
+          updated: "Effective as of September 20, 2026",
+          whoH: "Who runs the site",
+          whoP: "IT Movies is a personal, non-commercial catalog of films, series and documentaries about computers, technology and AI. The site is not a legal entity and carries out no commercial activity. Contact the administrator: <a href='https://t.me/wh_lab' target='_blank' rel='noopener'>Telegram @wh_lab</a>. The site is hosted on GitHub Pages; when pages load, visitors' IP addresses are handled by GitHub's (Microsoft) infrastructure under its own rules.",
+          noneH: "What the site does not collect",
+          noneP: "The site has no forms, registration, comments, accounts or newsletters. It does not ask for or store names, email addresses, phone numbers or any other personal data. It does not build advertising profiles from the cookies and analytics listed below.",
+          metrikaH: "Yandex.Metrika",
+          metrikaP: "On every page of the site (including this one) a Yandex.Metrika counter (account 112571181) is loaded on page load, and anonymized visit statistics are sent to Yandex: page views and visits, the referring page, approximate geography (country/city), device type and browser, in-page navigation, clicks (clickmap) and outbound link clicks (trackLinks). Metrika stores cookies in the browser, including <code>_ym_uid</code>, <code>_ym_d</code>, <code>_ym_isad</code>, with a lifetime of up to 2 years. The collected data is processed by Yandex LLC (Russia) under <a href='https://yandex.com/legal/confidential/' target='_blank' rel='noopener'>Yandex.Metrika rules</a>.",
+          basisH: "Legal basis and disclosure",
+          basisP: "For visitors in Russia, processing follows the legitimate interest of improving the site under 152-FZ (arts. 6, 7). For visitors in the EU/EEA it relies on legitimate interest (GDPR art. 6(1)(f)) with the information duty fulfilled (art. 13). Yandex is located outside the EEA, so analytics data may be transferred outside the European Union. This page states openly that analytics cookies are set without separate prior consent — the consent requirement that analytics normally triggers (ePrivacy) is not implemented on this site.",
+          rightsH: "Your rights and opting out",
+          rightsP: "You may object to analytics processing (GDPR art. 21) and stop it at any time by:",
+          right1: "deleting the site's and <code>mc.yandex.ru</code> cookies in your browser settings;",
+          right2: "blocking requests to <code>mc.yandex.ru</code> with a content blocker or firewall;",
+          right3: "turning off cookies and/or JavaScript in the browser;",
+          right4: "using a private (incognito) browsing window.",
+          rightsP2: "Stopping the counter from loading halts data transfers to Yandex; cookies already stored in the browser can be deleted any time. To impact aggregate statistics already in Yandex's systems you must use Yandex's own tools — this catalog has none, and the site cannot delete data from Yandex's systems on your behalf.",
+          repoH: "Open source",
+          repoP: "The catalog's source code is open in the <a href='https://github.com/akhomlyuk/IT_movies' target='_blank' rel='noopener'>GitHub repository</a>, so any data-handling claim made here can be verified in the code itself.",
+          changesH: "Changes and contact",
+          changesP: "This policy may be updated; the current version always lives on this page. For data-related questions, write to <a href='https://t.me/wh_lab' target='_blank' rel='noopener'>Telegram</a>.",
+          codedWith: "Coded with",
+          privacyCurrent: "Privacy policy",
+        },
+      };
+      var SUPPORTED = { lang: ["ru", "en"], theme: ["dark", "light"] };
+      function read(key) {
+        try { return localStorage.getItem(key); } catch (e) { return null; }
+      }
+      function write(key, value) {
+        try { localStorage.setItem(key, value); } catch (e) {}
+      }
+      var params = new URLSearchParams(location.search);
+      var langParam = params.get("lang");
+      var savedLang = read("it-movies-lang");
+      var lang = SUPPORTED.lang.indexOf(langParam) !== -1
+        ? langParam
+        : SUPPORTED.lang.indexOf(savedLang) !== -1
+          ? savedLang
+          : (navigator.language.startsWith("ru") ? "ru" : "en");
+      var theme = params.get("theme");
+      if (SUPPORTED.theme.indexOf(theme) === -1) {
+        theme = read("it-movies-theme");
+      }
+      if (SUPPORTED.theme.indexOf(theme) === -1) {
+        theme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      function apply() {
+        var t = I18N[lang];
+        document.documentElement.lang = lang;
+        document.title = t.title;
+        var meta = document.querySelector('meta[name="description"]');
+        if (meta) meta.setAttribute("content", t.desc);
+        document.querySelectorAll("[data-i18n]").forEach(function (el) {
+          var key = el.getAttribute("data-i18n");
+          if (t[key] !== undefined) el.innerHTML = t[key];
+        });
+        document.querySelectorAll("[data-lang-block]").forEach(function (el) {
+          el.hidden = el.getAttribute("data-lang-block") !== lang;
+        });
+        document.querySelectorAll("[data-lang]").forEach(function (btn) {
+          var on = btn.getAttribute("data-lang") === lang;
+          btn.classList.toggle("active", on);
+          btn.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+        var metaTheme = document.querySelector('meta[name="theme-color"]');
+        document.documentElement.classList.toggle("dark", theme === "dark");
+        if (metaTheme) metaTheme.setAttribute("content", theme === "dark" ? "#1a1a1f" : "#f4f3ef");
+        document.querySelectorAll("[data-theme]").forEach(function (btn) {
+          var on = btn.getAttribute("data-theme") === theme;
+          btn.classList.toggle("active", on);
+          btn.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+      }
+      apply();
+      document.querySelectorAll("[data-lang]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          lang = btn.getAttribute("data-lang");
+          write("it-movies-lang", lang);
+          apply();
+        });
+      });
+      document.querySelectorAll("[data-theme]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          theme = btn.getAttribute("data-theme");
+          write("it-movies-theme", theme);
+          apply();
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

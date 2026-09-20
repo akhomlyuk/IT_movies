@@ -10,6 +10,15 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://akhomlyuk.github.io/IT_movies/privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/privacy.html"/>
+    <lastmod>2026-09-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/kp-11442722-how-to-access-everything-reverse-engineering/</loc>
     <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/kp-11442722-how-to-access-everything-reverse-engineering/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/kp-11442722-how-to-access-everything-reverse-engineering/"/>

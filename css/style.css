@@ -579,9 +579,11 @@ footer .heart {
   margin: 2px;
 }
 
-footer .counts-all {
+footer .footer-privacy {
   display: block;
-  margin-top: 0.3rem;
+  margin-top: 0.55rem;
+  font-size: 0.7rem;
+  color: var(--muted);
 }
 
 .scroll-top {

@@ -160,7 +160,7 @@ refs = {
     r[:-1] if r.endswith("\\") else r
     for r in re.findall(r"""['"]((?:static|\.\./static)/[^'"]+)['"]""", i18n_src + raw + app_js + film_js + catalog_src)
 }
-for name in ("index.html", "404.html"):
+for name in ("index.html", "404.html", "privacy.html"):
     text = (ROOT / name).read_text(encoding="utf-8")
     for v in re.findall(r'(?:content|src|href)="([^"]+)"', text):
         m = re.search(r'(?:static|\.\./static|css|js)/[^"\')\s]+', v)
@@ -474,12 +474,21 @@ if _theme_block(notfound_src) != theme_core:
     errors.append(
         "404.html theme block differs from gen_pages.THEME_SCRIPT — run gen_pages.py"
     )
+privacy_src = (ROOT / "privacy.html").read_text(encoding="utf-8")
+if _theme_block(privacy_src) != theme_core:
+    errors.append(
+        "privacy.html theme block differs from gen_pages.THEME_SCRIPT — run gen_pages.py"
+    )
 
 # 9c2. Yandex.Metrika: single source (gen_pages.METRIKA_SCRIPT) on every page
 metrika_needle = f"mc.yandex.ru/metrika/tag.js?id={gen_pages.METRIKA_ID}"
 metrika_core = _norm_ws(gen_pages.METRIKA_SCRIPT)
 metrika_checked = 0
-for fname, src in (("index.html", index_src), ("404.html", notfound_src)):
+for fname, src in (
+    ("index.html", index_src),
+    ("404.html", notfound_src),
+    ("privacy.html", privacy_src),
+):
     if metrika_needle not in src:
         errors.append(f"{fname}: Yandex.Metrika snippet missing")
     if _mark_block(src, "<!-- begin:metrika -->", "<!-- end:metrika -->") != metrika_core:
@@ -488,7 +497,7 @@ for page in sorted((ROOT / "films").glob("*/index.html")):
     metrika_checked += 1
     if metrika_needle not in page.read_text(encoding="utf-8"):
         errors.append(f"metrika snippet missing on {page}")
-print(f"Metrika: present on {metrika_checked} film pages + index/404 (single source)")
+print(f"Metrika: present on {metrika_checked} film pages + index/404/privacy (single source)")
 
 # 9d. index.html noscript catalog block must match the catalog (gen_pages.py)
 nscript_m = re.search(
@@ -524,7 +533,11 @@ else:
             print(f"JSON-LD index: OK ({len(catalog)} items, static)")
 
 # 9e. Hardcoded site URLs must stay under lib.SITE_BASE (single source)
-for fname, txt in (("index.html", index_src), ("404.html", notfound_src)):
+for fname, txt in (
+    ("index.html", index_src),
+    ("404.html", notfound_src),
+    ("privacy.html", privacy_src),
+):
     if SITE_BASE not in txt:
         errors.append(f"{fname}: SITE_BASE ({SITE_BASE}) URL not found")
     for m in re.finditer(r"https://[^\s\"'<>]+", txt):
@@ -566,6 +579,8 @@ def _canonical_check(fname, text, expected):
 _canonical_check("index.html", index_src, SITE_BASE + "/")
 # 404.html — unique error content, indexing discouraged; canonical may be absent
 _canonical_check("404.html", notfound_src, None)
+# privacy.html — canonical to its own URL, same on every lang/theme variant
+_canonical_check("privacy.html", privacy_src, SITE_BASE + "/privacy.html")
 canon_checked = 0
 for slug in sorted(slugs):
     _canonical_check(
@@ -578,7 +593,7 @@ for slug in sorted(slugs):
 print(f"Sitemap: {sitemap_note}")
 print(f"robots.txt: {robots_note}")
 print(f"webmanifest: {webmanifest_note}")
-print(f"Canonical: checked ({canon_checked} pages + index/404)")
+print(f"Canonical: checked ({canon_checked} pages + index/404/privacy)")
 if (ROOT / ".nojekyll").exists():
     print(".nojekyll: present")
 print()

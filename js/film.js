@@ -88,6 +88,7 @@ const FILM_TEMPLATE = `
 
   <footer>
     <span>{{ t.codedWith }}</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a>
+    <span> · </span><a href="../../privacy.html">{{ t.privacy }}</a>
   </footer>
   <button class="scroll-top" :aria-label="t.scrollTop" @click="scrollToTop" v-show="showScrollTop">↑</button>
 `;

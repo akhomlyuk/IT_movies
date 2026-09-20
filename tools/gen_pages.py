@@ -417,6 +417,13 @@ def generate_sitemap(catalog, lastmod):
         "    <changefreq>monthly</changefreq>\n"
         "    <priority>1.0</priority>\n"
         "  </url>\n"
+        "  <url>\n"
+        f"    <loc>{SITE_BASE}/privacy.html</loc>\n"
+        + alt_links(SITE_BASE + "/privacy.html")
+        + f"    <lastmod>{lastmod}</lastmod>\n"
+        "    <changefreq>monthly</changefreq>\n"
+        "    <priority>0.3</priority>\n"
+        "  </url>\n"
         + film_urls
         + "</urlset>\n"
     )
@@ -635,7 +642,7 @@ def render(item, related):
         </section>
       </main>
       <footer>
-        <span>Сделано с</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a>
+        <span>Сделано с</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a> <span> · </span> <a href="../../privacy.html">Политика конфиденциальности</a>
       </footer>
     </noscript>
   </div>
@@ -730,6 +737,18 @@ def main():
             print("404.html: up to date")
     else:
         print("404.html: not found, skipped")
+
+    priv_path = ROOT / "privacy.html"
+    if priv_path.exists():
+        priv_src = priv_path.read_text(encoding="utf-8")
+        priv_new = inject_metrika(inject_theme(priv_src))
+        if priv_new != priv_src:
+            priv_path.write_text(priv_new, encoding="utf-8")
+            print("privacy.html: theme + metrika blocks updated")
+        else:
+            print("privacy.html: up to date")
+    else:
+        print("privacy.html: not found, skipped")
 
 if __name__ == "__main__":
     main()
