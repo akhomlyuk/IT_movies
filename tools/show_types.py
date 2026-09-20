@@ -7,7 +7,7 @@ from lib import ROOT, load_catalog
 RAW = (ROOT / "js" / "data.js").read_text(encoding="utf-8")
 CATALOG = load_catalog()
 
-# Номера строк, на которых объявлен "type" каждой записи (порядок = порядку массива)
+# Line numbers where each record's "type" is declared (order = array order)
 type_lines = [RAW.count("\n", 0, m.start()) + 1 for m in re.finditer(r'"type":\s*"\w+"', RAW)]
 if len(type_lines) != len(CATALOG):
     raise SystemExit(f"Строк с типом {len(type_lines)}, а записей {len(CATALOG)}")

@@ -211,7 +211,7 @@ const app = createApp({
     }
 
     function loadSorts() {
-      // Приоритет URL-параметров (?sort[movie]=year:desc)
+      // URL params take precedence (?sort[movie]=year:desc)
       const params = new URLSearchParams(location.search);
       const urlSorts = {};
       for (const type of Object.keys(SORT_DEFAULTS)) {
@@ -371,7 +371,7 @@ const app = createApp({
         current.key = key;
         current.dir = key === "title" || key === "genre" ? "asc" : "desc";
       }
-      // Сохраняем в localStorage после каждого изменения
+      // Persist to localStorage after every change
       safeWrite("it-movies-sorts", JSON.stringify(sorts));
     }
 

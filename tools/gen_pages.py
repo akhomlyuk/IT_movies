@@ -333,7 +333,7 @@ def inject_metrika(src):
 
 
 def site_lastmod():
-    """Последняя дата коммита для файлов, влияющих на генерацию (git)."""
+    """Last commit date of files that affect generation (git)."""
     try:
         res = subprocess.run(
             ["git", "log", "-1", "--format=%cs", "--",
@@ -352,7 +352,7 @@ def site_lastmod():
 
 
 def alt_links(url):
-    """hreflang-альтернативные ссылки для sitemap (ru/en/x-default)."""
+    """hreflang alternate links for the sitemap (ru/en/x-default)."""
     return (
         f'    <xhtml:link rel="alternate" hreflang="ru" href="{url}"/>\n'
         f'    <xhtml:link rel="alternate" hreflang="en" href="{url}"/>\n'
@@ -361,7 +361,7 @@ def alt_links(url):
 
 
 def generate_webmanifest():
-    """static/site.webmanifest — генерируется из SITE_BASE (single source)."""
+    """static/site.webmanifest — generated from SITE_BASE (single source)."""
     return (
         '{\n'
         '  "name": "IT Movies",\n'
@@ -385,7 +385,7 @@ def generate_webmanifest():
 
 
 def generate_robots_txt():
-    """robots.txt с Sitemap-ссылкой из SITE_BASE."""
+    """robots.txt with the Sitemap link from SITE_BASE."""
     return (
         "User-agent: *\n"
         "Allow: /\n"
@@ -394,7 +394,7 @@ def generate_robots_txt():
 
 
 def generate_sitemap(catalog, lastmod):
-    """sitemap.xml с hreflang-альтернативами, lastmod из git, приоритетами 0.7."""
+    """sitemap.xml with hreflang alternates, git-driven lastmod, priority 0.7."""
     slugs_sorted = sorted(item_slug(item) for item in catalog)
     film_urls = "".join(
         "  <url>\n"
@@ -671,7 +671,7 @@ def main():
         else:
             print(f"{rel}: up to date")
 
-    # Static-конфигурационные файлы: генерируются из SITE_BASE (single source)
+    # Static config files: generated from SITE_BASE (single source)
     webmanifest = ROOT / "static" / "site.webmanifest"
     webmanifest_data = generate_webmanifest()
     if not webmanifest.exists() or webmanifest.read_text(encoding="utf-8") != webmanifest_data:
