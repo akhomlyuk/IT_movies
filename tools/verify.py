@@ -6,12 +6,10 @@ import shutil
 import subprocess
 import sys
 import unicodedata
-from datetime import date
-from pathlib import Path
 from xml.etree import ElementTree
 
 import gen_pages
-from lib import ROOT, SITE_BASE, make_slug, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating
+from lib import ROOT, SITE_BASE, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating
 
 sys.stdout.reconfigure(encoding="utf-8")
 errors = []
@@ -198,57 +196,9 @@ for u in sorted(css_urls):
         errors.append(f"Broken url() in CSS: {u} (expected css/{u})")
 print(f"url() references in style.css: {len(css_urls)}")
 
-# 6c. Sitemap: regeneration (lastmod from git) and robots.txt cross-check
-def site_lastmod():
-    try:
-        res = subprocess.run(
-            ["git", "log", "-1", "--format=%cs", "--",
-             "js/data.js", "js/i18n.js", "tools/gen_pages.py", "tools/lib.py"],
-            capture_output=True,
-            text=True,
-            errors="replace",
-            cwd=ROOT,
-        )
-        m = res.stdout.strip()
-        if res.returncode == 0 and re.fullmatch(r"\d{4}-\d{2}-\d{2}", m):
-            return m
-    except OSError:
-        pass
-    return date.today().isoformat()
-
-lastmod = site_lastmod()
-def alt_links(url):
-    return (
-        f'    <xhtml:link rel="alternate" hreflang="ru" href="{url}"/>\n'
-        f'    <xhtml:link rel="alternate" hreflang="en" href="{url}"/>\n'
-        f'    <xhtml:link rel="alternate" hreflang="x-default" href="{url}"/>\n'
-    )
-
-
-film_urls = "".join(
-    "  <url>\n"
-    f"    <loc>{SITE_BASE}/films/{slug}/</loc>\n"
-    + alt_links(f"{SITE_BASE}/films/{slug}/")
-    + f"    <lastmod>{lastmod}</lastmod>\n"
-    "    <changefreq>monthly</changefreq>\n"
-    "    <priority>0.7</priority>\n"
-    "  </url>\n"
-    for slug in sorted(slugs)
-)
-sitemap_xml = (
-    '<?xml version="1.0" encoding="UTF-8"?>\n'
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
-    ' xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
-    "  <url>\n"
-    f"    <loc>{SITE_BASE}/</loc>\n"
-    + alt_links(SITE_BASE + "/")
-    + f"    <lastmod>{lastmod}</lastmod>\n"
-    "    <changefreq>monthly</changefreq>\n"
-    "    <priority>1.0</priority>\n"
-    "  </url>\n"
-    + film_urls
-    + "</urlset>\n"
-)
+# 6c. Sitemap / robots.txt / webmanifest: single source in gen_pages.py
+lastmod = gen_pages.site_lastmod()
+sitemap_xml = gen_pages.generate_sitemap(catalog, lastmod)
 sitemap_file = ROOT / "sitemap.xml"
 sitemap_note = "up to date"
 if not sitemap_file.exists():
@@ -270,11 +220,7 @@ if loc != f"{SITE_BASE}/":
     errors.append(f"Sitemap: invalid loc: {loc}")
 
 robots_path = ROOT / "robots.txt"
-robots_target = (
-    "User-agent: *\n"
-    "Allow: /\n"
-    f"\nSitemap: {SITE_BASE}/sitemap.xml\n"
-)
+robots_target = gen_pages.generate_robots_txt()
 robots_note = "up to date"
 if not robots_path.exists():
     robots_note = "missing"
@@ -289,6 +235,20 @@ elif robots_path.read_text(encoding="utf-8").strip() != robots_target.strip():
 robots_txt = robots_path.read_text(encoding="utf-8")
 if f"Sitemap: {SITE_BASE}/sitemap.xml" not in robots_txt:
     errors.append(f"robots.txt: missing 'Sitemap: {SITE_BASE}/sitemap.xml'")
+
+webmanifest_path = ROOT / "static" / "site.webmanifest"
+webmanifest_target = gen_pages.generate_webmanifest()
+webmanifest_note = "up to date"
+if not webmanifest_path.exists():
+    webmanifest_note = "missing"
+    errors.append("static/site.webmanifest is missing")
+elif webmanifest_path.read_text(encoding="utf-8").strip() != webmanifest_target.strip():
+    webmanifest_note = "stale"
+    if NO_WRITE:
+        errors.append("static/site.webmanifest is stale — run verify.py without --no-write to regenerate")
+    else:
+        webmanifest_path.write_text(webmanifest_target, encoding="utf-8")
+        webmanifest_note = "generated"
 
 if not (ROOT / ".nojekyll").exists():
     errors.append(".nojekyll is missing — add it to keep GitHub Pages from running Jekyll")
@@ -603,6 +563,7 @@ for slug in sorted(slugs):
 
 print(f"Sitemap: {sitemap_note}")
 print(f"robots.txt: {robots_note}")
+print(f"webmanifest: {webmanifest_note}")
 print(f"Canonical: checked ({canon_checked} pages + index/404)")
 if (ROOT / ".nojekyll").exists():
     print(".nojekyll: present")
