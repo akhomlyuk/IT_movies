@@ -11,7 +11,7 @@ from pathlib import Path
 from xml.etree import ElementTree
 
 import gen_pages
-from lib import ROOT, SITE_BASE, make_slug, item_slug, load_catalog, known_genres
+from lib import ROOT, SITE_BASE, make_slug, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths
 
 sys.stdout.reconfigure(encoding="utf-8")
 errors = []
@@ -113,13 +113,32 @@ if unknown:
 unused = known - used
 print(f"Genres: {len(used)} used, {len(known)} declared; unused: {sorted(unused) or '-'}")
 
+# 5b. i18n ru/en key parity (all keys incl. nested typeLabels/genres)
+try:
+    i18n = parse_i18n()
+    ru_paths = i18n_key_paths(i18n["ru"])
+    en_paths = i18n_key_paths(i18n["en"])
+    only_ru = ru_paths - en_paths
+    only_en = en_paths - ru_paths
+    if only_ru:
+        errors.append(f"i18n keys present only in ru: {sorted('.'.join(p) for p in only_ru)}")
+    if only_en:
+        errors.append(f"i18n keys present only in en: {sorted('.'.join(p) for p in only_en)}")
+    if not only_ru and not only_en:
+        print(f"i18n ru/en parity: OK ({len(ru_paths)} keys, {len(en_paths)} en)")
+    else:
+        print(f"i18n ru/en parity: MISMATCH")
+except (ValueError, KeyError) as e:
+    errors.append(f"i18n parse failed: {e}")
+
 # 6. All static/ references in html/app/css exist
 i18n_src = (ROOT / "js" / "i18n.js").read_text(encoding="utf-8")
 film_js = (ROOT / "js" / "film.js").read_text(encoding="utf-8")
 app_js = (ROOT / "js" / "app.js").read_text(encoding="utf-8")
+catalog_src = (ROOT / "js" / "catalog.js").read_text(encoding="utf-8")
 refs = {
     r[:-1] if r.endswith("\\") else r
-    for r in re.findall(r"""['"]((?:static|\.\./static)/[^'"]+)['"]""", i18n_src + raw + app_js + film_js)
+    for r in re.findall(r"""['"]((?:static|\.\./static)/[^'"]+)['"]""", i18n_src + raw + app_js + film_js + catalog_src)
 }
 for name in ("index.html", "404.html"):
     text = (ROOT / name).read_text(encoding="utf-8")
@@ -323,7 +342,10 @@ if switches != 2:
 
 # 9. JS syntax check via node --check (if node is installed)
 if shutil.which("node"):
-    for name in ("app.js", "i18n.js", "film.js", "common.js", "data.js"):
+    for name in (
+        "app.js", "i18n.js", "film.js", "common.js", "data.js",
+        "catalog.js", "i18n.min.js", "common.min.js", "app.min.js", "film.min.js",
+    ):
         res = subprocess.run(
             ["node", "--check", str(ROOT / "js" / name)],
             capture_output=True,
@@ -336,215 +358,75 @@ if shutil.which("node"):
 else:
     print("node not found, JS syntax check skipped")
 
-# 9b. app.js smoke test: boots the catalog app setup with mocked Vue globals
-if shutil.which("node"):
-    harness = r'''
-        const fs = require("fs");
-        const ROOT = __ROOT_PATH__;
-        function read(p) { return fs.readFileSync(ROOT + "/" + p, "utf8"); }
-        global.window = global;
-        global.location = {
-          pathname: "/IT_movies/",
-          search: "",
-          href: "https://example.org/IT_movies/",
-        };
-        global.navigator = { language: "ru" };
-        global.document = {
-          querySelector: () => ({ setAttribute() {} }),
-          documentElement: { classList: { add() {}, toggle() {} }, lang: "" },
-          title: "",
-          body: {},
-        };
-        global.history = { replaceState() {} };
-        global.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
-        const noop = () => {};
-        let captured;
-        global.Vue = {
-          createApp: (opts) => { captured = opts.setup; return { components: {}, config: {}, mount: noop }; },
-          computed: (fn) => ({ value: fn() }),
-          reactive: (o) => o,
-          ref: (v) => ({ value: v }),
-          watch: noop,
-          onMounted: noop,
-          onUnmounted: noop,
-          nextTick: () => Promise.resolve(),
-        };
-        eval(
-          read("js/i18n.js") + "\n" +
-          read("js/common.js") + "\n" +
-          read("js/data.js") + "\n" +
-          read("js/app.js")
-        );
-        const state = captured();
-        if (!state || typeof state.movies.value.length !== "number" || !state.setLang) {
-          throw new Error("app.js setup() returned invalid state");
-        }
-        const total = state.movies.value.length + state.series.value.length + state.documentaries.value.length;
-        if (total !== global.CATALOG.length) {
-          throw new Error("sections total " + total + " != CATALOG.length " + global.CATALOG.length);
-        }
-        console.log("app.js smoke (sections sum == CATALOG): OK");
-    '''.replace("__ROOT_PATH__", json.dumps(ROOT.as_posix()))
-    res = subprocess.run(
-        ["node", "-e", harness],
-        capture_output=True,
-        text=True,
-        errors="replace",
+# 9b. Derived JS files (js/catalog.js + js/*.min.js) must match gen_pages.py
+for rel, content in (
+    ("js/catalog.js", gen_pages.catalog_js(catalog)),
+) + tuple(
+    (
+        "js/" + name.replace(".js", ".min.js"),
+        gen_pages.minify_js((ROOT / "js" / name).read_text(encoding="utf-8")),
     )
-    if res.returncode != 0:
-        errors.append(f"app.js smoke failed:\n{(res.stdout + res.stderr).strip()}")
-    else:
-        print(res.stdout.strip())
-else:
-    print("node not found, app.js smoke check skipped")
+    for name in ("i18n.js", "common.js", "app.js", "film.js")
+):
+    path = ROOT / rel
+    if not path.exists():
+        errors.append(f"{rel} is missing — run gen_pages.py")
+    elif path.read_text(encoding="utf-8") != content:
+        errors.append(f"{rel} is stale — run gen_pages.py")
+print("Derived JS files (catalog.js, .min.js): checked against gen_pages.py")
 
-# 9b2. Slug parity: Python item_slug must equal common.js itemSlug for every record
-if shutil.which("node"):
-    harness = r'''
-        const fs = require("fs");
-        function read(p) { return fs.readFileSync("__ROOT__" + "/" + p, "utf8"); }
-        global.window = global;
-        eval(read("js/data.js"));
-        eval(read("js/common.js"));
-        const api = global.ITMoviesCommon;
-        console.log(JSON.stringify(global.CATALOG.map((it) => api.itemSlug(it))));
-    '''.replace("__ROOT__", ROOT.as_posix())
+# 9b1. Node smoke harnesses: app.js / slug / film.js / related parity (tools/smoke.js)
+def run_smoke(mode):
     res = subprocess.run(
-        ["node", "-e", harness],
+        ["node", str(ROOT / "tools" / "smoke.js"), mode],
         capture_output=True,
         text=True,
         errors="replace",
     )
     if res.returncode != 0:
-        errors.append(f"slug parity: node harness failed:\n{(res.stdout + res.stderr).strip()}")
+        raise RuntimeError((res.stdout + res.stderr).strip())
+    return res.stdout.strip()
+
+
+if shutil.which("node"):
+    # app.js smoke test: boots the catalog app with mocked Vue globals
+    try:
+        print(run_smoke("app"))
+    except RuntimeError as e:
+        errors.append(f"app.js smoke failed:\n{e}")
+
+    # Slug parity: Python item_slug must equal common.js itemSlug for every record
+    try:
+        js_slugs = json.loads(run_smoke("slug"))
+    except (RuntimeError, json.JSONDecodeError) as e:
+        errors.append(f"slug parity: node harness failed:\n{e}")
     else:
-        js_slugs = json.loads(res.stdout.strip())
         py_slugs = [item_slug(i) for i in catalog]
         diffs = [
             (i, catalog[i]["titleEn"], js, py)
             for i, (js, py) in enumerate(zip(js_slugs, py_slugs))
             if js != py
         ]
-        if diffs:
+        if len(js_slugs) != len(py_slugs) or diffs:
+            if len(js_slugs) != len(py_slugs):
+                errors.append(f"slug parity: size mismatch JS={len(js_slugs)} Python={len(py_slugs)}")
             for i, title, js, py in diffs:
                 errors.append(f"slug mismatch ({title}): JS={js} Python={py}")
         else:
             print(f"Slug parity JS<->Python: OK ({len(js_slugs)} items)")
-else:
-    print("node not found, slug parity check skipped")
 
-# 9b3. film.js smoke test: boots with window.FILM_PAGE (works without data.js on the page)
-if shutil.which("node"):
-    harness = r'''
-        const fs = require("fs");
-        const ROOT = __ROOT_PATH__;
-        function read(p) { return fs.readFileSync(ROOT + "/" + p, "utf8"); }
-        global.window = global;
-        global.location = {
-          pathname: "/IT_movies/films/tt0133093-the-matrix/",
-          search: "",
-          href: "https://example.org/IT_movies/films/tt0133093-the-matrix/",
-        };
-        global.navigator = { language: "ru" };
-        global.document = {
-          querySelector: () => ({ setAttribute() {} }),
-          documentElement: { classList: { add() {}, toggle() {} }, lang: "" },
-          title: "",
-          body: {},
-        };
-        global.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
-        const noop = () => {};
-        let captured;
-        global.Vue = {
-          createApp: (opts) => { captured = opts.setup; return { config: {}, mount: noop }; },
-          computed: (fn) => ({ value: fn() }),
-          ref: (v) => ({ value: v }),
-          watch: noop,
-          onMounted: noop,
-          onUnmounted: noop,
-        };
-        eval(
-          read("js/i18n.js") + "\n" +
-          read("js/common.js") + "\n" +
-          read("js/data.js") + "\n" +
-          read("js/film.js")
-        );
-        global.FILM_PAGE = {
-          item: window.CATALOG[0],
-          related: window.CATALOG.slice(1, 3),
-        };
-        const state = captured();
-        if (!state || typeof state.related.length !== "number" || !state.itemSlug) {
-          throw new Error("film.js setup() returned invalid state");
-        }
-        console.log("film.js smoke (FILM_PAGE, no data.js on page): OK");
-    '''.replace("__ROOT_PATH__", json.dumps(ROOT.as_posix()))
-    res = subprocess.run(
-        ["node", "-e", harness],
-        capture_output=True,
-        text=True,
-        errors="replace",
-    )
-    if res.returncode != 0:
-        errors.append(f"film.js smoke failed:\n{(res.stdout + res.stderr).strip()}")
-    else:
-        print(res.stdout.strip())
-else:
-    print("node not found, film.js smoke check skipped")
+    # film.js smoke test: boots with window.FILM_PAGE (works without data.js on the page)
+    try:
+        print(run_smoke("film"))
+    except RuntimeError as e:
+        errors.append(f"film.js smoke failed:\n{e}")
 
-# 9b4. Related parity: JS relatedItems must equal Python gen_pages.related_to
-# (film pages are generated by Python, film.js can compute the same set client-side)
-if shutil.which("node"):
-    harness = r'''
-        const fs = require("fs");
-        const ROOT = __ROOT_PATH__;
-        function read(p) { return fs.readFileSync(ROOT + "/" + p, "utf8"); }
-        global.window = global;
-        global.location = {
-          pathname: "/IT_movies/films/tt0133093-the-matrix/",
-          search: "",
-          href: "https://example.org/IT_movies/films/tt0133093-the-matrix/",
-        };
-        global.navigator = { language: "ru" };
-        global.document = {
-          querySelector: () => ({ setAttribute() {} }),
-          documentElement: { classList: { add() {}, toggle() {} }, lang: "" },
-          title: "",
-          body: {},
-        };
-        global.matchMedia = () => ({ matches: false, addEventListener() {}, removeEventListener() {} });
-        const noop = () => {};
-        global.Vue = {
-          createApp: () => ({ components: {}, config: {}, mount: noop }),
-          computed: (fn) => ({ value: fn() }),
-          ref: (v) => ({ value: v }),
-          watch: noop,
-          onMounted: noop,
-          onUnmounted: noop,
-        };
-        eval(
-          read("js/i18n.js") + "\n" +
-          read("js/common.js") + "\n" +
-          read("js/data.js") + "\n" +
-          read("js/film.js") + "\n" +
-          "global.__relatedItems = relatedItems;"
-        );
-        const cat = global.CATALOG;
-        const N = 5;
-        const api = global.ITMoviesCommon;
-        const out = cat.map((it) => global.__relatedItems(cat, it, N).map((r) => api.itemSlug(r)));
-        console.log(JSON.stringify(out));
-    '''.replace("__ROOT_PATH__", json.dumps(ROOT.as_posix()))
-    res = subprocess.run(
-        ["node", "-e", harness],
-        capture_output=True,
-        text=True,
-        errors="replace",
-    )
-    if res.returncode != 0:
-        errors.append(f"related parity: node harness failed:\n{(res.stdout + res.stderr).strip()}")
+    # Related parity: JS relatedItems must equal Python gen_pages.related_to
+    try:
+        js_related = json.loads(run_smoke("related"))
+    except (RuntimeError, json.JSONDecodeError) as e:
+        errors.append(f"related parity: node harness failed:\n{e}")
     else:
-        js_related = json.loads(res.stdout.strip())
         py_related = [
             [item_slug(r) for r in gen_pages.related_to(i, catalog, 5)]
             for i in catalog
@@ -565,9 +447,9 @@ if shutil.which("node"):
             if len(diffs) > 5:
                 errors.append(f"related parity: {len(diffs) - 5} more mismatches")
         else:
-            print(f"Related parity JS<->Python: OK ({len(py_related)} items, n={5})")
+            print(f"Related parity JS<->Python: OK ({len(py_related)} items, n=5)")
 else:
-    print("node not found, related parity check skipped")
+    print("node not found, JS smoke checks skipped")
 
 # 9c. Theme head-script must stay in sync across pages and scripts
 def _norm_ws(s):

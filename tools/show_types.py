@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
-import json
 import re
-from pathlib import Path
 
-PATH = Path(__file__).resolve().parent.parent / "js" / "data.js"
-RAW = PATH.read_text(encoding="utf-8")
-CATALOG = json.loads(RAW[RAW.index("[") : RAW.rindex("]") + 1])
+from lib import ROOT, load_catalog
+
+RAW = (ROOT / "js" / "data.js").read_text(encoding="utf-8")
+CATALOG = load_catalog()
 
 # Номера строк, на которых объявлен "type" каждой записи (порядок = порядку массива)
 type_lines = [RAW.count("\n", 0, m.start()) + 1 for m in re.finditer(r'"type":\s*"\w+"', RAW)]

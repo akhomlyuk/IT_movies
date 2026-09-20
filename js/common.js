@@ -32,7 +32,7 @@ window.ITMoviesCommon = (function () {
   }
 
   function imdbUrl(item) {
-    return `https://www.imdb.com/title/${item.imdbId}/`;
+    return item.imdbId ? `https://www.imdb.com/title/${item.imdbId}/` : null;
   }
 
   function hasRating(value) {

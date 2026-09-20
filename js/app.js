@@ -1,4 +1,4 @@
-const { createApp, computed, reactive, ref, watch, onMounted, onUnmounted } = Vue;
+const { createApp, computed, reactive, ref, watch, onMounted, onUnmounted, nextTick } = Vue;
 
 const {
   safeRead,

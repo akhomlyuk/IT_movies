@@ -142,6 +142,166 @@ def inject_ld(src, catalog):
     )
 
 
+def slim_catalog(catalog):
+    return [{k: v for k, v in item.items() if k != "desc"} for item in catalog]
+
+
+def catalog_js(catalog):
+    body = json.dumps(slim_catalog(catalog), ensure_ascii=False, separators=(",", ":"))
+    return "window.CATALOG = " + body + ";\n"
+
+
+_OPS = (
+    "**=", ">>>=", "<<=", ">>=", "===", "!==",
+    "**", "&&", "||", "??", "?.", "=>", ">=", "<=",
+    "==", "!=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=",
+    "<<", ">>", ">>>", "++", "--",
+)
+_OP_START = frozenset("+-*/%=&|<>!?:^~")
+_WORD_CHAR = frozenset(
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$"
+)
+_VERB = {"return", "typeof", "in", "of", "new", "delete", "void", "yield", "case",
+         "throw", "do", "else", "instanceof", "await", "extends"}
+
+
+def _min_need_space(prev, tok):
+    l = prev[-1]
+    f = tok[0]
+    if l in _WORD_CHAR and f in _WORD_CHAR:
+        return True
+    if (l, f) in (("+", "+"), ("-", "-"), ("*", "*"), ("/", "/"), ("/", "*"), ("*", "/")):
+        return True
+    return False
+
+
+def minify_js(src):
+    """Conservative JS minifier: strips comments and non-semantic whitespace.
+
+    Tokenizer that keeps strings, template literals (incl. ${...}) and regex
+    literals intact; inserts a single space only where adjacent tokens would
+    otherwise merge into a different token. Deliberately does not reflow, so
+    ASI/newline semantics are preserved.
+    """
+    words = ""
+    i = 0
+    n = len(src)
+    out = []
+    prev = ""
+    expr = False  # True when the next '/' must be a regex, not a division
+
+    while i < n:
+        c = src[i]
+        if c in " \t\r\n":
+            i += 1
+            continue
+        if c == "/" and src.startswith("//", i):
+            j = src.find("\n", i + 2)
+            i = n if j == -1 else j
+            continue
+        if c == "/" and src.startswith("/*", i):
+            j = src.find("*/", i + 2)
+            i = n if j == -1 else j + 2
+            continue
+        if c in "\"'`":
+            if c == "`":
+                tok, i = _read_template(src, i)
+            else:
+                tok, i = _read_string(src, i)
+        elif c in _WORD_CHAR:
+            j = i
+            while j < n and src[j] in _WORD_CHAR:
+                j += 1
+            tok = src[i:j]
+            i = j
+            expr = tok not in _VERB
+        elif c == "/" and expr:
+            tok, i = _read_regex(src, i)
+            expr = True
+        elif c in _OP_START:
+            tok = next((op for op in _OPS if src.startswith(op, i)), c)
+            i += len(tok)
+            expr = False
+        else:
+            tok = c
+            i += 1
+            expr = tok in "([{,:;=!&|?^~<>"
+
+        if out and _min_need_space(prev, tok):
+            out.append(" ")
+        out.append(tok)
+        prev = tok
+
+    return "".join(out)
+
+
+def _read_string(src, i):
+    q = src[i]
+    j = i + 1
+    while j < len(src):
+        if src[j] == "\\":
+            j += 2
+            continue
+        if src[j] == q:
+            return src[i : j + 1], j + 1
+        j += 1
+    raise ValueError("unterminated string literal while minifying")
+
+
+def _read_template(src, i):
+    j = i + 1
+    interp = 0
+    while j < len(src):
+        c = src[j]
+        if c == "\\":
+            j += 2
+            continue
+        if interp:
+            if c in "\"'`":
+                if c == "`":
+                    _, j = _read_template(src, j)
+                else:
+                    _, j = _read_string(src, j)
+                continue
+            if c == "{":
+                interp += 1
+            elif c == "}":
+                interp -= 1
+            j += 1
+            continue
+        if c == "$" and src.startswith("${", j):
+            interp = 1
+            j += 2
+            continue
+        if c == "`":
+            return src[i : j + 1], j + 1
+        j += 1
+    raise ValueError("unterminated template literal while minifying")
+
+
+def _read_regex(src, i):
+    j = i + 1
+    in_class = False
+    while j < len(src):
+        c = src[j]
+        if c == "\\":
+            j += 2
+            continue
+        if c == "[":
+            in_class = True
+        elif c == "]":
+            in_class = False
+        elif c == "/" and not in_class:
+            j += 1
+            break
+        elif c == "\n":
+            break
+        j += 1
+    while j < len(src) and src[j].isalpha():
+        j += 1
+    return src[i:j], j
+
+
 def inject_theme(src):
     n = src.count(THEME_MARK[0]) + src.count(THEME_MARK[1])
     if n != 2:
@@ -382,14 +542,28 @@ def render(item, related):
 
   <script>window.FILM_PAGE = {page_data};</script>
   <script src="../../js/vue.global.prod.js" defer></script>
-  <script src="../../js/i18n.js" defer></script>
-  <script src="../../js/common.js" defer></script>
-  <script src="../../js/film.js" defer></script>
+  <script src="../../js/i18n.min.js" defer></script>
+  <script src="../../js/common.min.js" defer></script>
+  <script src="../../js/film.min.js" defer></script>
 </body>
 </html>
 """
 
 def main():
+    derived = [
+        ("js/catalog.js", catalog_js(catalog)),
+    ] + [
+        ("js/" + name.replace(".js", ".min.js"), minify_js((ROOT / "js" / name).read_text(encoding="utf-8")))
+        for name in ("i18n.js", "common.js", "app.js", "film.js")
+    ]
+    for rel, content in derived:
+        target = ROOT / rel
+        if not target.exists() or target.read_text(encoding="utf-8") != content:
+            target.write_text(content, encoding="utf-8")
+            print(f"{rel}: generated")
+        else:
+            print(f"{rel}: up to date")
+
     written = 0
     for item in catalog:
         rel = related_to(item, catalog)

@@ -2012,6 +2012,7 @@ window.CATALOG = [
     "imdbRating": 7.2,
     "kpId": 663064,
     "kpRating": 7.3,
+    "fav": true,
     "poster": "static/posters/wearelegionthestoryofthehacktivists_doc_poster.webp"
   },
   {
