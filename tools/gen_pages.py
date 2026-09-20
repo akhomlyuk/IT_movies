@@ -522,14 +522,16 @@ def render(item, related):
 
     json_ld = json.dumps({"@context": "https://schema.org", "@graph": graph}, ensure_ascii=False).replace("<", "\\u003c")
 
+    SLIM_KEYS = ("type", "titleEn", "titleRu", "imdbId", "kpId")
     page_data = json.dumps(
         {
             "item": item,
-            "related": related,
+            "related": [{k: r[k] for k in SLIM_KEYS if k in r} for r in related],
             "posterW": poster_dims[0] if poster_dims else None,
             "posterH": poster_dims[1] if poster_dims else None,
         },
         ensure_ascii=False,
+        separators=(",", ":"),
     ).replace("<", "\\u003c")
 
     poster_abs = f"{SITE_BASE}/{poster}" if poster else f"{SITE_BASE}/static/ogimage.webp"
