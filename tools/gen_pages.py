@@ -95,6 +95,8 @@ def index_ld_json(catalog):
             "alternateName": item["titleEn"],
             "url": base + "films/" + item_slug(item) + "/",
         }
+        if item.get("poster"):
+            entry["image"] = f"{SITE_BASE}/{item['poster'].lstrip('/')}"
         if item.get("year"):
             entry["datePublished"] = str(item["year"])
         items.append(entry)
