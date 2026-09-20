@@ -36,6 +36,6 @@ Or just serve the repo root with any static file server (e.g. `npx serve`).
 
 ## Copyright & Posters
 
-The site's code (HTML/CSS/JS, Python scripts) is released under the [MIT License](LICENSE).
+The site's code (HTML/CSS/JS, Python helper scripts in `tools/`) is released under the [MIT License](LICENSE).
 
-Film posters displayed on the site (`static/posters/*.webp`) belong to their respective copyright holders (film studios, Kinopoisk, IMDb, etc.) and are used for identification and reference purposes only — they are not covered by the MIT license. If you are a rights holder and would like an image removed, please open an [issue](https://github.com/akhomlyuk/IT_movies/issues) or contact us.
+The MIT license covers the site's code only. It does NOT cover film posters (`static/posters/*.webp`), movie titles, ratings or other catalog data, which belong to their respective copyright holders (film studios, Kinopoisk, IMDb, etc.) and are used for identification and reference purposes only. If you are a rights holder and would like an image removed, please open an [issue](https://github.com/akhomlyuk/IT_movies/issues) or contact us.

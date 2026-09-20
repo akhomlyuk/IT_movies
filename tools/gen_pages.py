@@ -9,9 +9,7 @@ import html
 import json
 import re
 import shutil
-import subprocess
 import sys
-from datetime import date
 
 from lib import ROOT, SITE_BASE, load_catalog, make_slug, item_slug, ru_genres, has_rating, fmt_rating, webp_size
 
@@ -332,25 +330,6 @@ def inject_metrika(src):
     )
 
 
-def site_lastmod():
-    """Last commit date of files that affect generation (git)."""
-    try:
-        res = subprocess.run(
-            ["git", "log", "-1", "--format=%cs", "--",
-             "js/data.js", "js/i18n.js", "tools/gen_pages.py", "tools/lib.py"],
-            capture_output=True,
-            text=True,
-            errors="replace",
-            cwd=ROOT,
-        )
-        m = res.stdout.strip()
-        if res.returncode == 0 and re.fullmatch(r"\d{4}-\d{2}-\d{2}", m):
-            return m
-    except OSError:
-        pass
-    return date.today().isoformat()
-
-
 def alt_links(url):
     """hreflang alternate links for the sitemap (ru/en/x-default)."""
     return (
@@ -393,15 +372,14 @@ def generate_robots_txt():
     )
 
 
-def generate_sitemap(catalog, lastmod):
-    """sitemap.xml with hreflang alternates, git-driven lastmod, priority 0.7."""
+def generate_sitemap(catalog):
+    """sitemap.xml with hreflang alternates, changefreq, priority 0.7."""
     slugs_sorted = sorted(item_slug(item) for item in catalog)
     film_urls = "".join(
         "  <url>\n"
         f"    <loc>{SITE_BASE}/films/{slug}/</loc>\n"
         + alt_links(f"{SITE_BASE}/films/{slug}/")
-        + f"    <lastmod>{lastmod}</lastmod>\n"
-        "    <changefreq>monthly</changefreq>\n"
+        + "    <changefreq>monthly</changefreq>\n"
         "    <priority>0.7</priority>\n"
         "  </url>\n"
         for slug in slugs_sorted
@@ -413,15 +391,13 @@ def generate_sitemap(catalog, lastmod):
         "  <url>\n"
         f"    <loc>{SITE_BASE}/</loc>\n"
         + alt_links(SITE_BASE + "/")
-        + f"    <lastmod>{lastmod}</lastmod>\n"
-        "    <changefreq>monthly</changefreq>\n"
+        + "    <changefreq>monthly</changefreq>\n"
         "    <priority>1.0</priority>\n"
         "  </url>\n"
         "  <url>\n"
         f"    <loc>{SITE_BASE}/privacy.html</loc>\n"
         + alt_links(SITE_BASE + "/privacy.html")
-        + f"    <lastmod>{lastmod}</lastmod>\n"
-        "    <changefreq>monthly</changefreq>\n"
+        + "    <changefreq>monthly</changefreq>\n"
         "    <priority>0.3</priority>\n"
         "  </url>\n"
         + film_urls
@@ -689,7 +665,7 @@ def main():
         print("robots.txt: up to date")
 
     sitemap = ROOT / "sitemap.xml"
-    sitemap_data = generate_sitemap(catalog, site_lastmod())
+    sitemap_data = generate_sitemap(catalog)
     if not sitemap.exists() or sitemap.read_text(encoding="utf-8") != sitemap_data:
         sitemap.write_text(sitemap_data, encoding="utf-8")
         print("sitemap.xml: generated")

@@ -1,3 +1,15 @@
+const bootOk = window.Vue && typeof I18N !== "undefined" && window.ITMoviesCommon && Array.isArray(window.CATALOG);
+if (!bootOk) {
+  console.error("[IT Movies] bootstrap failed", {
+    vue: !!window.Vue,
+    i18n: typeof I18N !== "undefined",
+    common: !!window.ITMoviesCommon,
+    catalog: Array.isArray(window.CATALOG),
+  });
+  const fb = document.getElementById("boot-fallback");
+  if (fb) fb.hidden = false;
+}
+
 const { createApp, computed, reactive, ref, watch, onMounted, onUnmounted, nextTick } = Vue;
 
 const {
@@ -189,6 +201,7 @@ const app = createApp({
     const showScrollTop = ref(false);
     const loadTime = ref(null);
     let cleanupColorScheme = null;
+    let urlSyncTimer = null;
 
     const SORT_DEFAULTS = {
       series: { key: "title", dir: "asc" },
@@ -274,20 +287,24 @@ const app = createApp({
       const p = new URLSearchParams();
       if (query.value) p.set("q", query.value);
       if (onlyFav.value) p.set("fav", "1");
-      p.set("lang", lang.value);
-      p.set("theme", theme.value);
       for (const [type, s] of Object.entries(sorts)) {
-        if (s.key && s.key !== "title") {
+        if (s.key !== "title" || s.dir !== "asc") {
           p.set(`sort[${type}]`, `${s.key}:${s.dir}`);
         } else {
           p.delete(`sort[${type}]`);
         }
       }
       const qs = p.toString();
-      history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + location.hash);
+      const url = location.pathname + (qs ? "?" + qs : "") + location.hash;
+      clearTimeout(urlSyncTimer);
+      urlSyncTimer = setTimeout(() => {
+        try {
+          history.replaceState(null, "", url);
+        } catch {}
+      }, 200);
     }
 
-    watch([query, onlyFav, lang, theme], syncUrl);
+    watch([query, onlyFav], syncUrl);
 
     function measureLoadTime() {
       const nav = performance.getEntriesByType("navigation")[0];
@@ -318,6 +335,7 @@ const app = createApp({
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("load", measureLoadTime);
       if (cleanupColorScheme) cleanupColorScheme();
+      clearTimeout(urlSyncTimer);
     });
 
     const t = computed(() => I18N[lang.value]);
@@ -396,6 +414,7 @@ const app = createApp({
   },
 });
 
-installErrorHandler(app, () => currentLang, () => I18N);
-
-app.mount("#app");
+if (bootOk) {
+  installErrorHandler(app, () => currentLang, () => I18N);
+  app.mount("#app");
+}

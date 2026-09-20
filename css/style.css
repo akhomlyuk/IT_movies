@@ -543,6 +543,15 @@ a.imdb .star {
   padding: 1rem 0.8rem;
 }
 
+.boot-fallback {
+  max-width: 1080px;
+  margin: 15vh auto 0;
+  padding: 2rem 1.25rem;
+  text-align: center;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
 .no-js-catalog h3 {
   margin: 1.4rem 0 0.45rem;
 }

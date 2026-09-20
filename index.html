@@ -291,6 +291,8 @@
     <button class="scroll-top" :aria-label="t.scrollTop" @click="scrollToTop" v-show="showScrollTop">↑</button>
   </div>
 
+  <p id="boot-fallback" class="boot-fallback" hidden>Не удалось загрузить каталог. Проверьте соединение и обновите страницу.<br><span lang="en">Catalog failed to load. Check your connection and reload the page.</span></p>
+
   <template id="tpl-catalog">
     <section :id="id">
       <h2>{{ title }}</h2>

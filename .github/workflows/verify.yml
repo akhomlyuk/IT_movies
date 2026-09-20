@@ -1,0 +1,26 @@
+name: verify
+"on":
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Regenerate derived files
+        run: python3 tools/gen_pages.py
+      - name: Integrity and smoke checks
+        run: python3 tools/verify.py --strict
+      - name: Fail if the working tree is dirty
+        run: |
+          git status --porcelain
+          test -z "$(git status --porcelain)"

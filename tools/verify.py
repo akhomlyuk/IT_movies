@@ -198,20 +198,19 @@ for u in sorted(css_urls):
 print(f"url() references in style.css: {len(css_urls)}")
 
 # 6c. Sitemap / robots.txt / webmanifest: single source in gen_pages.py
-lastmod = gen_pages.site_lastmod()
-sitemap_xml = gen_pages.generate_sitemap(catalog, lastmod)
+sitemap_xml = gen_pages.generate_sitemap(catalog)
 sitemap_file = ROOT / "sitemap.xml"
 sitemap_note = "up to date"
 if not sitemap_file.exists():
     sitemap_note = "missing"
     errors.append("sitemap.xml is missing")
 elif sitemap_file.read_text(encoding="utf-8").strip() != sitemap_xml.strip():
-    sitemap_note = f"stale (lastmod={lastmod})"
+    sitemap_note = "stale"
     if NO_WRITE:
         errors.append("sitemap.xml is stale — run verify.py without --no-write to regenerate")
     else:
         sitemap_file.write_text(sitemap_xml, encoding="utf-8")
-        sitemap_note = f"generated (lastmod={lastmod})"
+        sitemap_note = "generated"
 
 loc = ElementTree.fromstring(sitemap_xml).findtext(
     "{http://www.sitemaps.org/schemas/sitemap/0.9}url/"
