@@ -481,15 +481,19 @@ def render(item, related):
     movie["sameAs"].append(f"https://www.kinopoisk.ru/film/{item['kpId']}/")
     if poster:
         movie["image"] = f"{SITE_BASE}/{poster}"
-    for key, best in (("imdbRating", 10), ("kpRating", 10)):
-        if has_rating(item.get(key)):
-            movie["aggregateRating"] = {
-                "@type": "AggregateRating",
-                "ratingValue": float(item[key]),
-                "bestRating": 10,
-                "worstRating": 1,
-            }
-            break
+    cr, cv = None, None
+    if has_rating(item.get("kpRating")) and item.get("kpVotes"):
+        cr, cv = float(item["kpRating"]), int(item["kpVotes"])
+    elif has_rating(item.get("imdbRating")) and item.get("imdbVotes"):
+        cr, cv = float(item["imdbRating"]), int(item["imdbVotes"])
+    if cr is not None and cv is not None:
+        movie["aggregateRating"] = {
+            "@type": "AggregateRating",
+            "ratingValue": cr,
+            "ratingCount": cv,
+            "bestRating": 10,
+            "worstRating": 1,
+        }
     graph.append(movie)
 
     graph.append({

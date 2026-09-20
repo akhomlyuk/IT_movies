@@ -30,7 +30,8 @@ Or just serve the repo root with any static file server (e.g. `npx serve`).
 - `tools/verify.py` — data/site integrity checker (source of truth, end with `✅ All good`; also checks generated pages are fresh)
 - `tools/gen_pages.py` — generates `films/*` pages + `js/catalog.js` + `js/*.min.js` from `js/data.js` and `js/i18n.js`, injects the theme/no-JS blocks into `index.html` and `404.html`
 - `tools/smoke.js` — node smoke harnesses (app.js / slug parity / film.js / related parity) driven by `tools/verify.py`
-- `tools/pw_kp.py` — Kinopoisk search + rating lookup via Playwright (kpId, kpRating)
+- `tools/pw_kp.py` — Kinopoisk search + rating lookup via Playwright (kpId, kpRating, kpVotes, IMDb sub-rating)
+- `tools/kp_votes.py` — bulk Kinopoisk vote-count collector over existing kpId values (resume via `_tmp/kp_votes.json`, `--limit`/`--reset-null`)
 - `tools/show_types.py` — prints every catalog record with its source line number
 
 ## Copyright & Posters

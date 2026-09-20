@@ -113,7 +113,9 @@ def _js_object(src, i):
         obj[key] = val
         i = _js_skip(src, i)
         if src[i] == ",":
-            i += 1
+            i = _js_skip(src, i + 1)
+            if src[i] == "}":
+                break
     return obj, i + 1
 
 

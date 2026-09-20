@@ -11,7 +11,7 @@ from pathlib import Path
 from xml.etree import ElementTree
 
 import gen_pages
-from lib import ROOT, SITE_BASE, make_slug, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths
+from lib import ROOT, SITE_BASE, make_slug, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating
 
 sys.stdout.reconfigure(encoding="utf-8")
 errors = []
@@ -112,6 +112,14 @@ if unknown:
     errors.append(f"Genres without a translation: {sorted(unknown)}")
 unused = known - used
 print(f"Genres: {len(used)} used, {len(known)} declared; unused: {sorted(unused) or '-'}")
+
+# 5c. Ratings need a vote count (AggregateRating.ratingCount): KP when present,
+# otherwise IMDb. Records without any votes simply get no aggregateRating.
+for item in catalog:
+    if has_rating(item.get("kpRating")) and not item.get("kpVotes"):
+        errors.append(f"kpRating without kpVotes (AggregateRating.ratingCount would be missing): {item['titleEn']}")
+    elif not has_rating(item.get("kpRating")) and has_rating(item.get("imdbRating")) and not item.get("imdbVotes"):
+        errors.append(f"imdbRating without imdbVotes (AggregateRating.ratingCount would be missing): {item['titleEn']}")
 
 # 5b. i18n ru/en key parity (all keys incl. nested typeLabels/genres)
 try:

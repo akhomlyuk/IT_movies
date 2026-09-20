@@ -5,15 +5,23 @@ Usage:
     python tools/pw_kp.py "Я, робот" "Экзистенция"
 
 For each query prints the first matching kpId, title and kpRating.
+ratingCount (kpVotes) is extracted alongside the rating value.
 """
 
 import json
+import re
 import sys
 from urllib.parse import quote
 
 from playwright.sync_api import sync_playwright
 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+
+IMDB_SUB = """() => {
+  const el = document.querySelector('.film-sub-rating');
+  if (!el) return null;
+  return Array.from(el.querySelectorAll('span')).map(s => s.innerText).filter(t => t.trim());
+}"""
 
 
 def search_kp(query, page):
@@ -45,20 +53,40 @@ def fetch_film_ld(fid, page):
         """() => Array.from(document.querySelectorAll('script[type="application/ld+json"]'))
                      .map(s => s.textContent)"""
     )
+    imdb = page.evaluate(IMDB_SUB)
+    info = {
+        "kpId": fid,
+        "titleRu": "",
+        "titleEn": "",
+        "kpRating": None,
+        "kpVotes": None,
+        "imdbRating": None,
+        "imdbVotes": None,
+        "year": "",
+    }
+    if imdb:
+        for part in imdb:
+            m = re.fullmatch(r"IMDb\s*:\s*([0-9.,]+)", part)
+            if m:
+                info["imdbRating"] = float(m.group(1).replace(",", "."))
+                continue
+            m = re.fullmatch(r"([\d ][\d ]*)\s*оцен\w*", part)
+            if m:
+                info["imdbVotes"] = int(m.group(1).replace(" ", ""))
     for blob in ld:
         try:
             data = json.loads(blob)
-            if data.get("@type") == "Movie" and "aggregateRating" in data:
-                return {
-                    "kpId": fid,
-                    "titleRu": data.get("name", ""),
-                    "titleEn": data.get("alternativeHeadline") or data.get("alternateName", ""),
-                    "kpRating": data["aggregateRating"]["ratingValue"],
-                    "year": data.get("datePublished", ""),
-                }
+            if data.get("@type") in ("Movie", "TVSeries", "Series"):
+                info["titleRu"] = info["titleRu"] or data.get("name", "")
+                info["titleEn"] = info["titleEn"] or (data.get("alternativeHeadline") or data.get("alternateName", ""))
+                info["year"] = info["year"] or data.get("datePublished", "")
+                if "aggregateRating" in data:
+                    ag = data["aggregateRating"]
+                    info["kpRating"] = ag["ratingValue"]
+                    info["kpVotes"] = ag.get("ratingCount")
         except Exception:
             continue
-    return None
+    return info
 
 
 def main():
@@ -84,6 +112,9 @@ def main():
                     print(f"  titleRu:   {info['titleRu']}")
                     print(f"  titleEn:   {info['titleEn']}")
                     print(f"  kpRating:  {info['kpRating']}")
+                    print(f"  kpVotes:   {info['kpVotes']}")
+                    print(f"  imdbRating:{info['imdbRating']}")
+                    print(f"  imdbVotes: {info['imdbVotes']}")
                     print(f"  year:      {info['year']}")
                 else:
                     print(f"  film page {fid} — no ld+json rating found")

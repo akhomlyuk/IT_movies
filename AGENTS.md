@@ -31,7 +31,8 @@ python -m http.server 8000
   - `verify.py` — integrity checker (source of truth; verifies generated pages are fresh, theme/JSON-LD/noscript/metrika blocks are in sync, JS↔Python slug and related parity, `js/catalog.js` and `js/*.min.js` fresh, regenerates `sitemap.xml` and `robots.txt` only when stale, `--no-write` = check-only, requires `.nojekyll`)
   - `gen_pages.py` — generates `films/*` pages from `js/data.js` + `js/i18n.js` (each embeds `window.FILM_PAGE` and the Yandex.Metrika snippet), generates `js/catalog.js` and `js/*.min.js`, and injects the theme, JSON-LD, no-JS and Metrika blocks into `index.html` / `404.html` via markers
   - `smoke.js` — node smoke harnesses (app.js / slug parity / film.js / related parity) driven by `verify.py`
-  - `pw_kp.py` — Kinopoisk search + rating lookup via Playwright (kpId, kpRating)
+  - `pw_kp.py` — Kinopoisk search + rating lookup via Playwright (kpId, kpRating, kpVotes, IMDb sub-rating)
+  - `kp_votes.py` — bulk Kinopoisk vote-count collector over existing kpId values (resume via `_tmp/kp_votes.json`, `--limit`/`--reset-null`)
   - `show_types.py` — prints every record with its line number in `js/data.js`
 
 ## CRITICAL rules
