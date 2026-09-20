@@ -9,7 +9,9 @@ import html
 import json
 import re
 import shutil
+import subprocess
 import sys
+from datetime import date
 
 from lib import ROOT, SITE_BASE, load_catalog, make_slug, item_slug, ru_genres, has_rating, fmt_rating, webp_size
 
@@ -328,6 +330,96 @@ def inject_metrika(src):
     )
 
 
+def site_lastmod():
+    """Последняя дата коммита для файлов, влияющих на генерацию (git)."""
+    try:
+        res = subprocess.run(
+            ["git", "log", "-1", "--format=%cs", "--",
+             "js/data.js", "js/i18n.js", "tools/gen_pages.py", "tools/lib.py"],
+            capture_output=True,
+            text=True,
+            errors="replace",
+            cwd=ROOT,
+        )
+        m = res.stdout.strip()
+        if res.returncode == 0 and re.fullmatch(r"\d{4}-\d{2}-\d{2}", m):
+            return m
+    except OSError:
+        pass
+    return date.today().isoformat()
+
+
+def alt_links(url):
+    """hreflang-альтернативные ссылки для sitemap (ru/en/x-default)."""
+    return (
+        f'    <xhtml:link rel="alternate" hreflang="ru" href="{url}"/>\n'
+        f'    <xhtml:link rel="alternate" hreflang="en" href="{url}"/>\n'
+        f'    <xhtml:link rel="alternate" hreflang="x-default" href="{url}"/>\n'
+    )
+
+
+def generate_webmanifest():
+    """static/site.webmanifest — генерируется из SITE_BASE (single source)."""
+    return (
+        '{\n'
+        '  "name": "IT Movies",\n'
+        '  "short_name": "IT Movies",\n'
+        '  "start_url": "/IT_movies/",\n'
+        '  "display": "standalone",\n'
+        '  "background_color": "#f4f3ef",\n'
+        '  "theme_color": "#f4f3ef",\n'
+        '  "description": "Каталог фильмов и сериалов о компьютерах, технологиях и ИИ",\n'
+        '  "icons": [\n'
+        '    { "src": "favicons/favicon-16x16.png", "sizes": "16x16", "type": "image/png" },\n'
+        '    { "src": "favicons/favicon-32x32.png", "sizes": "32x32", "type": "image/png" },\n'
+        '    { "src": "favicons/favicon-48x48.png", "sizes": "48x48", "type": "image/png" },\n'
+        '    { "src": "favicons/favicon-64x64.png", "sizes": "64x64", "type": "image/png" },\n'
+        '    { "src": "favicons/favicon-128x128.png", "sizes": "128x128", "type": "image/png" },\n'
+        '    { "src": "favicons/favicon-256x256.png", "sizes": "256x256", "type": "image/png" },\n'
+        '    { "src": "favicons/favicon-512x512.png", "sizes": "512x512", "type": "image/png" }\n'
+        '  ]\n'
+        '}\n'
+    )
+
+
+def generate_robots_txt():
+    """robots.txt с Sitemap-ссылкой из SITE_BASE."""
+    return (
+        "User-agent: *\n"
+        "Allow: /\n"
+        f"\nSitemap: {SITE_BASE}/sitemap.xml\n"
+    )
+
+
+def generate_sitemap(catalog, lastmod):
+    """sitemap.xml с hreflang-альтернативами, lastmod из git, приоритетами 0.7."""
+    slugs_sorted = sorted(item_slug(item) for item in catalog)
+    film_urls = "".join(
+        "  <url>\n"
+        f"    <loc>{SITE_BASE}/films/{slug}/</loc>\n"
+        + alt_links(f"{SITE_BASE}/films/{slug}/")
+        + f"    <lastmod>{lastmod}</lastmod>\n"
+        "    <changefreq>monthly</changefreq>\n"
+        "    <priority>0.7</priority>\n"
+        "  </url>\n"
+        for slug in slugs_sorted
+    )
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
+        ' xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
+        "  <url>\n"
+        f"    <loc>{SITE_BASE}/</loc>\n"
+        + alt_links(SITE_BASE + "/")
+        + f"    <lastmod>{lastmod}</lastmod>\n"
+        "    <changefreq>monthly</changefreq>\n"
+        "    <priority>1.0</priority>\n"
+        "  </url>\n"
+        + film_urls
+        + "</urlset>\n"
+    )
+
+
 def index_noscript(catalog):
     out = []
     for t, label in (
@@ -563,6 +655,31 @@ def main():
             print(f"{rel}: generated")
         else:
             print(f"{rel}: up to date")
+
+    # Static-конфигурационные файлы: генерируются из SITE_BASE (single source)
+    webmanifest = ROOT / "static" / "site.webmanifest"
+    webmanifest_data = generate_webmanifest()
+    if not webmanifest.exists() or webmanifest.read_text(encoding="utf-8") != webmanifest_data:
+        webmanifest.write_text(webmanifest_data, encoding="utf-8")
+        print("static/site.webmanifest: generated")
+    else:
+        print("static/site.webmanifest: up to date")
+
+    robots_txt = ROOT / "robots.txt"
+    robots_data = generate_robots_txt()
+    if not robots_txt.exists() or robots_txt.read_text(encoding="utf-8") != robots_data:
+        robots_txt.write_text(robots_data, encoding="utf-8")
+        print("robots.txt: generated")
+    else:
+        print("robots.txt: up to date")
+
+    sitemap = ROOT / "sitemap.xml"
+    sitemap_data = generate_sitemap(catalog, site_lastmod())
+    if not sitemap.exists() or sitemap.read_text(encoding="utf-8") != sitemap_data:
+        sitemap.write_text(sitemap_data, encoding="utf-8")
+        print("sitemap.xml: generated")
+    else:
+        print("sitemap.xml: up to date")
 
     written = 0
     for item in catalog:

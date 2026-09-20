@@ -211,6 +211,23 @@ const app = createApp({
     }
 
     function loadSorts() {
+      // Приоритет URL-параметров (?sort[movie]=year:desc)
+      const params = new URLSearchParams(location.search);
+      const urlSorts = {};
+      for (const type of Object.keys(SORT_DEFAULTS)) {
+        const raw = params.get(`sort[${type}]`);
+        if (raw) {
+          const parts = raw.split(":");
+          const key = parts[0];
+          const dir = parts[1];
+          if (key && SORT_KEYS.includes(key) && (dir === "asc" || dir === "desc")) {
+            urlSorts[type] = { key, dir };
+          }
+        }
+      }
+      if (Object.keys(urlSorts).length > 0) {
+        return normalizeSort(urlSorts);
+      }
       try {
         return normalizeSort(JSON.parse(safeRead("it-movies-sorts") ?? "null"));
       } catch {
@@ -241,6 +258,7 @@ const app = createApp({
       sorts,
       (value) => {
         safeWrite("it-movies-sorts", JSON.stringify(value));
+        syncUrl();
       },
       { deep: true }
     );
@@ -258,6 +276,13 @@ const app = createApp({
       if (onlyFav.value) p.set("fav", "1");
       p.set("lang", lang.value);
       p.set("theme", theme.value);
+      for (const [type, s] of Object.entries(sorts)) {
+        if (s.key && s.key !== "title") {
+          p.set(`sort[${type}]`, `${s.key}:${s.dir}`);
+        } else {
+          p.delete(`sort[${type}]`);
+        }
+      }
       const qs = p.toString();
       history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + location.hash);
     }
@@ -346,6 +371,8 @@ const app = createApp({
         current.key = key;
         current.dir = key === "title" || key === "genre" ? "asc" : "desc";
       }
+      // Сохраняем в localStorage после каждого изменения
+      safeWrite("it-movies-sorts", JSON.stringify(sorts));
     }
 
     return {
