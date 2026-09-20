@@ -14,6 +14,7 @@ from lib import ROOT, SITE_BASE, item_slug, load_catalog, known_genres, parse_i1
 sys.stdout.reconfigure(encoding="utf-8")
 errors = []
 NO_WRITE = "--no-write" in sys.argv
+STRICT = "--strict" in sys.argv
 
 # 1. Parse data.js as JSON (array between the first '[' and last ']')
 raw = (ROOT / "js" / "data.js").read_text(encoding="utf-8")
@@ -337,7 +338,11 @@ if shutil.which("node"):
             errors.append(f"{name}: node --check failed:\n{res.stderr.strip()}")
     print("node --check js/*.js: OK")
 else:
-    print("node not found, JS syntax check skipped")
+    msg = "node not found: JS syntax/smoke checks skipped"
+    if STRICT:
+        errors.append(msg)
+    else:
+        print(msg)
 
 # 9b. Derived JS files (js/catalog.js + js/*.min.js) must match gen_pages.py
 for rel, content in (
@@ -357,9 +362,9 @@ for rel, content in (
 print("Derived JS files (catalog.js, .min.js): checked against gen_pages.py")
 
 # 9b1. Node smoke harnesses: app.js / slug / film.js / related parity (tools/smoke.js)
-def run_smoke(mode):
+def run_smoke(*args):
     res = subprocess.run(
-        ["node", str(ROOT / "tools" / "smoke.js"), mode],
+        ["node", str(ROOT / "tools" / "smoke.js"), *args],
         capture_output=True,
         text=True,
         errors="replace",
@@ -429,8 +434,17 @@ if shutil.which("node"):
                 errors.append(f"related parity: {len(diffs) - 5} more mismatches")
         else:
             print(f"Related parity JS<->Python: OK ({len(py_related)} items, n=5)")
+
+    # 9b2. Repeat the smokes on the minified JS actually shipped (*.min.js),
+    # so a semantics-changing bug in gen_pages.minify_js is caught by the tests
+    for name in ("app", "slug", "film", "related"):
+        try:
+            print(run_smoke(name, "--min"))
+        except RuntimeError as e:
+            errors.append(f"{name} (minified): smoke failed:\n{e}")
 else:
-    print("node not found, JS smoke checks skipped")
+    if not STRICT:
+        print("node not found, JS smoke checks skipped")
 
 # 9c. Theme head-script must stay in sync across pages and scripts
 def _norm_ws(s):

@@ -12,6 +12,28 @@ function read(p) {
   return fs.readFileSync(path.join(ROOT, p), "utf8");
 }
 
+const MINIFY_MAP = {
+  "i18n.js": "i18n.min.js",
+  "common.js": "common.min.js",
+  "app.js": "app.min.js",
+  "film.js": "film.min.js",
+};
+
+let min = false;
+let mode = process.argv[2];
+if (mode === "--min") {
+  min = true;
+  mode = process.argv[3];
+} else if (process.argv.includes("--min")) {
+  min = true;
+}
+
+function jsSrc(name) {
+  return read("js/" + (min && MINIFY_MAP[name] ? MINIFY_MAP[name] : name));
+}
+
+const MIN_LABEL = min ? " (minified)" : "";
+
 function bootApp() {
   global.window = global;
   global.location = {
@@ -62,21 +84,19 @@ function bootApp() {
   return () => captured;
 }
 
-const mode = process.argv[2];
-
 if (mode === "slug") {
   global.window = global;
-  eval(read("js/catalog.js"));
-  eval(read("js/common.js"));
+  eval(jsSrc("catalog.js"));
+  eval(jsSrc("common.js"));
   const api = global.ITMoviesCommon;
   console.log(JSON.stringify(global.CATALOG.map((it) => api.itemSlug(it))));
 } else if (mode === "app") {
   const captured = bootApp();
   eval(
-    read("js/i18n.js") + "\n" +
-    read("js/common.js") + "\n" +
-    read("js/catalog.js") + "\n" +
-    read("js/app.js")
+    jsSrc("i18n.js") + "\n" +
+    jsSrc("common.js") + "\n" +
+    jsSrc("catalog.js") + "\n" +
+    jsSrc("app.js")
   );
   const setup = captured();
   const state = setup();
@@ -97,14 +117,14 @@ if (mode === "slug") {
       throw new Error("imdbUrl for record without imdbId must be null: " + it.titleEn);
     }
   }
-  console.log("app.js smoke (catalog.js, sections sum == CATALOG): OK");
+  console.log("app.js smoke (catalog.js, sections sum == CATALOG): OK" + MIN_LABEL);
 } else if (mode === "film") {
   const capture = bootApp();
   eval(
-    read("js/i18n.js") + "\n" +
-    read("js/common.js") + "\n" +
+    jsSrc("i18n.js") + "\n" +
+    jsSrc("common.js") + "\n" +
     read("js/data.js") + "\n" +
-    read("js/film.js")
+    jsSrc("film.js")
   );
   global.FILM_PAGE = {
     item: global.CATALOG[0],
@@ -120,14 +140,14 @@ if (mode === "slug") {
   if (!state.desc.value) {
     throw new Error("film.js desc is empty");
   }
-  console.log("film.js smoke (FILM_PAGE, no data.js load on film page): OK");
+  console.log("film.js smoke (FILM_PAGE, no data.js load on film page): OK" + MIN_LABEL);
 } else if (mode === "related") {
   bootApp();
   eval(
-    read("js/i18n.js") + "\n" +
-    read("js/common.js") + "\n" +
+    jsSrc("i18n.js") + "\n" +
+    jsSrc("common.js") + "\n" +
     read("js/data.js") + "\n" +
-    read("js/film.js") + "\n" +
+    jsSrc("film.js") + "\n" +
     "global.__relatedItems = relatedItems;"
   );
   const cat = global.CATALOG;
