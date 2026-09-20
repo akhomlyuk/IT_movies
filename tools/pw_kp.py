@@ -1,8 +1,8 @@
 """Search Kinopoisk via Playwright and extract kpId + rating from JSON-LD.
 
 Usage:
-    python scripts/pw_kp.py "Терминатор"
-    python scripts/pw_kp.py "Я, робот" "Экзистенция"
+    python tools/pw_kp.py "Терминатор"
+    python tools/pw_kp.py "Я, робот" "Экзистенция"
 
 For each query prints the first matching kpId, title and kpRating.
 """

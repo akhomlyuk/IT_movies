@@ -25,7 +25,7 @@ RU_GENRES = ru_genres()
 def star(v):
     return " ★" if has_rating(v) and float(v) >= 7 else ""
 
-def related_to(item, catalog, n=4):
+def related_to(item, catalog, n=5):
     gs = set(item["genres"])
     scored = sorted(
         (
@@ -64,6 +64,22 @@ THEME_SCRIPT = """  <script>
 THEME_MARK = ("<!-- begin:theme-script -->", "<!-- end:theme-script -->")
 NSCRIPT_MARK = ("<!-- begin:catalog-noscript -->", "<!-- end:catalog-noscript -->")
 LD_MARK = ("<!-- begin:index-ld -->", "<!-- end:index-ld -->")
+METRIKA_MARK = ("<!-- begin:metrika -->", "<!-- end:metrika -->")
+
+METRIKA_ID = "112571181"
+METRIKA_SCRIPT = """  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id={id}', 'ym');
+
+    ym({id}, 'init', {ssr:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/{id}" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+  <!-- /Yandex.Metrika counter -->""".replace("{id}", METRIKA_ID)
 
 
 def index_ld_json(catalog):
@@ -133,6 +149,19 @@ def inject_theme(src):
     return re.sub(
         re.escape(THEME_MARK[0]) + r".*?" + re.escape(THEME_MARK[1]),
         THEME_MARK[0] + "\n" + THEME_SCRIPT + "\n" + THEME_MARK[1],
+        src,
+        count=1,
+        flags=re.S,
+    )
+
+
+def inject_metrika(src):
+    n = src.count(METRIKA_MARK[0]) + src.count(METRIKA_MARK[1])
+    if n != 2:
+        raise SystemExit(f"metrika markers ({n}/2) not found in index/404 source")
+    return re.sub(
+        re.escape(METRIKA_MARK[0]) + r".*?" + re.escape(METRIKA_MARK[1]),
+        METRIKA_MARK[0] + "\n" + METRIKA_SCRIPT + "\n" + METRIKA_MARK[1],
         src,
         count=1,
         flags=re.S,
@@ -314,6 +343,7 @@ def render(item, related):
   <link rel="preload" href="../../static/fonts/roboto-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../static/fonts/roboto-latin.woff2" as="font" type="font/woff2" crossorigin>
   <script type="application/ld+json">{json_ld}</script>
+{METRIKA_SCRIPT}
 </head>
 <body>
   <div id="app">
@@ -381,10 +411,10 @@ def main():
     index_path = ROOT / "index.html"
     if index_path.exists():
         idx_src = index_path.read_text(encoding="utf-8")
-        idx_new = inject_noscript(inject_ld(inject_theme(idx_src), catalog), catalog)
+        idx_new = inject_metrika(inject_noscript(inject_ld(inject_theme(idx_src), catalog), catalog))
         if idx_new != idx_src:
             index_path.write_text(idx_new, encoding="utf-8")
-            print("index.html: theme + JSON-LD + noscript catalog blocks updated")
+            print("index.html: theme + JSON-LD + noscript + metrika blocks updated")
         else:
             print("index.html: up to date")
     else:
@@ -393,10 +423,10 @@ def main():
     nf_path = ROOT / "404.html"
     if nf_path.exists():
         nf_src = nf_path.read_text(encoding="utf-8")
-        nf_new = inject_theme(nf_src)
+        nf_new = inject_metrika(inject_theme(nf_src))
         if nf_new != nf_src:
             nf_path.write_text(nf_new, encoding="utf-8")
-            print("404.html: theme block updated")
+            print("404.html: theme + metrika blocks updated")
         else:
             print("404.html: up to date")
     else:

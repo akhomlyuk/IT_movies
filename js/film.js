@@ -17,11 +17,7 @@ const {
 
 let currentLang = "ru";
 
-function itemBySlug(catalog, name) {
-  return catalog.find((item) => itemSlug(item) === name) || null;
-}
-
-function relatedItems(catalog, item, limit) {
+function relatedItems(catalog, item, limit = 5) {
   const gs = new Set(item.genres);
   const scored = catalog
     .filter((o) => o !== item)
@@ -98,13 +94,8 @@ const FILM_TEMPLATE = `
 
 const app = createApp({
   setup() {
-    const parts = location.pathname.split("/").filter(Boolean);
     const pageData = window.FILM_PAGE || null;
-    const item = pageData
-      ? pageData.item || null
-      : window.CATALOG
-        ? itemBySlug(window.CATALOG, parts[parts.length - 1] || "")
-        : null;
+    const item = (pageData && pageData.item) || null;
 
     const urlParams = new URLSearchParams(location.search);
     const lang = ref(langFrom(urlParams, safeRead));
@@ -184,11 +175,7 @@ const app = createApp({
     const imdbRating = computed(() =>
       item ? formatRating(item.imdbRating, "—") : "—"
     );
-    const related = pageData
-      ? pageData.related || []
-      : item && window.CATALOG
-        ? relatedItems(window.CATALOG, item, 4)
-        : [];
+    const related = (pageData && pageData.related) || [];
 
     const SHARE_NETS = {
       telegram: { label: "Telegram", href: (url, title) => `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${title}` },

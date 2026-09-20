@@ -1774,7 +1774,8 @@ window.CATALOG = [
     "imdbId": null,
     "imdbRating": null,
     "kpId": 11442722,
-    "kpRating": null
+    "kpRating": null,
+    "poster": "static/posters/howtoaccesseverythingreverseengineering_doc_poster.webp"
   },
   {
     "type": "documentary",
