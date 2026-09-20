@@ -1,7 +1,7 @@
 const I18N = {
   ru: {
     title: "IT Movies",
-    titleFull: "IT Movies - Список фильмов и сериалов о компьютерах, технологиях и искусственном интеллекте",
+    titleFull: "IT Movies - Каталог фильмов и сериалов о компьютерах, технологиях и искусственном интеллекте",
     subtitle: "Подборка фильмов и сериалов о компьютерах, технологиях, ИИ и т.д.",
     invite: `Предложить фильм, сериал - <img src="static/telegram_32.png" alt="" width="16" height="16" class="tg-icon"> <a href="https://t.me/wh_lab" target="_blank" rel="noopener">Whitehat Lab</a> или в <a href="https://t.me/whitehat_chat" target="_blank" rel="noopener">чат</a>`,
     search: "🔎 Название, жанр, год",
@@ -59,7 +59,7 @@ const I18N = {
   },
   en: {
     title: "IT Movies",
-    titleFull: "IT Movies - A curated list of films and series about computers, technology and AI",
+    titleFull: "IT Movies - A catalog of films and series about computers, technology and AI",
     subtitle: "A curated list of films and series about computers, technology, AI, etc",
     invite: `Suggest a film, series - <img src="static/telegram_32.png" alt="" width="16" height="16" class="tg-icon"> <a href="https://t.me/wh_lab" target="_blank" rel="noopener">Whitehat Lab</a> or in <a href="https://t.me/whitehat_chat" target="_blank" rel="noopener">chat</a>`,
     search: "🔎 Title, genre, year",
