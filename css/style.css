@@ -89,7 +89,7 @@ html.js #app[v-cloak] > :not(noscript) {
   align-items: flex-start;
   justify-content: space-between;
   gap: 1.5rem;
-  padding-bottom: 1.5rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid var(--line-strong);
 }
 
