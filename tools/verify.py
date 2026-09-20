@@ -93,6 +93,19 @@ for item in catalog:
     if p and not (ROOT / p).exists():
         errors.append(f"Poster file missing: {item['poster']} ({item['titleEn']})")
 
+# 4a. Poster naming convention: lowercase [a-z0-9_] and no case-only collisions
+# (git on case-insensitive filesystems won't notice renames that only change case)
+POSTER_RE = re.compile(r"^[a-z0-9_]+\.webp$")
+posters_dir = ROOT / "static" / "posters"
+name_groups: dict[str, list[str]] = {}
+for name in sorted(p.name for p in posters_dir.iterdir() if p.is_file()):
+    if not POSTER_RE.fullmatch(name):
+        errors.append(f"Poster name breaks the lowercase convention: {name}")
+    name_groups.setdefault(name.lower(), []).append(name)
+for key, group in name_groups.items():
+    if len(group) > 1:
+        errors.append(f"Posters differing only by case: {sorted(group)}")
+
 # 4b. Film pages exist and match the current generator (gen_pages.py)
 for item in catalog:
     slug = item_slug(item)
