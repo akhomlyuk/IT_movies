@@ -10,21 +10,22 @@ Usage:
     python tools/kp_votes.py --limit 5       # only first 5 (smoke test)
     python tools/kp_votes.py --out _tmp/kp_votes.json
 
-Result JSON: {"<kpId>": {"kpRating": ..., "kpVotes": ..., "titleRu": ...}}
+Result JSON: {"<kpId>": {"ok": <bool>, "kpVotes": ..., ...}}. "ok": true means
+the film page loaded real content (a rating may still be absent); "ok": false
+means the page was not verified (blocked/error) and will be retried on re-run.
 """
 
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lib import ROOT, load_catalog  # noqa: E402
-from pw_kp import fetch_film_ld  # noqa: E402
-
-UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+from pw_kp import fetch_film_ld, polite_sleep  # noqa: E402
 
 
 def main():
@@ -51,7 +52,8 @@ def main():
         kpid = item.get("kpId")
         if not kpid:
             continue
-        if str(kpid) in saved:
+        entry = saved.get(str(kpid))
+        if entry is not None and (entry.get("ok") is True or entry.get("kpVotes") is not None):
             continue
         if args.limit > 0 and len(targets) >= args.limit:
             break
@@ -64,36 +66,56 @@ def main():
     print(f"targets: {len(targets)}")
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        ctx = browser.new_context(locale="ru-RU", user_agent=UA)
+        ctx = browser.new_context(locale="ru-RU")
         page = ctx.new_page()
         try:
             for i, (kpid, title) in enumerate(targets, 1):
-                try:
-                    info = fetch_film_ld(kpid, page)
-                    if info and info["kpVotes"]:
-                        saved[kpid] = {
-                            "kpRating": info["kpRating"],
-                            "kpVotes": info["kpVotes"],
-                            "imdbRating": info.get("imdbRating"),
-                            "imdbVotes": info.get("imdbVotes"),
-                            "titleRu": info["titleRu"],
-                        }
-                        imdb = f", imdb {info.get('imdbRating')} ({info.get('imdbVotes')})" if info.get("imdbVotes") else ""
-                        print(f"[{i}/{len(targets)}] {kpid}  {info['titleRu']}  "
-                              f"{info['kpRating']}  ({info['kpVotes']} votes){imdb}")
-                    else:
-                        saved[kpid] = {
-                            "kpRating": None,
-                            "kpVotes": None,
-                            "imdbRating": (info or {}).get("imdbRating"),
-                            "imdbVotes": (info or {}).get("imdbVotes"),
-                            "titleRu": (info or {}).get("titleRu") or title,
-                        }
-                        imdb = f", imdb {saved[kpid]['imdbRating']} ({saved[kpid]['imdbVotes']})" if saved[kpid].get("imdbVotes") else ""
-                        print(f"[{i}/{len(targets)}] {kpid}  {title}: no kp rating{imdb}", flush=True)
-                except Exception as e:
-                    print(f"[{i}/{len(targets)}] {kpid}  {title}: ERROR {e} (kept pending)", flush=True)
-                    continue
+                if i > 1:
+                    polite_sleep()
+                info = None
+                error = None
+                for attempt in range(3):
+                    try:
+                        info = fetch_film_ld(kpid, page)
+                        if not info.get("titleRu"):
+                            raise RuntimeError("no ld+json content on the page")
+                        error = None
+                        break
+                    except Exception as e:
+                        error = e
+                        if attempt < 2:
+                            time.sleep(2 ** attempt * 2)
+                if error is not None:
+                    saved[kpid] = {
+                        "ok": False,
+                        "kpVotes": None,
+                        "titleRu": title,
+                        "error": repr(error),
+                    }
+                    print(f"[{i}/{len(targets)}] {kpid}  {title}: UNVERIFIED {error!r}", flush=True)
+                elif info["kpVotes"]:
+                    saved[kpid] = {
+                        "ok": True,
+                        "kpRating": info["kpRating"],
+                        "kpVotes": info["kpVotes"],
+                        "imdbRating": info.get("imdbRating"),
+                        "imdbVotes": info.get("imdbVotes"),
+                        "titleRu": info["titleRu"],
+                    }
+                    imdb = f", imdb {info.get('imdbRating')} ({info.get('imdbVotes')})" if info.get("imdbVotes") else ""
+                    print(f"[{i}/{len(targets)}] {kpid}  {info['titleRu']}  "
+                          f"{info['kpRating']}  ({info['kpVotes']} votes){imdb}", flush=True)
+                else:
+                    saved[kpid] = {
+                        "ok": True,
+                        "kpRating": None,
+                        "kpVotes": None,
+                        "imdbRating": info.get("imdbRating"),
+                        "imdbVotes": info.get("imdbVotes"),
+                        "titleRu": info["titleRu"],
+                    }
+                    imdb = f", imdb {saved[kpid]['imdbRating']} ({saved[kpid]['imdbVotes']})" if saved[kpid].get("imdbVotes") else ""
+                    print(f"[{i}/{len(targets)}] {kpid}  {title}: no kp rating{imdb}", flush=True)
                 out.write_text(json.dumps(saved, ensure_ascii=False, sort_keys=True), encoding="utf-8")
         finally:
             ctx.close()

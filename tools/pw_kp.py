@@ -9,19 +9,25 @@ ratingCount (kpVotes) is extracted alongside the rating value.
 """
 
 import json
+import random
 import re
 import sys
+import time
 from urllib.parse import quote
 
 from playwright.sync_api import sync_playwright
 
-UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+IMDB_SUB_SELECTOR = ".film-sub-rating"  # mirror of the Kinopoisk DOM as of 2026-09
 
-IMDB_SUB = """() => {
-  const el = document.querySelector('.film-sub-rating');
+IMDB_SUB = f"""() => {{
+  const el = document.querySelector('{IMDB_SUB_SELECTOR}');
   if (!el) return null;
   return Array.from(el.querySelectorAll('span')).map(s => s.innerText).filter(t => t.trim());
-}"""
+}}"""
+
+
+def polite_sleep(a=1.5, b=4.0):
+    time.sleep(random.uniform(a, b))
 
 
 def search_kp(query, page):
@@ -94,7 +100,7 @@ def main():
 
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        ctx = browser.new_context(locale="ru-RU", user_agent=UA)
+        ctx = browser.new_context(locale="ru-RU")
         page = ctx.new_page()
 
         for query in queries:
