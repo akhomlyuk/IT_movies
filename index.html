@@ -323,7 +323,7 @@
                 <a class="kp" :href="kpUrl(item)" target="_blank" rel="noopener noreferrer"><span :class="{ 'no-data': !hasRating(item.kpRating) }">{{ formatRating(item.kpRating, t) }}</span><span class="star" v-if="isHighRating(item.kpRating)" aria-hidden="true">★</span></a>
               </td>
               <td class="num">
-                <a class="imdb" :href="imdbUrl(item)" target="_blank" rel="noopener noreferrer"><span :class="{ 'no-data': !hasRating(item.imdbRating) }">{{ formatRating(item.imdbRating, t) }}</span><span class="star" v-if="isHighRating(item.imdbRating)" aria-hidden="true">★</span></a>
+                <a v-if="item.imdbId" class="imdb" :href="imdbUrl(item)" target="_blank" rel="noopener noreferrer"><span :class="{ 'no-data': !hasRating(item.imdbRating) }">{{ formatRating(item.imdbRating, t) }}</span><span class="star" v-if="isHighRating(item.imdbRating)" aria-hidden="true">★</span></a><span v-else class="no-data">{{ formatRating(item.imdbRating, t) }}</span>
               </td>
             </tr>
             <tr v-if="!items.length">
