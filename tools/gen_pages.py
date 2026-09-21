@@ -62,7 +62,7 @@ THEME_SCRIPT = """  <script>
 THEME_MARK = ("<!-- begin:theme-script -->", "<!-- end:theme-script -->")
 NSCRIPT_MARK = ("<!-- begin:catalog-noscript -->", "<!-- end:catalog-noscript -->")
 LD_MARK = ("<!-- begin:index-ld -->", "<!-- end:index-ld -->")
-METRIKA_MARK = ("<!-- begin:metrika -->", "<!-- end:metrika -->")
+METRIKA_MARK = ("<!-- run:metrika counter -->", "<!-- end:metrika -->")
 
 METRIKA_ID = "112571181"
 METRIKA_SCRIPT = """  <!-- Yandex.Metrika counter -->
