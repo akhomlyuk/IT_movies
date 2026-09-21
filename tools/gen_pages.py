@@ -554,11 +554,11 @@ def render(item, related):
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{esc(title_ru)} — IT Movies</title>
   <meta name="description" content="{esc(desc_ru)}">
-  <meta property="og:title" content="{esc(title_ru)} — IT Movies">
-  <meta property="og:description" content="{esc(desc_ru)}">
+  <meta property="og:title" content="{esc(title_en)} — IT Movies">
+  <meta property="og:description" content="{esc(desc_en)}">
   <meta property="og:type" content="{og_type}">
-  <meta property="og:locale" content="ru_RU">
-  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="ru_RU">
   <meta property="og:url" content="{page_url}">
   <meta property="og:site_name" content="IT Movies">
   <meta property="og:image" content="{poster_abs}">
