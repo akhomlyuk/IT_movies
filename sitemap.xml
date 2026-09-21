@@ -1,1250 +1,782 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/"/>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/privacy.html</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/privacy.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/privacy.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/privacy.html"/>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/kp-11442722-how-to-access-everything-reverse-engineering/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/kp-11442722-how-to-access-everything-reverse-engineering/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/kp-11442722-how-to-access-everything-reverse-engineering/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/kp-11442722-how-to-access-everything-reverse-engineering/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0083658-blade-runner/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0083658-blade-runner/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0083658-blade-runner/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0083658-blade-runner/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0084827-tron/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0084827-tron/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0084827-tron/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0084827-tron/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0086567-wargames/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0086567-wargames/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0086567-wargames/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0086567-wargames/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0088247-the-terminator/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0088247-the-terminator/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0088247-the-terminator/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0088247-the-terminator/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0103064-terminator-2-judgment-day/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0103064-terminator-2-judgment-day/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0103064-terminator-2-judgment-day/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0103064-terminator-2-judgment-day/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0104692-the-lawnmower-man/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0104692-the-lawnmower-man/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0104692-the-lawnmower-man/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0104692-the-lawnmower-man/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0105435-sneakers/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0105435-sneakers/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0105435-sneakers/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0105435-sneakers/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0113243-hackers/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0113243-hackers/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0113243-hackers/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0113243-hackers/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0113481-johnny-mnemonic/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0113481-johnny-mnemonic/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0113481-johnny-mnemonic/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0113481-johnny-mnemonic/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0113957-the-net/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0113957-the-net/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0113957-the-net/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0113957-the-net/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0114746-twelve-monkeys/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0114746-twelve-monkeys/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0114746-twelve-monkeys/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0114746-twelve-monkeys/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0114857-virtuosity/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0114857-virtuosity/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0114857-virtuosity/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0114857-virtuosity/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0120660-enemy-of-the-state/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0120660-enemy-of-the-state/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0120660-enemy-of-the-state/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0120660-enemy-of-the-state/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0120907-existenz/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0120907-existenz/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0120907-existenz/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0120907-existenz/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0133093-the-matrix/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0133093-the-matrix/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0133093-the-matrix/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0133093-the-matrix/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0138704-pi/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0138704-pi/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0138704-pi/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0138704-pi/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0139809-the-thirteenth-floor/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0139809-the-thirteenth-floor/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0139809-the-thirteenth-floor/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0139809-the-thirteenth-floor/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0159784-takedown/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0159784-takedown/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0159784-takedown/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0159784-takedown/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0168122-pirates-of-silicon-valley/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0168122-pirates-of-silicon-valley/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0168122-pirates-of-silicon-valley/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0168122-pirates-of-silicon-valley/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0181689-minority-report/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0181689-minority-report/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0181689-minority-report/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0181689-minority-report/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0218817-antitrust/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0218817-antitrust/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0218817-antitrust/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0218817-antitrust/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0234215-the-matrix-reloaded/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0234215-the-matrix-reloaded/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0234215-the-matrix-reloaded/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0234215-the-matrix-reloaded/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0244244-swordfish/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0244244-swordfish/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0244244-swordfish/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0244244-swordfish/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0308449-the-kgb-the-computer-and-me/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0308449-the-kgb-the-computer-and-me/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0308449-the-kgb-the-computer-and-me/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0308449-the-kgb-the-computer-and-me/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0308808-revolution-os/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0308808-revolution-os/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0308808-revolution-os/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0308808-revolution-os/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0309614-freedom-downtime/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0309614-freedom-downtime/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0309614-freedom-downtime/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0309614-freedom-downtime/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0315417-the-code/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0315417-the-code/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0315417-the-code/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0315417-the-code/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0317042-one-point-o/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0317042-one-point-o/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0317042-one-point-o/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0317042-one-point-o/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0337978-live-free-or-die-hard/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0337978-live-free-or-die-hard/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0337978-live-free-or-die-hard/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0337978-live-free-or-die-hard/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0343818-i-robot/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0343818-i-robot/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0343818-i-robot/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0343818-i-robot/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0390384-primer/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0390384-primer/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0390384-primer/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0390384-primer/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0399201-the-island/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0399201-the-island/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0399201-the-island/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0399201-the-island/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0408345-firewall/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0408345-firewall/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0408345-firewall/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0408345-firewall/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0449077-the-net-20/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0449077-the-net-20/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0449077-the-net-20/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0449077-the-net-20/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0460402-bbs-the-documentary/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0460402-bbs-the-documentary/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0460402-bbs-the-documentary/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0460402-bbs-the-documentary/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0466043-khottabych/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0466043-khottabych/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0466043-khottabych/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0466043-khottabych/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0470752-ex-machina/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0470752-ex-machina/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0470752-ex-machina/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0470752-ex-machina/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0475784-westworld/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0475784-westworld/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0475784-westworld/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0475784-westworld/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0478087-21/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0478087-21/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0478087-21/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0478087-21/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0487831-the-it-crowd/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0487831-the-it-crowd/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0487831-the-it-crowd/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0487831-the-it-crowd/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0808532-hacking-democracy/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0808532-hacking-democracy/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0808532-hacking-democracy/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0808532-hacking-democracy/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0865957-wargames-the-dead-code/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0865957-wargames-the-dead-code/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0865957-wargames-the-dead-code/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0865957-wargames-the-dead-code/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt0880578-untraceable/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt0880578-untraceable/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt0880578-untraceable/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt0880578-untraceable/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt10133370-stalk/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt10133370-stalk/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt10133370-stalk/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt10133370-stalk/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1034032-gamer/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1034032-gamer/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1034032-gamer/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1034032-gamer/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1059786-eagle-eye/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1059786-eagle-eye/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1059786-eagle-eye/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1059786-eagle-eye/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1104001-tron-legacy/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1104001-tron-legacy/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1104001-tron-legacy/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1104001-tron-legacy/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1119644-fringe/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1119644-fringe/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1119644-fringe/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1119644-fringe/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1124039-echelon-conspiracy/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1124039-echelon-conspiracy/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1124039-echelon-conspiracy/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1124039-echelon-conspiracy/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt11318602-dont-fk-with-cats-hunting-an-internet-killer/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt11318602-dont-fk-with-cats-hunting-an-internet-killer/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt11318602-dont-fk-with-cats-hunting-an-internet-killer/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt11318602-dont-fk-with-cats-hunting-an-internet-killer/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt11354168-the-perfect-weapon/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt11354168-the-perfect-weapon/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt11354168-the-perfect-weapon/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt11354168-the-perfect-weapon/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt11394170-coded-bias/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt11394170-coded-bias/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt11394170-coded-bias/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt11394170-coded-bias/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt11464826-the-social-dilemma/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt11464826-the-social-dilemma/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt11464826-the-social-dilemma/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt11464826-the-social-dilemma/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt11858890-the-creator/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt11858890-the-creator/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt11858890-the-creator/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt11858890-the-creator/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1199631-in-the-realm-of-the-hackers/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1199631-in-the-realm-of-the-hackers/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1199631-in-the-realm-of-the-hackers/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1199631-in-the-realm-of-the-hackers/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt12041084-kill-chain-the-cyber-war-on-americas-elections/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt12041084-kill-chain-the-cyber-war-on-americas-elections/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt12041084-kill-chain-the-cyber-war-on-americas-elections/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt12041084-kill-chain-the-cyber-war-on-americas-elections/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1219827-ghost-in-the-shell/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1219827-ghost-in-the-shell/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1219827-ghost-in-the-shell/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1219827-ghost-in-the-shell/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt12759400-high-score/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt12759400-high-score/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt12759400-high-score/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt12759400-high-score/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1279942-hackers-are-people-too/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1279942-hackers-are-people-too/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1279942-hackers-are-people-too/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1279942-hackers-are-people-too/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1285016-the-social-network/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1285016-the-social-network/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1285016-the-social-network/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1285016-the-social-network/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt12967950-agents-of-chaos/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt12967950-agents-of-chaos/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt12967950-agents-of-chaos/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt12967950-agents-of-chaos/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1375666-inception/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1375666-inception/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1375666-inception/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1375666-inception/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1422757-steal-this-film/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1422757-steal-this-film/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1422757-steal-this-film/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1422757-steal-this-film/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt14404802-durov/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt14404802-durov/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt14404802-durov/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt14404802-durov/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt15392100-the-billion-dollar-code/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt15392100-the-billion-dollar-code/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt15392100-the-billion-dollar-code/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt15392100-the-billion-dollar-code/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt15866282-offlayn/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt15866282-offlayn/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt15866282-offlayn/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt15866282-offlayn/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1637688-in-time/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1637688-in-time/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1637688-in-time/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1637688-in-time/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1677720-ready-player-one/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1677720-ready-player-one/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1677720-ready-player-one/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1677720-ready-player-one/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1684716-download-the-true-story-of-the-internet/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1684716-download-the-true-story-of-the-internet/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1684716-download-the-true-story-of-the-internet/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1684716-download-the-true-story-of-the-internet/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1692889-plug-and-pray/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1692889-plug-and-pray/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1692889-plug-and-pray/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1692889-plug-and-pray/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1782451-good-copy-bad-copy/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1782451-good-copy-bad-copy/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1782451-good-copy-bad-copy/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1782451-good-copy-bad-copy/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1798709-her/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1798709-her/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1798709-her/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1798709-her/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt18224594-blade-runner-2099/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt18224594-blade-runner-2099/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt18224594-blade-runner-2099/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt18224594-blade-runner-2099/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1824254-we-steal-secrets-the-story-of-wikileaks/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1824254-we-steal-secrets-the-story-of-wikileaks/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1824254-we-steal-secrets-the-story-of-wikileaks/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1824254-we-steal-secrets-the-story-of-wikileaks/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1837703-the-fifth-estate/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1837703-the-fifth-estate/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1837703-the-fifth-estate/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1837703-the-fifth-estate/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1839578-person-of-interest/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1839578-person-of-interest/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1839578-person-of-interest/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1839578-person-of-interest/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1856101-blade-runner-2049/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1856101-blade-runner-2049/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1856101-blade-runner-2049/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1856101-blade-runner-2049/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt18573320-russian-hackers-the-beginning/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt18573320-russian-hackers-the-beginning/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt18573320-russian-hackers-the-beginning/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt18573320-russian-hackers-the-beginning/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt1942884-indie-game-the-movie/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt1942884-indie-game-the-movie/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt1942884-indie-game-the-movie/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt1942884-indie-game-the-movie/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2033981-downloaded/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2033981-downloaded/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2033981-downloaded/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2033981-downloaded/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2073120-the-singularity/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2073120-the-singularity/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2073120-the-singularity/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2073120-the-singularity/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2084953-terms-and-conditions-may-apply/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2084953-terms-and-conditions-may-apply/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2084953-terms-and-conditions-may-apply/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2084953-terms-and-conditions-may-apply/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2084970-the-imitation-game/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2084970-the-imitation-game/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2084970-the-imitation-game/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2084970-the-imitation-game/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2085059-black-mirror/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2085059-black-mirror/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2085059-black-mirror/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2085059-black-mirror/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2104994-steve-jobs-the-lost-interview/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2104994-steve-jobs-the-lost-interview/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2104994-steve-jobs-the-lost-interview/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2104994-steve-jobs-the-lost-interview/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt21379574-running-with-the-devil-the-wild-world-of-john-mcafee/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt21379574-running-with-the-devil-the-wild-world-of-john-mcafee/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt21379574-running-with-the-devil-the-wild-world-of-john-mcafee/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt21379574-running-with-the-devil-the-wild-world-of-john-mcafee/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2177843-we-are-legion-the-story-of-the-hacktivists/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2177843-we-are-legion-the-story-of-the-hacktivists/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2177843-we-are-legion-the-story-of-the-hacktivists/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2177843-we-are-legion-the-story-of-the-hacktivists/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2201890-the-scene/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2201890-the-scene/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2201890-the-scene/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2201890-the-scene/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2209764-transcendence/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2209764-transcendence/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2209764-transcendence/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2209764-transcendence/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2261227-altered-carbon/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2261227-altered-carbon/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2261227-altered-carbon/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2261227-altered-carbon/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2292707-hackers-wanted/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2292707-hackers-wanted/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2292707-hackers-wanted/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2292707-hackers-wanted/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2357453-underground-the-julian-assange-story/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2357453-underground-the-julian-assange-story/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2357453-underground-the-julian-assange-story/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2357453-underground-the-julian-assange-story/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt23872886-zero-day/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt23872886-zero-day/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt23872886-zero-day/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt23872886-zero-day/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2390367-war-for-the-web/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2390367-war-for-the-web/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2390367-war-for-the-web/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2390367-war-for-the-web/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2409818-open-windows/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2409818-open-windows/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2409818-open-windows/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2409818-open-windows/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2417174-dsknectd/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2417174-dsknectd/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2417174-dsknectd/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2417174-dsknectd/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2543312-halt-and-catch-fire/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2543312-halt-and-catch-fire/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2543312-halt-and-catch-fire/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2543312-halt-and-catch-fire/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2551516-google-and-the-world-brain/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2551516-google-and-the-world-brain/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2551516-google-and-the-world-brain/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2551516-google-and-the-world-brain/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2575988-silicon-valley/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2575988-silicon-valley/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2575988-silicon-valley/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2575988-silicon-valley/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2608732-tpb-afk-the-pirate-bay-away-from-keyboard/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2608732-tpb-afk-the-pirate-bay-away-from-keyboard/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2608732-tpb-afk-the-pirate-bay-away-from-keyboard/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2608732-tpb-afk-the-pirate-bay-away-from-keyboard/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt26656021-koroche-plan-takoy/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt26656021-koroche-plan-takoy/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt26656021-koroche-plan-takoy/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt26656021-koroche-plan-takoy/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2679552-it/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2679552-it/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2679552-it/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2679552-it/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2693776-intelligence/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2693776-intelligence/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2693776-intelligence/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2693776-intelligence/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2717822-blackhat/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2717822-blackhat/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2717822-blackhat/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2717822-blackhat/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt2910814-the-signal/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt2910814-the-signal/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt2910814-the-signal/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt2910814-the-signal/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt29472617-cyberbunker-the-criminal-underworld/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt29472617-cyberbunker-the-criminal-underworld/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt29472617-cyberbunker-the-criminal-underworld/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt29472617-cyberbunker-the-criminal-underworld/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt30221618-safe-harbor/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt30221618-safe-harbor/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt30221618-safe-harbor/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt30221618-safe-harbor/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt3042408-who-am-i/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt3042408-who-am-i/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt3042408-who-am-i/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt3042408-who-am-i/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt30444310-murderbot/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt30444310-murderbot/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt30444310-murderbot/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt30444310-murderbot/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt31050594-mercy/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt31050594-mercy/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt31050594-mercy/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt31050594-mercy/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt3148266-12-monkeys/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt3148266-12-monkeys/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt3148266-12-monkeys/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt3148266-12-monkeys/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt3153582-listening/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt3153582-listening/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt3153582-listening/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt3153582-listening/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt3173594-hacker/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt3173594-hacker/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt3173594-hacker/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt3173594-hacker/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt3214002-video-games-the-movie/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt3214002-video-games-the-movie/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt3214002-video-games-the-movie/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt3214002-video-games-the-movie/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt3268458-the-internets-own-boy-the-story-of-aaron-swartz/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt3268458-the-internets-own-boy-the-story-of-aaron-swartz/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt3268458-the-internets-own-boy-the-story-of-aaron-swartz/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt3268458-the-internets-own-boy-the-story-of-aaron-swartz/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt3312868-deep-web/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt3312868-deep-web/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt3312868-deep-web/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt3312868-deep-web/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt3472226-kung-fury/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt3472226-kung-fury/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt3472226-kung-fury/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt3472226-kung-fury/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt3514324-scorpion/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt3514324-scorpion/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt3514324-scorpion/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt3514324-scorpion/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt3560060-csi-cyber/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt3560060-csi-cyber/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt3560060-csi-cyber/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt3560060-csi-cyber/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt3715406-atari-game-over/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt3715406-atari-game-over/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt3715406-atari-game-over/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt3715406-atari-game-over/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt3774114-snowden/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt3774114-snowden/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt3774114-snowden/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt3774114-snowden/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt3914672-the-code/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt3914672-the-code/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt3914672-the-code/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt3914672-the-code/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt39150120-the-ai-doc-or-how-i-became-an-apocaloptimist/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt39150120-the-ai-doc-or-how-i-became-an-apocaloptimist/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt39150120-the-ai-doc-or-how-i-became-an-apocaloptimist/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt39150120-the-ai-doc-or-how-i-became-an-apocaloptimist/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt4044364-citizenfour/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt4044364-citizenfour/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt4044364-citizenfour/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt4044364-citizenfour/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt4047350-the-hacker-wars/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt4047350-the-hacker-wars/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt4047350-the-hacker-wars/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt4047350-the-hacker-wars/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt4122068-humans/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt4122068-humans/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt4122068-humans/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt4122068-humans/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt4158110-mr-robot/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt4158110-mr-robot/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt4158110-mr-robot/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt4158110-mr-robot/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt4287320-the-circle/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt4287320-the-circle/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt4287320-the-circle/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt4287320-the-circle/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt4520364-morgan/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt4520364-morgan/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt4520364-morgan/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt4520364-morgan/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt4736550-the-great-hack/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt4736550-the-great-hack/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt4736550-the-great-hack/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt4736550-the-great-hack/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt5028002-startup/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt5028002-startup/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt5028002-startup/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt5028002-startup/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt5095076-wardriver/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt5095076-wardriver/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt5095076-wardriver/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt5095076-wardriver/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt5215462-console-wars/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt5215462-console-wars/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt5215462-console-wars/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt5215462-console-wars/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt5275828-lo-and-behold-reveries-of-the-connected-world/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt5275828-lo-and-behold-reveries-of-the-connected-world/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt5275828-lo-and-behold-reveries-of-the-connected-world/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt5275828-lo-and-behold-reveries-of-the-connected-world/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt5397194-anon/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt5397194-anon/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt5397194-anon/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt5397194-anon/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt5397520-dark-net/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt5397520-dark-net/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt5397520-dark-net/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt5397520-dark-net/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt5446858-zero-days/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt5446858-zero-days/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt5446858-zero-days/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt5446858-zero-days/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt5462886-you-are-wanted/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt5462886-you-are-wanted/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt5462886-you-are-wanted/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt5462886-you-are-wanted/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt5651844-travelers/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt5651844-travelers/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt5651844-travelers/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt5651844-travelers/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt5818010-the-secret-rules-of-modern-living-algorithms/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt5818010-the-secret-rules-of-modern-living-algorithms/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt5818010-the-secret-rules-of-modern-living-algorithms/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt5818010-the-secret-rules-of-modern-living-algorithms/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt6152554-do-you-trust-this-computer/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt6152554-do-you-trust-this-computer/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt6152554-do-you-trust-this-computer/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt6152554-do-you-trust-this-computer/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt6499752-upgrade/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt6499752-upgrade/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt6499752-upgrade/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt6499752-upgrade/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt6604188-tron-ares/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt6604188-tron-ares/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt6604188-tron-ares/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt6604188-tron-ares/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt6700846-alphago/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt6700846-alphago/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt6700846-alphago/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt6700846-alphago/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt6882604-archive/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt6882604-archive/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt6882604-archive/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt6882604-archive/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt7826376-upload/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt7826376-upload/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt7826376-upload/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt7826376-upload/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt8134186-devs/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt8134186-devs/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt8134186-devs/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt8134186-devs/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt8291284-the-peripheral/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt8291284-the-peripheral/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt8291284-the-peripheral/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt8291284-the-peripheral/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt8421554-the-age-of-ai/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt8421554-the-age-of-ai/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt8421554-the-age-of-ai/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt8421554-the-age-of-ai/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt8488126-the-inventor-out-for-blood-in-silicon-valley/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt8488126-the-inventor-out-for-blood-in-silicon-valley/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt8488126-the-inventor-out-for-blood-in-silicon-valley/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt8488126-the-inventor-out-for-blood-in-silicon-valley/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt8879940-mythic-quest/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt8879940-mythic-quest/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt8879940-mythic-quest/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt8879940-mythic-quest/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt9055630-h0us3/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt9055630-h0us3/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt9055630-h0us3/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt9055630-h0us3/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://akhomlyuk.github.io/IT_movies/films/tt9814116-brave-new-world/</loc>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://akhomlyuk.github.io/IT_movies/films/tt9814116-brave-new-world/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://akhomlyuk.github.io/IT_movies/films/tt9814116-brave-new-world/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://akhomlyuk.github.io/IT_movies/films/tt9814116-brave-new-world/"/>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

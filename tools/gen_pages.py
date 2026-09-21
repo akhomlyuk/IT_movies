@@ -328,15 +328,6 @@ def inject_metrika(src):
     )
 
 
-def alt_links(url):
-    """hreflang alternate links for the sitemap (ru/en/x-default)."""
-    return (
-        f'    <xhtml:link rel="alternate" hreflang="ru" href="{url}"/>\n'
-        f'    <xhtml:link rel="alternate" hreflang="en" href="{url}"/>\n'
-        f'    <xhtml:link rel="alternate" hreflang="x-default" href="{url}"/>\n'
-    )
-
-
 def generate_webmanifest():
     """static/site.webmanifest — generated from SITE_BASE (single source)."""
     return (
@@ -371,31 +362,27 @@ def generate_robots_txt():
 
 
 def generate_sitemap(catalog):
-    """sitemap.xml with hreflang alternates, changefreq, priority 0.7."""
+    """sitemap.xml with changefreq and priority (no hreflang: language is client-side, no separate EN URLs)."""
     slugs_sorted = sorted(item_slug(item) for item in catalog)
     film_urls = "".join(
         "  <url>\n"
         f"    <loc>{SITE_BASE}/films/{slug}/</loc>\n"
-        + alt_links(f"{SITE_BASE}/films/{slug}/")
-        + "    <changefreq>monthly</changefreq>\n"
+        "    <changefreq>monthly</changefreq>\n"
         "    <priority>0.7</priority>\n"
         "  </url>\n"
         for slug in slugs_sorted
     )
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
-        ' xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         "  <url>\n"
         f"    <loc>{SITE_BASE}/</loc>\n"
-        + alt_links(SITE_BASE + "/")
-        + "    <changefreq>monthly</changefreq>\n"
+        "    <changefreq>monthly</changefreq>\n"
         "    <priority>1.0</priority>\n"
         "  </url>\n"
         "  <url>\n"
         f"    <loc>{SITE_BASE}/privacy.html</loc>\n"
-        + alt_links(SITE_BASE + "/privacy.html")
-        + "    <changefreq>monthly</changefreq>\n"
+        "    <changefreq>monthly</changefreq>\n"
         "    <priority>0.3</priority>\n"
         "  </url>\n"
         + film_urls

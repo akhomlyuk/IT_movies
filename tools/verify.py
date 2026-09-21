@@ -593,6 +593,67 @@ print(f"Sitemap: {sitemap_note}")
 print(f"robots.txt: {robots_note}")
 print(f"webmanifest: {webmanifest_note}")
 print(f"Canonical: checked ({canon_checked} pages + index/404/privacy)")
+
+# 9g. Static language coherence (runtime switches derive from one source — the
+# <html lang>/<title>/<meta description> markup is what crawlers read pre-JS):
+#   * <html lang> must match the language of the static <title> and <meta name="description">
+#   * og:locale must match the language of og:description
+CYRILLIC = re.compile(r"[А-Яа-яЁё]")
+
+
+def _text_lang(s):
+    return "ru" if CYRILLIC.search(s) else "en"
+
+
+def _lang_coherence(fname, text):
+    html = re.search(r'<html lang="([^"]+)"\s*>', text)
+    if not html:
+        errors.append(f"{fname}: <html lang> attribute missing")
+        return
+    page_lang = html.group(1)
+    m = re.search(r"<title[^>]*>(.*?)</title>", text, re.S)
+    if not m:
+        errors.append(f"{fname}: <title> missing")
+        return
+    title_lang = _text_lang(m.group(1))
+    if CYRILLIC.search(m.group(1)) and title_lang != page_lang:
+        # Cyrillic title on an otherwise-EN page, or non-Cyrillic lang mismatch;
+        # a Latin-only title is language-ambiguous (untranslated film titles on RU pages)
+        errors.append(
+            f"{fname}: <html lang=\"{page_lang}\"> conflicts with <title> ({title_lang})"
+        )
+    d = re.search(r'<meta name="description" content="([^"]*)"', text)
+    if d and _text_lang(d.group(1)) != page_lang:
+        errors.append(
+            f"{fname}: <html lang=\"{page_lang}\"> conflicts with meta description "
+            f"({_text_lang(d.group(1))})"
+        )
+    ogl = re.search(r'<meta property="og:locale" content="([^"]+)"', text)
+    ogd = re.search(r'<meta property="og:description" content="([^"]*)"', text)
+    if ogl and ogd:
+        loc_lang = ogl.group(1).split("_")[0]
+        if _text_lang(ogd.group(1)) != loc_lang:
+            errors.append(
+                f"{fname}: og:locale={ogl.group(1)} conflicts with og:description "
+                f"({_text_lang(ogd.group(1))})"
+            )
+
+
+lang_checked = 0
+for fname, src in (
+    ("index.html", index_src),
+    ("404.html", notfound_src),
+    ("privacy.html", privacy_src),
+):
+    _lang_coherence(fname, src)
+    lang_checked += 1
+for slug in sorted(slugs):
+    _lang_coherence(
+        f"films/{slug}/index.html",
+        (ROOT / "films" / slug / "index.html").read_text(encoding="utf-8"),
+    )
+    lang_checked += 1
+print(f"Language/OG coherence: checked ({lang_checked} pages)")
 if (ROOT / ".nojekyll").exists():
     print(".nojekyll: present")
 print()
