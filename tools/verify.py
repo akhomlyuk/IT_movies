@@ -490,7 +490,7 @@ for fname, src in (
 ):
     if metrika_needle not in src:
         errors.append(f"{fname}: Yandex.Metrika snippet missing")
-    if _mark_block(src, "<!-- run:metrika counter -->", "<!-- end:metrika -->") != metrika_core:
+    if _mark_block(src, "<!-- begin:metrika -->", "<!-- end:metrika -->") != metrika_core:
         errors.append(f"{fname} metrika block differs from gen_pages.METRIKA_SCRIPT — run gen_pages.py")
 for page in sorted((ROOT / "films").glob("*/index.html")):
     metrika_checked += 1
