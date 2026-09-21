@@ -55,8 +55,6 @@ THEME_SCRIPT = """  <script>
       }
       if (t === "dark") {
         document.documentElement.classList.add("dark");
-        var m = document.querySelector('meta[name="theme-color"]');
-        if (m) m.setAttribute("content", "#1a1a1f");
       }
     })();
   </script>"""
@@ -568,6 +566,7 @@ def render(item, related):
   <meta name="twitter:image" content="{poster_abs}">
   <link rel="canonical" href="{page_url}">
   <meta name="theme-color" content="#f4f3ef">
+  <meta name="theme-color" content="#1a1a1f" media="(prefers-color-scheme: dark)">
 {preload_poster}{THEME_SCRIPT}
   <link rel="manifest" href="../../static/site.webmanifest">
   <link rel="icon" href="../../static/favicons/favicon.ico" sizes="48x48">

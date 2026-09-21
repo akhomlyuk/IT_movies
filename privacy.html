@@ -12,6 +12,7 @@
   <meta property="og:site_name" content="IT Movies">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/privacy.html">
   <meta name="theme-color" content="#f4f3ef">
+  <meta name="theme-color" content="#1a1a1f" media="(prefers-color-scheme: dark)">
   <!-- begin:theme-script -->
   <script>
     (function () {
@@ -25,8 +26,6 @@
       }
       if (t === "dark") {
         document.documentElement.classList.add("dark");
-        var m = document.querySelector('meta[name="theme-color"]');
-        if (m) m.setAttribute("content", "#1a1a1f");
       }
     })();
   </script>
@@ -308,9 +307,7 @@
           btn.classList.toggle("active", on);
           btn.setAttribute("aria-pressed", on ? "true" : "false");
         });
-        var metaTheme = document.querySelector('meta[name="theme-color"]');
         document.documentElement.classList.toggle("dark", theme === "dark");
-        if (metaTheme) metaTheme.setAttribute("content", theme === "dark" ? "#1a1a1f" : "#f4f3ef");
         document.querySelectorAll("[data-theme]").forEach(function (btn) {
           var on = btn.getAttribute("data-theme") === theme;
           btn.classList.toggle("active", on);

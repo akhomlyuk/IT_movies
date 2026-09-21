@@ -7,6 +7,7 @@
   <title>404 — Page not found | IT Movies</title>
   <meta name="description" content="Page not found. Back to the curated list of films and series about computers, technology and AI.">
   <meta name="theme-color" content="#f4f3ef">
+  <meta name="theme-color" content="#1a1a1f" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="static/site.webmanifest">
   <link rel="icon" href="static/favicons/favicon.ico" sizes="48x48">
   <link rel="icon" type="image/png" sizes="16x16" href="static/favicons/favicon-16x16.png">
@@ -33,8 +34,6 @@
       }
       if (t === "dark") {
         document.documentElement.classList.add("dark");
-        var m = document.querySelector('meta[name="theme-color"]');
-        if (m) m.setAttribute("content", "#1a1a1f");
       }
     })();
   </script>

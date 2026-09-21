@@ -7,7 +7,8 @@ up a throwaway http.server on a free port and runs four scenarios:
 
 1. main page: typing "матриц" leaves exactly the two Matrix films
 2. main page: the EN toggle switches document.title to the English variant
-3. film page: the theme toggle flips html.dark and meta[name=theme-color]
+3. film page: the theme toggle flips html.dark; theme-color is declared
+   statically as light + dark (media) metas, not swapped by JS
 4. main page: blocking js/catalog.js reveals the #boot-fallback message
 
 Each scenario uses a fresh browser context (localStorage is not shared,
@@ -64,12 +65,13 @@ def test_main_lang(page, base):
 
 def test_film_theme(page, base):
     page.goto(base + FILM_PAGE, wait_until="domcontentloaded")
-    meta = page.locator('meta[name="theme-color"]')
+    light = page.locator('meta[name="theme-color"]:not([media])')
+    dark = page.locator('meta[name="theme-color"][media="(prefers-color-scheme: dark)"]')
+    expect(light).to_have_attribute("content", META_LIGHT)
+    expect(dark).to_have_attribute("content", META_DARK)
     expect(page.locator("html.dark")).to_have_count(0)
-    expect(meta).to_have_attribute("content", META_LIGHT)
     page.locator('.theme-toggle button[aria-label="Тёмная тема"]').click()
     expect(page.locator("html.dark")).to_have_count(1)
-    expect(meta).to_have_attribute("content", META_DARK)
     page.locator(".share-row").wait_for(state="visible")
     assert page.locator(".share-row a.share-btn[data-net]").count() >= 3
     assert page.locator(".related ul li a").count() >= 1

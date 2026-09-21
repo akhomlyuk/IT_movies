@@ -191,7 +191,6 @@ const app = createApp({
   setup() {
     const urlParams = new URLSearchParams(location.search);
     const lang = ref(langFrom(urlParams, safeRead));
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     const colorScheme = window.matchMedia("(prefers-color-scheme: light)");
     const theme = ref(themeFrom(urlParams, safeRead));
     const query = ref(urlParams.get("q") || "");
@@ -263,7 +262,7 @@ const app = createApp({
 
     watch(
       theme,
-      (value) => toggleThemeClass(value, metaThemeColor),
+      (value) => toggleThemeClass(value),
       { immediate: true }
     );
 

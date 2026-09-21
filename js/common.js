@@ -83,14 +83,8 @@ window.ITMoviesCommon = (function () {
         : "dark";
   }
 
-  function toggleThemeClass(value, metaThemeColor) {
+  function toggleThemeClass(value) {
     document.documentElement.classList.toggle("dark", value === "dark");
-    if (metaThemeColor) {
-      metaThemeColor.setAttribute(
-        "content",
-        value === "dark" ? "#1a1a1f" : "#f4f3ef"
-      );
-    }
   }
 
   function updateScrollState(showRef) {
