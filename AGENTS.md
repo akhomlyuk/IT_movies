@@ -33,6 +33,7 @@ python -m http.server 8000
   - `smoke.js` — node smoke harnesses (app.js / slug parity / film.js / related parity, each also run against `.min.js` via `--min`) driven by `verify.py`
   - `pw_kp.py` — Kinopoisk search + rating lookup via Playwright (kpId, kpRating, kpVotes, IMDb sub-rating)
   - `kp_votes.py` — bulk Kinopoisk vote-count collector over existing kpId values (resume via `_tmp/kp_votes.json`, `--limit`/`--reset-null`)
+  - `e2e.py` — optional real-browser smoke (Playwright + chromium, local only, NOT part of the verify gate): main-page filter/lang, film-page theme/share/related, bootstrap fallback
   - `show_types.py` — prints every record with its line number in `js/data.js`
 
 ## CRITICAL rules

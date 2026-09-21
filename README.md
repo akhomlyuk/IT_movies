@@ -32,6 +32,7 @@ Or just serve the repo root with any static file server (e.g. `npx serve`).
 - `tools/smoke.js` — node smoke harnesses (app.js / slug parity / film.js / related parity) driven by `tools/verify.py`
 - `tools/pw_kp.py` — Kinopoisk search + rating lookup via Playwright (kpId, kpRating, kpVotes, IMDb sub-rating)
 - `tools/kp_votes.py` — bulk Kinopoisk vote-count collector over existing kpId values (resume via `_tmp/kp_votes.json`, `--limit`/`--reset-null`)
+- `tools/e2e.py` — optional real-browser smoke (Playwright + chromium, local only): main-page filter/lang, film-page theme/share/related, bootstrap fallback
 - `tools/show_types.py` — prints every catalog record with its source line number
 
 ## Copyright & Posters
