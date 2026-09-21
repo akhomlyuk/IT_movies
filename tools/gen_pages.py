@@ -528,7 +528,7 @@ def render(item, related):
         dims = f' width="{poster_dims[0]}" height="{poster_dims[1]}"' if poster_dims else ""
         noscript_poster = (
             f'      <figure class="film-poster">\n'
-            f'        <img src="../../{poster}" alt="{esc(title_ru)}"{dims}>\n'
+            f'        <img src="../../{poster}" alt="{esc(title_ru)}"{dims} decoding="async">\n'
             "      </figure>\n"
         )
 
@@ -539,11 +539,11 @@ def render(item, related):
 
     rat_tiles = (
         f'        <div class="ratings">\n'
-        f'          <a class="kp" href="https://www.kinopoisk.ru/film/{item["kpId"]}/" target="_blank" rel="noopener">Кинопоиск: {esc(fmt_rating(item.get("kpRating")))}{esc(star(item.get("kpRating")))}</a>\n'
+        f'          <a class="kp" href="https://www.kinopoisk.ru/film/{item["kpId"]}/" target="_blank" rel="noopener noreferrer">Кинопоиск: {esc(fmt_rating(item.get("kpRating")))}{esc(star(item.get("kpRating")))}</a>\n'
     )
     if item.get("imdbId"):
         rat_tiles += (
-            f'          <a class="imdb" href="https://www.imdb.com/title/{item["imdbId"]}/" target="_blank" rel="noopener">IMDb: {esc(fmt_rating(item.get("imdbRating")))}{esc(star(item.get("imdbRating")))}</a>\n'
+            f'          <a class="imdb" href="https://www.imdb.com/title/{item["imdbId"]}/" target="_blank" rel="noopener noreferrer">IMDb: {esc(fmt_rating(item.get("imdbRating")))}{esc(star(item.get("imdbRating")))}</a>\n'
         )
     rat_tiles += "        </div>\n"
 
@@ -617,7 +617,7 @@ def render(item, related):
         </section>
       </main>
       <footer>
-        <span>Сделано с</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener">Exited3n</a> <span> · </span> <a href="../../privacy.html">Политика конфиденциальности</a>
+        <span>Сделано с</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a> <span> · </span> <a href="../../privacy.html">Политика конфиденциальности</a>
       </footer>
     </noscript>
   </div>
