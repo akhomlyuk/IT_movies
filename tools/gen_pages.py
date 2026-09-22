@@ -604,7 +604,8 @@ def render(item, related):
         </section>
       </main>
       <footer>
-        <span>Сделано с</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a> <span> · </span> <a href="../../privacy.html">Политика конфиденциальности</a>
+        <span>Сделано с</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
+        <a class="footer-privacy" href="../../privacy.html">Политика конфиденциальности</a>
       </footer>
     </noscript>
   </div>
