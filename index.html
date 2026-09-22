@@ -89,9 +89,10 @@
           <a href="./"><img src="static/logo.webp" alt="IT Movies Logo" fetchpriority="high" decoding="async" width="100" height="100"></a>
         </div>
         <div class="brand-text">
-          <h1>{{ t.title }}</h1>
-          <p>{{ t.subtitle }}</p>
-          <p class="invite" v-html="t.invite"></p>
+          <h1><span class="pre-mount">IT Movies</span><span class="post-mount">{{ t.title }}</span></h1>
+          <p><span class="pre-mount">Подборка фильмов и сериалов о компьютерах, технологиях, ИИ и т.д.</span><span class="post-mount">{{ t.subtitle }}</span></p>
+          <p class="invite pre-mount">Предложить фильм, сериал - <img src="static/telegram_32.png" alt="" width="16" height="16" loading="lazy" decoding="async" class="tg-icon"> <a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Whitehat Lab</a> или в <a href="https://t.me/whitehat_chat" target="_blank" rel="noopener noreferrer">чат</a></p>
+          <p class="invite post-mount" v-html="t.invite"></p>
         </div>
       </div>
       <div class="toolbar">

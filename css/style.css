@@ -1,5 +1,6 @@
 :root {
   color-scheme: light dark;
+  accent-color: var(--accent);
   --bg: #f4f3ef;
   --paper: #fbfaf7;
   --ink: #161513;
@@ -13,6 +14,25 @@
   --focus: #161513;
   --accent: #161513;
   --accent-ink: #fbfaf7;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    color-scheme: dark;
+    --bg: #1a1a1f;
+    --paper: #242429;
+    --ink: #e4e4e6;
+    --muted: #8e8e93;
+    --line: #333338;
+    --line-strong: #45454a;
+    --hover: #2c2c31;
+    --dot: rgba(142, 142, 147, 0.08);
+    --kp: #ff8533;
+    --imdb: #e2c04a;
+    --focus: #e4e4e6;
+    --accent: #e8c547;
+    --accent-ink: #161513;
+  }
 }
 
 @font-face {
@@ -89,6 +109,26 @@ a {
 
 html.js #app[v-cloak] > :not(noscript) {
   visibility: hidden;
+}
+
+html.js #app[v-cloak] .brand {
+  visibility: visible;
+}
+
+.pre-mount {
+  display: none;
+}
+
+#app[v-cloak] span.pre-mount {
+  display: inline;
+}
+
+#app[v-cloak] p.pre-mount {
+  display: block;
+}
+
+#app[v-cloak] .post-mount {
+  display: none;
 }
 
 .top {
@@ -287,6 +327,16 @@ html.js #app[v-cloak] > :not(noscript) {
 
 section {
   margin-bottom: 2rem;
+}
+
+#series {
+  content-visibility: auto;
+  contain-intrinsic-size: auto none auto 2020px;
+}
+
+#documentaries {
+  content-visibility: auto;
+  contain-intrinsic-size: auto none auto 3427px;
 }
 
 section h2 {
