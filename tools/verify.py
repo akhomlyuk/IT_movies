@@ -189,13 +189,15 @@ for r in refs:
 
 # 6b. url(...) in styles resolve relative to css/
 css = (ROOT / "css" / "style.css").read_text(encoding="utf-8")
-css_urls = {u for u in re.findall(r"""url\(\s*["']?([^"')]+)["']?\s*\)""", css)}
+data_re = r"""url\(\s*(?:"data:[^"]*"|'data:[^']*'|data:[^)\s]*)\s*\)"""
+n_data = len(re.findall(data_re, css))
+css_urls = {u for u in re.findall(r"""url\(\s*["']?([^"')]+)["']?\s*\)""", re.sub(data_re, "", css))}
 for u in sorted(css_urls):
     if u.startswith(("data:", "http://", "https://", "#")):
         continue
     if not (ROOT / "css" / u).resolve().exists():
         errors.append(f"Broken url() in CSS: {u} (expected css/{u})")
-print(f"url() references in style.css: {len(css_urls)}")
+print(f"url() references in style.css: {len(css_urls) + n_data}")
 
 # 6c. Sitemap / robots.txt / webmanifest: single source in gen_pages.py
 sitemap_xml = gen_pages.generate_sitemap(catalog)

@@ -29,8 +29,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lib import ROOT  # noqa: E402
 
 FILM_PAGE = "films/tt0133093-the-matrix/index.html"
-META_DARK = "#1a1a1f"
-META_LIGHT = "#f4f3ef"
+META_DARK = "#171b2d"
+META_LIGHT = "#eef1f6"
 
 
 class QuietHandler(SimpleHTTPRequestHandler):

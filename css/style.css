@@ -1,73 +1,145 @@
 :root {
   color-scheme: light dark;
   accent-color: var(--accent);
-  --bg: #f4f3ef;
-  --paper: #fbfaf7;
-  --ink: #161513;
-  --muted: #6b6862;
-  --line: #e2dfd6;
-  --line-strong: #cfcbc0;
-  --hover: #eeebe3;
-  --dot: rgba(107, 104, 98, 0.1);
+  --bg: #eef1f6;
+  --paper: #fbfcfe;
+  --ink: #101728;
+  --muted: #4d5873;
+  --line: #dfe4ee;
+  --line-strong: #c3cbdd;
+  --hover: rgba(16, 23, 40, 0.05);
+  --dot: rgba(16, 23, 40, 0.05);
   --kp: #b84c00;
   --imdb: #8a6a00;
-  --focus: #161513;
-  --accent: #161513;
-  --accent-ink: #fbfaf7;
+  --focus: #101728;
+  --accent: #15803d;
+  --accent-ink: #ffffff;
+  --accent2: #0a5c33;
+  --th-bg: rgba(16, 23, 40, 0.03);
+  --glass: rgba(255, 255, 255, 0.55);
+  --glass-card: rgba(251, 252, 254, 0.82);
+  --glow: none;
+  --link-glow: none;
+  --title-glow: none;
+  --shadow: 0 10px 30px rgba(16, 23, 40, 0.08);
+  --shadow-soft: 0 2px 10px rgba(16, 23, 40, 0.06);
+  --chip-shadow: 0 2px 6px rgba(16, 23, 40, 0.18);
+  --chip-shadow-hover: 0 4px 10px rgba(16, 23, 40, 0.26);
+  --poster-glow: 0 14px 32px rgba(16, 23, 40, 0.22);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
     color-scheme: dark;
-    --bg: #1a1a1f;
-    --paper: #242429;
-    --ink: #e4e4e6;
-    --muted: #8e8e93;
-    --line: #333338;
-    --line-strong: #45454a;
-    --hover: #2c2c31;
-    --dot: rgba(142, 142, 147, 0.08);
+    --bg: #171b2d;
+    --paper: #1d2235;
+    --ink: #d8dee5;
+    --muted: #8b95a3;
+    --line: #333a55;
+    --line-strong: #4a5274;
+    --hover: rgba(255, 255, 255, 0.05);
+    --dot: rgba(255, 255, 255, 0.04);
     --kp: #ff8533;
     --imdb: #e2c04a;
-    --focus: #e4e4e6;
-    --accent: #e8c547;
-    --accent-ink: #161513;
+    --focus: #e8ecf7;
+    --accent: #16a34a;
+    --accent-ink: #06222b;
+    --accent2: #0e8f4a;
+    --th-bg: rgba(255, 255, 255, 0.03);
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-card: rgba(18, 23, 42, 0.78);
+    --glow: 0 0 12px rgba(22, 163, 74, 0.06);
+    --link-glow: 0 0 10px rgba(22, 163, 74, 0.07);
+    --title-glow: 0 0 24px rgba(22, 163, 74, 0.06);
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    --shadow-soft: 0 4px 14px rgba(0, 0, 0, 0.35);
+    --chip-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    --chip-shadow-hover: 0 4px 10px rgba(0, 0, 0, 0.45);
+    --poster-glow: 0 18px 40px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.4);
   }
 }
 
 @font-face {
-  font-family: "Roboto";
+  font-family: "Ubuntu";
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 400;
   font-display: swap;
-  src: url("../static/fonts/roboto-cyrillic.woff2") format("woff2");
+  src: url("../static/fonts/ubuntu-cyrillic-400-normal.woff2") format("woff2");
   unicode-range: U+0020, U+00A0, U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 
 @font-face {
-  font-family: "Roboto";
+  font-family: "Ubuntu";
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 400;
   font-display: swap;
-  src: url("../static/fonts/roboto-latin.woff2") format("woff2");
+  src: url("../static/fonts/ubuntu-latin-400-normal.woff2") format("woff2");
+  unicode-range: U+0020-007E, U+00A0-00FF, U+0131, U+0152-0153, U+02BC, U+02C6, U+02DA, U+02DC, U+0300-0301, U+0303, U+0309, U+0323, U+2002, U+2009, U+200B, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026, U+2032-2033, U+2039-203A, U+2044, U+20AC, U+2122, U+2212, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../static/fonts/ubuntu-cyrillic-500-normal.woff2") format("woff2");
+  unicode-range: U+0020, U+00A0, U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../static/fonts/ubuntu-latin-500-normal.woff2") format("woff2");
+  unicode-range: U+0020-007E, U+00A0-00FF, U+0131, U+0152-0153, U+02BC, U+02C6, U+02DA, U+02DC, U+0300-0301, U+0303, U+0309, U+0323, U+2002, U+2009, U+200B, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026, U+2032-2033, U+2039-203A, U+2044, U+20AC, U+2122, U+2212, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../static/fonts/ubuntu-cyrillic-700-normal.woff2") format("woff2");
+  unicode-range: U+0020, U+00A0, U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../static/fonts/ubuntu-latin-700-normal.woff2") format("woff2");
   unicode-range: U+0020-007E, U+00A0-00FF, U+0131, U+0152-0153, U+02BC, U+02C6, U+02DA, U+02DC, U+0300-0301, U+0303, U+0309, U+0323, U+2002, U+2009, U+200B, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026, U+2032-2033, U+2039-203A, U+2044, U+20AC, U+2122, U+2212, U+FEFF, U+FFFD;
 }
 
 :root.dark {
   color-scheme: dark;
-  --bg: #1a1a1f;
-  --paper: #242429;
-  --ink: #e4e4e6;
-  --muted: #8e8e93;
-  --line: #333338;
-  --line-strong: #45454a;
-  --hover: #2c2c31;
-  --dot: rgba(142, 142, 147, 0.08);
+  --bg: #171b2d;
+  --paper: #1d2235;
+  --ink: #d8dee5;
+  --muted: #8b95a3;
+  --line: #333a55;
+  --line-strong: #4a5274;
+  --hover: rgba(255, 255, 255, 0.05);
+  --dot: rgba(255, 255, 255, 0.04);
   --kp: #ff8533;
   --imdb: #e2c04a;
-  --focus: #e4e4e6;
-  --accent: #e8c547;
-  --accent-ink: #161513;
+  --focus: #e8ecf7;
+  --accent: #16a34a;
+  --accent-ink: #06222b;
+  --accent2: #0e8f4a;
+  --th-bg: rgba(255, 255, 255, 0.03);
+  --glass: rgba(255, 255, 255, 0.05);
+  --glass-card: rgba(18, 23, 42, 0.78);
+  --glow: 0 0 12px rgba(22, 163, 74, 0.06);
+  --link-glow: 0 0 10px rgba(22, 163, 74, 0.07);
+  --title-glow: 0 0 24px rgba(22, 163, 74, 0.06);
+  --shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  --shadow-soft: 0 4px 14px rgba(0, 0, 0, 0.35);
+  --chip-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  --chip-shadow-hover: 0 4px 10px rgba(0, 0, 0, 0.45);
+  --poster-glow: 0 18px 40px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 :root.light {
@@ -89,11 +161,12 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Roboto", "Segoe UI", sans-serif;
+  font-family: "Ubuntu", "Segoe UI", sans-serif;
   background: var(--bg);
   background-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='g' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='linear' slope='0.12' intercept='-0.01'/></feComponentTransfer></filter><rect width='220' height='220' filter='url(%23g)'/></svg>"),
     radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 0);
-  background-size: 20px 20px;
+  background-size: 220px 220px, 20px 20px;
   color: var(--ink);
 }
 
@@ -132,12 +205,23 @@ html.js #app[v-cloak] .brand {
 }
 
 .top {
+  position: relative;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--line-strong);
+  border-bottom: 1px solid transparent;
+}
+
+.top::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2) 25%, transparent);
 }
 
 .brand {
@@ -162,7 +246,9 @@ html.js #app[v-cloak] .brand {
 .brand h1 {
   margin: 0;
   font-size: clamp(1.55rem, 2.6vw, 2rem);
-  font-weight: 500;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-shadow: var(--title-glow);
 }
 
 .brand p {
@@ -209,28 +295,35 @@ html.js #app[v-cloak] .brand {
 .theme-toggle {
   appearance: none;
   border: 1px solid var(--line-strong);
-  background: var(--paper);
+  background: var(--glass);
   color: var(--muted);
-  border-radius: 4px;
+  border-radius: 6px;
   font: inherit;
   font-size: 0.78rem;
   letter-spacing: 0.08em;
   padding: 0.4rem 0.7rem;
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  backdrop-filter: blur(8px);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .lang:hover,
 .theme-toggle:hover {
-  border-color: var(--ink);
+  border-color: var(--accent);
   color: var(--ink);
+  box-shadow: var(--glow);
 }
 
 .lang:active,
 .theme-toggle:active {
-  background: var(--ink);
-  color: var(--paper);
-  border-color: var(--ink);
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+  box-shadow: var(--glow);
 }
 
 .lang:focus-visible,
@@ -244,15 +337,23 @@ html.js #app[v-cloak] .brand {
   min-width: 0;
   height: 48px;
   border: 1px solid var(--line-strong);
-  border-radius: 4px;
-  background: var(--paper);
+  border-radius: 6px;
+  background: var(--glass);
   color: var(--ink);
   font: inherit;
   padding: 0 0.8rem;
+  backdrop-filter: blur(8px);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .search:hover {
-  border-color: var(--ink);
+  border-color: var(--accent);
+}
+
+.search:focus-visible {
+  outline: 1px solid var(--accent);
+  border-color: var(--accent);
+  box-shadow: var(--glow);
 }
 
 .filter-row {
@@ -271,11 +372,17 @@ html.js #app[v-cloak] .brand {
   height: 48px;
   padding: 0;
   border: 1px solid var(--line-strong);
-  border-radius: 4px;
-  background: var(--paper);
+  border-radius: 6px;
+  background: var(--glass);
   color: var(--muted);
   font: inherit;
   cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .fav-filter img {
@@ -288,14 +395,16 @@ html.js #app[v-cloak] .brand {
 }
 
 .fav-filter:hover {
-  border-color: var(--ink);
+  border-color: var(--accent);
   color: var(--ink);
+  box-shadow: var(--glow);
 }
 
 .fav-filter.active {
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--hover);
+  color: var(--accent);
   border-color: var(--accent);
+  box-shadow: var(--glow);
 }
 
 .fav-filter:focus-visible {
@@ -313,11 +422,23 @@ html.js #app[v-cloak] .brand {
 
 .nav a {
   text-decoration: none;
-  border-bottom: 1px solid transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--glass);
+  padding: 0.3rem 0.8rem;
+  backdrop-filter: blur(8px);
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .nav a:hover {
-  border-bottom-color: var(--ink);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: var(--glow);
+  text-shadow: var(--link-glow);
 }
 
 .nav span {
@@ -326,7 +447,7 @@ html.js #app[v-cloak] .brand {
 }
 
 section {
-  margin-bottom: 2rem;
+  margin-bottom: 2.25rem;
 }
 
 #series {
@@ -340,15 +461,21 @@ section {
 }
 
 section h2 {
-  margin: 0 0 0.85rem;
-  font-size: 1.45rem;
-  font-weight: 500;
+  margin: 0 0 0.9rem;
+  padding-left: 0.75rem;
+  border-left: 4px solid transparent;
+  border-image: linear-gradient(180deg, var(--accent), var(--accent2) 30%) 1;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .table-wrap {
   overflow-x: auto;
   background: var(--paper);
   border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
 }
 
 table {
@@ -387,10 +514,11 @@ th,
 td {
   text-align: left;
   padding: 0.6rem 0.7rem;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px dotted var(--line);
 }
 
 th {
+  background: var(--th-bg);
   font-weight: 500;
   color: var(--muted);
   font-size: 0.78rem;
@@ -398,6 +526,10 @@ th {
   text-transform: uppercase;
   white-space: nowrap;
   user-select: none;
+}
+
+thead th {
+  border-bottom-color: var(--line-strong);
 }
 
 th.sortable .th-sort {
@@ -447,11 +579,16 @@ th .arrow {
 
 th.is-asc .arrow,
 th.is-desc .arrow {
-  color: var(--ink);
+  color: var(--accent);
+  text-shadow: var(--link-glow);
 }
 
 tbody tr:hover {
   background: var(--hover);
+}
+
+tbody tr:hover td:first-child {
+  box-shadow: inset 3px 0 0 var(--accent);
 }
 
 .title-cell {
@@ -474,6 +611,17 @@ tbody tr:hover {
   cursor: pointer;
   vertical-align: text-bottom;
   margin-right: 0.1rem;
+}
+
+.poster-icon img {
+  border-radius: 4px;
+  box-shadow: var(--chip-shadow);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.poster-icon:hover img {
+  box-shadow: var(--chip-shadow-hover);
+  transform: translateY(-1px);
 }
 
 .poster-icon:focus-visible {
@@ -516,7 +664,7 @@ tbody tr:hover {
   max-width: 90vw;
   max-height: 90vh;
   border-radius: 8px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--poster-glow);
 }
 
 .poster-close {
@@ -568,10 +716,13 @@ tbody tr:hover {
   text-decoration: none;
   border-bottom: 1px solid var(--line-strong);
   vertical-align: 0.15em;
+  transition: color 0.2s ease, border-color 0.2s ease, text-shadow 0.2s ease;
 }
 
 .title-cell a:hover {
-  border-bottom-color: var(--ink);
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  text-shadow: var(--link-glow);
 }
 
 .alt-title {
@@ -667,7 +818,7 @@ a.imdb .star {
 footer {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--line);
+  border-top: 1px dotted var(--line);
   text-align: center;
   color: var(--muted);
   font-size: 0.85rem;
@@ -701,15 +852,18 @@ footer .footer-privacy {
   width: 35px;
   height: 35px;
   border: 1px solid var(--line-strong);
-  background: var(--paper);
+  background: var(--glass);
   color: var(--ink);
   font-size: 1.2rem;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 6px;
   opacity: 0.7;
   z-index: 100;
+  backdrop-filter: blur(8px);
   transition:
     background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
     visibility 0.3s,
     opacity 0.3s ease,
     translate 0.3s ease;
@@ -717,6 +871,8 @@ footer .footer-privacy {
 
 .scroll-top:hover {
   background: var(--hover);
+  border-color: var(--accent);
+  box-shadow: var(--glow);
 }
 
 @supports (container-type: scroll-state) {
@@ -755,7 +911,7 @@ html.no-scroll-state.scrolled .scroll-top {
   padding: 0.25rem 0.55rem;
   background: var(--accent);
   color: var(--accent-ink);
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 0.78rem;
   font-weight: 500;
   text-decoration: none;
@@ -901,7 +1057,13 @@ html.no-scroll-state.scrolled .scroll-top {
 
   .poster-close,
   .scroll-top,
-  .share-btn {
+  .share-btn,
+  .lang,
+  .theme-toggle,
+  .search,
+  .fav-filter,
+  .nav a,
+  .title-cell a {
     transition: none;
   }
 }
@@ -911,9 +1073,12 @@ html.no-scroll-state.scrolled .scroll-top {
   display: grid;
   gap: 1.5rem;
   margin: 1rem 0 1rem;
-  padding: 1rem;
-  background: var(--paper);
+  padding: 1.25rem;
+  background: var(--glass-card);
   border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
 }
 
 .film-main .meta-row {
@@ -935,6 +1100,7 @@ html.no-scroll-state.scrolled .scroll-top {
   max-width: min(300px, 100%);
   height: auto;
   border-radius: 8px;
+  box-shadow: var(--poster-glow);
 }
 
 .film-desc {
@@ -947,7 +1113,7 @@ html.no-scroll-state.scrolled .scroll-top {
   color: var(--muted);
   font-size: 0.95rem;
   padding-left: 0.85rem;
-  border-left: 2px solid var(--line-strong);
+  border-left: 3px solid var(--accent);
 }
 
 .ratings {
@@ -960,14 +1126,20 @@ html.no-scroll-state.scrolled .scroll-top {
 .ratings a {
   padding: 0.45rem 0.9rem;
   border: 1px solid var(--line-strong);
-  border-radius: 4px;
+  border-radius: 6px;
   text-decoration: none;
-  background: var(--paper);
+  background: var(--glass);
   font-size: 0.95rem;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .ratings a:hover {
   background: var(--hover);
+  border-color: currentColor;
+  box-shadow: var(--glow);
 }
 
 .ratings a.kp {
@@ -986,15 +1158,21 @@ html.no-scroll-state.scrolled .scroll-top {
   display: inline-block;
   padding: 0.45rem 0.9rem;
   border: 1px solid var(--line-strong);
-  border-radius: 4px;
-  background: var(--paper);
+  border-radius: 6px;
+  background: var(--glass);
   color: var(--ink);
   text-decoration: none;
   font-size: 0.95rem;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .btn-back a:hover {
   background: var(--hover);
+  border-color: var(--accent);
+  box-shadow: var(--glow);
 }
 
 .related {
@@ -1002,9 +1180,13 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 .related h2 {
-  margin: 0 0 0.85rem;
-  font-size: 1.45rem;
-  font-weight: 500;
+  margin: 0 0 0.9rem;
+  padding-left: 0.75rem;
+  border-left: 4px solid transparent;
+  border-image: linear-gradient(180deg, var(--accent), var(--accent2) 30%) 1;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .related ul {
@@ -1020,10 +1202,13 @@ html.no-scroll-state.scrolled .scroll-top {
 .related a {
   text-decoration: none;
   border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease, text-shadow 0.2s ease;
 }
 
 .related a:hover {
-  border-bottom-color: var(--ink);
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+  text-shadow: var(--link-glow);
 }
 
 .share-row {
@@ -1042,14 +1227,20 @@ html.no-scroll-state.scrolled .scroll-top {
   padding: 0;
   border: 1px solid var(--line-strong);
   border-radius: 50%;
-  background: var(--paper);
+  background: var(--glass);
   color: var(--ink);
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .share-btn:hover {
   background: var(--hover);
+  border-color: var(--accent);
+  box-shadow: var(--glow);
 }
 
 .share-ico {

@@ -3,8 +3,8 @@
   "short_name": "IT Movies",
   "start_url": "/IT_movies/",
   "display": "standalone",
-  "background_color": "#f4f3ef",
-  "theme_color": "#f4f3ef",
+  "background_color": "#eef1f6",
+  "theme_color": "#eef1f6",
   "description": "Каталог фильмов и сериалов о компьютерах, технологиях и ИИ",
   "icons": [
     { "src": "favicons/favicon-16x16.png", "sizes": "16x16", "type": "image/png" },
