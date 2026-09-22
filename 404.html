@@ -41,14 +41,17 @@
   <!-- begin:metrika -->
   <!-- Yandex.Metrika counter -->
   <script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112571181', 'ym');
+    (function () {
+      if (navigator.globalPrivacyControl === true || navigator.doNotTrack === "1") return;
+      (function(m,e,t,r,i,k,a){
+          m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+          m[i].l=1*new Date();
+          for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+          k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+      })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112571181', 'ym');
 
-    ym(112571181, 'init', {ssr:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+      ym(112571181, 'init', {ssr:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    })();
   </script>
   <noscript><div><img src="https://mc.yandex.ru/watch/112571181" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
   <!-- /Yandex.Metrika counter -->
@@ -168,8 +171,7 @@
           back: "← Вернуться к каталогу",
           codedWith: "Сделано с",
           privacy: "Политика конфиденциальности",
-          langToEn: "Переключить язык на английский",
-          langToRu: "Переключить язык на русский",
+          swapLang: "Переключить язык",
           themeToDark: "Включить тёмную тему",
           themeToLight: "Включить светлую тему",
         },
@@ -182,8 +184,7 @@
           back: "← Back to the catalog",
           codedWith: "Coded with",
           privacy: "Privacy policy",
-          langToEn: "Switch language to English",
-          langToRu: "Switch language to Russian",
+          swapLang: "Switch language",
           themeToDark: "Enable dark theme",
           themeToLight: "Enable light theme",
         },
@@ -201,7 +202,7 @@
         var langBtn = document.querySelector(".lang");
         if (langBtn) {
           langBtn.textContent = "🌐 " + lang.toUpperCase();
-          langBtn.setAttribute("aria-label", lang === "ru" ? t.langToEn : t.langToRu);
+          langBtn.setAttribute("aria-label", t.swapLang);
         }
         var themeBtn = document.querySelector(".theme-toggle");
         if (themeBtn) {
