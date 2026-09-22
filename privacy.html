@@ -124,13 +124,9 @@
         </div>
       </div>
       <div class="toolbar">
-        <div class="lang" role="group" aria-label="Язык / Language">
-          <button type="button" data-lang="ru">RU</button>
-          <button type="button" data-lang="en">EN</button>
-        </div>
-        <div class="theme-toggle" role="group" aria-label="Тема / Theme">
-          <button type="button" data-theme="dark" aria-label="Тёмная тема">🌙</button>
-          <button type="button" data-theme="light" aria-label="Светлая тема">☀️</button>
+        <div class="switchers">
+          <button type="button" class="lang">🌐 RU</button>
+          <button type="button" class="theme-toggle">🌙</button>
         </div>
       </div>
     </header>
@@ -238,6 +234,10 @@
           changesP: "Политика может обновляться; актуальная версия всегда находится на этой странице. По вопросам, связанным с обработкой данных, пишите в <a href='https://t.me/wh_lab' target='_blank' rel='noopener'>Telegram</a>.",
           codedWith: "Сделано с",
           privacyCurrent: "Политика конфиденциальности",
+          langToEn: "Переключить язык на английский",
+          langToRu: "Переключить язык на русский",
+          themeToDark: "Включить тёмную тему",
+          themeToLight: "Включить светлую тему",
         },
         en: {
           title: "Privacy Policy — IT Movies",
@@ -266,6 +266,10 @@
           changesP: "This policy may be updated; the current version always lives on this page. For data-related questions, write to <a href='https://t.me/wh_lab' target='_blank' rel='noopener'>Telegram</a>.",
           codedWith: "Coded with",
           privacyCurrent: "Privacy policy",
+          langToEn: "Switch language to English",
+          langToRu: "Switch language to Russian",
+          themeToDark: "Enable dark theme",
+          themeToLight: "Enable light theme",
         },
       };
       var SUPPORTED = { lang: ["ru", "en"], theme: ["dark", "light"] };
@@ -303,33 +307,35 @@
         document.querySelectorAll("[data-lang-block]").forEach(function (el) {
           el.hidden = el.getAttribute("data-lang-block") !== lang;
         });
-        document.querySelectorAll("[data-lang]").forEach(function (btn) {
-          var on = btn.getAttribute("data-lang") === lang;
-          btn.classList.toggle("active", on);
-          btn.setAttribute("aria-pressed", on ? "true" : "false");
-        });
+        var langBtn = document.querySelector(".lang");
+        if (langBtn) {
+          langBtn.textContent = "🌐 " + lang.toUpperCase();
+          langBtn.setAttribute("aria-label", lang === "ru" ? t.langToEn : t.langToRu);
+        }
         document.documentElement.classList.toggle("dark", theme === "dark");
-        document.querySelectorAll("[data-theme]").forEach(function (btn) {
-          var on = btn.getAttribute("data-theme") === theme;
-          btn.classList.toggle("active", on);
-          btn.setAttribute("aria-pressed", on ? "true" : "false");
-        });
+        var themeBtn = document.querySelector(".theme-toggle");
+        if (themeBtn) {
+          themeBtn.textContent = theme === "dark" ? "🌙" : "☀️";
+          themeBtn.setAttribute("aria-label", theme === "dark" ? t.themeToLight : t.themeToDark);
+        }
       }
       apply();
-      document.querySelectorAll("[data-lang]").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          lang = btn.getAttribute("data-lang");
+      var langBtn = document.querySelector(".lang");
+      if (langBtn) {
+        langBtn.addEventListener("click", function () {
+          lang = lang === "ru" ? "en" : "ru";
           write("it-movies-lang", lang);
           apply();
         });
-      });
-      document.querySelectorAll("[data-theme]").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          theme = btn.getAttribute("data-theme");
+      }
+      var themeBtn = document.querySelector(".theme-toggle");
+      if (themeBtn) {
+        themeBtn.addEventListener("click", function () {
+          theme = theme === "dark" ? "light" : "dark";
           write("it-movies-theme", theme);
           apply();
         });
-      });
+      }
     })();
   </script>
 </body>

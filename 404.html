@@ -136,9 +136,9 @@
         </div>
       </div>
       <div class="toolbar">
-        <div class="lang" role="group" aria-label="Язык / Language">
-          <button type="button" data-lang="ru">RU</button>
-          <button type="button" data-lang="en">EN</button>
+        <div class="switchers">
+          <button type="button" class="lang">🌐 RU</button>
+          <button type="button" class="theme-toggle">🌙</button>
         </div>
       </div>
     </header>
@@ -168,6 +168,10 @@
           back: "← Вернуться к каталогу",
           codedWith: "Сделано с",
           privacy: "Политика конфиденциальности",
+          langToEn: "Переключить язык на английский",
+          langToRu: "Переключить язык на русский",
+          themeToDark: "Включить тёмную тему",
+          themeToLight: "Включить светлую тему",
         },
         en: {
           title: "404 — Page not found | IT Movies",
@@ -178,6 +182,10 @@
           back: "← Back to the catalog",
           codedWith: "Coded with",
           privacy: "Privacy policy",
+          langToEn: "Switch language to English",
+          langToRu: "Switch language to Russian",
+          themeToDark: "Enable dark theme",
+          themeToLight: "Enable light theme",
         },
       };
       function apply(lang) {
@@ -190,21 +198,37 @@
           var key = el.getAttribute("data-i18n");
           if (t[key] !== undefined) el.innerHTML = t[key];
         });
-        document.querySelectorAll("[data-lang]").forEach(function (btn) {
-          var on = btn.getAttribute("data-lang") === lang;
-          btn.classList.toggle("active", on);
-          btn.setAttribute("aria-pressed", on ? "true" : "false");
-        });
+        var langBtn = document.querySelector(".lang");
+        if (langBtn) {
+          langBtn.textContent = "🌐 " + lang.toUpperCase();
+          langBtn.setAttribute("aria-label", lang === "ru" ? t.langToEn : t.langToRu);
+        }
+        var themeBtn = document.querySelector(".theme-toggle");
+        if (themeBtn) {
+          themeBtn.textContent = theme === "dark" ? "🌙" : "☀️";
+          themeBtn.setAttribute("aria-label", theme === "dark" ? t.themeToLight : t.themeToDark);
+        }
       }
       var lang = window.__404Lang === "ru" ? "ru" : "en";
+      var theme = document.documentElement.classList.contains("dark") ? "dark" : "light";
       apply(lang);
-      document.querySelectorAll("[data-lang]").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          var next = btn.getAttribute("data-lang");
-          try { localStorage.setItem("it-movies-lang", next); } catch (e) {}
-          apply(next);
+      var langBtn = document.querySelector(".lang");
+      if (langBtn) {
+        langBtn.addEventListener("click", function () {
+          lang = lang === "ru" ? "en" : "ru";
+          try { localStorage.setItem("it-movies-lang", lang); } catch (e) {}
+          apply(lang);
         });
-      });
+      }
+      var themeBtn = document.querySelector(".theme-toggle");
+      if (themeBtn) {
+        themeBtn.addEventListener("click", function () {
+          theme = theme === "dark" ? "light" : "dark";
+          try { localStorage.setItem("it-movies-theme", theme); } catch (e) {}
+          document.documentElement.classList.toggle("dark", theme === "dark");
+          apply(lang);
+        });
+      }
     })();
   </script>
 </body>

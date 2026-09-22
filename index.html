@@ -86,13 +86,9 @@
         </div>
       </div>
       <div class="toolbar">
-        <div class="lang" role="group" :aria-label="lang === 'ru' ? 'Язык / Language' : 'Language / Язык'">
-          <button type="button" :class="{ active: lang === 'ru' }" :aria-pressed="lang === 'ru'" @click="setLang('ru')">RU</button>
-          <button type="button" :class="{ active: lang === 'en' }" :aria-pressed="lang === 'en'" @click="setLang('en')">EN</button>
-        </div>
-        <div class="theme-toggle" role="group" :aria-label="t.theme">
-          <button type="button" :class="{ active: theme === 'dark' }" :aria-pressed="theme === 'dark'" :aria-label="t.themeDark" @click="setTheme('dark')">🌙</button>
-          <button type="button" :class="{ active: theme === 'light' }" :aria-pressed="theme === 'light'" :aria-label="t.themeLight" @click="setTheme('light')">☀️</button>
+        <div class="switchers">
+          <button type="button" class="lang" :aria-label="lang === 'ru' ? t.langToEn : t.langToRu" @click="setLang(lang === 'ru' ? 'en' : 'ru')">🌐 {{ lang === 'ru' ? 'RU' : 'EN' }}</button>
+          <button type="button" class="theme-toggle" :aria-label="theme === 'dark' ? t.themeToLight : t.themeToDark" @click="setTheme(theme === 'dark' ? 'light' : 'dark')">{{ theme === 'dark' ? '🌙' : '☀️' }}</button>
         </div>
         <div class="filter-row">
           <button type="button" class="fav-filter" :class="{ active: onlyFav }" :aria-pressed="onlyFav" :aria-label="t.favFilter" :title="t.favFilterTitle" @click="onlyFav = !onlyFav">

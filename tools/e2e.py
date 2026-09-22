@@ -57,7 +57,7 @@ def test_main_lang(page, base):
     expect(page).to_have_title(
         "IT Movies - Каталог фильмов и сериалов о компьютерах, технологиях и искусственном интеллекте"
     )
-    page.locator(".lang button", has_text="EN").click()
+    page.locator(".lang").click()
     expect(page).to_have_title(
         "IT Movies - A catalog of films and series about computers, technology and AI"
     )
@@ -70,7 +70,7 @@ def test_film_theme(page, base):
     expect(light).to_have_attribute("content", META_LIGHT)
     expect(dark).to_have_attribute("content", META_DARK)
     expect(page.locator("html.dark")).to_have_count(0)
-    page.locator('.theme-toggle button[aria-label="Тёмная тема"]').click()
+    page.locator(".theme-toggle").click()
     expect(page.locator("html.dark")).to_have_count(1)
     page.locator(".share-row").wait_for(state="visible")
     assert page.locator(".share-row a.share-btn[data-net]").count() >= 3
