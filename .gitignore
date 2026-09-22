@@ -1,6 +1,33 @@
+# Build artifacts
+dist/
+build/
+*.pyc
+__pycache__/
+
+# Environment files
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+_tmp/
+
+# Coverage reports
+coverage/
+htmlcov/
+*.coverage
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
 .gigacode/
 .gigaide/
-.idea/
-__pycache__/
-*.pyc
-_tmp/

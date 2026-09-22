@@ -36,6 +36,16 @@ Or just serve the repo root with any static file server (e.g. `npx serve`).
 - `tools/show_types.py` — prints every catalog record with its source line number
 - `.github/workflows/verify.yml` — GitHub Actions CI: regenerates derived files, runs `tools/verify.py --strict` and fails if the working tree is dirty
 
+## ➕ How to add a title
+
+1. Add the record to `js/data.js` (see `AGENTS.md` for the data contract: genres from `I18N` keys, `desc.ru` + `desc.en`, Latin `titleEn`, poster naming rules)
+2. Add the poster to `static/posters/*.webp`
+3. Run `python tools/gen_pages.py`
+4. Run `python tools/verify.py` (must end with `✅ All good`) and `python tools/e2e.py`
+5. Commit the changes
+
+All validation rules live in `AGENTS.md` and are enforced by `tools/verify.py` — when in doubt, check there instead of guessing.
+
 ## Copyright & Posters
 
 The site's code (HTML/CSS/JS, Python helper scripts in `tools/`) is released under the [MIT License](LICENSE).
