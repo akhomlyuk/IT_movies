@@ -10,7 +10,6 @@ const {
   langFrom,
   themeFrom,
   toggleThemeClass,
-  updateScrollState,
   scrollToTop,
   installErrorHandler,
 } = window.ITMoviesCommon;
@@ -86,7 +85,7 @@ const FILM_TEMPLATE = `
     <span>{{ t.codedWith }}</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
     <a class="footer-privacy" href="../../privacy.html">{{ t.privacy }}</a>
   </footer>
-  <button class="scroll-top" :aria-label="t.scrollTop" @click="scrollToTop" v-show="showScrollTop">↑</button>
+  <button class="scroll-top" :aria-label="t.scrollTop" @click="scrollToTop">↑</button>
 `;
 
 const app = createApp({
@@ -99,7 +98,6 @@ const app = createApp({
 
     const colorScheme = window.matchMedia("(prefers-color-scheme: light)");
     const theme = ref(themeFrom(urlParams, safeRead));
-    const showScrollTop = ref(false);
     let cleanupColorScheme = null;
 
     watch(
@@ -108,10 +106,7 @@ const app = createApp({
       { immediate: true }
     );
 
-    const onScroll = () => updateScrollState(showScrollTop);
-
     onMounted(() => {
-      window.addEventListener("scroll", onScroll);
       const onColorScheme = (e) => {
         if (!safeRead("it-movies-theme")) {
           theme.value = e.matches ? "light" : "dark";
@@ -123,7 +118,6 @@ const app = createApp({
     });
 
     onUnmounted(() => {
-      window.removeEventListener("scroll", onScroll);
       if (cleanupColorScheme) cleanupColorScheme();
     });
 
@@ -246,7 +240,6 @@ const app = createApp({
       related,
       itemSlug,
       relatedTitle,
-      showScrollTop,
       shareNets,
       nativeShare,
       doNativeShare,

@@ -45,17 +45,21 @@ def esc(s):
 
 THEME_SCRIPT = """  <script>
     (function () {
-      var t;
+      var t, src = "system";
       try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
-      if (t !== "dark" && t !== "light") {
+      if (t === "dark" || t === "light") {
+        src = "url";
+      } else {
         try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+        if (t === "dark" || t === "light") {
+          src = "store";
+        } else {
+          t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        }
       }
-      if (t !== "dark" && t !== "light") {
-        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-      }
-      if (t === "dark") {
-        document.documentElement.classList.add("dark");
-      }
+      document.documentElement.classList.add(t);
+      var m = document.querySelector('meta[name="color-scheme"]');
+      if (m) m.setAttribute("content", src === "system" ? "light dark" : t);
     })();
   </script>"""
 
@@ -555,6 +559,7 @@ def render(item, related):
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="{poster_abs}">
   <link rel="canonical" href="{page_url}">
+  <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#f4f3ef">
   <meta name="theme-color" content="#1a1a1f" media="(prefers-color-scheme: dark)">
 {preload_poster}{THEME_SCRIPT}

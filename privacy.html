@@ -12,22 +12,27 @@
   <meta property="og:url" content="https://akhomlyuk.github.io/IT_movies/privacy.html">
   <meta property="og:site_name" content="IT Movies">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/privacy.html">
+  <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#f4f3ef">
   <meta name="theme-color" content="#1a1a1f" media="(prefers-color-scheme: dark)">
   <!-- begin:theme-script -->
   <script>
     (function () {
-      var t;
+      var t, src = "system";
       try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
-      if (t !== "dark" && t !== "light") {
+      if (t === "dark" || t === "light") {
+        src = "url";
+      } else {
         try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+        if (t === "dark" || t === "light") {
+          src = "store";
+        } else {
+          t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        }
       }
-      if (t !== "dark" && t !== "light") {
-        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-      }
-      if (t === "dark") {
-        document.documentElement.classList.add("dark");
-      }
+      document.documentElement.classList.add(t);
+      var m = document.querySelector('meta[name="color-scheme"]');
+      if (m) m.setAttribute("content", src === "system" ? "light dark" : t);
     })();
   </script>
 <!-- end:theme-script -->
@@ -314,6 +319,9 @@
           langBtn.setAttribute("aria-label", t.swapLang);
         }
         document.documentElement.classList.toggle("dark", theme === "dark");
+        document.documentElement.classList.toggle("light", theme === "light");
+        var csMeta = document.querySelector('meta[name="color-scheme"]');
+        if (csMeta) csMeta.setAttribute("content", theme);
         var themeBtn = document.querySelector(".theme-toggle");
         if (themeBtn) {
           themeBtn.textContent = theme === "dark" ? "🌙" : "☀️";

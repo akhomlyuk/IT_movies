@@ -84,15 +84,34 @@ window.ITMoviesCommon = (function () {
   }
 
   function toggleThemeClass(value) {
-    document.documentElement.classList.toggle("dark", value === "dark");
-  }
-
-  function updateScrollState(showRef) {
-    showRef.value = window.scrollY > 300;
+    const dark = value === "dark";
+    document.documentElement.classList.toggle("dark", dark);
+    document.documentElement.classList.toggle("light", !dark);
+    const meta = document.querySelector('meta[name="color-scheme"]');
+    if (meta) meta.setAttribute("content", dark ? "dark" : "light");
   }
 
   function scrollToTop() {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function initScrollFallback() {
+    if (
+      typeof CSS !== "undefined" &&
+      CSS.supports("container-type", "scroll-state")
+    )
+      return;
+    if (typeof IntersectionObserver === "undefined") return;
+    const root = document.documentElement;
+    root.classList.add("no-scroll-state");
+    const sentinel = document.createElement("div");
+    sentinel.setAttribute("aria-hidden", "true");
+    sentinel.style.cssText =
+      "position:absolute;top:0;left:0;width:1px;height:300px;visibility:hidden;pointer-events:none";
+    document.body.appendChild(sentinel);
+    new IntersectionObserver((entries) => {
+      root.classList.toggle("scrolled", !entries[0].isIntersecting);
+    }).observe(sentinel);
   }
 
   function installErrorHandler(app, getCurrentLang, getI18N) {
@@ -106,6 +125,8 @@ window.ITMoviesCommon = (function () {
       };
     }
   }
+
+  initScrollFallback();
 
   return {
     SUPPORTED,
@@ -125,7 +146,6 @@ window.ITMoviesCommon = (function () {
     langFrom,
     themeFrom,
     toggleThemeClass,
-    updateScrollState,
     scrollToTop,
     installErrorHandler,
   };

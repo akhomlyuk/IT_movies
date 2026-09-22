@@ -15,6 +15,7 @@
   <meta property="og:url" content="https://akhomlyuk.github.io/IT_movies/">
   <meta property="og:site_name" content="IT Movies">
   <link rel="canonical" href="https://akhomlyuk.github.io/IT_movies/">
+  <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#f4f3ef">
   <meta name="theme-color" content="#1a1a1f" media="(prefers-color-scheme: dark)">
   <!-- begin:index-ld -->
@@ -23,17 +24,21 @@
   <!-- begin:theme-script -->
   <script>
     (function () {
-      var t;
+      var t, src = "system";
       try { t = new URLSearchParams(location.search).get("theme"); } catch (e) {}
-      if (t !== "dark" && t !== "light") {
+      if (t === "dark" || t === "light") {
+        src = "url";
+      } else {
         try { t = localStorage.getItem("it-movies-theme"); } catch (e) { t = null; }
+        if (t === "dark" || t === "light") {
+          src = "store";
+        } else {
+          t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        }
       }
-      if (t !== "dark" && t !== "light") {
-        t = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-      }
-      if (t === "dark") {
-        document.documentElement.classList.add("dark");
-      }
+      document.documentElement.classList.add(t);
+      var m = document.querySelector('meta[name="color-scheme"]');
+      if (m) m.setAttribute("content", src === "system" ? "light dark" : t);
     })();
   </script>
 <!-- end:theme-script -->
@@ -77,6 +82,7 @@
 </head>
 <body>
   <div id="app" v-cloak>
+    <a class="skip-link" href="#main">{{ t.skipLink }}</a>
     <header class="top">
       <div class="brand">
         <div class="logo">
@@ -108,7 +114,7 @@
       <a href="#documentaries">{{ t.documentaries }}</a> <span>{{ counts.documentaries }}</span>
     </nav>
 
-    <main>
+    <main id="main" tabindex="-1">
     <noscript class="no-js-catalog">
       <!-- begin:catalog-noscript -->
         <h3>Фильмы</h3>
@@ -286,7 +292,7 @@
       <span v-if="loadTime !== null"> ⚡️ {{ t.loadLabel }}: {{ loadTime }}ms</span>
       <a class="footer-privacy" href="privacy.html">{{ t.privacy }}</a>
     </footer>
-    <button class="scroll-top" :aria-label="t.scrollTop" @click="scrollToTop" v-show="showScrollTop">↑</button>
+    <button class="scroll-top" :aria-label="t.scrollTop" @click="scrollToTop">↑</button>
   </div>
 
   <p id="boot-fallback" class="boot-fallback" hidden>Не удалось загрузить каталог. Проверьте соединение и обновите страницу.<br><span lang="en">Catalog failed to load. Check your connection and reload the page.</span></p>
@@ -299,11 +305,11 @@
           <caption class="visually-hidden">{{ title }}</caption>
           <thead>
             <tr>
-              <th scope="col" :class="thClass('title')" :aria-sort="ariaSort('title')" tabindex="0" @click="$emit('sort', typeKey, 'title')" @keydown.enter="$emit('sort', typeKey, 'title')">{{ t.name }} <span class="arrow">{{ arrow('title') }}</span></th>
-              <th scope="col" :class="thClass('genre')" :aria-sort="ariaSort('genre')" tabindex="0" @click="$emit('sort', typeKey, 'genre')" @keydown.enter="$emit('sort', typeKey, 'genre')">{{ t.genre }} <span class="arrow">{{ arrow('genre') }}</span></th>
-              <th scope="col" :class="thClass('year')" :aria-sort="ariaSort('year')" tabindex="0" @click="$emit('sort', typeKey, 'year')" @keydown.enter="$emit('sort', typeKey, 'year')">{{ t.year }} <span class="arrow">{{ arrow('year') }}</span></th>
-              <th scope="col" :class="thClass('kp')" :aria-sort="ariaSort('kp')" tabindex="0" @click="$emit('sort', typeKey, 'kp')" @keydown.enter="$emit('sort', typeKey, 'kp')"><span class="th-label"><img class="col-icon" src="static/favicon_kp.png" alt="" width="14" height="14" loading="lazy" decoding="async"><span class="th-text">{{ t.kp }}</span></span> <span class="arrow">{{ arrow('kp') }}</span></th>
-              <th scope="col" :class="thClass('imdb')" :aria-sort="ariaSort('imdb')" tabindex="0" @click="$emit('sort', typeKey, 'imdb')" @keydown.enter="$emit('sort', typeKey, 'imdb')"><span class="th-label"><img class="col-icon" src="static/favicon_imdb.png" alt="" width="14" height="14" loading="lazy" decoding="async"><span class="th-text">{{ t.imdb }}</span></span> <span class="arrow">{{ arrow('imdb') }}</span></th>
+              <th scope="col" :class="thClass('title')" :aria-sort="ariaSort('title')"><button type="button" class="th-sort" @click="$emit('sort', typeKey, 'title')">{{ t.name }} <span class="arrow">{{ arrow('title') }}</span></button></th>
+              <th scope="col" :class="thClass('genre')" :aria-sort="ariaSort('genre')"><button type="button" class="th-sort" @click="$emit('sort', typeKey, 'genre')">{{ t.genre }} <span class="arrow">{{ arrow('genre') }}</span></button></th>
+              <th scope="col" :class="thClass('year')" :aria-sort="ariaSort('year')"><button type="button" class="th-sort" @click="$emit('sort', typeKey, 'year')">{{ t.year }} <span class="arrow">{{ arrow('year') }}</span></button></th>
+              <th scope="col" :class="thClass('kp')" :aria-sort="ariaSort('kp')"><button type="button" class="th-sort" @click="$emit('sort', typeKey, 'kp')"><span class="th-label"><img class="col-icon" src="static/favicon_kp.png" alt="" width="14" height="14" loading="lazy" decoding="async"><span class="th-text">{{ t.kp }}</span></span> <span class="arrow">{{ arrow('kp') }}</span></button></th>
+              <th scope="col" :class="thClass('imdb')" :aria-sort="ariaSort('imdb')"><button type="button" class="th-sort" @click="$emit('sort', typeKey, 'imdb')"><span class="th-label"><img class="col-icon" src="static/favicon_imdb.png" alt="" width="14" height="14" loading="lazy" decoding="async"><span class="th-text">{{ t.imdb }}</span></span> <span class="arrow">{{ arrow('imdb') }}</span></button></th>
             </tr>
           </thead>
           <tbody>
@@ -332,12 +338,12 @@
         </table>
       </div>
       <teleport to="body">
-        <div class="poster-modal" v-if="selectedPoster" role="dialog" aria-modal="true" :aria-label="displayTitle(selectedPoster)" @click.self="closePoster">
+        <dialog ref="modalEl" class="poster-modal" v-if="selectedPoster" closedby="any" :aria-label="displayTitle(selectedPoster)" @click.self="closePoster" @close="onDialogClose">
           <div class="poster-modal-inner">
             <img :src="selectedPoster.poster" :alt="displayTitle(selectedPoster)" loading="lazy" decoding="async">
             <button ref="closeBtn" class="poster-close" :aria-label="t.close" @click="closePoster"><img src="static/close_icon.png" alt="" width="24" height="24" loading="lazy" decoding="async"></button>
           </div>
-        </div>
+        </dialog>
       </teleport>
     </section>
   </template>

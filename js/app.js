@@ -28,7 +28,6 @@ const {
   langFrom,
   themeFrom,
   toggleThemeClass,
-  updateScrollState,
   scrollToTop,
   installErrorHandler,
 } = window.ITMoviesCommon;
@@ -74,53 +73,26 @@ const CatalogTable = {
   setup(props, { emit }) {
     const selectedPoster = ref(null);
     const closeBtn = ref(null);
-    let onKeydown = null;
-    let lastFocus = null;
+    const modalEl = ref(null);
 
     watch(selectedPoster, async (open) => {
       if (open) {
-        lastFocus = document.activeElement;
-        document.body.style.overflow = "hidden";
-        onKeydown = (e) => {
-          if (e.key === "Escape") closePoster();
-          else if (e.key === "Tab") {
-            const modal = document.querySelector(".poster-modal");
-            if (!modal) return;
-            const focusables = modal.querySelectorAll(
-              'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-            );
-            if (!focusables.length) return;
-            const first = focusables[0];
-            const last = focusables[focusables.length - 1];
-            if (e.shiftKey && document.activeElement === first) {
-              e.preventDefault();
-              last.focus();
-            } else if (!e.shiftKey && document.activeElement === last) {
-              e.preventDefault();
-              first.focus();
-            }
-          }
-        };
-        window.addEventListener("keydown", onKeydown);
         await nextTick();
+        modalEl.value?.showModal();
+        document.body.style.overflow = "hidden";
         closeBtn.value?.focus();
       } else {
+        modalEl.value?.close();
         document.body.style.overflow = "";
-        lastFocus?.focus();
-        lastFocus = null;
-        if (onKeydown) {
-          window.removeEventListener("keydown", onKeydown);
-          onKeydown = null;
-        }
       }
     });
 
+    function onDialogClose() {
+      selectedPoster.value = null;
+    }
+
     onUnmounted(() => {
       document.body.style.overflow = "";
-      if (onKeydown) {
-        window.removeEventListener("keydown", onKeydown);
-        onKeydown = null;
-      }
     });
 
     function displayTitle(item) {
@@ -166,6 +138,8 @@ const CatalogTable = {
     return {
       selectedPoster,
       closeBtn,
+      modalEl,
+      onDialogClose,
       formatRating: (value, t_) => formatRating(value, t_.noData),
       hasRating,
       isHighRating,
@@ -197,7 +171,6 @@ const app = createApp({
     const onlyFav = ref(
       urlParams.get("fav") === "1" || safeRead("it-movies-only-fav") === "1"
     );
-    const showScrollTop = ref(false);
     const loadTime = ref(null);
     let cleanupColorScheme = null;
     let urlSyncTimer = null;
@@ -311,10 +284,7 @@ const app = createApp({
       loadTime.value = Math.round(ms);
     }
 
-    const onScroll = () => updateScrollState(showScrollTop);
-
     onMounted(() => {
-      window.addEventListener("scroll", onScroll);
       const onColorScheme = (e) => {
         if (!safeRead("it-movies-theme")) {
           theme.value = e.matches ? "light" : "dark";
@@ -331,7 +301,6 @@ const app = createApp({
     });
 
     onUnmounted(() => {
-      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("load", measureLoadTime);
       if (cleanupColorScheme) cleanupColorScheme();
       clearTimeout(urlSyncTimer);
@@ -397,7 +366,6 @@ const app = createApp({
       theme,
       query,
       onlyFav,
-      showScrollTop,
       loadTime,
       sorts,
       t,
