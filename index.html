@@ -335,7 +335,7 @@
       <teleport to="body">
         <dialog ref="modalEl" class="poster-modal" v-if="selectedPoster" closedby="any" :aria-label="displayTitle(selectedPoster)" @click.self="closePoster" @close="onDialogClose">
           <div class="poster-modal-inner">
-            <img :src="selectedPoster.poster" :alt="displayTitle(selectedPoster)" :width="selectedPoster.posterW" :height="selectedPoster.posterH" loading="lazy" decoding="async">
+            <img :src="selectedPoster.poster400 || selectedPoster.poster" :alt="displayTitle(selectedPoster)" :width="selectedPoster.posterW" :height="selectedPoster.posterH" loading="lazy" decoding="async">
             <button ref="closeBtn" class="poster-close" :aria-label="t.close" @click="closePoster"><img src="static/close_icon.png" alt="" width="24" height="24" loading="lazy" decoding="async"></button>
           </div>
         </dialog>

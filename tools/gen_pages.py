@@ -239,8 +239,10 @@ def slim_catalog(catalog):
         entry = {k: v for k, v in item.items() if k != "desc"}
         poster = (item.get("poster") or "").lstrip("/")
         if poster:
-            dims = webp_size(ROOT / poster)
+            poster400 = poster[: -len(".webp")] + "_400.webp"
+            dims = webp_size(ROOT / poster400) or webp_size(ROOT / poster)
             if dims:
+                entry["poster400"] = poster400
                 entry["posterW"] = dims[0]
                 entry["posterH"] = dims[1]
         slim.append(entry)

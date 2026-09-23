@@ -117,6 +117,8 @@ def test_poster_modal(page, base):
         " && +el.getAttribute('height') === el.naturalHeight"
     )
     assert dims_ok, "modal img width/height attrs must match natural dims (CLS0)"
+    src = img.get_attribute("src")
+    assert src and "_400" in src, f"modal src must be _400 variant, got {src!r}"
     page.locator(".poster-close").click()
 
 
