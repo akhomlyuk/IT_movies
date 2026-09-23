@@ -542,8 +542,8 @@ thead th {
 th.sortable .th-sort {
   display: inline-block;
   vertical-align: baseline;
-  margin: 0;
-  padding: 0;
+  margin: -5px;
+  padding: 5px;
   border: 0;
   background: none;
   font: inherit;
@@ -557,7 +557,7 @@ th.sortable .th-sort {
 
 th.sortable .th-sort:focus-visible {
   outline: 1px solid var(--focus);
-  outline-offset: -1px;
+  outline-offset: -5px;
 }
 
 th.sortable:hover,
@@ -850,7 +850,8 @@ footer .footer-privacy {
   display: block;
   width: fit-content;
   margin-inline: auto;
-  margin-top: 0.55rem;
+  margin-top: calc(0.55rem - 7px);
+  padding: 7px 0;
   font-size: 0.7rem;
   color: var(--muted);
 }
@@ -918,7 +919,7 @@ html.no-scroll-state.scrolled .scroll-top {
   top: -50px;
   left: 8px;
   z-index: 1200;
-  padding: 0.25rem 0.55rem;
+  padding: 0.4rem 0.6rem;
   background: var(--accent);
   color: var(--accent-ink);
   border-radius: 6px;
