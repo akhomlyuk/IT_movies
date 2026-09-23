@@ -762,7 +762,7 @@ def render(item, related):
           <ul>
 {related_items}          </ul>
         </section>
-        <p class="back-catalog"><a href="../../">← Вернуться в каталог IT Movies</a></p>
+        <p class="back-catalog"><a href="../../">← Вернуться на главную</a></p>
       </main>
       <footer>
         <div class="footer-line">
