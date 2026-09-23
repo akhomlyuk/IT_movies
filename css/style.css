@@ -313,10 +313,10 @@ html.js #app[v-cloak] .brand {
   cursor: pointer;
   backdrop-filter: blur(8px);
   transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .lang:hover,
@@ -351,7 +351,7 @@ html.js #app[v-cloak] .brand {
   font: inherit;
   padding: 0 0.8rem;
   backdrop-filter: blur(8px);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .search:hover {
@@ -387,10 +387,10 @@ html.js #app[v-cloak] .brand {
   cursor: pointer;
   backdrop-filter: blur(8px);
   transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .fav-filter img {
@@ -436,10 +436,10 @@ html.js #app[v-cloak] .brand {
   padding: 0.3rem 0.8rem;
   backdrop-filter: blur(8px);
   transition:
-    border-color 0.2s ease,
-    color 0.2s ease,
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
+    border-color 0.15s ease,
+    color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .nav a:hover {
@@ -624,7 +624,7 @@ tbody tr:hover td:first-child {
 .poster-icon img {
   border-radius: 4px;
   box-shadow: var(--chip-shadow);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .poster-icon:hover img {
@@ -684,7 +684,7 @@ tbody tr:hover td:first-child {
   background: transparent;
   cursor: pointer;
   line-height: 0;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
 .poster-close:hover {
@@ -724,7 +724,7 @@ tbody tr:hover td:first-child {
   border-bottom: 1px solid var(--line-strong);
   vertical-align: 0.15em;
   margin-left: 0.15rem;
-  transition: color 0.2s ease, border-color 0.2s ease, text-shadow 0.2s ease;
+  transition: color 0.15s ease, border-color 0.15s ease, text-shadow 0.15s ease;
 }
 
 .title-cell a:hover {
@@ -873,12 +873,12 @@ footer .footer-privacy {
   z-index: 100;
   backdrop-filter: blur(8px);
   transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    visibility 0.3s,
-    opacity 0.3s ease,
-    translate 0.3s ease;
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    visibility 0.15s,
+    opacity 0.15s ease,
+    translate 0.15s ease;
 }
 
 .scroll-top:hover {
@@ -1156,9 +1156,9 @@ html.no-scroll-state.scrolled .scroll-top {
   background: var(--glass);
   font-size: 0.95rem;
   transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .ratings a:hover {
@@ -1189,9 +1189,9 @@ html.no-scroll-state.scrolled .scroll-top {
   text-decoration: none;
   font-size: 0.95rem;
   transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .btn-back a:hover {
@@ -1227,7 +1227,7 @@ html.no-scroll-state.scrolled .scroll-top {
 .related a {
   text-decoration: none;
   border-bottom: 1px solid var(--line-strong);
-  transition: color 0.2s ease, border-color 0.2s ease, text-shadow 0.2s ease;
+  transition: color 0.15s ease, border-color 0.15s ease, text-shadow 0.15s ease;
 }
 
 .related a:hover {
@@ -1256,10 +1256,10 @@ html.no-scroll-state.scrolled .scroll-top {
   color: var(--ink);
   cursor: pointer;
   transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease,
-    box-shadow 0.2s ease;
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .share-btn:hover {
