@@ -363,6 +363,12 @@ const app = createApp({
       safeWrite("it-movies-sorts", JSON.stringify(sorts));
     }
 
+    function goLucky() {
+      if (!window.CATALOG || window.CATALOG.length === 0) return;
+      const pick = window.CATALOG[Math.floor(Math.random() * window.CATALOG.length)];
+      location.href = filmUrl(pick);
+    }
+
     return {
       lang,
       theme,
@@ -378,6 +384,7 @@ const app = createApp({
       setLang,
       setTheme,
       sortBy,
+      goLucky,
       scrollToTop,
     };
   },

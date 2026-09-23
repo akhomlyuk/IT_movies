@@ -86,6 +86,7 @@
           <button type="button" class="fav-filter" :class="{ active: onlyFav }" :aria-pressed="onlyFav" :aria-label="t.favFilter" :title="t.favFilterTitle" @click="onlyFav = !onlyFav">
             <img src="static/favorite_32.png" alt="" width="32" height="32" loading="lazy" decoding="async">
           </button>
+          <button type="button" class="lucky" :aria-label="t.lucky" :title="t.lucky" @click="goLucky">🎲</button>
           <input id="srch" class="search" v-model="query" type="search" :placeholder="t.search" :aria-label="t.search">
         </div>
       </div>

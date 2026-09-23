@@ -88,6 +88,15 @@ def test_boot_fallback(page, base):
     expect(page.locator("#movies tbody tr")).to_have_count(0)
 
 
+def test_lucky(page, base):
+    page.goto(base + "index.html", wait_until="domcontentloaded")
+    btn = page.locator("button.lucky")
+    expect(btn).to_have_attribute("aria-label", "Мне повезёт")
+    btn.click()
+    page.wait_for_url(re.compile(r"/films/[^/]+/$"))
+    assert page.title()
+
+
 def main():
     headed = "--headed" in sys.argv
     shots = None
@@ -98,7 +107,7 @@ def main():
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=not headed)
-            scenarios = [test_main_filter, test_main_lang, test_film_theme, test_boot_fallback]
+            scenarios = [test_main_filter, test_main_lang, test_film_theme, test_boot_fallback, test_lucky]
             failed = 0
             if shots:
                 Path(shots).mkdir(parents=True, exist_ok=True)
