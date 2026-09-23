@@ -218,6 +218,8 @@ const app = createApp({
         safeWrite("it-movies-lang", value);
         document.documentElement.lang = value;
         document.title = `${title.value}${yearSuffix} — ${I18N[value].title}`;
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc && item && item.descSeo) metaDesc.setAttribute("content", item.descSeo[value]);
       },
       { immediate: true }
     );

@@ -2,6 +2,7 @@ const I18N = {
   ru: {
     title: "IT Movies",
     titleFull: "Фильмы и сериалы о компьютерах, технологиях и ИИ — IT Movies",
+    descSeo: "Каталог фильмов, сериалов и документалей о компьютерах, технологиях и ИИ: описания, рейтинги Кинопоиск и IMDb, фильтры по жанрам и году.",
     subtitle: "Подборка фильмов и сериалов о компьютерах, технологиях, ИИ и т.д.",
     invite: `Предложить фильм, сериал - <img src="static/telegram_32.png" alt="" width="16" height="16" loading="lazy" decoding="async" class="tg-icon"> <a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Whitehat Lab</a> или в <a href="https://t.me/whitehat_chat" target="_blank" rel="noopener noreferrer">чат</a>`,
     search: "🔎 Название, жанр, год",
@@ -63,6 +64,7 @@ const I18N = {
   en: {
     title: "IT Movies",
     titleFull: "Films and series on computers, technology and AI — IT Movies",
+    descSeo: "Catalog of films, series and documentaries about computers, technology and AI: synopses, Kinopoisk and IMDb ratings, filters by genre and year.",
     subtitle: "A curated list of films and series about computers, technology, AI, etc",
     invite: `Suggest a film, series - <img src="static/telegram_32.png" alt="" width="16" height="16" loading="lazy" decoding="async" class="tg-icon"> <a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Whitehat Lab</a> or in <a href="https://t.me/whitehat_chat" target="_blank" rel="noopener noreferrer">chat</a>`,
     search: "🔎 Title, genre, year",

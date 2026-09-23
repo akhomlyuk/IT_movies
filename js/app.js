@@ -229,6 +229,8 @@ const app = createApp({
         safeWrite("it-movies-lang", value);
         document.documentElement.lang = value;
         document.title = I18N[value].titleFull;
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) metaDesc.setAttribute("content", I18N[value].descSeo);
       },
       { immediate: true }
     );
