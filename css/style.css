@@ -959,7 +959,7 @@ html.no-scroll-state.scrolled .scroll-top {
 
   th:nth-child(2),
   td:nth-child(2) {
-    width: 18%;
+    width: 21%;
   }
 
   th:nth-child(3),
@@ -969,7 +969,7 @@ html.no-scroll-state.scrolled .scroll-top {
 
   th:nth-child(4),
   td:nth-child(4) {
-    width: 21%;
+    width: 18%;
   }
 
   th:nth-child(5),
