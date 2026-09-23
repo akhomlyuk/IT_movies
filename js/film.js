@@ -68,6 +68,7 @@ const FILM_TEMPLATE = `
             <svg class="share-ico" aria-hidden="true" viewBox="0 0 24 24"><use href="../../static/share.svg#icon-native"></use></svg>
           </button>
         </div>
+        <span class="visually-hidden" role="status">{{ shareStatus }}</span>
         <p class="btn-back"><a href="../../">← {{ t.backToCatalog }}</a></p>
       </div>
     </article>
@@ -195,13 +196,18 @@ const app = createApp({
     });
     const nativeShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
 
+    const shareStatus = ref("");
+
     function doNativeShare() {
       if (typeof navigator === "undefined" || typeof navigator.share !== "function") return;
       navigator.share({
         title: document.title,
         text: title.value,
         url: shareUrl(),
-      }).catch(() => {});
+      }).catch((err) => {
+        if (err && err.name === "AbortError") return;
+        shareStatus.value = t.value.shareFailed;
+      });
     }
 
     watch(
@@ -242,6 +248,7 @@ const app = createApp({
       relatedTitle,
       shareNets,
       nativeShare,
+      shareStatus,
       doNativeShare,
       setLang,
       setTheme,

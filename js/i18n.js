@@ -34,6 +34,7 @@ const I18N = {
     backToCatalog: "Вернуться в каталог",
     share: "Поделиться",
     shareNative: "Поделиться через систему",
+    shareFailed: "Не удалось поделиться",
     typeLabels: {
       movie: "Фильм",
       series: "Сериал",
@@ -94,6 +95,7 @@ const I18N = {
     backToCatalog: "Back to catalog",
     share: "Share",
     shareNative: "Share via system",
+    shareFailed: "Could not share",
     typeLabels: {
       movie: "Movie",
       series: "Series",

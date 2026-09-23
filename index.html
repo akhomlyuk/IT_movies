@@ -271,14 +271,14 @@
     </main>
     <footer>
       <span>{{ t.codedWith }}</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
-      <span> · </span><span class="counts-all">🎬 {{ t.total }}: {{ counts.all }}</span>
+      <span> · </span><span class="counts-all" role="status">🎬 {{ t.total }}: {{ counts.all }}</span>
       <span v-if="loadTime !== null"> ⚡️ {{ t.loadLabel }}: {{ loadTime }}ms</span>
       <a class="footer-privacy" href="privacy.html">{{ t.privacy }}</a>
     </footer>
     <button class="scroll-top" :aria-label="t.scrollTop" @click="scrollToTop">↑</button>
   </div>
 
-  <p id="boot-fallback" class="boot-fallback" hidden>Не удалось загрузить каталог. Проверьте соединение и обновите страницу.<br><span lang="en">Catalog failed to load. Check your connection and reload the page.</span></p>
+  <p id="boot-fallback" class="boot-fallback" role="alert" hidden>Не удалось загрузить каталог. Проверьте соединение и обновите страницу.<br><span lang="en">Catalog failed to load. Check your connection and reload the page.</span></p>
 
   <template id="tpl-catalog">
     <section :id="id">
