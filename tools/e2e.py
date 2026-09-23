@@ -102,6 +102,24 @@ def test_lucky(page, base):
     assert page.title()
 
 
+def test_poster_modal(page, base):
+    page.goto(base + "index.html", wait_until="domcontentloaded")
+    page.locator(".poster-icon").first.click()
+    page.locator(".poster-modal[open]").wait_for(state="visible")
+    img = page.locator(".poster-modal-inner > img")
+    page.wait_for_function(
+        "sel => { const el = document.querySelector(sel);"
+        " return el && el.complete && el.naturalWidth > 0; }",
+        arg=".poster-modal-inner > img",
+    )
+    dims_ok = img.evaluate(
+        "el => +el.getAttribute('width') === el.naturalWidth"
+        " && +el.getAttribute('height') === el.naturalHeight"
+    )
+    assert dims_ok, "modal img width/height attrs must match natural dims (CLS0)"
+    page.locator(".poster-close").click()
+
+
 def main():
     headed = "--headed" in sys.argv
     shots = None
@@ -112,7 +130,7 @@ def main():
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=not headed)
-            scenarios = [test_main_filter, test_main_lang, test_film_theme, test_boot_fallback, test_lucky]
+            scenarios = [test_main_filter, test_main_lang, test_film_theme, test_boot_fallback, test_lucky, test_poster_modal]
             failed = 0
             if shots:
                 Path(shots).mkdir(parents=True, exist_ok=True)

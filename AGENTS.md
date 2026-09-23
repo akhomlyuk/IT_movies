@@ -30,6 +30,7 @@ python -m http.server 8000
   - `lib.py` — shared helpers (catalog/i18n/slug/genres parsing, `SITE_BASE`) used by the scripts below
   - `verify.py` — integrity checker (source of truth; verifies generated pages are fresh, theme/JSON-LD/noscript/metrika blocks are in sync, JS↔Python slug and related parity, `js/catalog.js` and `js/*.min.js` fresh, regenerates `sitemap.xml` and `robots.txt` only when stale, `--no-write` = check-only, `--strict` = missing Node fails the run, requires `.nojekyll`)
   - `gen_pages.py` — generates `films/*` pages from `js/data.js` + `js/i18n.js` (each embeds `window.FILM_PAGE` and the Yandex.Metrika snippet), generates `js/catalog.js` and `js/*.min.js`, and injects the theme, JSON-LD, no-JS, last-updated and Metrika blocks into `index.html` / `404.html` via markers
+  - `gen_posters.py` — generates 400w poster variants in `static/posters/` and squeezes any original >= 100KB (idempotent; run after adding new posters — `tools/verify.py` checks every catalog poster has a `_400.webp` variant)
   - `smoke.js` — node smoke harnesses (app.js / slug parity / film.js / related parity, each also run against `.min.js` via `--min`) driven by `verify.py`
   - `pw_kp.py` — Kinopoisk search + rating lookup via Playwright (kpId, kpRating, kpVotes, IMDb sub-rating)
   - `kp_votes.py` — bulk Kinopoisk vote-count collector over existing kpId values (resume via `_tmp/kp_votes.json`, `--limit`/`--reset-null`)

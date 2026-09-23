@@ -148,6 +148,9 @@ def _seo_desc(text):
     return text
 
 
+POSTER_SIZES = "(max-width: 720px) 92vw, 300px"
+
+
 def index_ld_json(catalog):
     base = SITE_BASE + "/"
     items = []
@@ -231,7 +234,17 @@ def inject_ld(src, catalog):
 
 
 def slim_catalog(catalog):
-    return [{k: v for k, v in item.items() if k != "desc"} for item in catalog]
+    slim = []
+    for item in catalog:
+        entry = {k: v for k, v in item.items() if k != "desc"}
+        poster = (item.get("poster") or "").lstrip("/")
+        if poster:
+            dims = webp_size(ROOT / poster)
+            if dims:
+                entry["posterW"] = dims[0]
+                entry["posterH"] = dims[1]
+        slim.append(entry)
+    return slim
 
 
 def catalog_js(catalog):
@@ -634,14 +647,31 @@ def render(item, related):
 
     preload_poster = ""
     if poster:
-        preload_poster = f'  <link rel="preload" as="image" href="../../{poster}" fetchpriority="high">\n'
+        preload_attrs = ""
+        if poster_dims:
+            v400 = poster[: -len(".webp")] + "_400.webp"
+            preload_attrs = (
+                f' imagesrcset="../../{v400} 400w, ../../{poster} {poster_dims[0]}w"'
+                f' imagesizes="{POSTER_SIZES}"'
+            )
+        preload_poster = (
+            f'  <link rel="preload" as="image" href="../../{poster}"'
+            f'{preload_attrs} fetchpriority="high">\n'
+        )
 
     noscript_poster = ""
     if poster:
         dims = f' width="{poster_dims[0]}" height="{poster_dims[1]}"' if poster_dims else ""
+        srcset_attr = ""
+        if poster_dims:
+            v400 = poster[: -len(".webp")] + "_400.webp"
+            srcset_attr = (
+                f' srcset="../../{v400} 400w, ../../{poster} {poster_dims[0]}w"'
+                f' sizes="{POSTER_SIZES}"'
+            )
         noscript_poster = (
             f'      <figure class="film-poster">\n'
-            f'        <img src="../../{poster}" alt="{esc(title_ru)}"{dims} decoding="async">\n'
+            f'        <img src="../../{poster}"{srcset_attr} alt="{esc(title_ru)}"{dims} decoding="async">\n'
             "      </figure>\n"
         )
 

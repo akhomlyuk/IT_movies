@@ -105,6 +105,21 @@ for key, group in name_groups.items():
     if len(group) > 1:
         errors.append(f"Posters differing only by case: {sorted(group)}")
 
+catalog_posters = sorted({i["poster"].lstrip("/") for i in catalog if i.get("poster")})
+missing_variants = [
+    p
+    for p in catalog_posters
+    if not (ROOT / (p[: -len(".webp")] + "_400.webp")).exists()
+]
+if missing_variants:
+    errors.append(
+        f"poster _400 variants missing: {len(missing_variants)} — run tools/gen_posters.py"
+    )
+else:
+    print(
+        f"Poster variants: _400 present for {len(catalog_posters)} posters (gen_posters.py)"
+    )
+
 # 4b. Film pages exist and match the current generator (gen_pages.py)
 for item in catalog:
     slug = item_slug(item)
@@ -533,6 +548,8 @@ for page in sorted((ROOT / "films").glob("*/index.html")):
                 errors.append(f"film JSON-LD: @id/inLanguage broken on {page}")
         except json.JSONDecodeError:
             errors.append(f"film JSON-LD: invalid JSON on {page}")
+    if "srcset=" not in fsrc or "_400.webp 400w" not in fsrc or "imagesrcset" not in fsrc:
+        errors.append(f"poster srcset/preload missing on {page}")
 print(f"Metrika: present on {metrika_checked} film pages + index/404/privacy/about (single source)")
 
 # 9d. index.html noscript catalog block must match the catalog (gen_pages.py)
