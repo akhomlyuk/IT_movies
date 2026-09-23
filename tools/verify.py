@@ -221,6 +221,17 @@ loc = ElementTree.fromstring(sitemap_xml).findtext(
 if loc != f"{SITE_BASE}/":
     errors.append(f"Sitemap: invalid loc: {loc}")
 
+ns = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
+url_entries = ElementTree.fromstring(sitemap_xml).findall(f"{ns}url")
+without_lastmod = [u.findtext(f"{ns}loc") for u in url_entries if u.find(f"{ns}lastmod") is None]
+if without_lastmod:
+    errors.append(
+        f"Sitemap: {len(without_lastmod)} urls missing lastmod (first: {without_lastmod[0]})"
+    )
+if len(url_entries) != len(catalog) + 2:
+    errors.append(f"Sitemap: expected {len(catalog) + 2} urls, got {len(url_entries)}")
+print(f"Sitemap lastmod: {len(url_entries) - len(without_lastmod)}/{len(url_entries)} urls")
+
 robots_path = ROOT / "robots.txt"
 robots_target = gen_pages.generate_robots_txt()
 robots_note = "up to date"
@@ -511,6 +522,16 @@ if nscript_m is None or _norm_ws(nscript_m.group(1)) != _norm_ws(expected_nscrip
     errors.append(
         "index.html noscript catalog block is stale — run gen_pages.py"
     )
+
+lastupd_m = re.search(
+    r"<!-- begin:last-updated -->(.*?)<!-- end:last-updated -->", index_src, re.S
+)
+if lastupd_m is None or _norm_ws(lastupd_m.group(1)) != _norm_ws(
+    gen_pages.last_updated_block()
+):
+    errors.append("index.html last-updated widget block is stale — run gen_pages.py")
+else:
+    print(f"Last-updated widget: OK ({gen_pages.CATALOG_DATE})")
 
 ld_m = re.search(r"<!-- begin:index-ld -->(.*?)<!-- end:index-ld -->", index_src, re.S)
 if ld_m is None:

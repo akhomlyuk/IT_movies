@@ -9,7 +9,10 @@ import html
 import json
 import re
 import shutil
+import subprocess
 import sys
+
+from datetime import datetime
 
 from lib import ROOT, SITE_BASE, load_catalog, make_slug, item_slug, ru_genres, has_rating, fmt_rating, webp_size
 
@@ -21,6 +24,27 @@ TYPE_LABELS = {"movie": "Фильм", "series": "Сериал", "documentary": "
 catalog = load_catalog()
 
 RU_GENRES = ru_genres()
+
+
+def catalog_git_date():
+    try:
+        out = subprocess.run(
+            ["git", "log", "-1", "--format=%cs", "--", "js/data.js"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=30,
+        ).stdout.strip()
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", out):
+            return out
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return datetime.fromtimestamp((ROOT / "js" / "data.js").stat().st_mtime).date().isoformat()
+
+
+CATALOG_DATE = catalog_git_date()
 
 def star(v):
     return " ★" if has_rating(v) and float(v) >= 7 else ""
@@ -393,6 +417,7 @@ def generate_sitemap(catalog):
     film_urls = "".join(
         "  <url>\n"
         f"    <loc>{SITE_BASE}/films/{slug}/</loc>\n"
+        f"    <lastmod>{CATALOG_DATE}</lastmod>\n"
         "    <changefreq>monthly</changefreq>\n"
         "    <priority>0.7</priority>\n"
         "  </url>\n"
@@ -403,11 +428,13 @@ def generate_sitemap(catalog):
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         "  <url>\n"
         f"    <loc>{SITE_BASE}/</loc>\n"
+        f"    <lastmod>{CATALOG_DATE}</lastmod>\n"
         "    <changefreq>monthly</changefreq>\n"
         "    <priority>1.0</priority>\n"
         "  </url>\n"
         "  <url>\n"
         f"    <loc>{SITE_BASE}/privacy.html</loc>\n"
+        f"    <lastmod>{CATALOG_DATE}</lastmod>\n"
         "    <changefreq>monthly</changefreq>\n"
         "    <priority>0.3</priority>\n"
         "  </url>\n"
@@ -445,6 +472,30 @@ def inject_noscript(src, catalog):
     )
 
 
+LASTUPD_MARK = ("<!-- begin:last-updated -->", "<!-- end:last-updated -->")
+
+
+def last_updated_block():
+    human_date = f"{CATALOG_DATE[8:10]}.{CATALOG_DATE[5:7]}.{CATALOG_DATE[:4]}"
+    return (
+        f'\n      <span> · </span><span class="last-updated">{{{{ t.lastUpdated }}}}'
+        f'<time datetime="{CATALOG_DATE}">{human_date}</time></span>\n      '
+    )
+
+
+def inject_last_updated(src):
+    n = src.count(LASTUPD_MARK[0]) + src.count(LASTUPD_MARK[1])
+    if n != 2:
+        raise SystemExit(f"last-updated markers ({n}/2) not found in index.html")
+    return re.sub(
+        re.escape(LASTUPD_MARK[0]) + r".*?" + re.escape(LASTUPD_MARK[1]),
+        LASTUPD_MARK[0] + last_updated_block() + LASTUPD_MARK[1],
+        src,
+        count=1,
+        flags=re.S,
+    )
+
+
 def render(item, related):
     slug = item_slug(item)
     page_url = f"{SITE_BASE}/films/{slug}/"
@@ -469,6 +520,7 @@ def render(item, related):
         "url": page_url,
         "description": desc_ru,
         "datePublished": str(item["year"]),
+        "dateModified": CATALOG_DATE,
         "genre": genres_ru,
         "sameAs": [],
     }
@@ -707,10 +759,10 @@ def main():
     index_path = ROOT / "index.html"
     if index_path.exists():
         idx_src = index_path.read_text(encoding="utf-8")
-        idx_new = inject_metrika(inject_noscript(inject_ld(inject_theme(idx_src), catalog), catalog))
+        idx_new = inject_metrika(inject_last_updated(inject_noscript(inject_ld(inject_theme(idx_src), catalog), catalog)))
         if idx_new != idx_src:
             index_path.write_text(idx_new, encoding="utf-8")
-            print("index.html: theme + JSON-LD + noscript + metrika blocks updated")
+            print("index.html: theme + JSON-LD + noscript + last-updated + metrika blocks updated")
         else:
             print("index.html: up to date")
     else:
