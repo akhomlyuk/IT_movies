@@ -160,7 +160,7 @@ refs = {
     r[:-1] if r.endswith("\\") else r
     for r in re.findall(r"""['"]((?:static|\.\./static)/[^'"]+)['"]""", i18n_src + raw + app_js + film_js + catalog_src)
 }
-for name in ("index.html", "404.html", "privacy.html"):
+for name in ("index.html", "404.html", "privacy.html", "about.html"):
     text = (ROOT / name).read_text(encoding="utf-8")
     for v in re.findall(r'(?:content|src|href)="([^"]+)"', text):
         m = re.search(r'(?:static|\.\./static|css|js)/[^"\')\s]+', v)
@@ -228,8 +228,8 @@ if without_lastmod:
     errors.append(
         f"Sitemap: {len(without_lastmod)} urls missing lastmod (first: {without_lastmod[0]})"
     )
-if len(url_entries) != len(catalog) + 2:
-    errors.append(f"Sitemap: expected {len(catalog) + 2} urls, got {len(url_entries)}")
+if len(url_entries) != len(catalog) + 3:
+    errors.append(f"Sitemap: expected {len(catalog) + 3} urls, got {len(url_entries)}")
 print(f"Sitemap lastmod: {len(url_entries) - len(without_lastmod)}/{len(url_entries)} urls")
 
 robots_path = ROOT / "robots.txt"
@@ -491,6 +491,11 @@ if _theme_block(privacy_src) != theme_core:
     errors.append(
         "privacy.html theme block differs from gen_pages.THEME_SCRIPT — run gen_pages.py"
     )
+about_src = (ROOT / "about.html").read_text(encoding="utf-8")
+if _theme_block(about_src) != theme_core:
+    errors.append(
+        "about.html theme block differs from gen_pages.THEME_SCRIPT — run gen_pages.py"
+    )
 
 # 9c2. Yandex.Metrika: single source (gen_pages.METRIKA_SCRIPT) on every page
 metrika_needle = f"mc.yandex.ru/metrika/tag.js?id={gen_pages.METRIKA_ID}"
@@ -500,6 +505,7 @@ for fname, src in (
     ("index.html", index_src),
     ("404.html", notfound_src),
     ("privacy.html", privacy_src),
+    ("about.html", about_src),
 ):
     if metrika_needle not in src:
         errors.append(f"{fname}: Yandex.Metrika snippet missing")
@@ -509,7 +515,7 @@ for page in sorted((ROOT / "films").glob("*/index.html")):
     metrika_checked += 1
     if metrika_needle not in page.read_text(encoding="utf-8"):
         errors.append(f"metrika snippet missing on {page}")
-print(f"Metrika: present on {metrika_checked} film pages + index/404/privacy (single source)")
+print(f"Metrika: present on {metrika_checked} film pages + index/404/privacy/about (single source)")
 
 # 9d. index.html noscript catalog block must match the catalog (gen_pages.py)
 nscript_m = re.search(
@@ -559,6 +565,7 @@ for fname, txt in (
     ("index.html", index_src),
     ("404.html", notfound_src),
     ("privacy.html", privacy_src),
+    ("about.html", about_src),
 ):
     if SITE_BASE not in txt:
         errors.append(f"{fname}: SITE_BASE ({SITE_BASE}) URL not found")
@@ -603,6 +610,8 @@ _canonical_check("index.html", index_src, SITE_BASE + "/")
 _canonical_check("404.html", notfound_src, None)
 # privacy.html — canonical to its own URL, same on every lang/theme variant
 _canonical_check("privacy.html", privacy_src, SITE_BASE + "/privacy.html")
+# about.html — canonical to its own URL, same on every lang/theme variant
+_canonical_check("about.html", about_src, SITE_BASE + "/about.html")
 canon_checked = 0
 for slug in sorted(slugs):
     _canonical_check(
@@ -615,7 +624,7 @@ for slug in sorted(slugs):
 print(f"Sitemap: {sitemap_note}")
 print(f"robots.txt: {robots_note}")
 print(f"webmanifest: {webmanifest_note}")
-print(f"Canonical: checked ({canon_checked} pages + index/404/privacy)")
+print(f"Canonical: checked ({canon_checked} pages + index/404/privacy/about)")
 
 # 9g. Static language coherence (runtime switches derive from one source — the
 # <html lang>/<title>/<meta description> markup is what crawlers read pre-JS):
@@ -667,6 +676,7 @@ for fname, src in (
     ("index.html", index_src),
     ("404.html", notfound_src),
     ("privacy.html", privacy_src),
+    ("about.html", about_src),
 ):
     _lang_coherence(fname, src)
     lang_checked += 1

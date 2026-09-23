@@ -456,6 +456,12 @@ def generate_sitemap(catalog):
         "    <changefreq>monthly</changefreq>\n"
         "    <priority>0.3</priority>\n"
         "  </url>\n"
+        "  <url>\n"
+        f"    <loc>{SITE_BASE}/about.html</loc>\n"
+        f"    <lastmod>{CATALOG_DATE}</lastmod>\n"
+        "    <changefreq>monthly</changefreq>\n"
+        "    <priority>0.5</priority>\n"
+        "  </url>\n"
         + film_urls
         + "</urlset>\n"
     )
@@ -809,6 +815,18 @@ def main():
             print("privacy.html: up to date")
     else:
         print("privacy.html: not found, skipped")
+
+    about_path = ROOT / "about.html"
+    if about_path.exists():
+        about_src = about_path.read_text(encoding="utf-8")
+        about_new = inject_metrika(inject_theme(about_src))
+        if about_new != about_src:
+            about_path.write_text(about_new, encoding="utf-8")
+            print("about.html: theme + metrika blocks updated")
+        else:
+            print("about.html: up to date")
+    else:
+        print("about.html: not found, skipped")
 
 if __name__ == "__main__":
     main()
