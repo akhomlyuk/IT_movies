@@ -28,8 +28,8 @@ RU_GENRES = ru_genres()
 
 def catalog_git_date():
     try:
-        out = subprocess.run(
-            ["git", "log", "-1", "--format=%cs", "--", "js/data.js"],
+        shallow = subprocess.run(
+            ["git", "rev-parse", "--is-shallow-repository"],
             cwd=ROOT,
             capture_output=True,
             text=True,
@@ -37,10 +37,28 @@ def catalog_git_date():
             errors="replace",
             timeout=30,
         ).stdout.strip()
-        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", out):
-            return out
+        if shallow != "true":
+            out = subprocess.run(
+                ["git", "log", "-1", "--format=%cs", "--", "js/data.js"],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=30,
+            ).stdout.strip()
+            if re.fullmatch(r"\d{4}-\d{2}-\d{2}", out):
+                return out
     except (OSError, subprocess.SubprocessError):
         pass
+    sitemap = ROOT / "sitemap.xml"
+    if sitemap.exists():
+        dates = re.findall(
+            r"<lastmod>(\d{4}-\d{2}-\d{2})</lastmod>",
+            sitemap.read_text(encoding="utf-8", errors="replace"),
+        )
+        if dates:
+            return max(dates)
     return datetime.fromtimestamp((ROOT / "js" / "data.js").stat().st_mtime).date().isoformat()
 
 
