@@ -324,7 +324,16 @@
         themeBtn.addEventListener("click", function () {
           theme = theme === "dark" ? "light" : "dark";
           write("it-movies-theme", theme);
+          var snap = document.createElement("style");
+          snap.textContent = "*,*::before,*::after{transition:none !important}";
+          document.head.appendChild(snap);
+          void document.body.offsetHeight;
           apply();
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              snap.remove();
+            });
+          });
         });
       }
     })();

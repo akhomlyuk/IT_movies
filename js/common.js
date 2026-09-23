@@ -85,10 +85,25 @@ window.ITMoviesCommon = (function () {
 
   function toggleThemeClass(value) {
     const dark = value === "dark";
-    document.documentElement.classList.toggle("dark", dark);
-    document.documentElement.classList.toggle("light", !dark);
+    const root = document.documentElement;
+    let snap = null;
+    if (root.classList.contains("dark") !== dark) {
+      snap = document.createElement("style");
+      snap.textContent = "*,*::before,*::after{transition:none !important}";
+      document.head.appendChild(snap);
+      if (document.body) void document.body.offsetHeight;
+    }
+    root.classList.toggle("dark", dark);
+    root.classList.toggle("light", !dark);
     const meta = document.querySelector('meta[name="color-scheme"]');
     if (meta) meta.setAttribute("content", dark ? "dark" : "light");
+    if (snap) {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          snap.remove();
+        });
+      });
+    }
   }
 
   function scrollToTop() {

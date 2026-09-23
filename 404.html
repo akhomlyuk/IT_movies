@@ -213,11 +213,20 @@
         themeBtn.addEventListener("click", function () {
           theme = theme === "dark" ? "light" : "dark";
           try { localStorage.setItem("it-movies-theme", theme); } catch (e) {}
+          var snap = document.createElement("style");
+          snap.textContent = "*,*::before,*::after{transition:none !important}";
+          document.head.appendChild(snap);
+          void document.body.offsetHeight;
           document.documentElement.classList.toggle("dark", theme === "dark");
           document.documentElement.classList.toggle("light", theme === "light");
           var csMeta = document.querySelector('meta[name="color-scheme"]');
           if (csMeta) csMeta.setAttribute("content", theme);
           apply(lang);
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              snap.remove();
+            });
+          });
         });
       }
     })();
