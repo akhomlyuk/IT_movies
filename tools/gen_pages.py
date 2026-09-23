@@ -496,8 +496,8 @@ LASTUPD_MARK = ("<!-- begin:last-updated -->", "<!-- end:last-updated -->")
 def last_updated_block():
     human_date = f"{CATALOG_DATE[8:10]}.{CATALOG_DATE[5:7]}.{CATALOG_DATE[:4]}"
     return (
-        f'\n      <span> · </span><span class="last-updated">{{{{ t.lastUpdated }}}}'
-        f'<time datetime="{CATALOG_DATE}">{human_date}</time></span>\n      '
+        f'\n        <span> · </span><span class="last-updated">{{{{ t.lastUpdated }}}}'
+        f'<time datetime="{CATALOG_DATE}">{human_date}</time></span>\n        '
     )
 
 

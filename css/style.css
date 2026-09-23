@@ -847,12 +847,11 @@ footer .heart {
   margin: 2px;
 }
 
+footer .footer-line + .footer-line {
+  margin-top: 0.35rem;
+}
+
 footer .footer-privacy {
-  display: block;
-  width: fit-content;
-  margin-inline: auto;
-  margin-top: calc(0.55rem - 7px);
-  padding: 7px 0;
   font-size: 0.75rem;
   color: var(--muted);
 }
