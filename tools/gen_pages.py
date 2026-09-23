@@ -755,14 +755,14 @@ def render(item, related):
             <p class="meta-row">{esc(type_label)} · {esc(str(item["year"]))} · {esc(genre_list)}</p>
             <p class="film-desc">{esc(desc_ru)}</p>
             <p class="film-desc film-desc-alt">{esc(desc_en)}</p>
-{rat_tiles}            <p class="btn-back"><a href="../../">← Вернуться в каталог IT Movies</a></p>
-          </div>
+{rat_tiles}          </div>
         </article>
         <section class="related">
           <h2>Похожее в каталоге</h2>
           <ul>
 {related_items}          </ul>
         </section>
+        <p class="back-catalog"><a href="../../">← Вернуться в каталог IT Movies</a></p>
       </main>
       <footer>
         <div class="footer-line">

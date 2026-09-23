@@ -72,7 +72,6 @@ const FILM_TEMPLATE = `
           </button>
         </div>
         <span class="visually-hidden" role="status">{{ shareStatus }}</span>
-        <p class="btn-back"><a href="../../">← {{ t.backToCatalog }}</a></p>
       </div>
     </article>
 
@@ -83,6 +82,7 @@ const FILM_TEMPLATE = `
       </ul>
       <p class="empty" v-else>{{ t.empty }}</p>
     </section>
+    <p class="back-catalog"><a href="../../">← {{ t.backToCatalog }}</a></p>
   </main>
 
   <footer>
