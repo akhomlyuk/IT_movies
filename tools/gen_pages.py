@@ -790,7 +790,7 @@ def main():
         ("js/catalog.js", catalog_js(catalog)),
     ] + [
         ("js/" + name.replace(".js", ".min.js"), minify_js((ROOT / "js" / name).read_text(encoding="utf-8")))
-        for name in ("i18n.js", "common.js", "app.js", "film.js")
+        for name in ("i18n.js", "common.js", "app.js", "film.js", "about.js")
     ]
     for rel, content in derived:
         target = ROOT / rel

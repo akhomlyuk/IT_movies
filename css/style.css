@@ -1338,3 +1338,107 @@ html.no-scroll-state.scrolled .scroll-top {
     max-width: 100%;
   }
 }
+
+.privacy {
+  margin: 2.5rem 0 3rem;
+  padding: 2rem 1.5rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.privacy h1,
+.privacy h2:first-child {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 500;
+}
+.privacy h2 {
+  margin: 1.6rem 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+.privacy p, .privacy ul {
+  margin: 0.5rem 0;
+  line-height: 1.6;
+}
+.privacy ul {
+  padding-left: 1.25rem;
+}
+.privacy li {
+  margin: 0.3rem 0;
+}
+.privacy code {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
+}
+.privacy a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+}
+.privacy a:hover {
+  text-decoration-color: var(--ink);
+}
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin: 1.4rem 0 0.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+}
+.profile-avatar {
+  flex: none;
+  width: clamp(88px, 20vw, 120px);
+  height: clamp(88px, 20vw, 120px);
+  border-radius: 50%;
+  border: 2px solid var(--line-strong);
+  object-fit: cover;
+}
+.profile-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.profile-links a {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.profile-links a:hover,
+.profile-links a:focus-visible {
+  background: var(--hover);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+}
+.profile-links svg {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+.profile-links span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 480px) {
+  .profile {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .profile-links {
+    width: 100%;
+  }
+  .profile-links a {
+    justify-content: center;
+  }
+}

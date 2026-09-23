@@ -170,10 +170,11 @@ except (ValueError, KeyError) as e:
 i18n_src = (ROOT / "js" / "i18n.js").read_text(encoding="utf-8")
 film_js = (ROOT / "js" / "film.js").read_text(encoding="utf-8")
 app_js = (ROOT / "js" / "app.js").read_text(encoding="utf-8")
+about_js = (ROOT / "js" / "about.js").read_text(encoding="utf-8")
 catalog_src = (ROOT / "js" / "catalog.js").read_text(encoding="utf-8")
 refs = {
     r[:-1] if r.endswith("\\") else r
-    for r in re.findall(r"""['"]((?:static|\.\./static)/[^'"]+)['"]""", i18n_src + raw + app_js + film_js + catalog_src)
+    for r in re.findall(r"""['"]((?:static|\.\./static)/[^'"]+)['"]""", i18n_src + raw + app_js + film_js + about_js + catalog_src)
 }
 for name in ("index.html", "404.html", "privacy.html", "about.html"):
     text = (ROOT / name).read_text(encoding="utf-8")
@@ -307,7 +308,7 @@ def balance(src):
         i += 1
     return "OK" if not stack else f"Unclosed brackets: {stack}"
 
-for name in ("app.js", "i18n.js", "film.js", "common.js"):
+for name in ("app.js", "i18n.js", "film.js", "common.js", "about.js"):
     src = (ROOT / "js" / name).read_text(encoding="utf-8")
     res = balance(src)
     print(f"Bracket balance {name}: {res}")
@@ -352,8 +353,8 @@ if switches != 2:
 # 9. JS syntax check via node --check (if node is installed)
 if shutil.which("node"):
     for name in (
-        "app.js", "i18n.js", "film.js", "common.js", "data.js",
-        "catalog.js", "i18n.min.js", "common.min.js", "app.min.js", "film.min.js",
+        "app.js", "i18n.js", "film.js", "common.js", "data.js", "about.js",
+        "catalog.js", "i18n.min.js", "common.min.js", "app.min.js", "film.min.js", "about.min.js",
     ):
         res = subprocess.run(
             ["node", "--check", str(ROOT / "js" / name)],
@@ -379,7 +380,7 @@ for rel, content in (
         "js/" + name.replace(".js", ".min.js"),
         gen_pages.minify_js((ROOT / "js" / name).read_text(encoding="utf-8")),
     )
-    for name in ("i18n.js", "common.js", "app.js", "film.js")
+    for name in ("i18n.js", "common.js", "app.js", "film.js", "about.js")
 ):
     path = ROOT / rel
     if not path.exists():
