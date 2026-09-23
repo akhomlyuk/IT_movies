@@ -79,6 +79,11 @@ def test_film_theme(page, base):
     page.locator(".share-row").wait_for(state="visible")
     assert page.locator(".share-row a.share-btn[data-net]").count() >= 3
     assert page.locator(".related ul li a").count() >= 1
+    bc = page.locator("nav.breadcrumb")
+    expect(bc).to_be_visible()
+    expect(bc.locator("a")).to_have_attribute("href", "../../")
+    expect(bc.locator("a")).to_have_text("Главная")
+    expect(page.locator(".bc-current")).to_have_text(page.locator("h1").inner_text())
 
 
 def test_boot_fallback(page, base):

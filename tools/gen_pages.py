@@ -152,12 +152,14 @@ def index_ld_json(catalog):
     base = SITE_BASE + "/"
     items = []
     for i, item in enumerate(catalog):
+        url = base + "films/" + item_slug(item) + "/"
         entry = {
             "@type": "TVSeries" if item["type"] == "series" else "Movie",
             "position": i + 1,
             "name": item["titleRu"],
             "alternateName": item["titleEn"],
-            "url": base + "films/" + item_slug(item) + "/",
+            "url": url,
+            "@id": url,
         }
         if item.get("poster"):
             entry["image"] = f"{SITE_BASE}/{item['poster'].lstrip('/')}"
@@ -181,7 +183,25 @@ def index_ld_json(catalog):
             },
         },
         {
+            "@type": "Organization",
+            "@id": base + "#organization",
+            "name": "IT Movies",
+            "url": base,
+            "logo": base + "static/logo.webp",
+        },
+        {
+            "@type": "WebPage",
+            "@id": base + "#webpage",
+            "url": base,
+            "name": "IT Movies",
+            "inLanguage": ["ru", "en"],
+            "isPartOf": {"@id": base},
+            "mainEntity": {"@id": base + "#catalog"},
+            "publisher": {"@id": base + "#organization"},
+        },
+        {
             "@type": "ItemList",
+            "@id": base + "#catalog",
             "name": "Фильмы и сериалы о компьютерах, технологиях и искусственном интеллекте",
             "numberOfItems": len(catalog),
             "itemListElement": items,
@@ -542,6 +562,8 @@ def render(item, related):
         "name": title_ru,
         "alternateName": title_en,
         "url": page_url,
+        "@id": page_url,
+        "inLanguage": "ru",
         "description": desc_ru,
         "datePublished": str(item["year"]),
         "dateModified": CATALOG_DATE,
@@ -570,6 +592,7 @@ def render(item, related):
 
     graph.append({
         "@type": "BreadcrumbList",
+        "@id": page_url + "#breadcrumb",
         "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "IT Movies", "item": home_url},
             {"@type": "ListItem", "position": 2, "name": title_ru, "item": page_url},
@@ -579,6 +602,7 @@ def render(item, related):
     if related:
         graph.append({
             "@type": "ItemList",
+            "@id": page_url + "#related",
             "name": "Похожее в каталоге IT Movies",
             "numberOfItems": len(related),
             "itemListElement": [
@@ -691,6 +715,9 @@ def render(item, related):
         </div>
       </header>
       <main>
+        <nav class="breadcrumb" aria-label="Главная">
+          <a href="../../">Главная</a><span class="bc-sep"> › </span><span class="bc-current">{esc(title_ru)}</span>
+        </nav>
         <article class="film-main">
 {noscript_poster}          <div class="film-info">
             <p class="meta-row">{esc(type_label)} · {esc(str(item["year"]))} · {esc(genre_list)}</p>
@@ -706,8 +733,12 @@ def render(item, related):
         </section>
       </main>
       <footer>
-        <span>Сделано с</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
-        <a class="footer-privacy" href="../../privacy.html">Политика конфиденциальности</a>
+        <div class="footer-line">
+          <span>Сделано с</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
+        </div>
+        <div class="footer-line">
+          <a class="footer-privacy" href="../../privacy.html">Политика конфиденциальности</a>
+        </div>
       </footer>
     </noscript>
   </div>

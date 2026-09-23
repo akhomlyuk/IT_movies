@@ -47,6 +47,9 @@ const FILM_TEMPLATE = `
   </header>
 
   <main>
+    <nav class="breadcrumb" :aria-label="t.home">
+      <a href="../../">{{ t.home }}</a><span class="bc-sep"> › </span><span class="bc-current">{{ title }}</span>
+    </nav>
     <article class="film-main">
       <figure class="film-poster" v-if="posterSrc">
         <img :src="posterSrc" :alt="title" :width="posterW" :height="posterH" loading="eager" fetchpriority="high" decoding="async">
@@ -83,8 +86,12 @@ const FILM_TEMPLATE = `
   </main>
 
   <footer>
-    <span>{{ t.codedWith }}</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
-    <a class="footer-privacy" href="../../privacy.html">{{ t.privacy }}</a>
+    <div class="footer-line">
+      <span>{{ t.codedWith }}</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
+    </div>
+    <div class="footer-line">
+      <a class="footer-privacy" href="../../privacy.html">{{ t.privacy }}</a>
+    </div>
   </footer>
   <button class="scroll-top" :aria-label="t.scrollTop" @click="scrollToTop">↑</button>
 `;

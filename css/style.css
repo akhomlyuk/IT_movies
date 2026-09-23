@@ -327,7 +327,9 @@ html.js #app[v-cloak] .brand {
 }
 
 .lang:active,
-.theme-toggle:active {
+.theme-toggle:active,
+.fav-filter:active,
+.lucky:active {
   background: var(--accent);
   color: var(--accent-ink);
   border-color: var(--accent);
@@ -1204,6 +1206,26 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .ratings a.imdb {
   color: var(--imdb);
+}
+
+.breadcrumb {
+  margin: 0.7rem 0 0.9rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.breadcrumb a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+}
+
+.breadcrumb a:hover {
+  text-decoration-color: var(--ink);
+}
+
+.bc-current {
+  color: var(--ink);
 }
 
 .btn-back {

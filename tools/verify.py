@@ -513,8 +513,26 @@ for fname, src in (
         errors.append(f"{fname} metrika block differs from gen_pages.METRIKA_SCRIPT — run gen_pages.py")
 for page in sorted((ROOT / "films").glob("*/index.html")):
     metrika_checked += 1
-    if metrika_needle not in page.read_text(encoding="utf-8"):
+    fsrc = page.read_text(encoding="utf-8")
+    if metrika_needle not in fsrc:
         errors.append(f"metrika snippet missing on {page}")
+    fm = re.search(r'<script type="application/ld\+json">(.*?)</script>', fsrc, re.S)
+    if fm is None:
+        errors.append(f"film JSON-LD missing on {page}")
+    else:
+        try:
+            fgraph = json.loads(fm.group(1)).get("@graph", [])
+            fmovie = next(
+                (n for n in fgraph if n.get("@type") in ("Movie", "TVSeries")), None
+            )
+            if (
+                not fmovie
+                or fmovie.get("@id") != fmovie.get("url")
+                or fmovie.get("inLanguage") != "ru"
+            ):
+                errors.append(f"film JSON-LD: @id/inLanguage broken on {page}")
+        except json.JSONDecodeError:
+            errors.append(f"film JSON-LD: invalid JSON on {page}")
 print(f"Metrika: present on {metrika_checked} film pages + index/404/privacy/about (single source)")
 
 # 9d. index.html noscript catalog block must match the catalog (gen_pages.py)
@@ -550,15 +568,38 @@ else:
         graph = json.loads(inner).get("@graph", [])
         ws = next((n for n in graph if n.get("@type") == "WebSite"), None)
         il = next((n for n in graph if n.get("@type") == "ItemList"), None)
+        org = next((n for n in graph if n.get("@type") == "Organization"), None)
+        wp = next((n for n in graph if n.get("@type") == "WebPage"), None)
         if (
             not ws
             or not ws.get("potentialAction")
             or not il
             or il.get("numberOfItems") != len(catalog)
+            or not il.get("@id")
+            or not org
+            or not org.get("@id")
+            or not wp
+            or wp.get("isPartOf", {}).get("@id") != ws.get("@id")
+            or wp.get("mainEntity", {}).get("@id") != il.get("@id")
+            or wp.get("publisher", {}).get("@id") != org.get("@id")
         ):
             errors.append("index.html JSON-LD: unexpected structure")
         else:
-            print(f"JSON-LD index: OK ({len(catalog)} items, static)")
+            print(f"JSON-LD index: OK ({len(catalog)} items, Organization/WebPage linked, static)")
+
+pm = re.search(r'<script type="application/ld\+json">(.*?)</script>', privacy_src, re.S)
+if pm is None:
+    errors.append("privacy.html: JSON-LD block missing")
+else:
+    try:
+        pgraph = json.loads(pm.group(1)).get("@graph", [])
+        pwp = next((n for n in pgraph if n.get("@type") == "WebPage"), None)
+        if not pwp or pwp.get("isPartOf", {}).get("@id") != SITE_BASE + "/":
+            errors.append("privacy.html JSON-LD: WebPage/isPartOf broken")
+        else:
+            print("JSON-LD privacy: OK (WebPage -> WebSite)")
+    except json.JSONDecodeError:
+        errors.append("privacy.html JSON-LD: invalid JSON")
 
 # 9e. Hardcoded site URLs must stay under lib.SITE_BASE (single source)
 for fname, txt in (
