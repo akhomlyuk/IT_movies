@@ -69,36 +69,7 @@ LD_MARK = ("<!-- begin:index-ld -->", "<!-- end:index-ld -->")
 METRIKA_MARK = ("<!-- begin:metrika -->", "<!-- end:metrika -->")
 
 METRIKA_ID = "112571181"
-METRIKA_SCRIPT = """  <!-- Yandex.Metrika counter -->
-  <script type="text/javascript">
-    (function () {
-      if (navigator.globalPrivacyControl === true || navigator.doNotTrack === "1") return;
-      function startMetrika() {
-        (function(m,e,t,r,i,k,a){
-            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-            m[i].l=1*new Date();
-            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id={id}', 'ym');
-
-        ym({id}, 'init', {ssr:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-      }
-      function scheduleMetrika() {
-        if (window.requestIdleCallback) {
-          requestIdleCallback(startMetrika, {timeout: 3000});
-        } else {
-          setTimeout(startMetrika, 1000);
-        }
-      }
-      if (document.readyState === "complete") {
-        scheduleMetrika();
-      } else {
-        window.addEventListener("load", scheduleMetrika);
-      }
-    })();
-  </script>
-  <noscript><div><img src="https://mc.yandex.ru/watch/{id}" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-  <!-- /Yandex.Metrika counter -->""".replace("{id}", METRIKA_ID)
+METRIKA_SCRIPT = """  <!-- Yandex.Metrika counter --> <script type="text/javascript">     (function(m,e,t,r,i,k,a){         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};         m[i].l=1*new Date();         for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)     })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id={id}', 'ym');      ym({id}, 'init', {ssr:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true}); </script> <noscript><div><img src="https://mc.yandex.ru/watch/{id}" style="position:absolute; left:-9999px;" alt="" /></div></noscript> <!-- /Yandex.Metrika counter -->""".replace("{id}", METRIKA_ID)
 
 
 def index_ld_json(catalog):
@@ -594,7 +565,6 @@ def render(item, related):
   <link rel="preload" href="../../static/fonts/ubuntu-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../static/fonts/ubuntu-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <script type="application/ld+json">{json_ld}</script>
-{METRIKA_SCRIPT}
 </head>
 <body>
   <div id="app">
@@ -637,6 +607,7 @@ def render(item, related):
   <script src="../../js/i18n.min.js" defer></script>
   <script src="../../js/common.min.js" defer></script>
   <script src="../../js/film.min.js" defer></script>
+{METRIKA_SCRIPT}
 </body>
 </html>
 """
