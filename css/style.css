@@ -7,6 +7,7 @@
   --muted: #4d5873;
   --line: #dfe4ee;
   --line-strong: #c3cbdd;
+  --line-control: #7c87a2;
   --hover: rgba(16, 23, 40, 0.05);
   --dot: rgba(16, 23, 40, 0.05);
   --kp: #b84c00;
@@ -15,6 +16,7 @@
   --accent: #15803d;
   --accent-ink: #ffffff;
   --accent2: #0a5c33;
+  --link-hover: #0a5c33;
   --th-bg: rgba(16, 23, 40, 0.03);
   --glass: rgba(255, 255, 255, 0.55);
   --glass-card: rgba(251, 252, 254, 0.82);
@@ -37,6 +39,7 @@
     --muted: #8b95a3;
     --line: #333a55;
     --line-strong: #4a5274;
+    --line-control: #6b7699;
     --hover: rgba(255, 255, 255, 0.05);
     --dot: rgba(255, 255, 255, 0.04);
     --kp: #ff8533;
@@ -45,6 +48,7 @@
     --accent: #16a34a;
     --accent-ink: #06222b;
     --accent2: #0e8f4a;
+    --link-hover: #16a34a;
     --th-bg: rgba(255, 255, 255, 0.03);
     --glass: rgba(255, 255, 255, 0.05);
     --glass-card: rgba(18, 23, 42, 0.78);
@@ -121,6 +125,7 @@
   --muted: #8b95a3;
   --line: #333a55;
   --line-strong: #4a5274;
+  --line-control: #6b7699;
   --hover: rgba(255, 255, 255, 0.05);
   --dot: rgba(255, 255, 255, 0.04);
   --kp: #ff8533;
@@ -129,6 +134,7 @@
   --accent: #16a34a;
   --accent-ink: #06222b;
   --accent2: #0e8f4a;
+  --link-hover: #16a34a;
   --th-bg: rgba(255, 255, 255, 0.03);
   --glass: rgba(255, 255, 255, 0.05);
   --glass-card: rgba(18, 23, 42, 0.78);
@@ -265,11 +271,12 @@ html.js #app[v-cloak] .brand {
 
 .brand .invite a {
   color: var(--ink);
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
 }
 
 .brand .invite a:hover {
-  text-decoration: underline;
+  text-decoration-color: var(--ink);
 }
 
 .brand .invite .tg-icon {
@@ -294,7 +301,7 @@ html.js #app[v-cloak] .brand {
 .lang,
 .theme-toggle {
   appearance: none;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   background: var(--glass);
   color: var(--muted);
   border-radius: 6px;
@@ -336,7 +343,7 @@ html.js #app[v-cloak] .brand {
   flex: 1;
   min-width: 0;
   height: 48px;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: 6px;
   background: var(--glass);
   color: var(--ink);
@@ -371,7 +378,7 @@ html.js #app[v-cloak] .brand {
   width: 48px;
   height: 48px;
   padding: 0;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: 6px;
   background: var(--glass);
   color: var(--muted);
@@ -422,7 +429,7 @@ html.js #app[v-cloak] .brand {
 
 .nav a {
   text-decoration: none;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: 6px;
   background: var(--glass);
   padding: 0.3rem 0.8rem;
@@ -699,7 +706,6 @@ tbody tr:hover td:first-child {
 .fav-icon {
   display: inline-flex;
   align-items: center;
-  margin-right: 0.1rem;
   vertical-align: text-bottom;
 }
 
@@ -716,6 +722,7 @@ tbody tr:hover td:first-child {
   text-decoration: none;
   border-bottom: 1px solid var(--line-strong);
   vertical-align: 0.15em;
+  margin-left: 0.15rem;
   transition: color 0.2s ease, border-color 0.2s ease, text-shadow 0.2s ease;
 }
 
@@ -826,11 +833,12 @@ footer {
 
 footer a {
   color: var(--ink);
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
 }
 
 footer a:hover {
-  text-decoration: underline;
+  text-decoration-color: var(--ink);
 }
 
 footer .heart {
@@ -840,6 +848,8 @@ footer .heart {
 
 footer .footer-privacy {
   display: block;
+  width: fit-content;
+  margin-inline: auto;
   margin-top: 0.55rem;
   font-size: 0.7rem;
   color: var(--muted);
@@ -851,7 +861,7 @@ footer .footer-privacy {
   right: 2rem;
   width: 35px;
   height: 35px;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   background: var(--glass);
   color: var(--ink);
   font-size: 1.2rem;
@@ -1063,8 +1073,13 @@ html.no-scroll-state.scrolled .scroll-top {
   .search,
   .fav-filter,
   .nav a,
-  .title-cell a {
+  .title-cell a,
+  .poster-icon img {
     transition: none;
+  }
+
+  .poster-icon:hover img {
+    transform: none;
   }
 }
 
@@ -1125,7 +1140,7 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .ratings a {
   padding: 0.45rem 0.9rem;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: 6px;
   text-decoration: none;
   background: var(--glass);
@@ -1157,7 +1172,7 @@ html.no-scroll-state.scrolled .scroll-top {
 .btn-back a {
   display: inline-block;
   padding: 0.45rem 0.9rem;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: 6px;
   background: var(--glass);
   color: var(--ink);
@@ -1201,13 +1216,13 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .related a {
   text-decoration: none;
-  border-bottom: 1px solid transparent;
+  border-bottom: 1px solid var(--line-strong);
   transition: color 0.2s ease, border-color 0.2s ease, text-shadow 0.2s ease;
 }
 
 .related a:hover {
   border-bottom-color: var(--accent);
-  color: var(--accent);
+  color: var(--link-hover);
   text-shadow: var(--link-glow);
 }
 
@@ -1225,7 +1240,7 @@ html.no-scroll-state.scrolled .scroll-top {
   width: 2.5rem;
   height: 2.5rem;
   padding: 0;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: 50%;
   background: var(--glass);
   color: var(--ink);
