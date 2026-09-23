@@ -737,7 +737,7 @@ tbody tr:hover td:first-child {
   display: block;
   margin-top: 0.15rem;
   color: var(--muted);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
 }
 
 .genre {
@@ -768,7 +768,7 @@ a.kp .star,
 a.imdb .star {
   display: inline-block;
   margin-left: 0.18em;
-  font-size: 0.72em;
+  font-size: 0.85em;
   line-height: 1;
   vertical-align: 0.12em;
 }
@@ -786,7 +786,7 @@ a.imdb .star {
 
 .num .no-data {
   color: var(--muted);
-  font-size: 0.72em;
+  font-size: 0.85em;
   line-height: 1.15;
   white-space: normal;
 }
@@ -853,7 +853,7 @@ footer .footer-privacy {
   margin-inline: auto;
   margin-top: calc(0.55rem - 7px);
   padding: 7px 0;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 
