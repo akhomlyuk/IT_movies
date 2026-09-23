@@ -28,6 +28,10 @@ from playwright.sync_api import expect, sync_playwright
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lib import ROOT  # noqa: E402
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 FILM_PAGE = "films/tt0133093-the-matrix/index.html"
 META_DARK = "#171b2d"
 META_LIGHT = "#eef1f6"
@@ -55,11 +59,11 @@ def test_main_filter(page, base):
 def test_main_lang(page, base):
     page.goto(base + "index.html", wait_until="domcontentloaded")
     expect(page).to_have_title(
-        "IT Movies - Каталог фильмов и сериалов о компьютерах, технологиях и искусственном интеллекте"
+        "Фильмы и сериалы о компьютерах, технологиях и ИИ — IT Movies"
     )
     page.locator(".lang").click()
     expect(page).to_have_title(
-        "IT Movies - A catalog of films and series about computers, technology and AI"
+        "Films and series on computers, technology and AI — IT Movies"
     )
 
 
