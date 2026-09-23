@@ -72,6 +72,40 @@ METRIKA_ID = "112571181"
 METRIKA_SCRIPT = """  <!-- Yandex.Metrika counter --> <script type="text/javascript">     (function(m,e,t,r,i,k,a){         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};         m[i].l=1*new Date();         for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)     })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id={id}', 'ym');      ym({id}, 'init', {ssr:true, clickmap:true, referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true}); </script> <noscript><div><img src="https://mc.yandex.ru/watch/{id}" style="position:absolute; left:-9999px;" alt="" /></div></noscript> <!-- /Yandex.Metrika counter -->""".replace("{id}", METRIKA_ID)
 
 
+def seo_desc(text):
+    return _seo_desc(text).rstrip(" \t,;:…–—")
+
+
+def _seo_desc(text):
+    text = " ".join(text.split())
+    sentences = re.split(r"(?<=[.!?])\s+", text)
+    acc = ""
+    for s in sentences:
+        cand = s if not acc else acc + " " + s
+        if len(cand) > 160:
+            break
+        acc = cand
+        if len(acc) >= 120:
+            return acc
+    if len(acc) >= 120:
+        return acc
+    words = text.split(" ")
+    acc = ""
+    for w in words:
+        cand = w if not acc else acc + " " + w
+        if len(cand) > 160:
+            break
+        acc = cand
+    if len(acc) >= 120:
+        return acc
+    acc = ""
+    for w in words:
+        acc = w if not acc else acc + " " + w
+        if len(acc) >= 120:
+            return acc
+    return text
+
+
 def index_ld_json(catalog):
     base = SITE_BASE + "/"
     items = []
@@ -532,9 +566,9 @@ def render(item, related):
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{esc(title_ru)} — IT Movies</title>
-  <meta name="description" content="{esc(desc_ru)}">
+  <meta name="description" content="{esc(seo_desc(desc_ru))}">
   <meta property="og:title" content="{esc(title_en)} — IT Movies">
-  <meta property="og:description" content="{esc(desc_en)}">
+  <meta property="og:description" content="{esc(seo_desc(desc_en))}">
   <meta property="og:type" content="{og_type}">
   <meta property="og:locale" content="en_US">
   <meta property="og:locale:alternate" content="ru_RU">
