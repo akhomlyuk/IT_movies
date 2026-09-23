@@ -428,7 +428,7 @@ def index_noscript(catalog):
             f'          <li><a href="films/{item_slug(i)}/">{esc(i["titleRu"])}</a></li>\n'
             for i in rows
         )
-        out.append(f'        <h3>{label}</h3>\n        <ul>\n{lis}        </ul>\n')
+        out.append(f'        <h2>{label}</h2>\n        <ul>\n{lis}        </ul>\n')
     return "".join(out)
 
 
