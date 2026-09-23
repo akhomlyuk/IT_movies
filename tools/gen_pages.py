@@ -565,9 +565,9 @@ def render(item, related):
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{esc(title_ru)} — IT Movies</title>
+  <title>{esc(title_ru)} ({item["year"]}) — IT Movies</title>
   <meta name="description" content="{esc(seo_desc(desc_ru))}">
-  <meta property="og:title" content="{esc(title_ru)} — IT Movies">
+  <meta property="og:title" content="{esc(title_ru)} ({item["year"]}) — IT Movies">
   <meta property="og:description" content="{esc(seo_desc(desc_ru))}">
   <meta property="og:type" content="{og_type}">
   <meta property="og:locale" content="ru_RU">

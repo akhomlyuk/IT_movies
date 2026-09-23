@@ -136,6 +136,7 @@ const app = createApp({
     const title = computed(() =>
       item ? (lang.value === "ru" ? item.titleRu : item.titleEn) : ""
     );
+    const yearSuffix = item && item.year ? ` (${item.year})` : "";
     const altTitle = computed(() => {
       if (!item) return "";
       const primary = lang.value === "ru" ? item.titleRu : item.titleEn;
@@ -216,7 +217,7 @@ const app = createApp({
         currentLang = value;
         safeWrite("it-movies-lang", value);
         document.documentElement.lang = value;
-        document.title = `${title.value} — ${I18N[value].title}`;
+        document.title = `${title.value}${yearSuffix} — ${I18N[value].title}`;
       },
       { immediate: true }
     );
