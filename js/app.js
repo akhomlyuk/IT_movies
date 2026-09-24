@@ -133,8 +133,6 @@ const CatalogTable = {
       selectedPoster.value = null;
     }
 
-    const favIcon = "static/favorite_32.png";
-
     return {
       selectedPoster,
       closeBtn,
@@ -154,7 +152,6 @@ const CatalogTable = {
       arrow,
       openPoster,
       closePoster,
-      favIcon,
     };
   },
   template: "#tpl-catalog",
@@ -329,6 +326,26 @@ const app = createApp({
       all: series.value.length + movies.value.length + documentaries.value.length,
     }));
 
+    const featured = computed(() => {
+      const favorites = window.CATALOG.filter((item) => item.fav);
+      return ["movie", "documentary", "series"]
+        .flatMap((type) => favorites.filter((item) => item.type === type).slice(0, 3))
+        .slice(0, 8);
+    });
+    const hasActiveFilters = computed(() => query.value.trim() !== "" || onlyFav.value);
+
+    function resetFilters() {
+      query.value = "";
+      onlyFav.value = false;
+      for (const type of Object.keys(SORT_DEFAULTS)) {
+        sorts[type] = { ...SORT_DEFAULTS[type] };
+      }
+    }
+
+    function genreLabel(item) {
+      return item.genres.map((genre) => I18N[lang.value].genres[genre] || genre).join(" · ");
+    }
+
     function setLang(next) {
       lang.value = next;
     }
@@ -367,9 +384,14 @@ const app = createApp({
       movies,
       documentaries,
       counts,
+      featured,
+      hasActiveFilters,
+      resetFilters,
       setLang,
       setTheme,
       sortBy,
+      filmUrl,
+      genreLabel,
       goLucky,
       scrollToTop,
     };

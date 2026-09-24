@@ -78,11 +78,19 @@
       <div class="toolbar">
         <div class="tool-buttons">
           <button type="button" class="fav-filter" :class="{ active: onlyFav }" :aria-pressed="onlyFav" :aria-label="t.favFilter" :title="t.favFilterTitle" @click="onlyFav = !onlyFav">
-            <img src="static/favorite_32.png" alt="" width="32" height="32" loading="lazy" decoding="async">
+            <svg class="fav-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.8 1.7Z" fill="currentColor"/></svg>
           </button>
-          <button type="button" class="lucky" :aria-label="t.lucky" :title="t.lucky" @click="goLucky">🎲</button>
-          <button type="button" class="theme-toggle" :aria-label="theme === 'dark' ? t.themeToLight : t.themeToDark" :title="theme === 'dark' ? t.themeToLight : t.themeToDark" @click="setTheme(theme === 'dark' ? 'light' : 'dark')">{{ theme === 'dark' ? '🌙' : '☀️' }}</button>
-          <button type="button" class="lang" :aria-label="t.swapLang + ': ' + (lang === 'ru' ? 'RU' : 'EN')" :title="t.swapLang" @click="setLang(lang === 'ru' ? 'en' : 'ru')">🌐 {{ lang === 'ru' ? 'RU' : 'EN' }}</button>
+          <button type="button" class="lucky" :aria-label="t.lucky" :title="t.lucky" @click="goLucky">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm2 4h.01M15 7h.01M9 12h.01M15 12h.01M9 17h.01M15 17h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <button type="button" class="theme-toggle" :aria-label="theme === 'dark' ? t.themeToLight : t.themeToDark" :title="theme === 'dark' ? t.themeToLight : t.themeToDark" @click="setTheme(theme === 'dark' ? 'light' : 'dark')">
+            <svg v-if="theme === 'dark'" class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 15.6A8.5 8.5 0 0 1 8.4 3.6 8.5 8.5 0 1 0 20.4 15.6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg v-else class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+          <button type="button" class="lang" :aria-label="t.swapLang + ': ' + (lang === 'ru' ? 'RU' : 'EN')" :title="t.swapLang" @click="setLang(lang === 'ru' ? 'en' : 'ru')">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 12h18M12 3c2.4 2.5 3.5 5.5 3.5 9S14.4 18.5 12 21c-2.4-2.5-3.5-5.5-3.5-9S9.6 5.5 12 3Z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+            <span>{{ lang === 'ru' ? 'RU' : 'EN' }}</span>
+          </button>
         </div>
         <input id="srch" class="search" v-model="query" type="search" :placeholder="t.search" :aria-label="t.search">
       </div>
@@ -93,6 +101,29 @@
       <a href="#series">{{ t.series }} <span>{{ counts.series }}</span></a>
       <a href="#documentaries">{{ t.documentaries }} <span>{{ counts.documentaries }}</span></a>
     </nav>
+
+    <div v-if="hasActiveFilters" class="catalog-status">
+      <span class="result-count" role="status" aria-live="polite">{{ t.results }}: {{ counts.all }}</span>
+      <button type="button" class="reset-filters" @click="resetFilters">{{ t.resetFilters }}</button>
+    </div>
+
+    <section v-if="featured.length && !hasActiveFilters" class="featured" aria-labelledby="featured-title">
+      <div class="section-heading">
+        <h2 id="featured-title">{{ t.startHere }}</h2>
+        <p>{{ t.startHereLead }}</p>
+      </div>
+      <ul class="featured-grid">
+        <li v-for="item in featured" :key="'featured-' + (item.imdbId || item.kpId)">
+          <a class="featured-card" :href="filmUrl(item)">
+            <img :src="item.poster400 || item.poster" alt="" width="180" height="270" loading="lazy" decoding="async">
+            <span class="featured-card-copy">
+              <span class="featured-card-title">{{ lang === 'ru' ? item.titleRu : item.titleEn }}</span>
+              <span class="featured-card-meta">{{ item.year }} · {{ genreLabel(item) }}</span>
+            </span>
+          </a>
+        </li>
+      </ul>
+    </section>
 
     <main id="main" tabindex="-1">
     <noscript class="no-js-catalog">
@@ -262,16 +293,20 @@
         </ul>
 <!-- end:catalog-noscript -->
     </noscript>
-    <catalog-table id="movies" type-key="movie" :title="t.movies" :items="movies" :t="t" :lang="lang" :sort="sorts.movie" @sort="sortBy"></catalog-table>
-    <catalog-table id="series" type-key="series" :title="t.series" :items="series" :t="t" :lang="lang" :sort="sorts.series" @sort="sortBy"></catalog-table>
-    <catalog-table id="documentaries" type-key="documentary" :title="t.documentaries" :items="documentaries" :t="t" :lang="lang" :sort="sorts.documentary" @sort="sortBy"></catalog-table>
+    <catalog-table v-if="movies.length" id="movies" type-key="movie" :title="t.movies" :items="movies" :t="t" :lang="lang" :sort="sorts.movie" @sort="sortBy"></catalog-table>
+    <catalog-table v-if="series.length" id="series" type-key="series" :title="t.series" :items="series" :t="t" :lang="lang" :sort="sorts.series" @sort="sortBy"></catalog-table>
+    <catalog-table v-if="documentaries.length" id="documentaries" type-key="documentary" :title="t.documentaries" :items="documentaries" :t="t" :lang="lang" :sort="sorts.documentary" @sort="sortBy"></catalog-table>
+    <div v-if="counts.all === 0" class="empty-state" role="status">
+      <p>{{ query ? t.emptyQuery : t.empty }}</p>
+      <button type="button" class="reset-filters" @click="resetFilters">{{ t.resetFilters }}</button>
+    </div>
     <div class="catalog-end">
-      <span class="catalog-total" role="status">🎬 {{ t.total }}: {{ counts.all }}</span>
+      <span class="catalog-total">{{ t.total }}: {{ counts.all }}</span>
     </div>
     </main>
     <footer>
       <div class="footer-line">
-        <span>{{ t.codedWith }}</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
+        <span>{{ t.codedWith }}</span><svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.8 1.7Z" fill="currentColor"/></svg><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
         <!-- begin:last-updated -->
         <span> · </span><span class="last-updated">{{ t.lastUpdated }}<time datetime="2026-09-24">24.09.2026</time></span>
         <!-- end:last-updated -->
@@ -307,20 +342,25 @@
           <tbody>
             <tr v-for="item in items" :key="item.imdbId || item.kpId">
               <td class="title-cell">
-                <span class="poster-wrap" v-if="withPosters && item.poster">
-                  <button type="button" class="poster-icon" :aria-label="t.openPoster" @click.stop="openPoster(item)"><img src="static/poster_icon.png" alt="" width="24" height="24" loading="lazy" decoding="async"></button>
+                <span class="title-layout">
+                  <span class="poster-wrap" v-if="withPosters && item.poster">
+                    <button type="button" class="poster-icon" :aria-label="t.openPoster" @click.stop="openPoster(item)"><img src="static/poster_icon.png" alt="" width="24" height="24" loading="lazy" decoding="async"></button>
+                  </span>
+                  <span class="fav-icon" :title="t.recommend" v-if="item.fav"><svg class="fav-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.8 1.7Z" fill="currentColor"/></svg></span>
+                  <span class="title-copy">
+                    <span class="title-primary"><a :href="filmUrl(item)" :title="displayTitle(item)">{{ displayTitle(item) }}</a></span>
+                    <span class="alt-title" v-if="altTitle(item)">{{ altTitle(item) }}</span>
+                    <span class="mobile-meta">{{ genreLabel(item) }} · {{ item.year }}</span>
+                  </span>
                 </span>
-                <span class="fav-icon" :title="t.recommend" v-if="item.fav"><img :src="favIcon" :alt="t.recommend" width="24" height="24" loading="lazy" decoding="async"></span>
-                <a :href="filmUrl(item)">{{ displayTitle(item) }}</a>
-                <span class="alt-title" v-if="altTitle(item)">{{ altTitle(item) }}</span>
               </td>
               <td class="genre">{{ genreLabel(item) }}</td>
               <td class="year">{{ item.year }}</td>
               <td class="num">
-                <a class="kp" :href="kpUrl(item)" target="_blank" rel="noopener noreferrer"><span :class="{ 'no-data': !hasRating(item.kpRating) }">{{ formatRating(item.kpRating, t) }}</span><span class="star" v-if="isHighRating(item.kpRating)" aria-hidden="true">★</span></a>
+                <a class="kp" :href="kpUrl(item)" target="_blank" rel="noopener noreferrer" :aria-label="t.kp + ': ' + formatRating(item.kpRating, t) + ' — ' + t.openExternal"><span :class="{ 'no-data': !hasRating(item.kpRating) }">{{ formatRating(item.kpRating, t) }}</span><span class="star" v-if="isHighRating(item.kpRating)" aria-hidden="true">★</span></a>
               </td>
               <td class="num">
-                <a v-if="item.imdbId" class="imdb" :href="imdbUrl(item)" target="_blank" rel="noopener noreferrer"><span :class="{ 'no-data': !hasRating(item.imdbRating) }">{{ formatRating(item.imdbRating, t) }}</span><span class="star" v-if="isHighRating(item.imdbRating)" aria-hidden="true">★</span></a><span v-else class="no-data">{{ formatRating(item.imdbRating, t) }}</span>
+                <a v-if="item.imdbId" class="imdb" :href="imdbUrl(item)" target="_blank" rel="noopener noreferrer" :aria-label="t.imdb + ': ' + formatRating(item.imdbRating, t) + ' — ' + t.openExternal"><span :class="{ 'no-data': !hasRating(item.imdbRating) }">{{ formatRating(item.imdbRating, t) }}</span><span class="star" v-if="isHighRating(item.imdbRating)" aria-hidden="true">★</span></a><span v-else class="no-data">{{ formatRating(item.imdbRating, t) }}</span>
               </td>
             </tr>
             <tr v-if="!items.length">

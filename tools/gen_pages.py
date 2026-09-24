@@ -712,8 +712,9 @@ def render(item, related, pool):
         if r.get("fav"):
             fav = (
                 '<span class="fav-icon" title="Рекомендую">'
-                '<img src="../../static/favorite_32.png" alt="Рекомендую" width="24" height="24"'
-                ' loading="lazy" decoding="async"></span>'
+                '<svg class="fav-icon-svg" viewBox="0 0 24 24" aria-hidden="true">'
+                '<path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.8 1.7Z"'
+                ' fill="currentColor"></path></svg></span>'
             )
         rates = []
         if has_rating(r.get("kpRating")):

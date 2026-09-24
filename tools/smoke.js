@@ -103,9 +103,57 @@ if (mode === "slug") {
   if (!state || typeof state.movies.value.length !== "number" || !state.setLang) {
     throw new Error("app.js setup() returned invalid state");
   }
+  if (!state.featured || !Array.isArray(state.featured.value) || state.featured.value.length === 0) {
+    throw new Error("app.js must expose a non-empty featured shelf");
+  }
+  if (new Set(state.featured.value.map((item) => item.type)).size < 2) {
+    throw new Error("app.js featured shelf must include more than one media type");
+  }
+  if (typeof state.resetFilters !== "function" || !state.hasActiveFilters) {
+    throw new Error("app.js must expose filter reset state");
+  }
+  state.query.value = "matrix";
+  state.onlyFav.value = true;
+  state.resetFilters();
+  if (state.query.value || state.onlyFav.value) {
+    throw new Error("app.js resetFilters must clear search and recommendation state");
+  }
   const total = state.movies.value.length + state.series.value.length + state.documentaries.value.length;
   if (total !== global.CATALOG.length) {
     throw new Error("sections total " + total + " != CATALOG.length " + global.CATALOG.length);
+  }
+  const mainMarkup = read("index.html");
+  const styleSource = read("css/style.css");
+  if (!mainMarkup.includes('class="title-layout"')) {
+    throw new Error("index.html must keep title cell layout inside a table-cell-safe wrapper");
+  }
+  if (!mainMarkup.includes('class="title-primary"')) {
+    throw new Error("index.html must isolate title line clamping from the inline link");
+  }
+  if (!styleSource.includes("grid-template-columns: 32px 32px")) {
+    throw new Error("title layout must use equal icon columns");
+  }
+  if (styleSource.includes(".title-cell {\n  display: flex")) {
+    throw new Error("style.css must not turn the table title cell into a flex item");
+  }
+  if (!styleSource.includes("grid-column: 3")) {
+    throw new Error("title copy must have an explicit grid position independent of heart visibility");
+  }
+  if (!styleSource.includes(".title-cell a") || !styleSource.includes("display: inline;")) {
+    throw new Error("title links must remain inline instead of stretching across the full column");
+  }
+  if (!mainMarkup.includes('class="catalog-status"')) {
+    throw new Error("index.html must keep result status outside the search control row");
+  }
+  if (mainMarkup.includes('src="static/favorite_32.png"')) {
+    throw new Error("index.html must use an inline SVG recommendation icon");
+  }
+  if (styleSource.includes("monospace")) {
+    throw new Error("style.css must not introduce a monospace font override");
+  }
+  const privacySource = read("privacy.html");
+  if (privacySource.includes("monospace")) {
+    throw new Error("privacy.html must not introduce a monospace font override");
   }
   const api = global.ITMoviesCommon;
   for (const it of global.CATALOG) {
