@@ -595,10 +595,10 @@ tbody tr:hover td:first-child {
   line-height: 0;
   cursor: pointer;
   vertical-align: text-bottom;
-  margin-right: 0.25rem;
 }
 
 .poster-icon img {
+  display: block;
   border-radius: 4px;
   transition: transform 0.15s ease;
 }
@@ -697,7 +697,7 @@ tbody tr:hover td:first-child {
 .title-cell a {
   text-decoration: none;
   border-bottom: 1px solid var(--line-strong);
-  vertical-align: 0.15em;
+  vertical-align: 0.3em;
   margin-left: 0.25rem;
   transition: border-color 0.15s ease;
 }
@@ -942,7 +942,7 @@ html.no-scroll-state.scrolled .scroll-top {
   }
 
   .toolbar {
-    margin-left: auto;
+    align-items: flex-start;
   }
 
   th:nth-child(1),
