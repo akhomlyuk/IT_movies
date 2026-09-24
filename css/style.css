@@ -15,16 +15,15 @@
   --focus: #101728;
   --accent: #15803d;
   --accent-ink: #ffffff;
-  --accent2: #0a5c33;
-  --link-hover: #0a5c33;
   --th-bg: rgba(16, 23, 40, 0.03);
   --glass: rgba(255, 255, 255, 0.55);
   --glass-card: rgba(251, 252, 254, 0.82);
   --shadow: 0 2px 8px rgba(16, 23, 40, 0.07);
-  --shadow-soft: 0 2px 10px rgba(16, 23, 40, 0.06);
-  --chip-shadow: 0 2px 6px rgba(16, 23, 40, 0.18);
-  --chip-shadow-hover: 0 3px 8px rgba(16, 23, 40, 0.2);
-  --poster-glow: 0 8px 24px rgba(16, 23, 40, 0.18);
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -44,16 +43,10 @@
     --focus: #e8ecf7;
     --accent: #17914a;
     --accent-ink: #06222b;
-    --accent2: #0e8f4a;
-    --link-hover: #16a34a;
     --th-bg: rgba(255, 255, 255, 0.03);
     --glass: rgba(255, 255, 255, 0.05);
     --glass-card: rgba(18, 23, 42, 0.78);
     --shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-    --shadow-soft: 0 4px 14px rgba(0, 0, 0, 0.35);
-    --chip-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-    --chip-shadow-hover: 0 3px 8px rgba(0, 0, 0, 0.3);
-    --poster-glow: 0 10px 28px rgba(0, 0, 0, 0.45);
   }
 }
 
@@ -127,16 +120,10 @@
   --focus: #e8ecf7;
   --accent: #17914a;
   --accent-ink: #06222b;
-  --accent2: #0e8f4a;
-  --link-hover: #16a34a;
   --th-bg: rgba(255, 255, 255, 0.03);
   --glass: rgba(255, 255, 255, 0.05);
   --glass-card: rgba(18, 23, 42, 0.78);
   --shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-  --shadow-soft: 0 4px 14px rgba(0, 0, 0, 0.35);
-  --chip-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  --chip-shadow-hover: 0 3px 8px rgba(0, 0, 0, 0.3);
-  --poster-glow: 0 10px 28px rgba(0, 0, 0, 0.45);
 }
 
 :root.light {
@@ -159,6 +146,8 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: "Ubuntu", "Segoe UI", sans-serif;
+  font-size: var(--fs-md);
+  line-height: 1.5;
   background: var(--bg);
   background-image: radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 0);
   background-size: 20px 20px;
@@ -167,6 +156,11 @@ body {
 
 a {
   color: inherit;
+}
+
+h1,
+h2 {
+  line-height: 1.2;
 }
 
 #app {
@@ -206,17 +200,7 @@ html.js #app[v-cloak] .brand {
   justify-content: space-between;
   gap: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid transparent;
-}
-
-.top::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent), var(--accent2) 25%, transparent);
+  border-bottom: 1px solid var(--accent);
 }
 
 .brand {
@@ -247,15 +231,14 @@ html.js #app[v-cloak] .brand {
 }
 
 .brand p {
-  margin: 0.4rem 0 0;
+  margin: 0.5rem 0 0;
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
 }
 
 .brand .invite {
-  margin: 0.1rem 0 0;
-  font-size: 0.95rem;
-  line-height: 1.4;
+  margin: 0.25rem 0 0;
+  font-size: var(--fs-md);
 }
 
 .brand .invite a {
@@ -280,6 +263,7 @@ html.js #app[v-cloak] .brand {
   flex-direction: column;
   align-items: flex-end;
   gap: 0.75rem;
+  flex-shrink: 0;
 }
 
 .switchers {
@@ -290,20 +274,24 @@ html.js #app[v-cloak] .brand {
 .lang,
 .theme-toggle {
   appearance: none;
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 0.75rem;
   border: 1px solid var(--line-control);
   background: var(--glass);
   color: var(--muted);
   border-radius: 6px;
   font: inherit;
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   letter-spacing: 0.08em;
-  padding: 0.4rem 0.7rem;
+  white-space: nowrap;
+  flex-shrink: 0;
   cursor: pointer;
   transition:
     background-color 0.15s ease,
     color 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    border-color 0.15s ease;
 }
 
 .lang:hover,
@@ -331,14 +319,14 @@ html.js #app[v-cloak] .brand {
 .search {
   flex: 1;
   min-width: 0;
-  height: 48px;
+  height: 40px;
   border: 1px solid var(--line-control);
   border-radius: 6px;
   background: var(--glass);
   color: var(--ink);
   font: inherit;
-  padding: 0 0.8rem;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  padding: 0 0.75rem;
+  transition: border-color 0.15s ease;
 }
 
 .search:hover {
@@ -362,8 +350,8 @@ html.js #app[v-cloak] .brand {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border: 1px solid var(--line-control);
   border-radius: 6px;
@@ -374,8 +362,7 @@ html.js #app[v-cloak] .brand {
   transition:
     background-color 0.15s ease,
     color 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    border-color 0.15s ease;
 }
 
 .fav-filter img {
@@ -409,19 +396,18 @@ html.js #app[v-cloak] .brand {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border: 1px solid var(--line-control);
   border-radius: 6px;
   background: var(--glass);
-  font-size: 1.35rem;
+  font-size: var(--fs-xl);
   line-height: 1;
   cursor: pointer;
   transition:
     background-color 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    border-color 0.15s ease;
 }
 
 .lucky:hover {
@@ -438,16 +424,19 @@ html.js #app[v-cloak] .brand {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin: 1.1rem 0 2rem;
-  font-size: 0.92rem;
+  margin: 1rem 0 2rem;
+  font-size: var(--fs-sm);
 }
 
 .nav a {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 0.75rem;
   text-decoration: none;
   border: 1px solid var(--line-control);
   border-radius: 6px;
   background: var(--glass);
-  padding: 0.3rem 0.8rem;
   transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
@@ -467,17 +456,17 @@ section {
 
 #series {
   content-visibility: auto;
-  contain-intrinsic-size: auto none auto 1988px;
+  contain-intrinsic-size: auto none auto 2059px;
 }
 
 #documentaries {
   content-visibility: auto;
-  contain-intrinsic-size: auto none auto 3150px;
+  contain-intrinsic-size: auto none auto 3201px;
 }
 
 section h2 {
-  margin: 0 0 0.9rem;
-  font-size: 1.5rem;
+  margin: 0 0 1rem;
+  font-size: var(--fs-xl);
   font-weight: 500;
   letter-spacing: -0.01em;
 }
@@ -493,7 +482,8 @@ section h2 {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.92rem;
+  font-size: var(--fs-sm);
+  line-height: 1.3;
   table-layout: fixed;
 }
 
@@ -525,7 +515,7 @@ td:nth-child(5) {
 th,
 td {
   text-align: left;
-  padding: 0.6rem 0.7rem;
+  padding: 0.5rem 0.75rem;
   border-bottom: 1px dotted var(--line);
 }
 
@@ -533,7 +523,7 @@ th {
   background: var(--th-bg);
   font-weight: 500;
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -547,8 +537,8 @@ thead th {
 th.sortable .th-sort {
   display: inline-block;
   vertical-align: baseline;
-  margin: -5px;
-  padding: 5px;
+  margin: -4px;
+  padding: 4px;
   border: 0;
   background: none;
   font: inherit;
@@ -562,7 +552,7 @@ th.sortable .th-sort {
 
 th.sortable .th-sort:focus-visible {
   outline: 2px solid var(--focus);
-  outline-offset: -5px;
+  outline-offset: -4px;
 }
 
 th.sortable:hover,
@@ -573,7 +563,7 @@ th.sortable .th-sort:hover {
 th .th-label {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.25rem;
 }
 
 th .col-icon {
@@ -585,7 +575,7 @@ th .col-icon {
 
 th .arrow {
   display: inline-block;
-  margin-left: 0.3rem;
+  margin-left: 0.25rem;
   color: var(--line-strong);
 }
 
@@ -621,12 +611,12 @@ tbody tr:hover td:first-child {
   line-height: 0;
   cursor: pointer;
   vertical-align: text-bottom;
-  margin-right: 0.1rem;
+  margin-right: 0.25rem;
 }
 
 .poster-icon img {
   border-radius: 4px;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  transition: transform 0.15s ease;
 }
 
 .poster-icon:hover img {
@@ -673,7 +663,7 @@ tbody tr:hover td:first-child {
   max-width: 90vw;
   max-height: 90vh;
   border-radius: 8px;
-  box-shadow: var(--poster-glow);
+  box-shadow: var(--shadow);
 }
 
 .poster-close {
@@ -724,7 +714,7 @@ tbody tr:hover td:first-child {
   text-decoration: none;
   border-bottom: 1px solid var(--line-strong);
   vertical-align: 0.15em;
-  margin-left: 0.15rem;
+  margin-left: 0.25rem;
   transition: border-color 0.15s ease;
 }
 
@@ -734,9 +724,9 @@ tbody tr:hover td:first-child {
 
 .alt-title {
   display: block;
-  margin-top: 0.15rem;
+  margin-top: 0.25rem;
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
 }
 
 .genre {
@@ -766,7 +756,7 @@ a.imdb {
 a.kp .star,
 a.imdb .star {
   display: inline-block;
-  margin-left: 0.18em;
+  margin-left: 0.2em;
   font-size: 0.85em;
   line-height: 1;
   vertical-align: 0.12em;
@@ -786,7 +776,7 @@ a.imdb .star {
 .num .no-data {
   color: var(--muted);
   font-size: 0.85em;
-  line-height: 1.15;
+  line-height: 1.2;
   white-space: normal;
 }
 
@@ -797,7 +787,7 @@ a.imdb .star {
 
 .empty {
   color: var(--muted);
-  padding: 1rem 0.8rem;
+  padding: 1rem 0.75rem;
 }
 
 .boot-fallback {
@@ -810,7 +800,7 @@ a.imdb .star {
 }
 
 .no-js-catalog h3 {
-  margin: 1.4rem 0 0.45rem;
+  margin: 1.5rem 0 0.5rem;
 }
 
 .no-js-catalog ul {
@@ -819,7 +809,7 @@ a.imdb .star {
 }
 
 .no-js-catalog li {
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.25rem;
 }
 
 footer {
@@ -828,7 +818,7 @@ footer {
   border-top: 1px dotted var(--line);
   text-align: center;
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
 }
 
 footer a {
@@ -847,11 +837,11 @@ footer .heart {
 }
 
 footer .footer-line + .footer-line {
-  margin-top: 0.35rem;
+  margin-top: 0.25rem;
 }
 
 footer .footer-privacy {
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--muted);
 }
 
@@ -859,12 +849,12 @@ footer .footer-privacy {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   border: 1px solid var(--line-control);
   background: var(--glass);
   color: var(--ink);
-  font-size: 1.2rem;
+  font-size: var(--fs-lg);
   cursor: pointer;
   border-radius: 6px;
   opacity: 0.7;
@@ -872,7 +862,6 @@ footer .footer-privacy {
   transition:
     background 0.15s ease,
     border-color 0.15s ease,
-    box-shadow 0.15s ease,
     visibility 0.15s,
     opacity 0.15s ease,
     translate 0.15s ease;
@@ -916,11 +905,11 @@ html.no-scroll-state.scrolled .scroll-top {
   top: -50px;
   left: 8px;
   z-index: 1200;
-  padding: 0.4rem 0.6rem;
+  padding: 0.5rem 0.75rem;
   background: var(--accent);
   color: var(--accent-ink);
   border-radius: 6px;
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   text-decoration: none;
 }
@@ -1007,7 +996,7 @@ html.no-scroll-state.scrolled .scroll-top {
 
   th,
   td {
-    padding: 0.6rem 0.45rem;
+    padding: 0.5rem;
   }
 
   th:nth-child(1),
@@ -1084,7 +1073,7 @@ html.no-scroll-state.scrolled .scroll-top {
 .film-main {
   display: grid;
   gap: 1.5rem;
-  margin: 1rem 0 1rem;
+  margin: 1rem 0;
   padding: 1.25rem;
   background: var(--glass-card);
   border: 1px solid var(--line);
@@ -1095,7 +1084,7 @@ html.no-scroll-state.scrolled .scroll-top {
 .film-main .meta-row {
   margin: 0;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
 }
 
 .film-main .meta-row:first-of-type {
@@ -1111,40 +1100,42 @@ html.no-scroll-state.scrolled .scroll-top {
   max-width: min(300px, 100%);
   height: auto;
   border-radius: 8px;
-  box-shadow: var(--poster-glow);
+  box-shadow: var(--shadow);
 }
 
 .film-desc {
-  margin: 0.9rem 0 0.9rem;
-  line-height: 1.55;
+  margin: 1rem 0;
+  line-height: 1.5;
 }
 
 .film-desc-alt {
   margin-top: 0;
   color: var(--muted);
-  font-size: 0.95rem;
-  padding-left: 0.85rem;
+  font-size: var(--fs-md);
+  padding-left: 0.75rem;
   border-left: 1px solid var(--accent);
 }
 
 .ratings {
   display: flex;
-  gap: 0.6rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
-  margin-top: 0.6rem;
+  margin-top: 0.5rem;
 }
 
 .ratings a {
-  padding: 0.45rem 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 0.75rem;
   border: 1px solid var(--line-control);
   border-radius: 6px;
   text-decoration: none;
   background: var(--glass);
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
   transition:
     background-color 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    border-color 0.15s ease;
 }
 
 .ratings a:hover {
@@ -1161,8 +1152,8 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 .breadcrumb {
-  margin: 0.7rem 0 0.9rem;
-  font-size: 0.95rem;
+  margin: 0.75rem 0 1rem;
+  font-size: var(--fs-md);
   color: var(--muted);
 }
 
@@ -1187,11 +1178,11 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .back-catalog a {
   display: inline-block;
-  padding: 0.45rem 0.5rem;
+  padding: 0.5rem;
   color: var(--muted);
   text-decoration: underline;
   text-decoration-color: var(--line-strong);
-  font-size: 0.95rem;
+  font-size: var(--fs-md);
   transition:
     color 0.15s ease,
     text-decoration-color 0.15s ease;
@@ -1207,8 +1198,8 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 .related h2 {
-  margin: 0 0 0.9rem;
-  font-size: 1.5rem;
+  margin: 0 0 1rem;
+  font-size: var(--fs-xl);
   font-weight: 500;
   letter-spacing: -0.01em;
 }
@@ -1220,7 +1211,7 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 .related li {
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
 }
 
 .related a {
@@ -1236,27 +1227,26 @@ html.no-scroll-state.scrolled .scroll-top {
 .share-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin: 0.9rem 0 0;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
 }
 
 .share-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 40px;
+  height: 40px;
   padding: 0;
   border: 1px solid var(--line-control);
-  border-radius: 50%;
+  border-radius: 6px;
   background: var(--glass);
   color: var(--ink);
   cursor: pointer;
   transition:
     background 0.15s ease,
     border-color 0.15s ease,
-    color 0.15s ease,
-    box-shadow 0.15s ease;
+    color 0.15s ease;
 }
 
 .share-btn:hover {
@@ -1304,13 +1294,13 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 .privacy h1,
 .privacy h2:first-child {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.25rem;
   font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: 500;
 }
 .privacy h2 {
-  margin: 1.6rem 0 0.5rem;
-  font-size: 1.15rem;
+  margin: 1.5rem 0 0.5rem;
+  font-size: var(--fs-lg);
   font-weight: 500;
 }
 .privacy p, .privacy ul {
@@ -1321,7 +1311,7 @@ html.no-scroll-state.scrolled .scroll-top {
   padding-left: 1.25rem;
 }
 .privacy li {
-  margin: 0.3rem 0;
+  margin: 0.25rem 0;
 }
 .privacy code {
   font-family: ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
@@ -1338,7 +1328,7 @@ html.no-scroll-state.scrolled .scroll-top {
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  margin: 1.4rem 0 0.5rem;
+  margin: 1.5rem 0 0.5rem;
   padding: 1.25rem;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1355,14 +1345,14 @@ html.no-scroll-state.scrolled .scroll-top {
 .profile-links {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.25rem;
   min-width: 0;
 }
 .profile-links a {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.4rem 0.5rem;
+  gap: 0.75rem;
+  padding: 0.5rem;
   border-radius: 6px;
   color: var(--ink);
   text-decoration: none;
