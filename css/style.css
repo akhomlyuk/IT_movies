@@ -467,12 +467,12 @@ section {
 
 #series {
   content-visibility: auto;
-  contain-intrinsic-size: auto none auto 2020px;
+  contain-intrinsic-size: auto none auto 1988px;
 }
 
 #documentaries {
   content-visibility: auto;
-  contain-intrinsic-size: auto none auto 3427px;
+  contain-intrinsic-size: auto none auto 3150px;
 }
 
 section h2 {
@@ -626,13 +626,11 @@ tbody tr:hover td:first-child {
 
 .poster-icon img {
   border-radius: 4px;
-  box-shadow: var(--chip-shadow);
   transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .poster-icon:hover img {
-  box-shadow: var(--chip-shadow-hover);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .poster-icon:focus-visible {
