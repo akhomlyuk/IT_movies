@@ -614,6 +614,10 @@ section h2 {
   letter-spacing: -0.01em;
 }
 
+.mobile-sort {
+  display: none;
+}
+
 .table-wrap {
   overflow-x: auto;
   background: var(--paper);
@@ -1265,19 +1269,69 @@ html.no-scroll-state.scrolled .scroll-top {
     height: 44px;
   }
 
+  .table-wrap {
+    overflow-x: hidden;
+  }
+
   .table-wrap table {
-    min-width: 640px;
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
   }
 
-  .title-layout {
-    grid-template-columns: 44px 44px minmax(0, 1fr);
+  .mobile-sort {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 40px;
+    margin-bottom: 0.5rem;
+    padding: 0 0.75rem;
+    border: 1px solid var(--line-control);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: var(--fs-xs);
+    cursor: pointer;
   }
 
-  .title-layout .poster-wrap,
-  .title-layout .fav-icon,
-  .title-layout .poster-icon {
-    width: 44px;
-    height: 44px;
+  .mobile-sort .arrow {
+    color: var(--accent);
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    display: none;
+  }
+
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 62%;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 10%;
+  }
+
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 14%;
+    text-align: center;
+  }
+
+  th:nth-child(5),
+  td:nth-child(5) {
+    width: 14%;
+    text-align: center;
+  }
+
+  .mobile-meta {
+    display: block;
+    color: var(--muted);
+    font-size: var(--fs-xs);
+    line-height: 1.25;
   }
 
   .nav span {
@@ -1294,33 +1348,6 @@ html.no-scroll-state.scrolled .scroll-top {
   th,
   td {
     padding: 0.5rem;
-  }
-
-  th:nth-child(1),
-  td:nth-child(1) {
-    width: 34%;
-  }
-
-  th:nth-child(2),
-  td:nth-child(2) {
-    width: 30%;
-  }
-
-  th:nth-child(3),
-  td:nth-child(3) {
-    width: 9%;
-  }
-
-  th:nth-child(4),
-  td:nth-child(4) {
-    width: 13.5%;
-    text-align: center;
-  }
-
-  th:nth-child(5),
-  td:nth-child(5) {
-    width: 13.5%;
-    text-align: center;
   }
 
   th:nth-child(4) .th-label,

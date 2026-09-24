@@ -130,6 +130,12 @@ if (mode === "slug") {
   if (!mainMarkup.includes('class="title-primary"')) {
     throw new Error("index.html must isolate title line clamping from the inline link");
   }
+  if (!mainMarkup.includes('class="mobile-sort"')) {
+    throw new Error("index.html must preserve genre sorting on mobile");
+  }
+  if (styleSource.includes("min-width: 640px")) {
+    throw new Error("style.css must not force horizontal table scrolling on mobile");
+  }
   if (!styleSource.includes("grid-template-columns: 32px 32px")) {
     throw new Error("title layout must use equal icon columns");
   }

@@ -350,8 +350,8 @@ window.CATALOG = [
       "en": "New York, mid-90s: Zero Cool, a legendary hacker busted as a kid, moves to a new city and falls in with a crew of teenagers whose nicks matter more than passports. The team stumbles onto the 'Da Vinci virus' — a worm a corporation plans to profit from — and within days turns from pranksters into enemies of the state. Shot so stylishly it became a manifesto for the first internet generation: cyberpunk daydreams of interfaces and the creed that information wants to be free."
     },
     "genres": [
-      "crime",
-      "drama"
+      "drama",
+      "romance"
     ],
     "year": 1995,
     "imdbId": "tt0113243",

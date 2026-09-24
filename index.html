@@ -308,7 +308,7 @@
       <div class="footer-line">
         <span>{{ t.codedWith }}</span><svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.8 1.7Z" fill="currentColor"/></svg><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
         <!-- begin:last-updated -->
-        <span> · </span><span class="last-updated">{{ t.lastUpdated }}<time datetime="2026-09-24">24.09.2026</time></span>
+        <span> · </span><span class="last-updated">{{ t.lastUpdated }}<time datetime="2026-09-25">25.09.2026</time></span>
         <!-- end:last-updated -->
       </div>
       <div class="footer-line">
@@ -327,6 +327,7 @@
   <template id="tpl-catalog">
     <section :id="id">
       <h2>{{ title }}</h2>
+      <button type="button" class="mobile-sort" @click="$emit('sort', typeKey, 'genre')">{{ t.genre }} <span class="arrow">{{ arrow('genre') }}</span></button>
       <div class="table-wrap">
         <table>
           <caption class="visually-hidden">{{ title }}</caption>
@@ -350,7 +351,7 @@
                   <span class="title-copy">
                     <span class="title-primary"><a :href="filmUrl(item)" :title="displayTitle(item)">{{ displayTitle(item) }}</a></span>
                     <span class="alt-title" v-if="altTitle(item)">{{ altTitle(item) }}</span>
-                    <span class="mobile-meta">{{ genreLabel(item) }} · {{ item.year }}</span>
+                    <span class="mobile-meta">{{ genreLabel(item) }}</span>
                   </span>
                 </span>
               </td>
