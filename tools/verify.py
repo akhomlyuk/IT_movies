@@ -127,7 +127,15 @@ for item in catalog:
     if not page.exists():
         errors.append(f"Missing film page: films/{slug}/ ({item['titleEn']})")
         continue
-    expected = gen_pages.render(item, gen_pages.related_to(item, catalog))
+    rel = gen_pages.related_to(item, catalog, 4)
+    pool = gen_pages.related_pool(item, catalog)
+    if len(pool) < 4:
+        errors.append(f"related pool too small ({len(pool)}): {item['titleEn']}")
+    if item["type"] != "documentary" and any(p["type"] == "documentary" for p in pool):
+        errors.append(f"documentary leaked into related pool: {item['titleEn']}")
+    if not {item_slug(r) for r in rel} <= {item_slug(r) for r in pool}:
+        errors.append(f"static related not inside related pool: {item['titleEn']}")
+    expected = gen_pages.render(item, rel, pool)
     if page.read_text(encoding="utf-8") != expected:
         errors.append(f"Stale film page: films/{slug}/ — run gen_pages.py ({item['titleEn']})")
 
@@ -139,6 +147,16 @@ if unknown:
     errors.append(f"Genres without a translation: {sorted(unknown)}")
 unused = known - used
 print(f"Genres: {len(used)} used, {len(known)} declared; unused: {sorted(unused) or '-'}")
+
+doc_missing = sorted(
+    item["titleEn"]
+    for item in catalog
+    if item["type"] == "documentary" and "documentary" not in item["genres"]
+)
+if doc_missing:
+    errors.append(
+        f"Documentary records missing the 'documentary' genre ({len(doc_missing)}): {doc_missing}"
+    )
 
 # 5c. Ratings need a vote count (AggregateRating.ratingCount): KP when present,
 # otherwise IMDb. Records without any votes simply get no aggregateRating.

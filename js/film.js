@@ -20,13 +20,25 @@ let currentLang = "ru";
 
 function relatedItems(catalog, item, limit = 4) {
   const gs = new Set(item.genres);
+  const isDoc = item.type === "documentary";
   const scored = catalog
-    .filter((o) => o !== item)
+    .filter((o) => o !== item && (isDoc || o.type !== "documentary"))
     .map((o) => ({ item: o, overlap: o.genres.filter((g) => gs.has(g)).length }))
     .sort((a, b) => b.overlap - a.overlap);
   const top = scored.filter((s) => s.overlap > 0).map((s) => s.item);
   const rest = scored.filter((s) => s.overlap === 0).map((s) => s.item);
   return [...top, ...rest].slice(0, Math.max(limit, 1));
+}
+
+function pickRandom(arr, n) {
+  const copy = arr.slice();
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = copy[i];
+    copy[i] = copy[j];
+    copy[j] = tmp;
+  }
+  return copy.slice(0, n);
 }
 
 const FILM_TEMPLATE = `
@@ -194,7 +206,11 @@ const app = createApp({
     const imdbRating = computed(() =>
       item ? formatRating(item.imdbRating, "—") : "—"
     );
-    const related = (pageData && pageData.related) || [];
+    const relatedPool = (pageData && pageData.relatedPool) || [];
+    const related =
+      relatedPool.length >= 4
+        ? pickRandom(relatedPool, 4)
+        : (pageData && pageData.related) || [];
 
     const SHARE_NETS = {
       telegram: { label: "Telegram", href: (url, title) => `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${title}` },

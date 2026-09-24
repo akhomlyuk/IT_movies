@@ -1400,6 +1400,7 @@ window.CATALOG = [
       "en": "Jason Scott's three-hour epic about Bulletin Board Systems — the networks before the internet, when modem calls connected people in the 80s. Online communities, flame wars, the first viruses and the first moderators all appeared here. A documentary built on interviews with the people who built it all, from software authors to sysops. Required viewing for anyone talking about social media today: it all happened before, just slower, at 2400 baud."
     },
     "genres": [
+      "documentary",
       "history"
     ],
     "year": 2005,
@@ -1458,6 +1459,7 @@ window.CATALOG = [
       "en": "A four-part Discovery series on how private experiments became a global network: BBS and Usenet, Tim Berners-Lee and browsers, the dotcom bubble and online business. A chronicle with the people who actually did it, from Netscape's founders to eBay's. It becomes clear why the internet looks the way it does: every familiar thing is a trace of someone's war over standards. A great 'internet history in one evening' option."
     },
     "genres": [
+      "documentary",
       "history"
     ],
     "year": 2008,
@@ -1478,6 +1480,7 @@ window.CATALOG = [
       "en": "John McAfee made millions on antivirus, lost it all, fled the US to Belize and turned his life into a borderland story with guns, eccentric claims and runs from the law. Assembled from personal archives and interviews with those around him, the documentary shows not a 'mad genius' but a man who built himself into a brand and became its hostage. A story of how a cybersecurity legend ended up as a plot that cannot be deleted."
     },
     "genres": [
+      "documentary",
       "history"
     ],
     "year": 2022,
@@ -1497,6 +1500,7 @@ window.CATALOG = [
       "en": "In a former NATO bunker built for nuclear war, a company hosted servers for half the darknet: botnets, markets, censorship bypasses. The documentary reconstructs a years-long siege: police, courts, neighbors, clients — and the impossibility of telling where 'hosting services' end and complicity begins. An investigation into the physical footprint of digital crime: the cloud always has an address and a door."
     },
     "genres": [
+      "documentary",
       "history"
     ],
     "year": 2023,
@@ -1516,6 +1520,7 @@ window.CATALOG = [
       "en": "In June 2013, in a Hong Kong hotel room, Laura Poitras films the first meetings with an anonymous source signed 'Citizenfour': Edward Snowden, carrying archives about the NSA's total surveillance. We watch it happen in real time: the decision to go public, the call to a lawyer, the first headlines, and the growing understanding that there is no way back. The Oscar winner for Best Documentary — and a rare case of a camera being not next to the story but inside its unfolding."
     },
     "genres": [
+      "documentary",
       "biography"
     ],
     "year": 2014,
@@ -1841,6 +1846,7 @@ window.CATALOG = [
       "en": "A documentary about three indie projects in their final stretch: Super Meat Boy, Fez and Braid. For a year the camera follows developers who have staked everything — money, relationships, health — on games no one has seen yet. Hence the honesty missing from 'success stories': panic attacks, debts, dependence on reviews, and a single release day that decides everything. In this film, financial failure is still an outcome — which makes it more honest than any business course."
     },
     "genres": [
+      "documentary",
       "indie"
     ],
     "year": 2012,
@@ -1918,6 +1924,7 @@ window.CATALOG = [
       "en": "The history of the free software movement, from Richard Stallman's idea to Linus Torvalds's Linux — and to the moment open source became the backbone of corporate infrastructure. Interviews with Torvalds, Eric Raymond, Bruce Perens and others show how 'hippies with a GPL license' won not through ideology but through code quality. Required viewing for everyone who uses Linux, Git and everything open — and wants to know where it all came from."
     },
     "genres": [
+      "documentary",
       "indie"
     ],
     "year": 2001,
@@ -2303,6 +2310,7 @@ window.CATALOG = [
       "en": "A portrait of Pavel Durov: from the creator of VK, who refused to hand user data on Ukrainian groups to the security services, to the founder of Telegram and a 'world citizen' with no fixed address. The documentary assembles testimony from colleagues and former partners and shows the price of the chosen path: a lost company, conflicts, security paranoia. Neither an apology nor an exposé — an attempt to understand how an ideology of privacy becomes a character."
     },
     "genres": [
+      "documentary",
       "biography"
     ],
     "year": 2021,
@@ -2382,6 +2390,7 @@ window.CATALOG = [
       "en": "Werner Herzog takes the internet apart in ten chapters: from the first ARPANET message that crashed a university network to self-driving cars, solar flares as a threat, and people suffering from internet allergy. The format — conversations with scientists, engineers and oddballs, delivered with Herzog's trademark earnestness. The best film about the network not as technology but as a force of nature: funny, anxious and philosophical at once."
     },
     "genres": [
+      "documentary",
       "history"
     ],
     "year": 2016,
@@ -2401,6 +2410,7 @@ window.CATALOG = [
       "en": "The lost 1995 interview: Jobs at the moment when Apple is near bankruptcy and he himself has been thrown out of the company. In an hour he explains why products must run ahead of what users ask for, what the 'end-to-end' ownership of hardware and software means, why big companies lose innovation — and gives the legendary metaphor of a rock polishing another rock. Perhaps the best primary source on how Jobs thought — without the biographers' mythology."
     },
     "genres": [
+      "documentary",
       "history"
     ],
     "year": 2012,

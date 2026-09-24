@@ -67,20 +67,32 @@ CATALOG_DATE = catalog_git_date()
 def star(v):
     return " ★" if has_rating(v) and float(v) >= 7 else ""
 
-def related_to(item, catalog, n=4):
+def _scored_candidates(item, catalog):
     gs = set(item["genres"])
-    scored = sorted(
+    is_doc = item.get("type") == "documentary"
+    return sorted(
         (
             (sum(1 for g in other["genres"] if g in gs), other)
             for other in catalog
-            if other is not item
+            if other is not item and (is_doc or other.get("type") != "documentary")
         ),
         key=lambda t: t[0],
         reverse=True,
     )
+
+def related_to(item, catalog, n=4):
+    scored = _scored_candidates(item, catalog)
     top = [other for score, other in scored if score > 0]
     rest = [other for score, other in scored if score == 0]
     return (top + rest)[: max(n, 1)]
+
+def related_pool(item, catalog, cap=16, min_n=4):
+    scored = _scored_candidates(item, catalog)
+    pool = [other for score, other in scored if score > 0][:cap]
+    if len(pool) >= min_n:
+        return pool
+    rest = [other for score, other in scored if score == 0]
+    return (pool + rest)[: max(min_n, 1)]
 
 def esc(s):
     return html.escape(str(s), quote=True)
@@ -555,7 +567,7 @@ def inject_last_updated(src):
     )
 
 
-def render(item, related):
+def render(item, related, pool):
     slug = item_slug(item)
     page_url = f"{SITE_BASE}/films/{slug}/"
     home_url = f"{SITE_BASE}/"
@@ -649,6 +661,7 @@ def render(item, related):
         {
             "item": {**item, "descSeo": {"ru": seo_desc(desc_ru), "en": seo_desc(desc_en)}},
             "related": [{k: r[k] for k in SLIM_KEYS if k in r} for r in related],
+            "relatedPool": [{k: r[k] for k in SLIM_KEYS if k in r} for r in pool],
             "posterW": poster_dims[0] if poster_dims else None,
             "posterH": poster_dims[1] if poster_dims else None,
         },
@@ -868,7 +881,7 @@ def main():
     written = 0
     for item in catalog:
         rel = related_to(item, catalog)
-        html_out = render(item, rel)
+        html_out = render(item, rel, related_pool(item, catalog))
         out_dir = OUT / item_slug(item)
         out_dir.mkdir(parents=True, exist_ok=True)
         target = out_dir / "index.html"
