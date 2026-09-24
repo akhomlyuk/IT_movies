@@ -10,8 +10,8 @@
   --line-control: #7c87a2;
   --hover: rgba(16, 23, 40, 0.05);
   --dot: rgba(16, 23, 40, 0.05);
-  --kp: #b84c00;
-  --imdb: #8a6a00;
+  --kp: #a54b12;
+  --imdb: #856414;
   --focus: #101728;
   --accent: #15803d;
   --accent-ink: #ffffff;
@@ -20,14 +20,11 @@
   --th-bg: rgba(16, 23, 40, 0.03);
   --glass: rgba(255, 255, 255, 0.55);
   --glass-card: rgba(251, 252, 254, 0.82);
-  --glow: none;
-  --link-glow: none;
-  --title-glow: none;
-  --shadow: 0 10px 30px rgba(16, 23, 40, 0.08);
+  --shadow: 0 2px 8px rgba(16, 23, 40, 0.07);
   --shadow-soft: 0 2px 10px rgba(16, 23, 40, 0.06);
   --chip-shadow: 0 2px 6px rgba(16, 23, 40, 0.18);
-  --chip-shadow-hover: 0 4px 10px rgba(16, 23, 40, 0.26);
-  --poster-glow: 0 14px 32px rgba(16, 23, 40, 0.22);
+  --chip-shadow-hover: 0 3px 8px rgba(16, 23, 40, 0.2);
+  --poster-glow: 0 8px 24px rgba(16, 23, 40, 0.18);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -42,24 +39,21 @@
     --line-control: #6b7699;
     --hover: rgba(255, 255, 255, 0.05);
     --dot: rgba(255, 255, 255, 0.04);
-    --kp: #ff8533;
+    --kp: #e8834a;
     --imdb: #e2c04a;
     --focus: #e8ecf7;
-    --accent: #16a34a;
+    --accent: #17914a;
     --accent-ink: #06222b;
     --accent2: #0e8f4a;
     --link-hover: #16a34a;
     --th-bg: rgba(255, 255, 255, 0.03);
     --glass: rgba(255, 255, 255, 0.05);
     --glass-card: rgba(18, 23, 42, 0.78);
-    --glow: 0 0 12px rgba(22, 163, 74, 0.06);
-    --link-glow: 0 0 10px rgba(22, 163, 74, 0.07);
-    --title-glow: 0 0 24px rgba(22, 163, 74, 0.06);
-    --shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
     --shadow-soft: 0 4px 14px rgba(0, 0, 0, 0.35);
     --chip-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-    --chip-shadow-hover: 0 4px 10px rgba(0, 0, 0, 0.45);
-    --poster-glow: 0 18px 40px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.4);
+    --chip-shadow-hover: 0 3px 8px rgba(0, 0, 0, 0.3);
+    --poster-glow: 0 10px 28px rgba(0, 0, 0, 0.45);
   }
 }
 
@@ -128,24 +122,21 @@
   --line-control: #6b7699;
   --hover: rgba(255, 255, 255, 0.05);
   --dot: rgba(255, 255, 255, 0.04);
-  --kp: #ff8533;
+  --kp: #e8834a;
   --imdb: #e2c04a;
   --focus: #e8ecf7;
-  --accent: #16a34a;
+  --accent: #17914a;
   --accent-ink: #06222b;
   --accent2: #0e8f4a;
   --link-hover: #16a34a;
   --th-bg: rgba(255, 255, 255, 0.03);
   --glass: rgba(255, 255, 255, 0.05);
   --glass-card: rgba(18, 23, 42, 0.78);
-  --glow: 0 0 12px rgba(22, 163, 74, 0.06);
-  --link-glow: 0 0 10px rgba(22, 163, 74, 0.07);
-  --title-glow: 0 0 24px rgba(22, 163, 74, 0.06);
-  --shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
   --shadow-soft: 0 4px 14px rgba(0, 0, 0, 0.35);
   --chip-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-  --chip-shadow-hover: 0 4px 10px rgba(0, 0, 0, 0.45);
-  --poster-glow: 0 18px 40px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.4);
+  --chip-shadow-hover: 0 3px 8px rgba(0, 0, 0, 0.3);
+  --poster-glow: 0 10px 28px rgba(0, 0, 0, 0.45);
 }
 
 :root.light {
@@ -169,10 +160,8 @@ body {
   min-height: 100vh;
   font-family: "Ubuntu", "Segoe UI", sans-serif;
   background: var(--bg);
-  background-image:
-    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='g' x='0' y='0' width='100%25' height='100%25' color-interpolation-filters='sRGB'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='linear' slope='0.12' intercept='-0.01'/></feComponentTransfer></filter><rect width='220' height='220' filter='url(%23g)'/></svg>"),
-    radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 0);
-  background-size: 220px 220px, 20px 20px;
+  background-image: radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 0);
+  background-size: 20px 20px;
   color: var(--ink);
 }
 
@@ -255,7 +244,6 @@ html.js #app[v-cloak] .brand {
   font-size: clamp(1.55rem, 2.6vw, 2rem);
   font-weight: 700;
   letter-spacing: -0.01em;
-  text-shadow: var(--title-glow);
 }
 
 .brand p {
@@ -311,7 +299,6 @@ html.js #app[v-cloak] .brand {
   letter-spacing: 0.08em;
   padding: 0.4rem 0.7rem;
   cursor: pointer;
-  backdrop-filter: blur(8px);
   transition:
     background-color 0.15s ease,
     color 0.15s ease,
@@ -321,9 +308,9 @@ html.js #app[v-cloak] .brand {
 
 .lang:hover,
 .theme-toggle:hover {
-  border-color: var(--accent);
+  border-color: var(--ink);
   color: var(--ink);
-  box-shadow: var(--glow);
+  background: var(--hover);
 }
 
 .lang:active,
@@ -333,7 +320,6 @@ html.js #app[v-cloak] .brand {
   background: var(--accent);
   color: var(--accent-ink);
   border-color: var(--accent);
-  box-shadow: var(--glow);
 }
 
 .lang:focus-visible,
@@ -352,18 +338,16 @@ html.js #app[v-cloak] .brand {
   color: var(--ink);
   font: inherit;
   padding: 0 0.8rem;
-  backdrop-filter: blur(8px);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .search:hover {
-  border-color: var(--accent);
+  border-color: var(--ink);
 }
 
 .search:focus-visible {
   outline: 2px solid var(--accent);
   border-color: var(--accent);
-  box-shadow: var(--glow);
 }
 
 .filter-row {
@@ -387,7 +371,6 @@ html.js #app[v-cloak] .brand {
   color: var(--muted);
   font: inherit;
   cursor: pointer;
-  backdrop-filter: blur(8px);
   transition:
     background-color 0.15s ease,
     color 0.15s ease,
@@ -405,16 +388,15 @@ html.js #app[v-cloak] .brand {
 }
 
 .fav-filter:hover {
-  border-color: var(--accent);
+  border-color: var(--ink);
   color: var(--ink);
-  box-shadow: var(--glow);
+  background: var(--hover);
 }
 
 .fav-filter.active {
   background: var(--hover);
   color: var(--accent);
   border-color: var(--accent);
-  box-shadow: var(--glow);
 }
 
 .fav-filter:focus-visible {
@@ -436,7 +418,6 @@ html.js #app[v-cloak] .brand {
   font-size: 1.35rem;
   line-height: 1;
   cursor: pointer;
-  backdrop-filter: blur(8px);
   transition:
     background-color 0.15s ease,
     border-color 0.15s ease,
@@ -444,8 +425,8 @@ html.js #app[v-cloak] .brand {
 }
 
 .lucky:hover {
-  border-color: var(--accent);
-  box-shadow: var(--glow);
+  border-color: var(--ink);
+  background: var(--hover);
 }
 
 .lucky:focus-visible {
@@ -467,19 +448,12 @@ html.js #app[v-cloak] .brand {
   border-radius: 6px;
   background: var(--glass);
   padding: 0.3rem 0.8rem;
-  backdrop-filter: blur(8px);
-  transition:
-    border-color 0.15s ease,
-    color 0.15s ease,
-    background-color 0.15s ease,
-    box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .nav a:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  box-shadow: var(--glow);
-  text-shadow: var(--link-glow);
+  border-color: var(--ink);
+  background: var(--hover);
 }
 
 .nav span {
@@ -503,11 +477,8 @@ section {
 
 section h2 {
   margin: 0 0 0.9rem;
-  padding-left: 0.75rem;
-  border-left: 4px solid transparent;
-  border-image: linear-gradient(180deg, var(--accent), var(--accent2) 30%) 1;
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.01em;
 }
 
@@ -621,7 +592,6 @@ th .arrow {
 th.is-asc .arrow,
 th.is-desc .arrow {
   color: var(--accent);
-  text-shadow: var(--link-glow);
 }
 
 tbody tr:hover {
@@ -629,7 +599,7 @@ tbody tr:hover {
 }
 
 tbody tr:hover td:first-child {
-  box-shadow: inset 3px 0 0 var(--accent);
+  box-shadow: inset 3px 0 0 var(--line-control);
 }
 
 .title-cell {
@@ -721,7 +691,7 @@ tbody tr:hover td:first-child {
 }
 
 .poster-close:hover {
-  transform: scale(1.15);
+  transform: scale(1.08);
 }
 
 .poster-close:focus-visible {
@@ -757,13 +727,11 @@ tbody tr:hover td:first-child {
   border-bottom: 1px solid var(--line-strong);
   vertical-align: 0.15em;
   margin-left: 0.15rem;
-  transition: color 0.15s ease, border-color 0.15s ease, text-shadow 0.15s ease;
+  transition: border-color 0.15s ease;
 }
 
 .title-cell a:hover {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-  text-shadow: var(--link-glow);
+  border-bottom-color: var(--ink);
 }
 
 .alt-title {
@@ -903,7 +871,6 @@ footer .footer-privacy {
   border-radius: 6px;
   opacity: 0.7;
   z-index: 100;
-  backdrop-filter: blur(8px);
   transition:
     background 0.15s ease,
     border-color 0.15s ease,
@@ -915,8 +882,7 @@ footer .footer-privacy {
 
 .scroll-top:hover {
   background: var(--hover);
-  border-color: var(--accent);
-  box-shadow: var(--glow);
+  border-color: var(--ink);
 }
 
 @supports (container-type: scroll-state) {
@@ -1126,7 +1092,6 @@ html.no-scroll-state.scrolled .scroll-top {
   border: 1px solid var(--line);
   border-radius: 8px;
   box-shadow: var(--shadow);
-  backdrop-filter: blur(10px);
 }
 
 .film-main .meta-row {
@@ -1161,7 +1126,7 @@ html.no-scroll-state.scrolled .scroll-top {
   color: var(--muted);
   font-size: 0.95rem;
   padding-left: 0.85rem;
-  border-left: 3px solid var(--accent);
+  border-left: 1px solid var(--accent);
 }
 
 .ratings {
@@ -1186,8 +1151,7 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .ratings a:hover {
   background: var(--hover);
-  border-color: currentColor;
-  box-shadow: var(--glow);
+  border-color: var(--ink);
 }
 
 .ratings a.kp {
@@ -1246,11 +1210,8 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .related h2 {
   margin: 0 0 0.9rem;
-  padding-left: 0.75rem;
-  border-left: 4px solid transparent;
-  border-image: linear-gradient(180deg, var(--accent), var(--accent2) 30%) 1;
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.01em;
 }
 
@@ -1267,13 +1228,11 @@ html.no-scroll-state.scrolled .scroll-top {
 .related a {
   text-decoration: none;
   border-bottom: 1px solid var(--line-strong);
-  transition: color 0.15s ease, border-color 0.15s ease, text-shadow 0.15s ease;
+  transition: border-color 0.15s ease;
 }
 
 .related a:hover {
-  border-bottom-color: var(--accent);
-  color: var(--link-hover);
-  text-shadow: var(--link-glow);
+  border-bottom-color: var(--ink);
 }
 
 .share-row {
@@ -1304,8 +1263,7 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .share-btn:hover {
   background: var(--hover);
-  border-color: var(--accent);
-  box-shadow: var(--glow);
+  border-color: var(--ink);
 }
 
 .share-ico {
