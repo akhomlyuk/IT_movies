@@ -148,6 +148,12 @@ if (mode === "slug") {
   if (mainMarkup.includes('src="static/favorite_32.png"')) {
     throw new Error("index.html must use an inline SVG recommendation icon");
   }
+  if (!mainMarkup.includes('class="icon poster-icon-svg"')) {
+    throw new Error("index.html must use the inline SVG poster icon");
+  }
+  if (mainMarkup.includes("poster_icon.")) {
+    throw new Error("poster icon must not be loaded as an image asset");
+  }
   if (styleSource.includes("monospace")) {
     throw new Error("style.css must not introduce a monospace font override");
   }

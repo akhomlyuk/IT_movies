@@ -169,8 +169,8 @@ window.CATALOG = [
       "en": "Washington, 2054: the PreCrime system, built on prophecies of three 'oracles', stops murders before they happen. John Anderton, the unit's best officer, becomes a suspect himself: the oracles predict he will kill a man he has never met. Running is pointless — his eyes are scanned in every store, ads address him by name, and mechanical spiders comb the buildings. Spielberg's Philip K. Dick adaptation about prediction, privacy and free will."
     },
     "genres": [
-      "crime",
-      "drama"
+      "scifi",
+      "action"
     ],
     "year": 2002,
     "imdbId": "tt0181689",
@@ -572,7 +572,7 @@ window.CATALOG = [
     },
     "genres": [
       "drama",
-      "thriller"
+      "biography"
     ],
     "year": 2014,
     "imdbId": "tt2084970",
@@ -836,7 +836,7 @@ window.CATALOG = [
     },
     "genres": [
       "scifi",
-      "thriller"
+      "cyberpunk"
     ],
     "year": 1982,
     "imdbId": "tt0083658",
@@ -936,8 +936,8 @@ window.CATALOG = [
       "en": "Dom Cobb and his crew are extractors: they enter shared dreams and carry ideas out. The new job flips the craft: instead of stealing, plant — make the heir of a corporate empire dissolve it. The deeper the dream levels, the weaker the anchor of 'where am I', and Cobb's private architecture — his memory of his wife — turns from a tool into a threat. A blockbuster that genuinely works like a mechanism: layered reality, Escher stairs and an honest drama at the core."
     },
     "genres": [
-      "mystery",
-      "scifi"
+      "scifi",
+      "mystery"
     ],
     "year": 2010,
     "imdbId": "tt1375666",
