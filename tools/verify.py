@@ -421,18 +421,13 @@ def run_smoke(*args):
 
 
 if shutil.which("node"):
-    # app.js smoke test: boots the catalog app with mocked Vue globals
-    try:
-        print(run_smoke("app"))
-    except RuntimeError as e:
-        errors.append(f"app.js smoke failed:\n{e}")
-
-    # Slug parity: Python item_slug must equal common.js itemSlug for every record
-    try:
-        js_slugs = json.loads(run_smoke("slug"))
-    except (RuntimeError, json.JSONDecodeError) as e:
-        errors.append(f"slug parity: node harness failed:\n{e}")
-    else:
+    def check_slugs(*args):
+        label = ", minified" if args else ""
+        try:
+            js_slugs = json.loads(run_smoke("slug", *args))
+        except (RuntimeError, json.JSONDecodeError) as e:
+            errors.append(f"slug parity: node harness failed:\n{e}")
+            return
         py_slugs = [item_slug(i) for i in catalog]
         diffs = [
             (i, catalog[i]["titleEn"], js, py)
@@ -445,20 +440,15 @@ if shutil.which("node"):
             for i, title, js, py in diffs:
                 errors.append(f"slug mismatch ({title}): JS={js} Python={py}")
         else:
-            print(f"Slug parity JS<->Python: OK ({len(js_slugs)} items)")
+            print(f"Slug parity JS<->Python: OK ({len(js_slugs)} items{label})")
 
-    # film.js smoke test: boots with window.FILM_PAGE (works without data.js on the page)
-    try:
-        print(run_smoke("film"))
-    except RuntimeError as e:
-        errors.append(f"film.js smoke failed:\n{e}")
-
-    # Related parity: JS relatedItems must equal Python gen_pages.related_to
-    try:
-        js_related = json.loads(run_smoke("related"))
-    except (RuntimeError, json.JSONDecodeError) as e:
-        errors.append(f"related parity: node harness failed:\n{e}")
-    else:
+    def check_related(*args):
+        label = ", minified" if args else ""
+        try:
+            js_related = json.loads(run_smoke("related", *args))
+        except (RuntimeError, json.JSONDecodeError) as e:
+            errors.append(f"related parity: node harness failed:\n{e}")
+            return
         py_related = [
             [item_slug(r) for r in gen_pages.related_to(i, catalog, 4)]
             for i in catalog
@@ -479,11 +469,35 @@ if shutil.which("node"):
             if len(diffs) > 5:
                 errors.append(f"related parity: {len(diffs) - 5} more mismatches")
         else:
-            print(f"Related parity JS<->Python: OK ({len(py_related)} items, n=4)")
+            print(f"Related parity JS<->Python: OK ({len(py_related)} items, n=4{label})")
+
+    # app.js smoke test: boots the catalog app with mocked Vue globals
+    try:
+        print(run_smoke("app"))
+    except RuntimeError as e:
+        errors.append(f"app.js smoke failed:\n{e}")
+
+    # Slug parity: Python item_slug must equal common.js itemSlug for every record
+    check_slugs()
+
+    # film.js smoke test: boots with window.FILM_PAGE (works without data.js on the page)
+    try:
+        print(run_smoke("film"))
+    except RuntimeError as e:
+        errors.append(f"film.js smoke failed:\n{e}")
+
+    # Related parity: JS relatedItems must equal Python gen_pages.related_to
+    check_related()
 
     # 9b2. Repeat the smokes on the minified JS actually shipped (*.min.js),
     # so a semantics-changing bug in gen_pages.minify_js is caught by the tests
     for name in ("app", "slug", "film", "related"):
+        if name == "slug":
+            check_slugs("--min")
+            continue
+        if name == "related":
+            check_related("--min")
+            continue
         try:
             print(run_smoke(name, "--min"))
         except RuntimeError as e:
