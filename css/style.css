@@ -1277,15 +1277,16 @@ html.no-scroll-state.scrolled .scroll-top {
     width: 100%;
     min-width: 0;
     table-layout: fixed;
+    font-size: 0.8125rem;
   }
 
   .mobile-sort {
     display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    min-height: 40px;
-    margin-bottom: 0.5rem;
+    justify-content: center;
+    width: auto;
+    min-height: 36px;
+    margin: -0.25rem 0 0.5rem auto;
     padding: 0 0.75rem;
     border: 1px solid var(--line-control);
     border-radius: 8px;
@@ -1297,6 +1298,7 @@ html.no-scroll-state.scrolled .scroll-top {
   }
 
   .mobile-sort .arrow {
+    margin-left: 0.5rem;
     color: var(--accent);
   }
 
@@ -1307,12 +1309,12 @@ html.no-scroll-state.scrolled .scroll-top {
 
   th:nth-child(1),
   td:nth-child(1) {
-    width: 62%;
+    width: 45%;
   }
 
   th:nth-child(3),
   td:nth-child(3) {
-    width: 10%;
+    width: 12%;
   }
 
   th:nth-child(4),
@@ -1328,10 +1330,7 @@ html.no-scroll-state.scrolled .scroll-top {
   }
 
   .mobile-meta {
-    display: block;
-    color: var(--muted);
-    font-size: var(--fs-xs);
-    line-height: 1.25;
+    display: none;
   }
 
   .nav span {
@@ -1347,7 +1346,7 @@ html.no-scroll-state.scrolled .scroll-top {
 
   th,
   td {
-    padding: 0.5rem;
+    padding: 0.4rem 0.25rem;
   }
 
   th:nth-child(4) .th-label,

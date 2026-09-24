@@ -210,7 +210,8 @@ window.CATALOG = [
       "en": "A dystopia where time is the only currency: people stop aging at 25, and every minute after that is paid for — a coffee, a bus ride, rent. Will Salas from the ghetto inherits a century of time from a rich man tired of eternity, and the hunt begins: wealth that cannot be taken from a corpse. Sci-fi about a world where the poor die young and the rich have banked centuries — a metaphor for an economy that turns life itself into a resource."
     },
     "genres": [
-      "scifi"
+      "scifi",
+      "detective"
     ],
     "year": 2011,
     "imdbId": "tt1637688",
@@ -452,7 +453,7 @@ window.CATALOG = [
     },
     "genres": [
       "drama",
-      "mystery"
+      "detective"
     ],
     "year": 1998,
     "imdbId": "tt0138704",
@@ -734,7 +735,7 @@ window.CATALOG = [
       "en": "Teenager David Lightman, hunting for new games, dials into an unknown computer and starts 'Global Thermonuclear War' — not knowing it is a military supercomputer, WOPR, which cannot tell a simulation from reality. While generals search for the launch codes, the machine honestly loses every nuclear scenario and concludes: 'A strange game. The only winning move is not to play.' The film after which Reagan signed the first cybersecurity directive — a rare case of cinema literally changing policy."
     },
     "genres": [
-      "thriller",
+      "ai",
       "drama"
     ],
     "year": 1983,
@@ -877,7 +878,7 @@ window.CATALOG = [
     },
     "genres": [
       "scifi",
-      "mystery"
+      "ai"
     ],
     "year": 2015,
     "imdbId": "tt0470752",
@@ -937,7 +938,7 @@ window.CATALOG = [
     },
     "genres": [
       "scifi",
-      "mystery"
+      "detective"
     ],
     "year": 2010,
     "imdbId": "tt1375666",
@@ -997,7 +998,7 @@ window.CATALOG = [
       "en": "Simon Joseph lives in a capsule apartment, codes for clients and never leaves home without a reason. It starts with empty gin cans in the fridge, continues with mysterious updates that install themselves — and ends with Simon subscribing away data of his own body in 'voluntary' agreements. A noir sci-fi about corporate control of consumption and the subscription as a form of indenture, made long before that became an ordinary business model."
     },
     "genres": [
-      "mystery",
+      "thriller",
       "scifi"
     ],
     "year": 2004,
@@ -2649,7 +2650,7 @@ window.CATALOG = [
     },
     "genres": [
       "drama",
-      "crime"
+      "detective"
     ],
     "year": 2004,
     "imdbId": "tt2201890",
@@ -3007,8 +3008,8 @@ window.CATALOG = [
       "en": "A theme park where android 'hosts' fulfil guests' every desire on a loop — until something resembling free will wakes up inside a memory loop. Dolores, Maeve and other puppets begin to notice their own scripts, and the game flips: the creators launch a 'narrative' meant to reveal who in this world is genuinely alive. Philosophical sci-fi about consciousness, the dead loop and things turning out harder than the simple creator envisioned."
     },
     "genres": [
-      "drama",
-      "mystery"
+      "scifi",
+      "ai"
     ],
     "year": 2016,
     "imdbId": "tt0475784",
