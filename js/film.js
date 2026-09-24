@@ -60,8 +60,8 @@ const FILM_TEMPLATE = `
         <p class="meta-row">{{ typeLabel }} · {{ year }} · {{ genreLabel }}</p>
         <p class="film-desc">{{ desc }}</p>
         <div class="ratings">
-          <a class="kp" :href="kpHref" target="_blank" rel="noopener noreferrer">{{ t.kp }}: {{ kpRating }}</a>
-          <a class="imdb" v-if="hasImdb" :href="imdbHref" target="_blank" rel="noopener noreferrer">{{ t.imdb }}: {{ imdbRating }}</a>
+          <a class="kp" :href="kpHref" target="_blank" rel="noopener noreferrer">{{ t.kp }}: {{ kpRating }}{{ isHighRating(kpRating) ? " ★" : "" }}</a>
+          <a class="imdb" v-if="hasImdb" :href="imdbHref" target="_blank" rel="noopener noreferrer">{{ t.imdb }}: {{ imdbRating }}{{ isHighRating(imdbRating) ? " ★" : "" }}</a>
         </div>
         <div class="share-row" role="group" :aria-label="t.share">
           <a v-for="n in shareNets" :key="n.key" class="share-btn" :data-net="n.key" :href="n.href"
