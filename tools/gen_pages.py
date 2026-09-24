@@ -656,6 +656,10 @@ def render(item, related, pool):
         "kpRating",
         "imdbRating",
         "fav",
+        "poster",
+        "poster400",
+        "posterW",
+        "posterH",
     )
     page_data = json.dumps(
         {
@@ -716,6 +720,16 @@ def render(item, related, pool):
                 '<path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.8 1.7Z"'
                 ' fill="currentColor"></path></svg></span>'
             )
+        poster_html = ""
+        related_poster = (r.get("poster") or "").lstrip("/")
+        if related_poster:
+            poster400 = related_poster[: -len(".webp")] + "_400.webp"
+            dims = webp_size(ROOT / poster400) or webp_size(ROOT / related_poster)
+            dims_attr = f' width="{dims[0]}" height="{dims[1]}"' if dims else ""
+            srcset_attr = f' srcset="../../{poster400} 400w, ../../{related_poster} {dims[0]}w" sizes="64px"' if dims else ""
+            poster_html = (
+                f'<img class="rc-poster" src="../../{related_poster}"{srcset_attr}{dims_attr} alt="" loading="lazy" decoding="async">'
+            )
         rates = []
         if has_rating(r.get("kpRating")):
             star_kp = esc(star(r.get("kpRating")).strip())
@@ -729,10 +743,13 @@ def render(item, related, pool):
             )
         related_items += (
             f'        <li><a class="rc" href="../{item_slug(r)}/">\n'
-            f'          <span class="rc-head">{fav}<span class="rc-title">{esc(r["titleRu"])}</span></span>\n'
+            f'          {poster_html}\n'
+            f'          <span class="rc-content">\n'
+            f'            <span class="rc-head">{fav}<span class="rc-title">{esc(r["titleRu"])}</span></span>\n'
             f"{alt}"
-            f'          <span class="rc-info">{esc(info)}</span>\n'
-            f'          <span class="rc-meta">{"".join(rates)}</span>\n'
+            f'            <span class="rc-info">{esc(info)}</span>\n'
+            f'            <span class="rc-meta">{"".join(rates)}</span>\n'
+            f"          </span>\n"
             f"        </a></li>\n"
         )
 
@@ -795,8 +812,7 @@ def render(item, related, pool):
             <a href="../../"><img src="../../static/logo.webp" alt="IT Movies" width="100" height="100"></a>
           </div>
           <div class="brand-text">
-            <h1>{esc(title_ru)}</h1>
-            <p>{esc(title_en)}</p>
+            <p class="film-context">{esc(type_label)}</p>
           </div>
         </div>
       </header>
@@ -807,6 +823,8 @@ def render(item, related, pool):
         <article class="film-main">
 {noscript_poster}          <div class="film-info">
             <p class="meta-row">{esc(type_label)} · {esc(str(item["year"]))} · {esc(genre_list)}</p>
+            <h1 class="film-title">{esc(title_ru)}</h1>
+            <p class="film-alt-title">{esc(title_en)}</p>
             <p class="film-desc">{esc(desc_ru)}</p>
             <p class="film-desc film-desc-alt">{esc(desc_en)}</p>
 {rat_tiles}          </div>

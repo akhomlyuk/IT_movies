@@ -48,8 +48,7 @@ const FILM_TEMPLATE = `
         <a href="../../"><img src="../../static/logo.webp" alt="IT Movies" fetchpriority="high" decoding="async" width="100" height="100"></a>
       </div>
       <div class="brand-text">
-        <h1>{{ title }}</h1>
-        <p v-if="altTitle">{{ altTitle }}</p>
+        <p class="film-context">{{ typeLabel }}</p>
       </div>
     </div>
     <div class="toolbar">
@@ -76,6 +75,8 @@ const FILM_TEMPLATE = `
       </figure>
       <div class="film-info">
         <p class="meta-row">{{ typeLabel }} · {{ year }} · {{ genreLabel }}</p>
+        <h1 class="film-title">{{ title }}</h1>
+        <p class="film-alt-title" v-if="altTitle">{{ altTitle }}</p>
         <p class="film-desc">{{ desc }}</p>
         <div class="ratings">
           <a class="kp" :href="kpHref" target="_blank" rel="noopener noreferrer" :aria-label="t.kp + ': ' + kpRating + ' — ' + t.openExternal">{{ t.kp }}: {{ kpRating }}{{ isHighRating(kpRating) ? " ★" : "" }}</a>
@@ -100,15 +101,18 @@ const FILM_TEMPLATE = `
       <ul v-if="related.length">
         <li v-for="r in related" :key="itemSlug(r)">
           <a class="rc" :href="'../' + itemSlug(r) + '/'">
-            <span class="rc-head">
-              <span class="fav-icon" v-if="r.fav" :title="t.recommend"><svg class="fav-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.8 1.7Z" fill="currentColor"/></svg></span>
-              <span class="rc-title">{{ relatedTitle(r) }}</span>
-            </span>
-            <span class="rc-alt" v-if="relatedAlt(r)">{{ relatedAlt(r) }}</span>
-            <span class="rc-info">{{ relatedInfo(r) }}</span>
-            <span class="rc-meta">
-              <span class="rc-rating kp" v-if="hasRating(r.kpRating)">{{ t.kpShort }} {{ formatRating(r.kpRating) }}<span class="star" v-if="isHighRating(r.kpRating)" aria-hidden="true">★</span></span>
-              <span class="rc-rating imdb" v-if="r.imdbId && hasRating(r.imdbRating)">{{ t.imdb }} {{ formatRating(r.imdbRating) }}<span class="star" v-if="isHighRating(r.imdbRating)" aria-hidden="true">★</span></span>
+            <img v-if="relatedPoster(r)" class="rc-poster" :src="relatedPoster(r)" :srcset="relatedPosterSrcset(r)" sizes="64px" alt="" width="64" height="96" loading="lazy" decoding="async">
+            <span class="rc-content">
+              <span class="rc-head">
+                <span class="fav-icon" v-if="r.fav" :title="t.recommend"><svg class="fav-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.8 1.7Z" fill="currentColor"/></svg></span>
+                <span class="rc-title">{{ relatedTitle(r) }}</span>
+              </span>
+              <span class="rc-alt" v-if="relatedAlt(r)">{{ relatedAlt(r) }}</span>
+              <span class="rc-info">{{ relatedInfo(r) }}</span>
+              <span class="rc-meta">
+                <span class="rc-rating kp" v-if="hasRating(r.kpRating)">{{ t.kpShort }} {{ formatRating(r.kpRating) }}<span class="star" v-if="isHighRating(r.kpRating)" aria-hidden="true">★</span></span>
+                <span class="rc-rating imdb" v-if="r.imdbId && hasRating(r.imdbRating)">{{ t.imdb }} {{ formatRating(r.imdbRating) }}<span class="star" v-if="isHighRating(r.imdbRating)" aria-hidden="true">★</span></span>
+              </span>
             </span>
           </a>
         </li>
@@ -293,6 +297,16 @@ const app = createApp({
       return parts.join(" · ");
     }
 
+    function relatedPoster(r) {
+      return r.poster ? "../../" + r.poster.replace(/^\//, "") : "";
+    }
+
+    function relatedPosterSrcset(r) {
+      if (!r.poster) return null;
+      const src = relatedPoster(r);
+      return `${src.replace(/\.webp$/, "_400.webp")} 400w, ${src} 800w`;
+    }
+
     return {
       lang,
       theme,
@@ -317,6 +331,8 @@ const app = createApp({
       relatedTitle,
       relatedAlt,
       relatedInfo,
+      relatedPoster,
+      relatedPosterSrcset,
       formatRating,
       hasRating,
       isHighRating,

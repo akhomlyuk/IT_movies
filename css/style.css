@@ -1395,6 +1395,31 @@ html.no-scroll-state.scrolled .scroll-top {
   min-width: 0;
 }
 
+.film-context {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  line-height: 1.3;
+}
+
+.film-title {
+  max-width: 18ch;
+  margin: 0.55rem 0 0.35rem;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.film-alt-title {
+  max-width: 52ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-md);
+  line-height: 1.35;
+}
+
 .film-main .meta-row {
   margin: 0;
   color: var(--muted);
@@ -1525,8 +1550,8 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .related ul {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.75rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1539,8 +1564,10 @@ html.no-scroll-state.scrolled .scroll-top {
 .related a.rc {
   display: flex;
   flex: 1;
-  flex-direction: column;
-  gap: 0.25rem;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
   padding: 0.9rem;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -1565,6 +1592,23 @@ html.no-scroll-state.scrolled .scroll-top {
   outline-offset: 2px;
 }
 
+.rc-poster {
+  display: block;
+  flex: 0 0 64px;
+  width: 64px;
+  height: 96px;
+  border-radius: 7px;
+  object-fit: cover;
+  background: var(--hover);
+}
+
+.rc-content {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 0.25rem;
+}
+
 .rc-head {
   display: flex;
   align-items: center;
@@ -1572,7 +1616,12 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 .rc-title {
+  display: -webkit-box;
+  overflow: hidden;
   font-weight: 500;
+  line-height: 1.25;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
 .rc-alt,
@@ -1662,8 +1711,35 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 @media (max-width: 720px) {
+  .film-poster {
+    width: min(100%, 240px);
+  }
+
   .film-poster img {
-    max-width: 100%;
+    width: 100%;
+    max-width: none;
+  }
+
+  .film-title {
+    max-width: 20ch;
+    font-size: clamp(1.9rem, 9vw, 2.75rem);
+  }
+
+  .related ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .related a.rc {
+    flex-direction: row;
+    gap: 0.55rem;
+    padding: 0.65rem;
+  }
+
+  .rc-poster {
+    flex-basis: 56px;
+    width: 56px;
+    height: 84px;
   }
 }
 

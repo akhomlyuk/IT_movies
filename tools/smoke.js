@@ -109,6 +109,13 @@ if (mode === "slug") {
   if (new Set(state.featured.value.map((item) => item.type)).size < 2) {
     throw new Error("app.js featured shelf must include more than one media type");
   }
+  if (typeof state.pickFeatured !== "function") {
+    throw new Error("app.js must expose pickFeatured for recommendation shuffling");
+  }
+  const featuredWithSeed = state.pickFeatured(global.CATALOG, () => 0.25);
+  if (featuredWithSeed.length !== 8 || new Set(featuredWithSeed.map((item) => item.type)).size < 3) {
+    throw new Error("pickFeatured must return eight mixed recommended titles");
+  }
   if (typeof state.resetFilters !== "function" || !state.hasActiveFilters) {
     throw new Error("app.js must expose filter reset state");
   }
@@ -179,6 +186,17 @@ if (mode === "slug") {
   }
   console.log("app.js smoke (catalog.js, sections sum == CATALOG): OK" + MIN_LABEL);
 } else if (mode === "film") {
+  const filmSource = read("js/film.js");
+  if (!filmSource.includes('class="film-title"')) {
+    throw new Error("film.js must expose the film title inside the hero");
+  }
+  if (!filmSource.includes('class="rc-poster"')) {
+    throw new Error("film.js must render related poster thumbnails");
+  }
+  const generatorSource = read("tools/gen_pages.py");
+  if (!generatorSource.includes('"poster",')) {
+    throw new Error("generated related records must include poster data");
+  }
   const capture = bootApp();
   eval(
     jsSrc("i18n.js") + "\n" +

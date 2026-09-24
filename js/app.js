@@ -58,6 +58,25 @@ function compare(a, b, key, dir, lang) {
   return 0;
 }
 
+function shuffle(items, random) {
+  const copy = items.slice();
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    const tmp = copy[i];
+    copy[i] = copy[j];
+    copy[j] = tmp;
+  }
+  return copy;
+}
+
+function pickFeatured(catalog, random = Math.random) {
+  const favorites = catalog.filter((item) => item.fav);
+  const selected = ["movie", "documentary", "series"].flatMap((type) =>
+    shuffle(favorites.filter((item) => item.type === type), random).slice(0, type === "series" ? 2 : 3)
+  );
+  return shuffle(selected, random).slice(0, 8);
+}
+
 const CatalogTable = {
   props: {
     id: String,
@@ -326,12 +345,7 @@ const app = createApp({
       all: series.value.length + movies.value.length + documentaries.value.length,
     }));
 
-    const featured = computed(() => {
-      const favorites = window.CATALOG.filter((item) => item.fav);
-      return ["movie", "documentary", "series"]
-        .flatMap((type) => favorites.filter((item) => item.type === type).slice(0, 3))
-        .slice(0, 8);
-    });
+    const featured = computed(() => pickFeatured(window.CATALOG));
     const hasActiveFilters = computed(() => query.value.trim() !== "" || onlyFav.value);
 
     function resetFilters() {
@@ -385,6 +399,7 @@ const app = createApp({
       documentaries,
       counts,
       featured,
+      pickFeatured,
       hasActiveFilters,
       resetFilters,
       setLang,
