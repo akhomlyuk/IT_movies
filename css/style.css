@@ -228,6 +228,7 @@ html.js #app[v-cloak] .brand {
   font-size: clamp(1.55rem, 2.6vw, 2rem);
   font-weight: 700;
   letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
 .brand p {
@@ -236,22 +237,22 @@ html.js #app[v-cloak] .brand {
   font-size: var(--fs-md);
 }
 
-.brand .invite {
+.invite {
   margin: 0.25rem 0 0;
   font-size: var(--fs-md);
 }
 
-.brand .invite a {
+.invite a {
   color: var(--ink);
   text-decoration: underline;
   text-decoration-color: var(--line-strong);
 }
 
-.brand .invite a:hover {
+.invite a:hover {
   text-decoration-color: var(--ink);
 }
 
-.brand .invite .tg-icon {
+.invite .tg-icon {
   display: inline-block;
   width: 16px;
   height: 16px;
@@ -260,14 +261,16 @@ html.js #app[v-cloak] .brand {
 
 .toolbar {
   display: flex;
+  flex-shrink: 0;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.75rem;
-  flex-shrink: 0;
+  justify-content: flex-start;
+  gap: 0.5rem;
 }
 
-.switchers {
+.tool-buttons {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
@@ -317,8 +320,10 @@ html.js #app[v-cloak] .brand {
 }
 
 .search {
-  flex: 1;
-  min-width: 0;
+  flex: none;
+  width: 340px;
+  min-width: 160px;
+  max-width: 100%;
   height: 40px;
   border: 1px solid var(--line-control);
   border-radius: 6px;
@@ -338,18 +343,12 @@ html.js #app[v-cloak] .brand {
   border-color: var(--accent);
 }
 
-.filter-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: min(340px, 70vw);
-}
-
 .fav-filter {
   appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   width: 40px;
   height: 40px;
   padding: 0;
@@ -381,7 +380,7 @@ html.js #app[v-cloak] .brand {
 }
 
 .fav-filter.active {
-  background: var(--hover);
+  background: var(--glass);
   color: var(--accent);
   border-color: var(--accent);
 }
@@ -396,6 +395,7 @@ html.js #app[v-cloak] .brand {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   width: 40px;
   height: 40px;
   padding: 0;
@@ -431,6 +431,7 @@ html.js #app[v-cloak] .brand {
 .nav a {
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
   height: 40px;
   padding: 0 0.75rem;
   text-decoration: none;
@@ -452,16 +453,6 @@ html.js #app[v-cloak] .brand {
 
 section {
   margin-bottom: 2.25rem;
-}
-
-#series {
-  content-visibility: auto;
-  contain-intrinsic-size: auto none auto 2059px;
-}
-
-#documentaries {
-  content-visibility: auto;
-  contain-intrinsic-size: auto none auto 3201px;
 }
 
 section h2 {
@@ -489,27 +480,27 @@ table {
 
 th:nth-child(1),
 td:nth-child(1) {
-  width: 39%;
+  width: 40%;
 }
 
 th:nth-child(2),
 td:nth-child(2) {
-  width: 25%;
+  width: 27%;
 }
 
 th:nth-child(3),
 td:nth-child(3) {
-  width: 10%;
+  width: 9%;
 }
 
 th:nth-child(4),
 td:nth-child(4) {
-  width: 16%;
+  width: 12%;
 }
 
 th:nth-child(5),
 td:nth-child(5) {
-  width: 10%;
+  width: 12%;
 }
 
 th,
@@ -564,13 +555,6 @@ th .th-label {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-}
-
-th .col-icon {
-  width: 14px;
-  height: 14px;
-  object-fit: contain;
-  flex-shrink: 0;
 }
 
 th .arrow {
@@ -754,7 +738,8 @@ a.imdb {
 }
 
 a.kp .star,
-a.imdb .star {
+a.imdb .star,
+.rc-rating .star {
   display: inline-block;
   margin-left: 0.2em;
   font-size: 0.85em;
@@ -810,6 +795,21 @@ a.imdb .star {
 
 .no-js-catalog li {
   margin-bottom: 0.25rem;
+}
+
+.catalog-end {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1.5rem;
+}
+
+.catalog-total {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
 }
 
 footer {
@@ -937,29 +937,37 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 @media (min-width: 721px) and (max-width: 950px) {
+  .top {
+    flex-wrap: wrap;
+  }
+
+  .toolbar {
+    margin-left: auto;
+  }
+
   th:nth-child(1),
   td:nth-child(1) {
-    width: 40%;
+    width: 46%;
   }
 
   th:nth-child(2),
   td:nth-child(2) {
-    width: 21%;
+    width: 24%;
   }
 
   th:nth-child(3),
   td:nth-child(3) {
-    width: 8%;
+    width: 9%;
   }
 
   th:nth-child(4),
   td:nth-child(4) {
-    width: 18%;
+    width: 10%;
   }
 
   th:nth-child(5),
   td:nth-child(5) {
-    width: 13%;
+    width: 11%;
   }
 }
 
@@ -973,21 +981,38 @@ html.no-scroll-state.scrolled .scroll-top {
   }
 
   .toolbar {
-    align-items: stretch;
     width: 100%;
-  }
-
-  .switchers {
-    width: fit-content;
+    align-items: stretch;
+    justify-content: flex-start;
   }
 
   .search {
-    width: auto;
-    flex: 1;
+    width: 100%;
+    min-width: 0;
   }
 
-  .filter-row {
-    width: 100%;
+  .lang,
+  .theme-toggle,
+  .search,
+  .nav a,
+  .ratings a {
+    height: 44px;
+  }
+
+  .scroll-top,
+  .share-btn,
+  .fav-filter,
+  .lucky,
+  .theme-toggle {
+    width: 44px;
+    height: 44px;
+  }
+
+  .nav span {
+    background: var(--th-bg);
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    font-size: var(--fs-xs);
   }
 
   .genre {
@@ -1029,19 +1054,6 @@ html.no-scroll-state.scrolled .scroll-top {
   th:nth-child(4) .th-label,
   th:nth-child(5) .th-label {
     justify-content: center;
-  }
-
-  th:nth-child(4) .th-text,
-  th:nth-child(5) .th-text {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-    border: 0;
   }
 }
 
@@ -1205,23 +1217,78 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 .related ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.5rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .related li {
-  margin-bottom: 0.5rem;
+  display: flex;
 }
 
-.related a {
+.related a.rc {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
   text-decoration: none;
-  border-bottom: 1px solid var(--line-strong);
-  transition: border-color 0.15s ease;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
 }
 
-.related a:hover {
-  border-bottom-color: var(--ink);
+.related a.rc:hover {
+  border-color: var(--line-strong);
+  background: var(--hover);
+}
+
+.related a.rc:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.rc-head {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.rc-title {
+  font-weight: 500;
+}
+
+.rc-alt,
+.rc-info {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.rc-meta {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+}
+
+.rc-rating {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rc-rating.kp {
+  color: var(--kp);
+}
+
+.rc-rating.imdb {
+  color: var(--imdb);
 }
 
 .share-row {
@@ -1240,8 +1307,8 @@ html.no-scroll-state.scrolled .scroll-top {
   padding: 0;
   border: 1px solid var(--line-control);
   border-radius: 6px;
-  background: var(--glass);
-  color: var(--ink);
+  background: transparent;
+  color: var(--muted);
   cursor: pointer;
   transition:
     background 0.15s ease,
@@ -1252,6 +1319,12 @@ html.no-scroll-state.scrolled .scroll-top {
 .share-btn:hover {
   background: var(--hover);
   border-color: var(--ink);
+  color: var(--ink);
+}
+
+:root.dark .share-btn {
+  background: var(--glass);
+  color: var(--ink);
 }
 
 .share-ico {

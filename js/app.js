@@ -171,7 +171,6 @@ const app = createApp({
     const onlyFav = ref(
       urlParams.get("fav") === "1" || safeRead("it-movies-only-fav") === "1"
     );
-    const loadTime = ref(null);
     let cleanupColorScheme = null;
     let urlSyncTimer = null;
 
@@ -280,12 +279,6 @@ const app = createApp({
 
     watch([query, onlyFav], syncUrl);
 
-    function measureLoadTime() {
-      const nav = performance.getEntriesByType("navigation")[0];
-      const ms = nav ? nav.loadEventEnd || nav.loadEventStart || performance.now() : performance.now();
-      loadTime.value = Math.round(ms);
-    }
-
     onMounted(() => {
       const onColorScheme = (e) => {
         if (!safeRead("it-movies-theme")) {
@@ -295,15 +288,9 @@ const app = createApp({
       colorScheme.addEventListener("change", onColorScheme);
       cleanupColorScheme = () =>
         colorScheme.removeEventListener("change", onColorScheme);
-      if (document.readyState === "complete") {
-        measureLoadTime();
-      } else {
-        window.addEventListener("load", measureLoadTime, { once: true });
-      }
     });
 
     onUnmounted(() => {
-      window.removeEventListener("load", measureLoadTime);
       if (cleanupColorScheme) cleanupColorScheme();
       clearTimeout(urlSyncTimer);
     });
@@ -374,7 +361,6 @@ const app = createApp({
       theme,
       query,
       onlyFav,
-      loadTime,
       sorts,
       t,
       series,

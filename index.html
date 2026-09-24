@@ -73,29 +73,25 @@
         <div class="brand-text">
           <h1><span class="pre-mount">IT Movies</span><span class="post-mount">{{ t.title }}</span></h1>
           <p><span class="pre-mount">Подборка фильмов и сериалов о компьютерах, технологиях, ИИ и т.д.</span><span class="post-mount">{{ t.subtitle }}</span></p>
-          <p class="invite pre-mount">Предложить фильм, сериал - <img src="static/telegram_32.png" alt="" width="16" height="16" loading="lazy" decoding="async" class="tg-icon"> <a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Whitehat Lab</a> или в <a href="https://t.me/whitehat_chat" target="_blank" rel="noopener noreferrer">чат</a></p>
-          <p class="invite post-mount" v-html="t.invite"></p>
         </div>
       </div>
       <div class="toolbar">
-        <div class="switchers">
-          <button type="button" class="lang" :aria-label="t.swapLang + ': ' + (lang === 'ru' ? 'RU' : 'EN')" @click="setLang(lang === 'ru' ? 'en' : 'ru')">🌐 {{ lang === 'ru' ? 'RU' : 'EN' }}</button>
-          <button type="button" class="theme-toggle" :aria-label="theme === 'dark' ? t.themeToLight : t.themeToDark" @click="setTheme(theme === 'dark' ? 'light' : 'dark')">{{ theme === 'dark' ? '🌙' : '☀️' }}</button>
-        </div>
-        <div class="filter-row">
+        <div class="tool-buttons">
           <button type="button" class="fav-filter" :class="{ active: onlyFav }" :aria-pressed="onlyFav" :aria-label="t.favFilter" :title="t.favFilterTitle" @click="onlyFav = !onlyFav">
             <img src="static/favorite_32.png" alt="" width="32" height="32" loading="lazy" decoding="async">
           </button>
           <button type="button" class="lucky" :aria-label="t.lucky" :title="t.lucky" @click="goLucky">🎲</button>
-          <input id="srch" class="search" v-model="query" type="search" :placeholder="t.search" :aria-label="t.search">
+          <button type="button" class="theme-toggle" :aria-label="theme === 'dark' ? t.themeToLight : t.themeToDark" :title="theme === 'dark' ? t.themeToLight : t.themeToDark" @click="setTheme(theme === 'dark' ? 'light' : 'dark')">{{ theme === 'dark' ? '🌙' : '☀️' }}</button>
+          <button type="button" class="lang" :aria-label="t.swapLang + ': ' + (lang === 'ru' ? 'RU' : 'EN')" :title="t.swapLang" @click="setLang(lang === 'ru' ? 'en' : 'ru')">🌐 {{ lang === 'ru' ? 'RU' : 'EN' }}</button>
         </div>
+        <input id="srch" class="search" v-model="query" type="search" :placeholder="t.search" :aria-label="t.search">
       </div>
     </header>
 
     <nav class="nav">
-      <a href="#movies">{{ t.movies }}</a> <span>{{ counts.movies }}</span>
-      <a href="#series">{{ t.series }}</a> <span>{{ counts.series }}</span>
-      <a href="#documentaries">{{ t.documentaries }}</a> <span>{{ counts.documentaries }}</span>
+      <a href="#movies">{{ t.movies }} <span>{{ counts.movies }}</span></a>
+      <a href="#series">{{ t.series }} <span>{{ counts.series }}</span></a>
+      <a href="#documentaries">{{ t.documentaries }} <span>{{ counts.documentaries }}</span></a>
     </nav>
 
     <main id="main" tabindex="-1">
@@ -269,19 +265,20 @@
     <catalog-table id="movies" type-key="movie" :title="t.movies" :items="movies" :t="t" :lang="lang" :sort="sorts.movie" @sort="sortBy"></catalog-table>
     <catalog-table id="series" type-key="series" :title="t.series" :items="series" :t="t" :lang="lang" :sort="sorts.series" @sort="sortBy"></catalog-table>
     <catalog-table id="documentaries" type-key="documentary" :title="t.documentaries" :items="documentaries" :t="t" :lang="lang" :sort="sorts.documentary" @sort="sortBy"></catalog-table>
+    <div class="catalog-end">
+      <span class="catalog-total" role="status">🎬 {{ t.total }}: {{ counts.all }}</span>
+    </div>
     </main>
     <footer>
       <div class="footer-line">
         <span>{{ t.codedWith }}</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
-        <span> · </span><span class="counts-all" role="status">🎬 {{ t.total }}: {{ counts.all }}</span>
-      </div>
-      <div class="footer-line">
-        <span v-if="loadTime !== null"> ⚡️ {{ t.loadLabel }}: {{ loadTime }}ms</span>
         <!-- begin:last-updated -->
         <span> · </span><span class="last-updated">{{ t.lastUpdated }}<time datetime="2026-09-21">21.09.2026</time></span>
         <!-- end:last-updated -->
       </div>
       <div class="footer-line">
+        <span class="invite footer-privacy" v-html="t.invite"></span>
+        <span class="footer-privacy"> · </span>
         <a class="footer-privacy" href="about.html">{{ t.aboutLink }}</a>
         <span class="footer-privacy"> · </span>
         <a class="footer-privacy" href="privacy.html">{{ t.privacy }}</a>
@@ -303,8 +300,8 @@
               <th scope="col" :class="thClass('title')" :aria-sort="ariaSort('title')"><button type="button" class="th-sort" @click="$emit('sort', typeKey, 'title')">{{ t.name }} <span class="arrow">{{ arrow('title') }}</span></button></th>
               <th scope="col" :class="thClass('genre')" :aria-sort="ariaSort('genre')"><button type="button" class="th-sort" @click="$emit('sort', typeKey, 'genre')">{{ t.genre }} <span class="arrow">{{ arrow('genre') }}</span></button></th>
               <th scope="col" :class="thClass('year')" :aria-sort="ariaSort('year')"><button type="button" class="th-sort" @click="$emit('sort', typeKey, 'year')">{{ t.year }} <span class="arrow">{{ arrow('year') }}</span></button></th>
-              <th scope="col" :class="thClass('kp')" :aria-sort="ariaSort('kp')"><button type="button" class="th-sort" @click="$emit('sort', typeKey, 'kp')"><span class="th-label"><img class="col-icon" src="static/favicon_kp.png" alt="" width="14" height="14" loading="lazy" decoding="async"><span class="th-text">{{ t.kp }}</span></span> <span class="arrow">{{ arrow('kp') }}</span></button></th>
-              <th scope="col" :class="thClass('imdb')" :aria-sort="ariaSort('imdb')"><button type="button" class="th-sort" @click="$emit('sort', typeKey, 'imdb')"><span class="th-label"><img class="col-icon" src="static/favicon_imdb.png" alt="" width="14" height="14" loading="lazy" decoding="async"><span class="th-text">{{ t.imdb }}</span></span> <span class="arrow">{{ arrow('imdb') }}</span></button></th>
+              <th scope="col" :class="thClass('kp')" :aria-sort="ariaSort('kp')"><button type="button" class="th-sort" @click="$emit('sort', typeKey, 'kp')"><span class="th-label">{{ t.kpShort }}</span> <span class="arrow">{{ arrow('kp') }}</span></button></th>
+              <th scope="col" :class="thClass('imdb')" :aria-sort="ariaSort('imdb')"><button type="button" class="th-sort" @click="$emit('sort', typeKey, 'imdb')"><span class="th-label">{{ t.imdb }}</span> <span class="arrow">{{ arrow('imdb') }}</span></button></th>
             </tr>
           </thead>
           <tbody>

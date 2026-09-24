@@ -151,7 +151,7 @@ if (mode === "slug") {
     "global.__relatedItems = relatedItems;"
   );
   const cat = global.CATALOG;
-  const N = 5;
+  const N = 4;
   const api = global.ITMoviesCommon;
   const out = cat.map((it) => global.__relatedItems(cat, it, N).map((r) => api.itemSlug(r)));
   console.log(JSON.stringify(out));

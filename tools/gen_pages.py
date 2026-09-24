@@ -67,7 +67,7 @@ CATALOG_DATE = catalog_git_date()
 def star(v):
     return " ★" if has_rating(v) and float(v) >= 7 else ""
 
-def related_to(item, catalog, n=5):
+def related_to(item, catalog, n=4):
     gs = set(item["genres"])
     scored = sorted(
         (
@@ -633,7 +633,18 @@ def render(item, related):
 
     json_ld = json.dumps({"@context": "https://schema.org", "@graph": graph}, ensure_ascii=False).replace("<", "\\u003c")
 
-    SLIM_KEYS = ("type", "titleEn", "titleRu", "imdbId", "kpId")
+    SLIM_KEYS = (
+        "type",
+        "titleEn",
+        "titleRu",
+        "imdbId",
+        "kpId",
+        "year",
+        "genres",
+        "kpRating",
+        "imdbRating",
+        "fav",
+    )
     page_data = json.dumps(
         {
             "item": {**item, "descSeo": {"ru": seo_desc(desc_ru), "en": seo_desc(desc_en)}},
@@ -677,10 +688,39 @@ def render(item, related):
             "      </figure>\n"
         )
 
-    related_items = "".join(
-        f'        <li><a href="../{item_slug(r)}/">{esc(r["titleRu"])}</a></li>\n'
-        for r in related
-    )
+    related_items = ""
+    for r in related:
+        r_genres = " / ".join(sorted(RU_GENRES.get(g, g) for g in r.get("genres", [])))
+        info = " · ".join(p for p in (r_genres, str(r.get("year") or "")) if p)
+        alt = ""
+        if r.get("titleEn") and r["titleEn"] != r["titleRu"]:
+            alt = f'              <span class="rc-alt">{esc(r["titleEn"])}</span>\n'
+        fav = ""
+        if r.get("fav"):
+            fav = (
+                '<span class="fav-icon" title="Рекомендую">'
+                '<img src="../../static/favorite_32.png" alt="Рекомендую" width="24" height="24"'
+                ' loading="lazy" decoding="async"></span>'
+            )
+        rates = []
+        if has_rating(r.get("kpRating")):
+            star_kp = esc(star(r.get("kpRating")).strip())
+            rates.append(
+                f'<span class="rc-rating kp">КП {esc(fmt_rating(r.get("kpRating")))}{star_kp}</span>'
+            )
+        if r.get("imdbId") and has_rating(r.get("imdbRating")):
+            star_imdb = esc(star(r.get("imdbRating")).strip())
+            rates.append(
+                f'<span class="rc-rating imdb">IMDb {esc(fmt_rating(r.get("imdbRating")))}{star_imdb}</span>'
+            )
+        related_items += (
+            f'        <li><a class="rc" href="../{item_slug(r)}/">\n'
+            f'          <span class="rc-head">{fav}<span class="rc-title">{esc(r["titleRu"])}</span></span>\n'
+            f"{alt}"
+            f'          <span class="rc-info">{esc(info)}</span>\n'
+            f'          <span class="rc-meta">{"".join(rates)}</span>\n'
+            f"        </a></li>\n"
+        )
 
     rat_tiles = (
         f'        <div class="ratings">\n'

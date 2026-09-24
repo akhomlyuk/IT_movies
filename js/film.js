@@ -7,6 +7,8 @@ const {
   kpUrl,
   imdbUrl,
   formatRating,
+  hasRating,
+  isHighRating,
   langFrom,
   themeFrom,
   toggleThemeClass,
@@ -16,7 +18,7 @@ const {
 
 let currentLang = "ru";
 
-function relatedItems(catalog, item, limit = 5) {
+function relatedItems(catalog, item, limit = 4) {
   const gs = new Set(item.genres);
   const scored = catalog
     .filter((o) => o !== item)
@@ -39,9 +41,9 @@ const FILM_TEMPLATE = `
       </div>
     </div>
     <div class="toolbar">
-      <div class="switchers">
-        <button type="button" class="lang" :aria-label="t.swapLang + ': ' + (lang === 'ru' ? 'RU' : 'EN')" @click="setLang(lang === 'ru' ? 'en' : 'ru')">🌐 {{ lang === 'ru' ? 'RU' : 'EN' }}</button>
-        <button type="button" class="theme-toggle" :aria-label="theme === 'dark' ? t.themeToLight : t.themeToDark" @click="setTheme(theme === 'dark' ? 'light' : 'dark')">{{ theme === 'dark' ? '🌙' : '☀️' }}</button>
+      <div class="tool-buttons">
+        <button type="button" class="theme-toggle" :aria-label="theme === 'dark' ? t.themeToLight : t.themeToDark" :title="theme === 'dark' ? t.themeToLight : t.themeToDark" @click="setTheme(theme === 'dark' ? 'light' : 'dark')">{{ theme === 'dark' ? '🌙' : '☀️' }}</button>
+        <button type="button" class="lang" :aria-label="t.swapLang + ': ' + (lang === 'ru' ? 'RU' : 'EN')" :title="t.swapLang" @click="setLang(lang === 'ru' ? 'en' : 'ru')">🌐 {{ lang === 'ru' ? 'RU' : 'EN' }}</button>
       </div>
     </div>
   </header>
@@ -78,7 +80,20 @@ const FILM_TEMPLATE = `
     <section class="related" :aria-label="t.relatedH">
       <h2>{{ t.relatedH }}</h2>
       <ul v-if="related.length">
-        <li v-for="r in related" :key="itemSlug(r)"><a :href="'../' + itemSlug(r) + '/'">{{ relatedTitle(r) }}</a></li>
+        <li v-for="r in related" :key="itemSlug(r)">
+          <a class="rc" :href="'../' + itemSlug(r) + '/'">
+            <span class="rc-head">
+              <span class="fav-icon" v-if="r.fav" :title="t.recommend"><img src="../../static/favorite_32.png" :alt="t.recommend" width="24" height="24" loading="lazy" decoding="async"></span>
+              <span class="rc-title">{{ relatedTitle(r) }}</span>
+            </span>
+            <span class="rc-alt" v-if="relatedAlt(r)">{{ relatedAlt(r) }}</span>
+            <span class="rc-info">{{ relatedInfo(r) }}</span>
+            <span class="rc-meta">
+              <span class="rc-rating kp" v-if="hasRating(r.kpRating)">{{ t.kpShort }} {{ formatRating(r.kpRating) }}<span class="star" v-if="isHighRating(r.kpRating)" aria-hidden="true">★</span></span>
+              <span class="rc-rating imdb" v-if="r.imdbId && hasRating(r.imdbRating)">{{ t.imdb }} {{ formatRating(r.imdbRating) }}<span class="star" v-if="isHighRating(r.imdbRating)" aria-hidden="true">★</span></span>
+            </span>
+          </a>
+        </li>
       </ul>
       <p class="empty" v-else>{{ t.empty }}</p>
     </section>
@@ -240,6 +255,22 @@ const app = createApp({
       return lang.value === "ru" ? r.titleRu : r.titleEn;
     }
 
+    function relatedAlt(r) {
+      const primary = lang.value === "ru" ? r.titleRu : r.titleEn;
+      const other = lang.value === "ru" ? r.titleEn : r.titleRu;
+      return other && other !== primary ? other : "";
+    }
+
+    function relatedInfo(r) {
+      const tt = t.value;
+      const parts = [];
+      if (r.genres && r.genres.length) {
+        parts.push(r.genres.map((g) => tt.genres[g] || g).join(" / "));
+      }
+      if (r.year) parts.push(String(r.year));
+      return parts.join(" · ");
+    }
+
     return {
       lang,
       theme,
@@ -262,6 +293,11 @@ const app = createApp({
       related,
       itemSlug,
       relatedTitle,
+      relatedAlt,
+      relatedInfo,
+      formatRating,
+      hasRating,
+      isHighRating,
       shareNets,
       nativeShare,
       shareStatus,

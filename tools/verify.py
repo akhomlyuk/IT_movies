@@ -442,7 +442,7 @@ if shutil.which("node"):
         errors.append(f"related parity: node harness failed:\n{e}")
     else:
         py_related = [
-            [item_slug(r) for r in gen_pages.related_to(i, catalog, 5)]
+            [item_slug(r) for r in gen_pages.related_to(i, catalog, 4)]
             for i in catalog
         ]
         if len(js_related) != len(py_related):
@@ -461,7 +461,7 @@ if shutil.which("node"):
             if len(diffs) > 5:
                 errors.append(f"related parity: {len(diffs) - 5} more mismatches")
         else:
-            print(f"Related parity JS<->Python: OK ({len(py_related)} items, n=5)")
+            print(f"Related parity JS<->Python: OK ({len(py_related)} items, n=4)")
 
     # 9b2. Repeat the smokes on the minified JS actually shipped (*.min.js),
     # so a semantics-changing bug in gen_pages.minify_js is caught by the tests
