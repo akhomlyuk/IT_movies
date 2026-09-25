@@ -1845,6 +1845,64 @@ html.no-scroll-state.scrolled .scroll-top {
   }
 }
 
+.about-article {
+  max-width: 900px;
+  margin: 2.5rem auto 3rem;
+  padding: 2rem 1.5rem;
+  background: var(--glass-card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.about-lead {
+  max-width: 70ch;
+  margin: 0;
+  font-size: 1.05em;
+  line-height: 1.6;
+}
+
+.about-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.about-section h2 {
+  margin: 0 0 0.5rem;
+  font-size: var(--fs-lg);
+  font-weight: 500;
+}
+
+.about-section p {
+  max-width: 72ch;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.about-article a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+}
+
+.about-article a:hover {
+  text-decoration-color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .about-article {
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1.25rem;
+  }
+
+  .about-section {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+  }
+}
+
 .privacy {
   margin: 2.5rem 0 3rem;
   padding: 2rem 1.5rem;

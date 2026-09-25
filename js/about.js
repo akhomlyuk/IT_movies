@@ -25,8 +25,14 @@ const ABOUT_TEMPLATE = `
     </div>
     <div class="toolbar">
       <div class="tool-buttons">
-        <button type="button" class="theme-toggle" :aria-label="theme === 'dark' ? t.themeToLight : t.themeToDark" :title="theme === 'dark' ? t.themeToLight : t.themeToDark" @click="setTheme(theme === 'dark' ? 'light' : 'dark')">{{ theme === 'dark' ? '🌙' : '☀️' }}</button>
-        <button type="button" class="lang" :aria-label="t.swapLang + ': ' + (lang === 'ru' ? 'RU' : 'EN')" :title="t.swapLang" @click="setLang(lang === 'ru' ? 'en' : 'ru')">🌐 {{ lang === 'ru' ? 'RU' : 'EN' }}</button>
+        <button type="button" class="theme-toggle" :aria-label="theme === 'dark' ? t.themeToLight : t.themeToDark" :title="theme === 'dark' ? t.themeToLight : t.themeToDark" @click="setTheme(theme === 'dark' ? 'light' : 'dark')">
+          <svg v-if="theme === 'dark'" class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 15.6A8.5 8.5 0 0 1 8.4 3.6 8.5 8.5 0 1 0 20.4 15.6Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg v-else class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <button type="button" class="lang" :aria-label="t.swapLang + ': ' + (lang === 'ru' ? 'RU' : 'EN')" :title="t.swapLang" @click="setLang(lang === 'ru' ? 'en' : 'ru')">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 12h18M12 3c2.4 2.5 3.5 5.5 3.5 9S14.4 18.5 12 21c-2.4-2.5-3.5-5.5-3.5-9S9.6 5.5 12 3Z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          <span>{{ lang === 'ru' ? 'RU' : 'EN' }}</span>
+        </button>
       </div>
     </div>
   </header>
@@ -36,8 +42,8 @@ const ABOUT_TEMPLATE = `
       <a href="./">{{ t.home }}</a><span class="bc-sep"> › </span><span class="bc-current">{{ about.heading }}</span>
     </nav>
 
-    <article class="privacy">
-      <p>{{ about.lead }}</p>
+    <article class="about-article">
+      <p class="about-lead">{{ about.lead }}</p>
 
       <div class="profile">
         <img class="profile-avatar" src="static/exited3n_avatar.png" alt="Exited3n" width="140" height="140" decoding="async">
@@ -52,23 +58,30 @@ const ABOUT_TEMPLATE = `
         </nav>
       </div>
 
-      <h2>{{ about.ideaH }}</h2>
-      <p>{{ about.ideaP }}</p>
-
-      <h2>{{ about.whoH }}</h2>
-      <p v-html="about.whoP"></p>
-
-      <h2>{{ about.recordH }}</h2>
-      <p v-html="about.recordP"></p>
-
-      <h2>{{ about.siteH }}</h2>
-      <p>{{ about.siteP }}</p>
-
-      <h2>{{ about.suggestH }}</h2>
-      <p v-html="about.suggestP"></p>
-
-      <h2>{{ about.principlesH }}</h2>
-      <p v-html="about.principlesP"></p>
+      <section class="about-section">
+        <h2>{{ about.ideaH }}</h2>
+        <p>{{ about.ideaP }}</p>
+      </section>
+      <section class="about-section">
+        <h2>{{ about.whoH }}</h2>
+        <p v-html="about.whoP"></p>
+      </section>
+      <section class="about-section">
+        <h2>{{ about.recordH }}</h2>
+        <p v-html="about.recordP"></p>
+      </section>
+      <section class="about-section">
+        <h2>{{ about.siteH }}</h2>
+        <p>{{ about.siteP }}</p>
+      </section>
+      <section class="about-section">
+        <h2>{{ about.suggestH }}</h2>
+        <p v-html="about.suggestP"></p>
+      </section>
+      <section class="about-section">
+        <h2>{{ about.principlesH }}</h2>
+        <p v-html="about.principlesP"></p>
+      </section>
     </article>
   </main>
 

@@ -87,6 +87,16 @@ def test_featured_mobile_limit(page, base):
     assert page.evaluate("document.documentElement.scrollWidth <= document.documentElement.clientWidth")
 
 
+def test_about_page(page, base):
+    page.goto(base + "about.html", wait_until="domcontentloaded")
+    expect(page.locator("h1")).to_have_text("О сайте")
+    assert page.locator(".about-article").count() == 1
+    assert page.locator(".about-section").count() == 6
+    assert page.locator(".theme-toggle svg").count() == 1
+    assert page.locator(".lang svg").count() == 1
+    assert page.evaluate("document.documentElement.scrollWidth <= document.documentElement.clientWidth")
+
+
 def test_main_lang(page, base):
     page.goto(base + "index.html", wait_until="domcontentloaded")
     expect(page).to_have_title(
@@ -177,7 +187,7 @@ def main():
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=not headed)
-            scenarios = [test_main_filter, test_genre_filter, test_featured_mobile_limit, test_main_lang, test_film_theme, test_film_mobile_header, test_boot_fallback, test_lucky, test_poster_modal]
+            scenarios = [test_main_filter, test_genre_filter, test_featured_mobile_limit, test_about_page, test_main_lang, test_film_theme, test_film_mobile_header, test_boot_fallback, test_lucky, test_poster_modal]
             failed = 0
             if shots:
                 Path(shots).mkdir(parents=True, exist_ok=True)

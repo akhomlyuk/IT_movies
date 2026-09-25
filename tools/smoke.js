@@ -158,6 +158,14 @@ if (mode === "slug") {
   if (!mainMarkup.includes('class="catalog-tools"')) {
     throw new Error("index.html must group search and genre controls");
   }
+  const aboutMarkup = read("about.html");
+  if (!aboutMarkup.includes('class="about-article"') || !aboutMarkup.includes('class="about-section"')) {
+    throw new Error("about.html must expose the structured article and sections");
+  }
+  const aboutSource = read("js/about.js");
+  if (!aboutSource.includes('class="about-article"') || !aboutSource.includes('class="about-section"')) {
+    throw new Error("about.js must expose the structured article and sections");
+  }
   if (styleSource.includes("min-width: 640px")) {
     throw new Error("style.css must not force horizontal table scrolling on mobile");
   }
