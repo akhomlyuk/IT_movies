@@ -36,3 +36,7 @@ Thumbs.db
 # Agent skills
 .agents/
 skills-lock.json
+
+# Agent working notes (plans, specs, ledgers)
+docs/
+.superpowers/
