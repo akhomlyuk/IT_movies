@@ -187,6 +187,9 @@ const app = createApp({
     const onlyFav = ref(
       urlParams.get("fav") === "1" || safeRead("it-movies-only-fav") === "1"
     );
+    const genre = ref(
+      I18N.en.genres[urlParams.get("genre")] ? urlParams.get("genre") : ""
+    );
     let cleanupColorScheme = null;
     let urlSyncTimer = null;
 
@@ -275,6 +278,7 @@ const app = createApp({
     function syncUrl() {
       const p = new URLSearchParams();
       if (query.value) p.set("q", query.value);
+      if (genre.value) p.set("genre", genre.value);
       if (onlyFav.value) p.set("fav", "1");
       for (const [type, s] of Object.entries(sorts)) {
         if (s.key !== "title" || s.dir !== "asc") {
@@ -293,7 +297,7 @@ const app = createApp({
       }, 200);
     }
 
-    watch([query, onlyFav], syncUrl);
+    watch([query, genre, onlyFav], syncUrl);
 
     onMounted(() => {
       const onColorScheme = (e) => {
@@ -312,12 +316,19 @@ const app = createApp({
     });
 
     const t = computed(() => I18N[lang.value]);
+    const genreOptions = computed(() =>
+      Object.entries(t.value.genres).sort(([, a], [, b]) =>
+        a.localeCompare(b, lang.value === "ru" ? "ru" : "en")
+      )
+    );
 
     const filtered = computed(() => {
       const q = query.value.trim().toLowerCase();
       const favOnly = onlyFav.value;
+      const selectedGenre = genre.value;
       return window.CATALOG.filter((item) => {
         if (favOnly && !item.fav) return false;
+        if (selectedGenre && !item.genres.includes(selectedGenre)) return false;
         if (!q) return true;
         const genres = item.genres
           .map((g) => `${I18N.ru.genres[g] || g} ${I18N.en.genres[g] || g}`)
@@ -346,10 +357,13 @@ const app = createApp({
     }));
 
     const featured = computed(() => pickFeatured(window.CATALOG));
-    const hasActiveFilters = computed(() => query.value.trim() !== "" || onlyFav.value);
+    const hasActiveFilters = computed(
+      () => query.value.trim() !== "" || genre.value !== "" || onlyFav.value
+    );
 
     function resetFilters() {
       query.value = "";
+      genre.value = "";
       onlyFav.value = false;
       for (const type of Object.keys(SORT_DEFAULTS)) {
         sorts[type] = { ...SORT_DEFAULTS[type] };
@@ -391,9 +405,11 @@ const app = createApp({
       lang,
       theme,
       query,
+      genre,
       onlyFav,
       sorts,
       t,
+      genreOptions,
       series,
       movies,
       documentaries,

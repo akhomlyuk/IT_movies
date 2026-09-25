@@ -56,6 +56,30 @@ def test_main_filter(page, base):
     expect(page.locator("#movies tbody tr")).to_have_count(2)
 
 
+def test_genre_filter(page, base):
+    page.goto(base + "index.html?genre=ai", wait_until="domcontentloaded")
+    expected = page.evaluate(
+        "window.CATALOG.filter((item) => item.genres.includes('ai')).length"
+    )
+    expect(page.locator("#genre-filter")).to_have_value("ai")
+    labels = page.locator("#genre-filter option").all_text_contents()[1:]
+    assert labels == sorted(labels)
+    assert page.locator("#genre-filter").evaluate("el => !!el.closest('.catalog-tools')")
+    expect(page.locator(".result-count")).to_have_text(f"Найдено: {expected}")
+    page.locator("#genre-filter").select_option("")
+    expect(page.locator(".result-count")).to_have_count(0)
+
+
+def test_featured_mobile_limit(page, base):
+    page.set_viewport_size({"width": 390, "height": 900})
+    page.goto(base + "index.html", wait_until="domcontentloaded")
+    assert page.locator(".featured-card").count() == 8
+    assert page.locator(".featured-card:visible").count() == 4
+    assert page.locator(".featured-grid").evaluate(
+        "el => getComputedStyle(el).gridTemplateColumns.split(' ').length"
+    ) == 2
+
+
 def test_main_lang(page, base):
     page.goto(base + "index.html", wait_until="domcontentloaded")
     expect(page).to_have_title(
@@ -146,7 +170,7 @@ def main():
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=not headed)
-            scenarios = [test_main_filter, test_main_lang, test_film_theme, test_film_mobile_header, test_boot_fallback, test_lucky, test_poster_modal]
+            scenarios = [test_main_filter, test_genre_filter, test_featured_mobile_limit, test_main_lang, test_film_theme, test_film_mobile_header, test_boot_fallback, test_lucky, test_poster_modal]
             failed = 0
             if shots:
                 Path(shots).mkdir(parents=True, exist_ok=True)

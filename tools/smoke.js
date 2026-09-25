@@ -119,10 +119,22 @@ if (mode === "slug") {
   if (typeof state.resetFilters !== "function" || !state.hasActiveFilters) {
     throw new Error("app.js must expose filter reset state");
   }
+  if (!state.genre) {
+    throw new Error("app.js must expose genre filter state");
+  }
+  if (!state.genreOptions || state.genreOptions.value.length !== 17) {
+    throw new Error("app.js must expose all genre filter options");
+  }
+  const genreLabels = state.genreOptions.value.map((option) => option[1]);
+  const sortedGenreLabels = genreLabels.slice().sort((a, b) => a.localeCompare(b, "ru"));
+  if (genreLabels.join("|") !== sortedGenreLabels.join("|")) {
+    throw new Error("genre filter options must be alphabetically sorted");
+  }
   state.query.value = "matrix";
   state.onlyFav.value = true;
+  state.genre.value = "ai";
   state.resetFilters();
-  if (state.query.value || state.onlyFav.value) {
+  if (state.query.value || state.onlyFav.value || state.genre.value) {
     throw new Error("app.js resetFilters must clear search and recommendation state");
   }
   const total = state.movies.value.length + state.series.value.length + state.documentaries.value.length;
@@ -139,6 +151,12 @@ if (mode === "slug") {
   }
   if (!mainMarkup.includes('class="mobile-sort"')) {
     throw new Error("index.html must preserve genre sorting on mobile");
+  }
+  if (!mainMarkup.includes('id="genre-filter"')) {
+    throw new Error("index.html must expose the genre filter control");
+  }
+  if (!mainMarkup.includes('class="catalog-tools"')) {
+    throw new Error("index.html must group search and genre controls");
   }
   if (styleSource.includes("min-width: 640px")) {
     throw new Error("style.css must not force horizontal table scrolling on mobile");

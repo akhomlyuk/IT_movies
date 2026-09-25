@@ -92,7 +92,6 @@
             <span>{{ lang === 'ru' ? 'RU' : 'EN' }}</span>
           </button>
         </div>
-        <input id="srch" class="search" v-model="query" type="search" :placeholder="t.search" :aria-label="t.search">
       </div>
     </header>
 
@@ -101,6 +100,14 @@
       <a href="#series">{{ t.series }} <span>{{ counts.series }}</span></a>
       <a href="#documentaries">{{ t.documentaries }} <span>{{ counts.documentaries }}</span></a>
     </nav>
+
+    <div class="catalog-tools">
+      <input id="srch" class="search" v-model="query" type="search" :placeholder="t.search" :aria-label="t.search">
+      <select id="genre-filter" class="genre-filter" v-model="genre" :aria-label="t.genre">
+        <option value="">{{ t.allGenres }}</option>
+        <option v-for="option in genreOptions" :key="option[0]" :value="option[0]">{{ option[1] }}</option>
+      </select>
+    </div>
 
     <div v-if="hasActiveFilters" class="catalog-status">
       <span class="result-count" role="status" aria-live="polite">{{ t.results }}: {{ counts.all }}</span>

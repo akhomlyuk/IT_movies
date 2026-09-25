@@ -388,6 +388,30 @@ svg:not(.heart) {
   transition: border-color 0.15s ease;
 }
 
+.genre-filter {
+  width: 180px;
+  max-width: 100%;
+  height: 40px;
+  padding: 0 2rem 0 0.75rem;
+  border: 1px solid var(--line-control);
+  border-radius: 6px;
+  background: var(--glass);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.genre-filter:hover {
+  border-color: var(--ink);
+}
+
+.genre-filter:focus-visible {
+  outline: 2px solid var(--accent);
+  border-color: var(--accent);
+}
+
 .search:hover {
   border-color: var(--ink);
 }
@@ -474,8 +498,15 @@ svg:not(.heart) {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin: 1rem 0 2rem;
+  margin: 1rem 0;
   font-size: var(--fs-sm);
+}
+
+.catalog-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 1.5rem;
 }
 
 .nav a {
@@ -1231,9 +1262,20 @@ html.no-scroll-state.scrolled .scroll-top {
     justify-content: flex-start;
   }
 
+  .catalog-tools {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
   .search {
     width: 100%;
     min-width: 0;
+  }
+
+  .genre-filter {
+    width: 100%;
+    height: 44px;
   }
 
   .catalog-status {
@@ -1355,6 +1397,16 @@ html.no-scroll-state.scrolled .scroll-top {
   th:nth-child(4) .th-label,
   th:nth-child(5) .th-label {
     justify-content: center;
+  }
+}
+
+@media (max-width: 525px) {
+  .featured-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .featured-grid li:nth-child(n + 5) {
+    display: none;
   }
 }
 
