@@ -18,7 +18,7 @@ const {
 
 let currentLang = "ru";
 
-function relatedItems(catalog, item, limit = 4) {
+function relatedItems(catalog, item, limit = 6) {
   const gs = new Set(item.genres);
   const isDoc = item.type === "documentary";
   const scored = catalog
@@ -48,7 +48,9 @@ const FILM_TEMPLATE = `
         <a href="../../"><img src="../../static/logo.webp" alt="IT Movies" fetchpriority="high" decoding="async" width="100" height="100"></a>
       </div>
       <div class="brand-text">
-        <p class="film-context">{{ typeLabel }}</p>
+        <h1 class="film-header-title">{{ title }}</h1>
+        <p class="film-header-alt">{{ altTitle }}</p>
+        <p class="film-type">{{ typeLabel }}</p>
       </div>
     </div>
     <div class="toolbar">
@@ -75,8 +77,6 @@ const FILM_TEMPLATE = `
       </figure>
       <div class="film-info">
         <p class="meta-row">{{ typeLabel }} · {{ year }} · {{ genreLabel }}</p>
-        <h1 class="film-title">{{ title }}</h1>
-        <p class="film-alt-title" v-if="altTitle">{{ altTitle }}</p>
         <p class="film-desc">{{ desc }}</p>
         <div class="ratings">
           <a class="kp" :href="kpHref" target="_blank" rel="noopener noreferrer" :aria-label="t.kp + ': ' + kpRating + ' — ' + t.openExternal">{{ t.kp }}: {{ kpRating }}{{ isHighRating(kpRating) ? " ★" : "" }}</a>
@@ -218,8 +218,8 @@ const app = createApp({
     );
     const relatedPool = (pageData && pageData.relatedPool) || [];
     const related =
-      relatedPool.length >= 4
-        ? pickRandom(relatedPool, 4)
+      relatedPool.length >= 6
+        ? pickRandom(relatedPool, 6)
         : (pageData && pageData.related) || [];
 
     const SHARE_NETS = {

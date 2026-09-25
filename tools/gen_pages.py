@@ -80,13 +80,13 @@ def _scored_candidates(item, catalog):
         reverse=True,
     )
 
-def related_to(item, catalog, n=4):
+def related_to(item, catalog, n=6):
     scored = _scored_candidates(item, catalog)
     top = [other for score, other in scored if score > 0]
     rest = [other for score, other in scored if score == 0]
     return (top + rest)[: max(n, 1)]
 
-def related_pool(item, catalog, cap=16, min_n=4):
+def related_pool(item, catalog, cap=16, min_n=6):
     scored = _scored_candidates(item, catalog)
     pool = [other for score, other in scored if score > 0][:cap]
     if len(pool) >= min_n:
@@ -812,7 +812,9 @@ def render(item, related, pool):
             <a href="../../"><img src="../../static/logo.webp" alt="IT Movies" width="100" height="100"></a>
           </div>
           <div class="brand-text">
-            <p class="film-context">{esc(type_label)}</p>
+            <h1 class="film-header-title">{esc(title_ru)}</h1>
+            <p class="film-header-alt">{esc(title_en)}</p>
+            <p class="film-type">{esc(type_label)}</p>
           </div>
         </div>
       </header>
@@ -823,8 +825,6 @@ def render(item, related, pool):
         <article class="film-main">
 {noscript_poster}          <div class="film-info">
             <p class="meta-row">{esc(type_label)} · {esc(str(item["year"]))} · {esc(genre_list)}</p>
-            <h1 class="film-title">{esc(title_ru)}</h1>
-            <p class="film-alt-title">{esc(title_en)}</p>
             <p class="film-desc">{esc(desc_ru)}</p>
             <p class="film-desc film-desc-alt">{esc(desc_en)}</p>
 {rat_tiles}          </div>

@@ -86,6 +86,17 @@ def test_film_theme(page, base):
     expect(page.locator(".bc-current")).to_have_text(page.locator("h1").inner_text())
 
 
+def test_film_mobile_header(page, base):
+    page.set_viewport_size({"width": 390, "height": 900})
+    page.goto(base + "films/tt8488126-the-inventor-out-for-blood-in-silicon-valley/index.html", wait_until="domcontentloaded")
+    assert page.locator("h1").count() == 1
+    assert page.locator(".film-info h1").count() == 0
+    assert page.locator(".related .rc").count() == 6
+    assert page.locator(".related .rc:visible").count() == 4
+    assert page.locator(".related .rc-poster").first.evaluate("el => getComputedStyle(el).display") == "none"
+    assert page.evaluate("document.documentElement.scrollWidth <= document.documentElement.clientWidth")
+
+
 def test_boot_fallback(page, base):
     page.route(re.compile(r"js/catalog\.js$"), lambda route: route.abort())
     page.goto(base + "index.html", wait_until="domcontentloaded")
@@ -132,7 +143,7 @@ def main():
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=not headed)
-            scenarios = [test_main_filter, test_main_lang, test_film_theme, test_boot_fallback, test_lucky, test_poster_modal]
+            scenarios = [test_main_filter, test_main_lang, test_film_theme, test_film_mobile_header, test_boot_fallback, test_lucky, test_poster_modal]
             failed = 0
             if shots:
                 Path(shots).mkdir(parents=True, exist_ok=True)

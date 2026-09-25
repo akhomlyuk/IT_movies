@@ -127,9 +127,9 @@ for item in catalog:
     if not page.exists():
         errors.append(f"Missing film page: films/{slug}/ ({item['titleEn']})")
         continue
-    rel = gen_pages.related_to(item, catalog, 4)
+    rel = gen_pages.related_to(item, catalog, 6)
     pool = gen_pages.related_pool(item, catalog)
-    if len(pool) < 4:
+    if len(pool) < 6:
         errors.append(f"related pool too small ({len(pool)}): {item['titleEn']}")
     if item["type"] != "documentary" and any(p["type"] == "documentary" for p in pool):
         errors.append(f"documentary leaked into related pool: {item['titleEn']}")
@@ -450,7 +450,7 @@ if shutil.which("node"):
             errors.append(f"related parity: node harness failed:\n{e}")
             return
         py_related = [
-            [item_slug(r) for r in gen_pages.related_to(i, catalog, 4)]
+            [item_slug(r) for r in gen_pages.related_to(i, catalog, 6)]
             for i in catalog
         ]
         if len(js_related) != len(py_related):
@@ -469,7 +469,7 @@ if shutil.which("node"):
             if len(diffs) > 5:
                 errors.append(f"related parity: {len(diffs) - 5} more mismatches")
         else:
-            print(f"Related parity JS<->Python: OK ({len(py_related)} items, n=4{label})")
+            print(f"Related parity JS<->Python: OK ({len(py_related)} items, n=6{label})")
 
     # app.js smoke test: boots the catalog app with mocked Vue globals
     try:

@@ -187,13 +187,22 @@ if (mode === "slug") {
   console.log("app.js smoke (catalog.js, sections sum == CATALOG): OK" + MIN_LABEL);
 } else if (mode === "film") {
   const filmSource = read("js/film.js");
-  if (!filmSource.includes('class="film-title"')) {
-    throw new Error("film.js must expose the film title inside the hero");
+  if (!filmSource.includes('class="film-header-title"')) {
+    throw new Error("film.js must expose the film title in the header");
+  }
+  if (filmSource.includes('class="film-title"')) {
+    throw new Error("film.js must not duplicate the giant film title in the hero");
   }
   if (!filmSource.includes('class="rc-poster"')) {
     throw new Error("film.js must render related poster thumbnails");
   }
   const generatorSource = read("tools/gen_pages.py");
+  if (!generatorSource.includes('film-header-title')) {
+    throw new Error("generated film pages must keep the title in the header");
+  }
+  if (generatorSource.includes('class="film-title"')) {
+    throw new Error("generated film pages must not duplicate the giant title in the hero");
+  }
   if (!generatorSource.includes('"poster",')) {
     throw new Error("generated related records must include poster data");
   }
@@ -223,12 +232,12 @@ if (mode === "slug") {
     if (!state.desc.value) {
       throw new Error("film.js desc is empty");
     }
-    if (state.related.length !== 4) {
-      throw new Error("film.js related must have 4 items, got " + state.related.length);
+    if (state.related.length !== 6) {
+      throw new Error("film.js related must have 6 items, got " + state.related.length);
     }
     const slugs = state.related.map((r) => global.ITMoviesCommon.itemSlug(r));
-    if (new Set(slugs).size !== 4 || slugs.some((s) => !poolSlugs.has(s))) {
-      throw new Error("film.js related must be 4 distinct relatedPool items: " + slugs.join(","));
+    if (new Set(slugs).size !== 6 || slugs.some((s) => !poolSlugs.has(s))) {
+      throw new Error("film.js related must be 6 distinct relatedPool items: " + slugs.join(","));
     }
     seen.add(slugs.slice().sort().join("|"));
   }
@@ -266,7 +275,7 @@ if (mode === "slug") {
     throw new Error("relatedItems must allow non-documentary items for documentaries");
   }
   const cat = global.CATALOG;
-  const N = 4;
+  const N = 6;
   const api = global.ITMoviesCommon;
   const out = cat.map((it) => global.__relatedItems(cat, it, N).map((r) => api.itemSlug(r)));
   console.log(JSON.stringify(out));
