@@ -375,7 +375,7 @@ svg:not(.heart) {
 
 .search {
   flex: none;
-  width: 340px;
+  width: 210px;
   min-width: 160px;
   max-width: 100%;
   height: 40px;
@@ -389,7 +389,7 @@ svg:not(.heart) {
 }
 
 .genre-filter {
-  width: 180px;
+  width: 160px;
   max-width: 100%;
   height: 40px;
   padding: 0 2rem 0 0.75rem;
@@ -622,6 +622,7 @@ svg:not(.heart) {
 .featured-card-title {
   display: -webkit-box;
   overflow: hidden;
+  overflow-wrap: anywhere;
   font-size: var(--fs-sm);
   font-weight: 700;
   line-height: 1.25;
@@ -630,6 +631,7 @@ svg:not(.heart) {
 }
 
 .featured-card-meta {
+  overflow-wrap: anywhere;
   color: var(--muted);
   font-size: var(--fs-xs);
   line-height: 1.35;
@@ -1407,6 +1409,16 @@ html.no-scroll-state.scrolled .scroll-top {
 
   .featured-grid li:nth-child(n + 5) {
     display: none;
+  }
+
+  .featured-card-title,
+  .featured-card-meta {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    overflow-wrap: normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

@@ -78,6 +78,13 @@ def test_featured_mobile_limit(page, base):
     assert page.locator(".featured-grid").evaluate(
         "el => getComputedStyle(el).gridTemplateColumns.split(' ').length"
     ) == 2
+    assert page.locator(".featured-card-title").evaluate_all(
+        "els => els.every(el => getComputedStyle(el).textOverflow === 'ellipsis' && getComputedStyle(el).whiteSpace === 'nowrap')"
+    )
+    assert page.locator(".featured-card-meta").evaluate_all(
+        "els => els.every(el => getComputedStyle(el).textOverflow === 'ellipsis' && getComputedStyle(el).whiteSpace === 'nowrap')"
+    )
+    assert page.evaluate("document.documentElement.scrollWidth <= document.documentElement.clientWidth")
 
 
 def test_main_lang(page, base):
