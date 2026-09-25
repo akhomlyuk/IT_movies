@@ -142,7 +142,7 @@ if (mode === "slug") {
     throw new Error("sections total " + total + " != CATALOG.length " + global.CATALOG.length);
   }
   const mainMarkup = read("index.html");
-  const styleSource = read("css/style.css");
+  const styleSource = read("css/style.css").replace(/\r\n/g, "\n");
   if (!mainMarkup.includes('class="title-layout"')) {
     throw new Error("index.html must keep title cell layout inside a table-cell-safe wrapper");
   }
@@ -172,14 +172,14 @@ if (mode === "slug") {
   if (!styleSource.includes("font-size: clamp(1.3rem, 2vw, 1.7rem)")) {
     throw new Error("brand heading scale must use the reduced compact clamp");
   }
-  if (!styleSource.includes("grid-template-columns: 32px 32px")) {
-    throw new Error("title layout must use equal icon columns");
+  if (!styleSource.includes(".title-layout {\n  display: flex")) {
+    throw new Error("title layout must be a flex row with no reserved heart track");
   }
   if (styleSource.includes(".title-cell {\n  display: flex")) {
     throw new Error("style.css must not turn the table title cell into a flex item");
   }
-  if (!styleSource.includes("grid-column: 3")) {
-    throw new Error("title copy must have an explicit grid position independent of heart visibility");
+  if (mainMarkup.indexOf('class="title-copy"') === -1 || mainMarkup.indexOf('class="title-copy"') > mainMarkup.indexOf('class="fav-icon"')) {
+    throw new Error("title heart must follow the title copy at the row end");
   }
   if (!styleSource.includes(".title-cell a") || !styleSource.includes("display: inline;")) {
     throw new Error("title links must remain inline instead of stretching across the full column");

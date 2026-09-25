@@ -359,11 +359,11 @@
                   <span class="poster-wrap" v-if="withPosters && item.poster">
                     <button type="button" class="poster-icon" :aria-label="t.openPoster" @click.stop="openPoster(item)"><svg class="icon poster-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="8" cy="9" r="1.5" fill="currentColor"/><path d="m5.5 17 4.2-4 2.7 2.5 2-2 4.1 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
                   </span>
-                  <span class="fav-icon" :title="t.recommend" v-if="item.fav"><svg class="fav-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.8 1.7Z" fill="currentColor"/></svg></span>
                   <span class="title-copy">
                     <span class="title-primary"><a :href="filmUrl(item)" :title="displayTitle(item)">{{ displayTitle(item) }}</a></span>
                     <span class="alt-title" v-if="altTitle(item)">{{ altTitle(item) }}</span>
                   </span>
+                  <span class="fav-icon" :title="t.recommend" v-if="item.fav"><svg class="fav-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.8 1.7Z" fill="currentColor"/></svg></span>
                 </span>
               </td>
               <td class="genre">{{ genreLabel(item) }}</td>

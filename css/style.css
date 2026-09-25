@@ -594,8 +594,8 @@ svg:not(.heart) {
 .featured-card {
   display: grid;
   flex: 1;
-  grid-template-columns: 96px minmax(0, 1fr);
-  align-items: center;
+  grid-template-columns: 94px minmax(0, 1fr);
+  align-items: stretch;
   gap: 0.75rem;
   min-width: 0;
   padding: 0.5rem;
@@ -662,17 +662,6 @@ svg:not(.heart) {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   line-clamp: 2;
-}
-
-.featured-card-title {
-  display: -webkit-box;
-  overflow: hidden;
-  overflow-wrap: anywhere;
-  font-size: var(--fs-sm);
-  font-weight: 700;
-  line-height: 1.25;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
 }
 
 .featured-card-meta {
@@ -828,34 +817,26 @@ tbody tr:hover td:first-child {
 }
 
 .title-layout {
-  display: grid;
-  grid-template-columns: 32px 32px minmax(0, 1fr);
-  align-items: start;
-  gap: 0.2rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
   min-height: 3.75em;
 }
 
 .title-layout .poster-wrap {
-  grid-column: 1;
-  grid-row: 1;
+  flex: 0 0 auto;
   width: 32px;
+  height: 32px;
 }
 
 .title-layout .fav-icon {
-  grid-column: 2;
-  grid-row: 1;
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
   margin-top: 0;
-}
-
-.title-layout .title-copy {
-  grid-column: 3;
-  grid-row: 1;
-  justify-self: stretch;
 }
 
 .poster-wrap {
@@ -989,6 +970,7 @@ tbody tr:hover td:first-child {
 
 .title-copy {
   display: grid;
+  flex: 1;
   min-width: 0;
   gap: 0.2rem;
 }
@@ -1508,7 +1490,7 @@ html.no-scroll-state.scrolled .scroll-top {
   .featured-grid {
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(200px, 72%);
+    grid-auto-columns: minmax(230px, 72%);
     grid-template-columns: none;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
