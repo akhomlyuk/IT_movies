@@ -732,14 +732,12 @@ def render(item, related, pool):
             )
         rates = []
         if has_rating(r.get("kpRating")):
-            star_kp = esc(star(r.get("kpRating")).strip())
             rates.append(
-                f'<span class="rc-rating kp">КП {esc(fmt_rating(r.get("kpRating")))}{star_kp}</span>'
+                f'<span class="rc-rating kp">КП {esc(fmt_rating(r.get("kpRating")))}</span>'
             )
         if r.get("imdbId") and has_rating(r.get("imdbRating")):
-            star_imdb = esc(star(r.get("imdbRating")).strip())
             rates.append(
-                f'<span class="rc-rating imdb">IMDb {esc(fmt_rating(r.get("imdbRating")))}{star_imdb}</span>'
+                f'<span class="rc-rating imdb">IMDb {esc(fmt_rating(r.get("imdbRating")))}</span>'
             )
         related_items += (
             f'        <li><a class="rc" href="../{item_slug(r)}/">\n'
@@ -820,11 +818,14 @@ def render(item, related, pool):
       </header>
       <main>
         <nav class="breadcrumb" aria-label="Главная">
-          <a href="../../">Главная</a><span class="bc-sep"> › </span><span class="bc-current">{esc(title_ru)}</span>
+          <a href="../../">Главная</a><span class="bc-sep"> › </span><span class="bc-current"><span class="bc-type">{esc(type_label)}</span><span class="visually-hidden"> — {esc(title_ru)}</span></span>
         </nav>
         <article class="film-main">
 {noscript_poster}          <div class="film-info">
-            <p class="meta-row">{esc(type_label)} · {esc(str(item["year"]))} · {esc(genre_list)}</p>
+            <div class="film-meta">
+              <span class="film-meta-item">{esc(str(item["year"]))}</span>
+              <span class="film-meta-item">{esc(genre_list)}</span>
+            </div>
             <p class="film-desc">{esc(desc_ru)}</p>
             <p class="film-desc film-desc-alt">{esc(desc_en)}</p>
 {rat_tiles}          </div>

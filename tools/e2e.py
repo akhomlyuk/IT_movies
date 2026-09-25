@@ -83,7 +83,8 @@ def test_film_theme(page, base):
     expect(bc).to_be_visible()
     expect(bc.locator("a")).to_have_attribute("href", "../../")
     expect(bc.locator("a")).to_have_text("Главная")
-    expect(page.locator(".bc-current")).to_have_text(page.locator("h1").inner_text())
+    expect(page.locator(".bc-current .bc-type")).to_have_text("Фильм")
+    expect(page.locator(".bc-current .visually-hidden")).to_contain_text("Матрица")
 
 
 def test_film_mobile_header(page, base):
@@ -94,6 +95,7 @@ def test_film_mobile_header(page, base):
     assert page.locator(".related .rc").count() == 6
     assert page.locator(".related .rc:visible").count() == 4
     assert page.locator(".related .rc-poster").first.evaluate("el => getComputedStyle(el).display") == "none"
+    assert page.locator(".related .star").count() == 0
     assert page.evaluate("document.documentElement.scrollWidth <= document.documentElement.clientWidth")
 
 

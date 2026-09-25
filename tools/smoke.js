@@ -143,6 +143,9 @@ if (mode === "slug") {
   if (styleSource.includes("min-width: 640px")) {
     throw new Error("style.css must not force horizontal table scrolling on mobile");
   }
+  if (!styleSource.includes("font-size: clamp(1.3rem, 2vw, 1.7rem)")) {
+    throw new Error("brand heading scale must use the reduced compact clamp");
+  }
   if (!styleSource.includes("grid-template-columns: 32px 32px")) {
     throw new Error("title layout must use equal icon columns");
   }
@@ -193,6 +196,12 @@ if (mode === "slug") {
   if (filmSource.includes('class="film-title"')) {
     throw new Error("film.js must not duplicate the giant film title in the hero");
   }
+  if (!filmSource.includes('class="film-meta"')) {
+    throw new Error("film.js must expose a structured metadata block");
+  }
+  if (!filmSource.includes('class="bc-type"')) {
+    throw new Error("film.js must expose a compact breadcrumb category");
+  }
   if (!filmSource.includes('class="rc-poster"')) {
     throw new Error("film.js must render related poster thumbnails");
   }
@@ -202,6 +211,12 @@ if (mode === "slug") {
   }
   if (generatorSource.includes('class="film-title"')) {
     throw new Error("generated film pages must not duplicate the giant title in the hero");
+  }
+  if (!generatorSource.includes('film-meta')) {
+    throw new Error("generated film pages must include structured metadata");
+  }
+  if (!generatorSource.includes('bc-type')) {
+    throw new Error("generated film pages must include compact breadcrumb metadata");
   }
   if (!generatorSource.includes('"poster",')) {
     throw new Error("generated related records must include poster data");
