@@ -74,7 +74,18 @@ function pickFeatured(catalog, random = Math.random) {
   const selected = ["movie", "documentary", "series"].flatMap((type) =>
     shuffle(favorites.filter((item) => item.type === type), random).slice(0, type === "series" ? 2 : 3)
   );
-  return shuffle(selected, random).slice(0, 8);
+  const shuffled = shuffle(selected, random);
+  if (shuffled.length < 8) {
+    const picked = new Set(shuffled);
+    for (const item of favorites) {
+      if (shuffled.length >= 8) break;
+      if (!picked.has(item)) {
+        picked.add(item);
+        shuffled.push(item);
+      }
+    }
+  }
+  return shuffled.slice(0, 8);
 }
 
 const CatalogTable = {
@@ -425,6 +436,8 @@ const app = createApp({
       genreLabel,
       goLucky,
       scrollToTop,
+      hasRating,
+      formatRating: (value) => formatRating(value, t.value.noData),
     };
   },
 });

@@ -127,7 +127,7 @@ for item in catalog:
     if not page.exists():
         errors.append(f"Missing film page: films/{slug}/ ({item['titleEn']})")
         continue
-    rel = gen_pages.related_to(item, catalog, 6)
+    rel = gen_pages.related_to(item, catalog, 4)
     pool = gen_pages.related_pool(item, catalog)
     if len(pool) < 6:
         errors.append(f"related pool too small ({len(pool)}): {item['titleEn']}")

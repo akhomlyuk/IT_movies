@@ -122,10 +122,15 @@
       <ul class="featured-grid">
         <li v-for="item in featured" :key="'featured-' + (item.imdbId || item.kpId)">
           <a class="featured-card" :href="filmUrl(item)">
-            <img :src="item.poster400 || item.poster" alt="" width="180" height="270" loading="lazy" decoding="async">
+            <img :src="item.poster400 || item.poster" alt="" width="240" height="360" loading="lazy" decoding="async">
             <span class="featured-card-copy">
+              <span class="featured-badge">{{ t.authorPick }}</span>
               <span class="featured-card-title">{{ lang === 'ru' ? item.titleRu : item.titleEn }}</span>
               <span class="featured-card-meta">{{ item.year }} · {{ genreLabel(item) }}</span>
+              <span class="featured-ratings">
+                <span v-if="hasRating(item.kpRating)" class="rating-chip rating-chip--kp">{{ t.kpShort }} {{ formatRating(item.kpRating) }}</span>
+                <span v-if="hasRating(item.imdbRating)" class="rating-chip rating-chip--imdb">{{ t.imdb }} {{ formatRating(item.imdbRating) }}</span>
+              </span>
             </span>
           </a>
         </li>

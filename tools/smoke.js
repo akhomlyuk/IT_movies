@@ -279,12 +279,12 @@ if (mode === "slug") {
     if (!state.desc.value) {
       throw new Error("film.js desc is empty");
     }
-    if (state.related.length !== 6) {
-      throw new Error("film.js related must have 6 items, got " + state.related.length);
+    if (state.related.length !== 4) {
+      throw new Error("film.js related must have 4 items, got " + state.related.length);
     }
     const slugs = state.related.map((r) => global.ITMoviesCommon.itemSlug(r));
-    if (new Set(slugs).size !== 6 || slugs.some((s) => !poolSlugs.has(s))) {
-      throw new Error("film.js related must be 6 distinct relatedPool items: " + slugs.join(","));
+    if (new Set(slugs).size !== 4 || slugs.some((s) => !poolSlugs.has(s))) {
+      throw new Error("film.js related must be 4 distinct relatedPool items: " + slugs.join(","));
     }
     seen.add(slugs.slice().sort().join("|"));
   }

@@ -80,7 +80,7 @@ def _scored_candidates(item, catalog):
         reverse=True,
     )
 
-def related_to(item, catalog, n=6):
+def related_to(item, catalog, n=4):
     scored = _scored_candidates(item, catalog)
     top = [other for score, other in scored if score > 0]
     rest = [other for score, other in scored if score == 0]
@@ -709,16 +709,13 @@ def render(item, related, pool):
     for r in related:
         r_genres = " / ".join(sorted(RU_GENRES.get(g, g) for g in r.get("genres", [])))
         info = " · ".join(p for p in (r_genres, str(r.get("year") or "")) if p)
-        alt = ""
-        if r.get("titleEn") and r["titleEn"] != r["titleRu"]:
-            alt = f'              <span class="rc-alt">{esc(r["titleEn"])}</span>\n'
         poster_html = ""
         related_poster = (r.get("poster") or "").lstrip("/")
         if related_poster:
             poster400 = related_poster[: -len(".webp")] + "_400.webp"
             dims = webp_size(ROOT / poster400) or webp_size(ROOT / related_poster)
             dims_attr = f' width="{dims[0]}" height="{dims[1]}"' if dims else ""
-            srcset_attr = f' srcset="../../{poster400} 400w, ../../{related_poster} {dims[0]}w" sizes="64px"' if dims else ""
+            srcset_attr = f' srcset="../../{poster400} 400w, ../../{related_poster} {dims[0]}w" sizes="96px"' if dims else ""
             poster_html = (
                 f'<img class="rc-poster" src="../../{related_poster}"{srcset_attr}{dims_attr} alt="" loading="lazy" decoding="async">'
             )
@@ -736,20 +733,24 @@ def render(item, related, pool):
             f'          {poster_html}\n'
             f'          <span class="rc-content">\n'
             f'            <span class="rc-head"><span class="rc-title">{esc(r["titleRu"])}</span></span>\n'
-            f"{alt}"
             f'            <span class="rc-info">{esc(info)}</span>\n'
             f'            <span class="rc-meta">{"".join(rates)}</span>\n'
             f"          </span>\n"
             f"        </a></li>\n"
         )
 
+    fav_badge = (
+        '              <span class="film-badge">Выбор автора</span>\n'
+        if item.get("fav")
+        else ""
+    )
     rat_tiles = (
         f'        <div class="ratings">\n'
-        f'          <a class="kp" href="https://www.kinopoisk.ru/film/{item["kpId"]}/" target="_blank" rel="noopener noreferrer">Кинопоиск: {esc(fmt_rating(item.get("kpRating")))}{esc(star(item.get("kpRating")))}</a>\n'
+        f'          <a class="kp rating-chip rating-chip--kp" href="https://www.kinopoisk.ru/film/{item["kpId"]}/" target="_blank" rel="noopener noreferrer">Кинопоиск: {esc(fmt_rating(item.get("kpRating")))}{esc(star(item.get("kpRating")))}</a>\n'
     )
     if item.get("imdbId"):
         rat_tiles += (
-            f'          <a class="imdb" href="https://www.imdb.com/title/{item["imdbId"]}/" target="_blank" rel="noopener noreferrer">IMDb: {esc(fmt_rating(item.get("imdbRating")))}{esc(star(item.get("imdbRating")))}</a>\n'
+            f'          <a class="imdb rating-chip rating-chip--imdb" href="https://www.imdb.com/title/{item["imdbId"]}/" target="_blank" rel="noopener noreferrer">IMDb: {esc(fmt_rating(item.get("imdbRating")))}{esc(star(item.get("imdbRating")))}</a>\n'
         )
     rat_tiles += "        </div>\n"
 
@@ -810,17 +811,20 @@ def render(item, related, pool):
       </header>
       <main>
         <nav class="breadcrumb" aria-label="Главная">
-          <a href="../../">Главная</a><span class="bc-sep"> › </span><span class="bc-current"><span class="bc-type">{esc(type_label)}</span><span class="visually-hidden"> — {esc(title_ru)}</span></span>
+          <a href="../../">Главная</a><span class="bc-sep"> › </span><span class="bc-current"><span class="bc-type">{esc(title_ru)}</span></span>
         </nav>
         <article class="film-main">
 {noscript_poster}          <div class="film-info">
-            <div class="film-meta">
+{fav_badge}            <div class="film-meta">
               <span class="film-meta-item">{esc(str(item["year"]))}</span>
               <span class="film-meta-item">{esc(genre_list)}</span>
             </div>
-            <p class="film-desc">{esc(desc_ru)}</p>
-            <p class="film-desc film-desc-alt">{esc(desc_en)}</p>
-{rat_tiles}          </div>
+{rat_tiles}            <p class="film-desc">{esc(desc_ru)}</p>
+            <details class="film-desc-alt-wrap">
+              <summary>Описание на английском</summary>
+              <p class="film-desc film-desc-alt">{esc(desc_en)}</p>
+            </details>
+          </div>
         </article>
         <section class="related">
           <h2>Похожее в каталоге</h2>

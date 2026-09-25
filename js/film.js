@@ -69,22 +69,27 @@ const FILM_TEMPLATE = `
 
   <main>
     <nav class="breadcrumb" :aria-label="t.home">
-      <a href="../../">{{ t.home }}</a><span class="bc-sep"> › </span><span class="bc-current"><span class="bc-type">{{ typeLabel }}</span><span class="visually-hidden"> — {{ title }}</span></span>
+      <a href="../../">{{ t.home }}</a><span class="bc-sep"> › </span><span class="bc-current"><span class="bc-type">{{ title }}</span></span>
     </nav>
     <article class="film-main">
       <figure class="film-poster" v-if="posterSrc">
         <img :src="posterSrc" :srcset="posterSrcset" sizes="(max-width: 720px) 92vw, 300px" :alt="title" :width="posterW" :height="posterH" loading="eager" fetchpriority="high" decoding="async">
       </figure>
       <div class="film-info">
+        <span class="film-badge" v-if="isFav">{{ t.authorPick }}</span>
         <div class="film-meta">
           <span class="film-meta-item">{{ year }}</span>
           <span class="film-meta-item">{{ genreLabel }}</span>
         </div>
-        <p class="film-desc">{{ desc }}</p>
         <div class="ratings">
-          <a class="kp" :href="kpHref" target="_blank" rel="noopener noreferrer" :aria-label="t.kp + ': ' + kpRating + ' — ' + t.openExternal">{{ t.kp }}: {{ kpRating }}{{ isHighRating(kpRating) ? " ★" : "" }}</a>
-          <a class="imdb" v-if="hasImdb" :href="imdbHref" target="_blank" rel="noopener noreferrer" :aria-label="t.imdb + ': ' + imdbRating + ' — ' + t.openExternal">{{ t.imdb }}: {{ imdbRating }}{{ isHighRating(imdbRating) ? " ★" : "" }}</a>
+          <a class="kp rating-chip rating-chip--kp" :href="kpHref" target="_blank" rel="noopener noreferrer" :aria-label="t.kp + ': ' + kpRating + ' — ' + t.openExternal">{{ t.kp }}: {{ kpRating }}{{ isHighRating(kpRating) ? " ★" : "" }}</a>
+          <a class="imdb rating-chip rating-chip--imdb" v-if="hasImdb" :href="imdbHref" target="_blank" rel="noopener noreferrer" :aria-label="t.imdb + ': ' + imdbRating + ' — ' + t.openExternal">{{ t.imdb }}: {{ imdbRating }}{{ isHighRating(imdbRating) ? " ★" : "" }}</a>
         </div>
+        <p class="film-desc">{{ desc }}</p>
+        <details class="film-desc-alt-wrap">
+          <summary>{{ t.descAlt }}</summary>
+          <p class="film-desc film-desc-alt">{{ descAlt }}</p>
+        </details>
         <div class="share-row" role="group" :aria-label="t.share">
           <a v-for="n in shareNets" :key="n.key" class="share-btn" :data-net="n.key" :href="n.href"
              target="_blank" rel="noopener noreferrer" :title="n.label" :aria-label="n.label">
@@ -104,12 +109,11 @@ const FILM_TEMPLATE = `
       <ul v-if="related.length">
         <li v-for="r in related" :key="itemSlug(r)">
           <a class="rc" :href="'../' + itemSlug(r) + '/'">
-            <img v-if="relatedPoster(r)" class="rc-poster" :src="relatedPoster(r)" :srcset="relatedPosterSrcset(r)" sizes="64px" alt="" width="64" height="96" loading="lazy" decoding="async">
+            <img v-if="relatedPoster(r)" class="rc-poster" :src="relatedPoster(r)" :srcset="relatedPosterSrcset(r)" sizes="96px" alt="" width="120" height="180" loading="lazy" decoding="async">
             <span class="rc-content">
               <span class="rc-head">
                 <span class="rc-title">{{ relatedTitle(r) }}</span>
               </span>
-              <span class="rc-alt" v-if="relatedAlt(r)">{{ relatedAlt(r) }}</span>
               <span class="rc-info">{{ relatedInfo(r) }}</span>
               <span class="rc-meta">
                 <span class="rc-rating kp" v-if="hasRating(r.kpRating)">{{ t.kpShort }} {{ formatRating(r.kpRating) }}</span>
@@ -192,6 +196,10 @@ const app = createApp({
     const desc = computed(() =>
       item ? item.desc[lang.value === "ru" ? "ru" : "en"] : I18N[lang.value].fatalError
     );
+    const descAlt = computed(() =>
+      item ? item.desc[lang.value === "ru" ? "en" : "ru"] : ""
+    );
+    const isFav = computed(() => !!(item && item.fav));
     const typeLabel = computed(() =>
       item ? t.value.typeLabels[item.type] || item.type : ""
     );
@@ -220,8 +228,8 @@ const app = createApp({
     );
     const relatedPool = (pageData && pageData.relatedPool) || [];
     const related =
-      relatedPool.length >= 6
-        ? pickRandom(relatedPool, 6)
+      relatedPool.length >= 4
+        ? pickRandom(relatedPool, 4)
         : (pageData && pageData.related) || [];
 
     const SHARE_NETS = {
@@ -283,12 +291,6 @@ const app = createApp({
       return lang.value === "ru" ? r.titleRu : r.titleEn;
     }
 
-    function relatedAlt(r) {
-      const primary = lang.value === "ru" ? r.titleRu : r.titleEn;
-      const other = lang.value === "ru" ? r.titleEn : r.titleRu;
-      return other && other !== primary ? other : "";
-    }
-
     function relatedInfo(r) {
       const tt = t.value;
       const parts = [];
@@ -316,6 +318,8 @@ const app = createApp({
       title,
       altTitle,
       desc,
+      descAlt,
+      isFav,
       typeLabel,
       genreLabel,
       year,
@@ -331,7 +335,6 @@ const app = createApp({
       related,
       itemSlug,
       relatedTitle,
-      relatedAlt,
       relatedInfo,
       relatedPoster,
       relatedPosterSrcset,
