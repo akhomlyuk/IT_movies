@@ -96,6 +96,7 @@ def test_film_mobile_header(page, base):
     assert page.locator(".related .rc:visible").count() == 4
     assert page.locator(".related .rc-poster").first.evaluate("el => getComputedStyle(el).display") == "none"
     assert page.locator(".related .star").count() == 0
+    assert page.locator(".related .fav-icon").count() == 0
     assert page.evaluate("document.documentElement.scrollWidth <= document.documentElement.clientWidth")
 
 

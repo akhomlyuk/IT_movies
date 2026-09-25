@@ -205,6 +205,9 @@ if (mode === "slug") {
   if (!filmSource.includes('class="rc-poster"')) {
     throw new Error("film.js must render related poster thumbnails");
   }
+  if (filmSource.includes('class="fav-icon"')) {
+    throw new Error("film.js must not render recommendation hearts in related cards");
+  }
   const generatorSource = read("tools/gen_pages.py");
   if (!generatorSource.includes('film-header-title')) {
     throw new Error("generated film pages must keep the title in the header");
@@ -220,6 +223,9 @@ if (mode === "slug") {
   }
   if (!generatorSource.includes('"poster",')) {
     throw new Error("generated related records must include poster data");
+  }
+  if (generatorSource.includes('class="fav-icon"')) {
+    throw new Error("generated film pages must not render recommendation hearts in related cards");
   }
   const capture = bootApp();
   eval(

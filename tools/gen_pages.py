@@ -712,14 +712,6 @@ def render(item, related, pool):
         alt = ""
         if r.get("titleEn") and r["titleEn"] != r["titleRu"]:
             alt = f'              <span class="rc-alt">{esc(r["titleEn"])}</span>\n'
-        fav = ""
-        if r.get("fav"):
-            fav = (
-                '<span class="fav-icon" title="Рекомендую">'
-                '<svg class="fav-icon-svg" viewBox="0 0 24 24" aria-hidden="true">'
-                '<path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.8 1.7Z"'
-                ' fill="currentColor"></path></svg></span>'
-            )
         poster_html = ""
         related_poster = (r.get("poster") or "").lstrip("/")
         if related_poster:
@@ -743,7 +735,7 @@ def render(item, related, pool):
             f'        <li><a class="rc" href="../{item_slug(r)}/">\n'
             f'          {poster_html}\n'
             f'          <span class="rc-content">\n'
-            f'            <span class="rc-head">{fav}<span class="rc-title">{esc(r["titleRu"])}</span></span>\n'
+            f'            <span class="rc-head"><span class="rc-title">{esc(r["titleRu"])}</span></span>\n'
             f"{alt}"
             f'            <span class="rc-info">{esc(info)}</span>\n'
             f'            <span class="rc-meta">{"".join(rates)}</span>\n'
