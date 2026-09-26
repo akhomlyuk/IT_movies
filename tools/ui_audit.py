@@ -54,6 +54,10 @@ NON_MATCHING_QUERY = "zzqqxx-no-such-title-42"
 EXPECTED_STATUS = 200
 
 IMAGE_VIEWPORTS = (("desktop", 1280, 900), ("mobile", 375, 812))
+RELATED_STABLE_PATH = "/films/tt2085059-black-mirror/"
+RELATED_STABLE_LOADS = 4
+RELATED_STABLE_WAIT = 500
+RELATED_TITLE_SELECTOR = ".related .rc-title"
 POSTER_IMG_SELECTORS = (
     ".poster-modal-inner > img",
     ".film-poster img",
@@ -79,9 +83,9 @@ DELIBERATE_SCROLLERS = (".table-wrap", ".featured-grid")
 
 LAYOUT_CHECKS = ("no-h-overflow", "cls-zero", "tap-targets", "no-inner-overflow")
 IMAGE_CHECKS = ("no-broken-srcset", "poster-aspect")
-IMPLEMENTED_CHECKS = LAYOUT_CHECKS + IMAGE_CHECKS + ("contrast-floor",)
+STABILITY_CHECKS = ("related-stable",)
+IMPLEMENTED_CHECKS = LAYOUT_CHECKS + IMAGE_CHECKS + STABILITY_CHECKS + ("contrast-floor",)
 DECLARED_NOT_IMPLEMENTED = (
-    "related-stable",
     "jsonld-matches-render",
     "sort-controls-reachable",
     "live-region-persistent",
@@ -426,6 +430,35 @@ def drive_conditional(page, key, results, coverage, taps, enabled):
         page.wait_for_timeout(300)
 
 
+def run_related_stable(browser, base, hard):
+    path = RELATED_STABLE_PATH
+    ctx = browser.new_context(
+        viewport={"width": CONTRAST_WIDTH, "height": CONTRAST_HEIGHT},
+        color_scheme="light",
+    )
+    page = ctx.new_page()
+    runs = []
+    for _ in range(RELATED_STABLE_LOADS):
+        response = page.goto(base + path, wait_until="load")
+        sentinel_found = page.query_selector(sentinel_for(path)) is not None
+        if not check_page_response(path, response, sentinel_found, path, hard):
+            ctx.close()
+            return
+        page.wait_for_timeout(RELATED_STABLE_WAIT)
+        runs.append(page.eval_on_selector_all(
+            RELATED_TITLE_SELECTOR, "e => e.map((x) => x.textContent.trim())"))
+    ctx.close()
+    if not runs[0]:
+        hard.append("[%s] related-stable: %s matched no related card title"
+                    % (path, RELATED_TITLE_SELECTOR))
+        return
+    for load_no, titles in enumerate(runs[1:], start=2):
+        if titles != runs[0]:
+            hard.append("[%s] related-stable: load %d rendered %r, load 1 rendered %r"
+                        % (path, load_no, titles, runs[0]))
+            return
+
+
 def record(results, coverage, key, state, probe, cls, want_inner, enabled):
     coverage.setdefault(state, {})[key] = probe["presence"]
     if state != "base":
@@ -624,6 +657,9 @@ def tier_legend(executed):
                      % ", ".join("%dpx" % x for x in INNER_OVERFLOW_WIDTHS))
     if "poster-aspect" in executed:
         parts.append("poster aspect tolerance %g" % POSTER_ASPECT_TOLERANCE)
+    if "related-stable" in executed:
+        parts.append("related stability %d loads of %s"
+                     % (RELATED_STABLE_LOADS, RELATED_STABLE_PATH))
     return "tiers: " + " | ".join(parts) if parts else ""
 
 
@@ -767,6 +803,8 @@ def run(base, requested, as_json):
             run_layout(browser, base, enabled, hard, advisory, results, coverage, taps)
         if any(enabled(c) for c in IMAGE_CHECKS):
             run_images(browser, base, enabled, hard, image_coverage, per_selector)
+        if enabled("related-stable"):
+            run_related_stable(browser, base, hard)
         if enabled("contrast-floor"):
             run_contrast(browser, base, hard, advisory, results)
         browser.close()

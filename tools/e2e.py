@@ -7,7 +7,8 @@ up a throwaway http.server on a free port and runs the scenarios listed in
 main():
 
 Every run prints the genre-collation branch it resolved and, for the two film-page
-scenarios, the worst related-poster crop found in the related pool.
+scenarios, the worst related-poster crop found in the 4 shipped related posters
+(FILM_PAGE.related, the complete list the generator chose — not a wider pool).
 
 main page
   1. search: typing "матриц" leaves exactly the two Matrix films
@@ -30,7 +31,7 @@ film page
      label and the related titles
  11. mobile layout at 390px: single h1 in the header, 4 related cards in one
      horizontal row, 2:3 poster boxes that are not cropped past the recorded
-     ceiling, related slugs drawn from the related pool
+     ceiling, related slugs drawn from FILM_PAGE.related
 
 Each scenario uses a fresh browser context (localStorage is not shared,
 so the lang/theme persistence cannot leak between tests). Exits non-zero
@@ -70,10 +71,10 @@ CYRILLIC_FOLD = str.maketrans({"ё": "е", "й": "и"})
 POSTER_ASPECT = 2 / 3
 POSTER_ASPECT_TOLERANCE = 0.02
 POSTER_CROP_CEILING = 0.16
-POOL_POSTER_RATIOS = """async () => {
-  const pool = window.FILM_PAGE.relatedPool || window.FILM_PAGE.related;
+RELATED_POSTER_RATIOS = """async () => {
+  const related = window.FILM_PAGE.related;
   const out = [];
-  for (const r of pool) {
+  for (const r of related) {
     if (!r.poster) { out.push(['', null]); continue; }
     const src = '../../' + r.poster.replace(/^\\//, '').replace(/\\.webp$/, '_400.webp');
     const nat = await new Promise((res) => {
@@ -221,24 +222,25 @@ def test_main_lang(page, base):
     )
 
 
-def report_pool_poster_crop(page):
-    rows = page.evaluate(POOL_POSTER_RATIOS)
+def report_related_crop(page):
+    rows = page.evaluate(RELATED_POSTER_RATIOS)
     measured = [(name, nat[0] / nat[1]) for name, nat in rows if nat and nat[1]]
     unmeasured = [name for name, nat in rows if not nat or not nat[1]]
     assert len(measured) >= RELATED_COUNT, (
-        f"only {len(measured)} of {len(rows)} related-pool posters could be measured;"
+        f"only {len(measured)} of {len(rows)} related posters could be measured;"
         f" unloaded or broken: {unmeasured}"
     )
     deltas = [(name, abs(ratio - POSTER_ASPECT)) for name, ratio in measured]
     worst_name, worst = max(deltas, key=lambda d: d[1])
     over = [name for name, d in deltas if d > POSTER_ASPECT_TOLERANCE]
     print(
-        f"    related-pool poster crop: worst {worst:.4f} ({worst_name}),"
-        f" {len(over)}/{len(deltas)} off the {POSTER_ASPECT_TOLERANCE} project standard"
-        f" [{len(over) * 100 // len(deltas)}%], target {POSTER_ASPECT:.4f}"
+        f"    related-crop: worst {worst:.4f} ({worst_name}),"
+        f" {len(over)}/{RELATED_COUNT} off the {POSTER_ASPECT_TOLERANCE} project standard"
+        f" [{len(over) * 100 // RELATED_COUNT}%], target {POSTER_ASPECT:.4f}"
+        f" (complete sample: all {RELATED_COUNT} shipped related posters)"
     )
     assert worst <= POSTER_CROP_CEILING, (
-        f"related-pool poster crop {worst:.4f} ({worst_name}) exceeds the recorded ceiling"
+        f"related-crop {worst:.4f} ({worst_name}) exceeds the recorded ceiling"
         f" {POSTER_CROP_CEILING}; the 2:3 crop defect is owned by Stage 2 and must not worsen"
     )
 
@@ -302,7 +304,7 @@ def test_film_theme(page, base):
     )
     expect(page.locator(".related a.rc")).to_have_count(RELATED_COUNT)
     assert_related_posters(page)
-    report_pool_poster_crop(page)
+    report_related_crop(page)
     assert page.locator(".related .fav-icon").count() == 0, (
         "related cards must not repeat the author's-pick heart"
     )
@@ -356,20 +358,20 @@ def test_film_mobile_layout(page, base):
     )
     assert len(rows) == 1, f"xs tier must be one horizontal row, card tops {rows}"
     assert_related_posters(page)
-    report_pool_poster_crop(page)
+    report_related_crop(page)
     hrefs = page.locator(".related a.rc").evaluate_all(
         "els => els.map(el => el.getAttribute('href'))"
     )
-    pool = page.evaluate(
-        "() => (window.FILM_PAGE.relatedPool || window.FILM_PAGE.related)"
+    related_slugs = page.evaluate(
+        "() => window.FILM_PAGE.related"
         ".map(r => window.ITMoviesCommon.itemSlug(r))"
     )
     own = page.evaluate("() => window.ITMoviesCommon.itemSlug(window.FILM_PAGE.item)")
-    assert own not in pool, "the related pool must not contain the current film"
+    assert own not in related_slugs, "related must not contain the current film"
     assert len(set(hrefs)) == RELATED_COUNT, f"related cards must be distinct: {hrefs}"
     for href in hrefs:
         assert re.fullmatch(r"\.\./[a-z0-9-]+/", href), f"bad related href {href!r}"
-        assert href[3:-1] in pool, f"{href} is not in the related pool"
+        assert href[3:-1] in related_slugs, f"{href} is not in related"
     titles = page.locator(".related .rc-title").all_text_contents()
     assert all(t.strip() for t in titles), f"every related card needs a title: {titles}"
     infos = page.locator(".related .rc-info").all_text_contents()

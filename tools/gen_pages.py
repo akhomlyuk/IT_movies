@@ -716,7 +716,6 @@ def render(item, related, pool):
         {
             "item": {**item, "descSeo": {"ru": seo_desc(desc_ru), "en": seo_desc(desc_en)}},
             "related": [{k: r[k] for k in SLIM_KEYS if k in r} for r in related],
-            "relatedPool": [{k: r[k] for k in SLIM_KEYS if k in r} for r in pool],
             "posterW": poster_dims[0] if poster_dims else None,
             "posterH": poster_dims[1] if poster_dims else None,
         },

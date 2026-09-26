@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* Node smoke harnesses for the IT Movies static site.
-   Usage: node tools/smoke.js <app|slug|film|related>
+   Usage: node tools/smoke.js <app|slug|film>
    Replaces the four inline node -e harnesses that used to live in verify.py. */
 "use strict";
 
@@ -253,6 +253,10 @@ if (mode === "slug") {
   if (generatorSource.includes('class="fav-icon"')) {
     throw new Error("generated film pages must not render recommendation hearts in related cards");
   }
+  if (generatorSource.includes('relatedPool')) {
+    throw new Error("gen_pages.py must not build a relatedPool: the client renders"
+      + " FILM_PAGE.related verbatim, and a pool costs 622979 B across 154 pages");
+  }
   const capture = bootApp();
   eval(
     jsSrc("i18n.js") + "\n" +
@@ -260,73 +264,69 @@ if (mode === "slug") {
     read("js/data.js") + "\n" +
     jsSrc("film.js")
   );
-  const pool = global.CATALOG.slice(1, 10);
+  const relA = global.CATALOG.slice(1, 5);
+  const relB = global.CATALOG.slice(6, 10);
   global.FILM_PAGE = {
     item: global.CATALOG[0],
-    related: global.CATALOG.slice(1, 3),
-    relatedPool: pool,
+    related: relA,
     posterW: null,
     posterH: null,
   };
   const setup = capture();
-  const poolSlugs = new Set(pool.map((r) => global.ITMoviesCommon.itemSlug(r)));
-  const seen = new Set();
-  for (let i = 0; i < 12; i++) {
-    const state = setup();
-    if (!state || typeof state.related.length !== "number" || !state.itemSlug) {
-      throw new Error("film.js setup() returned invalid state");
-    }
-    if (!state.desc.value) {
-      throw new Error("film.js desc is empty");
-    }
-    if (state.related.length !== 4) {
-      throw new Error("film.js related must have 4 items, got " + state.related.length);
-    }
-    const slugs = state.related.map((r) => global.ITMoviesCommon.itemSlug(r));
-    if (new Set(slugs).size !== 4 || slugs.some((s) => !poolSlugs.has(s))) {
-      throw new Error("film.js related must be 4 distinct relatedPool items: " + slugs.join(","));
-    }
-    seen.add(slugs.slice().sort().join("|"));
+  const state = setup();
+  if (!state || !Array.isArray(state.related)) {
+    throw new Error("film.js setup() returned invalid state");
   }
-  if (seen.size < 2) {
-    throw new Error("film.js related must vary across loads, got " + seen.size + " unique set(s)");
+  if (state.desc.value === "") {
+    throw new Error("film.js desc is empty");
+  }
+  const slugs = state.related.map((r) => global.ITMoviesCommon.itemSlug(r));
+  const want = relA.map((r) => global.ITMoviesCommon.itemSlug(r));
+  if (slugs.join(",") !== want.join(",")) {
+    throw new Error("film.js must render FILM_PAGE.related verbatim, got " + slugs.join(","));
+  }
+  for (let i = 0; i < 5; i++) {
+    const again = setup();
+    const againSlugs = again.related.map((r) => global.ITMoviesCommon.itemSlug(r));
+    if (againSlugs.join(",") !== want.join(",")) {
+      throw new Error("film.js related must be stable across setup() calls");
+    }
+  }
+  global.FILM_PAGE = { item: global.CATALOG[0], related: relB, posterW: null, posterH: null };
+  const otherSlugs = setup().related.map((r) => global.ITMoviesCommon.itemSlug(r));
+  const otherWant = relB.map((r) => global.ITMoviesCommon.itemSlug(r));
+  if (otherSlugs.join(",") !== otherWant.join(",")) {
+    throw new Error("film.js must follow FILM_PAGE.related, not a fixed list");
   }
   global.FILM_PAGE = {
     item: global.CATALOG[0],
-    related: global.CATALOG.slice(1, 3),
+    related: relA,
+    relatedPool: global.CATALOG.slice(1, 10),
     posterW: null,
     posterH: null,
   };
-  const fallbackState = setup();
-  if (fallbackState.related.length !== 2) {
-    throw new Error("film.js related must fall back to static related without a pool, got " + fallbackState.related.length);
+  const pooledSlugs = setup().related.map((r) => global.ITMoviesCommon.itemSlug(r));
+  if (pooledSlugs.join(",") !== want.join(",")) {
+    throw new Error("film.js must ignore FILM_PAGE.relatedPool, got " + pooledSlugs.join(","));
+  }
+  global.FILM_PAGE = {
+    item: global.CATALOG[0],
+    related: [],
+    relatedPool: global.CATALOG.slice(1, 10),
+    posterW: null,
+    posterH: null,
+  };
+  const emptySlugs = setup().related.map((r) => global.ITMoviesCommon.itemSlug(r));
+  if (emptySlugs.length !== 0) {
+    throw new Error("film.js must tolerate an empty related array even when a pool is"
+      + " present, got " + emptySlugs.join(","));
+  }
+  global.FILM_PAGE = { item: global.CATALOG[0], posterW: null, posterH: null };
+  if (!Array.isArray(setup().related)) {
+    throw new Error("film.js must default related to an array when FILM_PAGE omits it");
   }
   console.log("film.js smoke (FILM_PAGE, no data.js load on film page): OK" + MIN_LABEL);
-} else if (mode === "related") {
-  bootApp();
-  eval(
-    jsSrc("i18n.js") + "\n" +
-    jsSrc("common.js") + "\n" +
-    read("js/data.js") + "\n" +
-    jsSrc("film.js") + "\n" +
-    "global.__relatedItems = relatedItems;"
-  );
-  const fakeDoc = { type: "documentary", titleEn: "Doc", genres: ["history"], kpId: 999001 };
-  const fakeFic = { type: "movie", titleEn: "Fic", genres: ["history"], kpId: 999002 };
-  const ficRel = global.__relatedItems([fakeDoc, fakeFic], fakeFic, 4);
-  if (ficRel.some((r) => r.type === "documentary")) {
-    throw new Error("relatedItems must not return documentaries for non-documentary items");
-  }
-  const docRel = global.__relatedItems([fakeDoc, fakeFic], fakeDoc, 4);
-  if (docRel.length !== 1 || docRel[0] !== fakeFic) {
-    throw new Error("relatedItems must allow non-documentary items for documentaries");
-  }
-  const cat = global.CATALOG;
-  const N = 6;
-  const api = global.ITMoviesCommon;
-  const out = cat.map((it) => global.__relatedItems(cat, it, N).map((r) => api.itemSlug(r)));
-  console.log(JSON.stringify(out));
 } else {
-  console.error("usage: node tools/smoke.js <app|slug|film|related>");
+  console.error("usage: node tools/smoke.js <app|slug|film>");
   process.exit(2);
 }
