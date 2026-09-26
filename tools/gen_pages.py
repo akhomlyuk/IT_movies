@@ -5,8 +5,10 @@ Each page shares the look of the main page (css/style.css) and is rendered
 by the shared Vue app in js/film.js. A <noscript> block keeps key content
 visible to crawlers without JS. JSON-LD and meta are emitted statically.
 """
+import hashlib
 import html
 import json
+import random
 import re
 import shutil
 import subprocess
@@ -80,11 +82,30 @@ def _scored_candidates(item, catalog):
         reverse=True,
     )
 
+def _related_seed(item):
+    digest = hashlib.sha256(item_slug(item).encode("utf-8")).hexdigest()
+    return int(digest[:12], 16)
+
+
 def related_to(item, catalog, n=4):
-    scored = _scored_candidates(item, catalog)
-    top = [other for score, other in scored if score > 0]
-    rest = [other for score, other in scored if score == 0]
-    return (top + rest)[: max(n, 1)]
+    want = max(n, 1)
+    pool = related_pool(item, catalog)
+    if not pool:
+        return []
+    genres = set(item.get("genres", []))
+    bands = {}
+    for other in pool:
+        overlap = len(genres & set(other.get("genres", [])))
+        bands.setdefault(overlap, []).append(other)
+    rng = random.Random(_related_seed(item))
+    picked = []
+    for score in sorted(bands, reverse=True):
+        band = bands[score]
+        rng.shuffle(band)
+        picked += band[: want - len(picked)]
+        if len(picked) >= want:
+            break
+    return picked[:want]
 
 def related_pool(item, catalog, cap=16, min_n=6):
     scored = _scored_candidates(item, catalog)

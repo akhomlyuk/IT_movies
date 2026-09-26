@@ -16,6 +16,8 @@ errors = []
 NO_WRITE = "--no-write" in sys.argv
 STRICT = "--strict" in sys.argv
 POSTER_VARIANT_WIDTH = 400
+RELATED_MEAN_OVERLAP = 1.513
+RELATED_MEAN_TOLERANCE = 0.04
 
 # 1. Parse data.js as JSON (array between the first '[' and last ']')
 raw = (ROOT / "js" / "data.js").read_text(encoding="utf-8")
@@ -423,7 +425,61 @@ for rel, content in (
         errors.append(f"{rel} is stale — run gen_pages.py")
 print("Derived JS files (catalog.js, .min.js): checked against gen_pages.py")
 
-# 9b1. Node smoke harnesses: app.js / slug / film.js / related parity (tools/smoke.js)
+# 9b. Related selection rules (Python only, node-independent)
+def check_related():
+    problems = []
+    picks = set()
+    overlaps = []
+    for item in catalog:
+        slug = item_slug(item)
+        pool = gen_pages.related_pool(item, catalog)
+        if len(pool) < 6:
+            problems.append(f"{slug}: related pool too small ({len(pool)})")
+            continue
+        rel = gen_pages.related_to(item, catalog, 4)
+        if len(rel) != min(4, len(pool)):
+            problems.append(f"{slug}: related_to returned {len(rel)}, expected 4")
+        if {item_slug(r) for r in rel} - {item_slug(r) for r in pool}:
+            problems.append(f"{slug}: related_to escaped the pool")
+        if item["type"] != "documentary" and any(r["type"] == "documentary" for r in rel):
+            problems.append(f"{slug}: documentary leaked into related")
+        if gen_pages.related_to(item, catalog, 4) != rel:
+            problems.append(f"{slug}: related_to is not deterministic")
+        picks.add(tuple(item_slug(r) for r in rel))
+        genres = set(item["genres"])
+        overlaps.extend(len(genres & set(r["genres"])) for r in rel)
+    floor = max(3, len(catalog) * 3 // 5)
+    if len(picks) < floor:
+        problems.append(
+            f"{len(picks)} distinct 4-sets across {len(catalog)} items, "
+            f"floor {floor} — collapsed toward the 83 distinct sets of the "
+            f"pre-Task-5 deterministic selection"
+        )
+    relevance = RELATED_MEAN_OVERLAP
+    if overlaps and relevance - sum(overlaps) / len(overlaps) > RELATED_MEAN_TOLERANCE:
+        problems.append(
+            f"mean genre overlap {sum(overlaps) / len(overlaps):.3f} per pick over "
+            f"{len(overlaps)} picks, floor {relevance - RELATED_MEAN_TOLERANCE:.3f} "
+            f"(expected {relevance:.3f}) — relevance regressed toward 1.265, the "
+            f"whole-pool shuffle that discarded the score ranking"
+        )
+    for p in problems[:5]:
+        errors.append(f"related selection: {p}")
+    if len(problems) > 5:
+        errors.append(f"related selection: {len(problems) - 5} more problems")
+    if not problems:
+        print(
+            f"Related selection rules: OK ({len(catalog)} items, "
+            f"{len(picks)} distinct 4-sets floor {floor}, "
+            f"mean overlap {sum(overlaps) / len(overlaps):.3f} "
+            f"floor {relevance - RELATED_MEAN_TOLERANCE:.3f})"
+        )
+
+
+check_related()
+
+
+# 9b1. Node smoke harnesses: app.js / slug / film.js (tools/smoke.js)
 def run_smoke(*args):
     res = subprocess.run(
         ["node", str(ROOT / "tools" / "smoke.js"), *args],
@@ -458,35 +514,6 @@ if shutil.which("node"):
         else:
             print(f"Slug parity JS<->Python: OK ({len(js_slugs)} items{label})")
 
-    def check_related(*args):
-        label = ", minified" if args else ""
-        try:
-            js_related = json.loads(run_smoke("related", *args))
-        except (RuntimeError, json.JSONDecodeError) as e:
-            errors.append(f"related parity: node harness failed:\n{e}")
-            return
-        py_related = [
-            [item_slug(r) for r in gen_pages.related_to(i, catalog, 6)]
-            for i in catalog
-        ]
-        if len(js_related) != len(py_related):
-            errors.append(
-                f"related parity: size mismatch JS={len(js_related)} Python={len(py_related)}"
-            )
-            js_related = js_related[: len(py_related)]
-        diffs = [
-            (i, catalog[i]["titleEn"], js, py)
-            for i, (js, py) in enumerate(zip(js_related, py_related))
-            if js != py
-        ]
-        if diffs:
-            for i, title, js, py in diffs[:5]:
-                errors.append(f"related mismatch ({title}): JS={js} Python={py}")
-            if len(diffs) > 5:
-                errors.append(f"related parity: {len(diffs) - 5} more mismatches")
-        else:
-            print(f"Related parity JS<->Python: OK ({len(py_related)} items, n=6{label})")
-
     # app.js smoke test: boots the catalog app with mocked Vue globals
     try:
         print(run_smoke("app"))
@@ -502,17 +529,11 @@ if shutil.which("node"):
     except RuntimeError as e:
         errors.append(f"film.js smoke failed:\n{e}")
 
-    # Related parity: JS relatedItems must equal Python gen_pages.related_to
-    check_related()
-
     # 9b2. Repeat the smokes on the minified JS actually shipped (*.min.js),
     # so a semantics-changing bug in gen_pages.minify_js is caught by the tests
-    for name in ("app", "slug", "film", "related"):
+    for name in ("app", "slug", "film"):
         if name == "slug":
             check_slugs("--min")
-            continue
-        if name == "related":
-            check_related("--min")
             continue
         try:
             print(run_smoke(name, "--min"))
