@@ -72,11 +72,12 @@ def star(v):
 def _scored_candidates(item, catalog):
     gs = set(item["genres"])
     is_doc = item.get("type") == "documentary"
+    slug = item_slug(item)
     return sorted(
         (
             (sum(1 for g in other["genres"] if g in gs), other)
             for other in catalog
-            if other is not item and (is_doc or other.get("type") != "documentary")
+            if item_slug(other) != slug and (is_doc or other.get("type") != "documentary")
         ),
         key=lambda t: t[0],
         reverse=True,
@@ -618,7 +619,7 @@ def inject_last_updated(src):
     )
 
 
-def render(item, related, pool):
+def render(item, related):
     slug = item_slug(item)
     page_url = f"{SITE_BASE}/films/{slug}/"
     home_url = f"{SITE_BASE}/"
@@ -942,7 +943,7 @@ def main():
     written = 0
     for item in catalog:
         rel = related_to(item, catalog)
-        html_out = render(item, rel, related_pool(item, catalog))
+        html_out = render(item, rel)
         out_dir = OUT / item_slug(item)
         out_dir.mkdir(parents=True, exist_ok=True)
         target = out_dir / "index.html"

@@ -58,6 +58,8 @@ RELATED_STABLE_PATH = "/films/tt2085059-black-mirror/"
 RELATED_STABLE_LOADS = 4
 RELATED_STABLE_WAIT = 500
 RELATED_TITLE_SELECTOR = ".related .rc-title"
+JSONLD_RENDER_SELECTOR = ".rc .rc-title"
+JSONLD_RENDER_WAIT = 600
 POSTER_IMG_SELECTORS = (
     ".poster-modal-inner > img",
     ".film-poster img",
@@ -73,6 +75,11 @@ COVERAGE_OWNERS = (
     ("compared", "poster-aspect"),
     ("cropped", "poster-aspect"),
 )
+DATA_COVERAGE_OWNERS = (
+    ("ldNames", "jsonld-matches-render"),
+    ("cards", "jsonld-matches-render"),
+    ("pool", "jsonld-matches-render"),
+)
 
 PAGE_SENTINELS = {CATALOG: ".search"}
 FILM_SENTINEL = ".back-catalog a"
@@ -84,9 +91,10 @@ DELIBERATE_SCROLLERS = (".table-wrap", ".featured-grid")
 LAYOUT_CHECKS = ("no-h-overflow", "cls-zero", "tap-targets", "no-inner-overflow")
 IMAGE_CHECKS = ("no-broken-srcset", "poster-aspect")
 STABILITY_CHECKS = ("related-stable",)
-IMPLEMENTED_CHECKS = LAYOUT_CHECKS + IMAGE_CHECKS + STABILITY_CHECKS + ("contrast-floor",)
+DATA_CHECKS = ("jsonld-matches-render",)
+IMPLEMENTED_CHECKS = (LAYOUT_CHECKS + IMAGE_CHECKS + STABILITY_CHECKS + DATA_CHECKS
+                      + ("contrast-floor",))
 DECLARED_NOT_IMPLEMENTED = (
-    "jsonld-matches-render",
     "sort-controls-reachable",
     "live-region-persistent",
     "skip-link-present",
@@ -285,6 +293,39 @@ IMAGES = """
 }
 """
 
+JSONLD_RENDER = """
+(cfg) => {
+  const out = { itemLists: 0, names: null, cards: [], pool: 0, unparsable: 0 };
+  const nodes = Array.prototype.slice.call(
+    document.querySelectorAll('script[type="application/ld+json"]'));
+  const graphs = [];
+  for (const node of nodes) {
+    let doc = null;
+    try {
+      doc = JSON.parse(node.textContent);
+    } catch (e) {
+      out.unparsable += 1;
+      continue;
+    }
+    if (doc && Array.isArray(doc["@graph"])) graphs.push.apply(graphs, doc["@graph"]);
+    else if (doc) graphs.push(doc);
+  }
+  const lists = graphs.filter((n) => n && n["@type"] === "ItemList");
+  out.itemLists = lists.length;
+  if (lists.length === 1) {
+    const elements = lists[0].itemListElement;
+    out.names = Array.isArray(elements)
+      ? elements.map((e) => (e && typeof e.name === "string") ? e.name : "")
+      : null;
+  }
+  out.cards = Array.prototype.slice.call(document.querySelectorAll(cfg.selector))
+    .map((el) => el.textContent.trim());
+  const payload = window.FILM_PAGE || null;
+  out.pool = (payload && Array.isArray(payload.relatedPool)) ? payload.relatedPool.length : 0;
+  return out;
+}
+"""
+
 COLOUR_STATE_TEXT = {
     "undefined": "is not defined on :root",
     "unresolved": "references an undefined custom property (declared as %r)",
@@ -457,6 +498,56 @@ def run_related_stable(browser, base, hard):
             hard.append("[%s] related-stable: load %d rendered %r, load 1 rendered %r"
                         % (path, load_no, titles, runs[0]))
             return
+
+
+def run_jsonld_render(browser, base, hard, data_coverage):
+    for path in FILM_PAGES:
+        ctx = browser.new_context(
+            viewport={"width": CONTRAST_WIDTH, "height": CONTRAST_HEIGHT},
+            color_scheme="light",
+        )
+        page = ctx.new_page()
+        response = page.goto(base + path, wait_until="load")
+        sentinel_found = page.query_selector(sentinel_for(path)) is not None
+        if not check_page_response(path, response, sentinel_found, path, hard):
+            ctx.close()
+            continue
+        page.wait_for_timeout(JSONLD_RENDER_WAIT)
+        got = page.evaluate(JSONLD_RENDER, {"selector": JSONLD_RENDER_SELECTOR})
+        ctx.close()
+        names = got["names"]
+        cards = got["cards"]
+        data_coverage[path] = {
+            "ldNames": len(names) if names is not None else 0,
+            "cards": len(cards),
+            "pool": got["pool"],
+        }
+        if got["unparsable"]:
+            hard.append("[%s] jsonld-matches-render: %d JSON-LD script(s) did not "
+                        "parse as JSON" % (path, got["unparsable"]))
+        if got["itemLists"] != 1 or names is None:
+            hard.append("[%s] jsonld-matches-render: the page carries %d JSON-LD "
+                        "ItemList node(s), expected exactly 1 with a name list"
+                        % (path, got["itemLists"]))
+            continue
+        if not names:
+            hard.append("[%s] jsonld-matches-render: the JSON-LD ItemList has an "
+                        "empty itemListElement, so the comparison would be vacuous"
+                        % path)
+            continue
+        if not cards:
+            hard.append("[%s] jsonld-matches-render: %s matched no related card "
+                        "title" % (path, JSONLD_RENDER_SELECTOR))
+            continue
+        if cards != names:
+            hard.append("[%s] jsonld-matches-render: the DOM rendered %r, the "
+                        "JSON-LD ItemList lists %r" % (path, cards, names))
+            continue
+        if got["pool"]:
+            hard.append("[%s] jsonld-matches-render: the served payload still "
+                        "carries a relatedPool of %d item(s); the client must "
+                        "render FILM_PAGE.related, a pool only reopens the "
+                        "shuffled-subset defect" % (path, got["pool"]))
 
 
 def record(results, coverage, key, state, probe, cls, want_inner, enabled):
@@ -660,6 +751,9 @@ def tier_legend(executed):
     if "related-stable" in executed:
         parts.append("related stability %d loads of %s"
                      % (RELATED_STABLE_LOADS, RELATED_STABLE_PATH))
+    if any(c in executed for c in DATA_CHECKS):
+        parts.append("jsonld ItemList == rendered related cards on %d film page(s)"
+                     % len(FILM_PAGES))
     return "tiers: " + " | ".join(parts) if parts else ""
 
 
@@ -706,8 +800,40 @@ def render_image_coverage(executed, image_coverage, per_selector, out):
              "   DEAD SELECTOR" if s["matched"] == 0 else ""))
 
 
+def render_data_coverage(executed, data_coverage, out):
+    w = out.write
+    widths = {"ldNames": 11, "cards": 11, "pool": 11}
+    w("\nCHECK COVERAGE (related data checks)\n")
+    w("  %-58s %10s %10s %10s\n"
+      % ("page", "ldNames", "cards", "pool"))
+    for key in FILM_PAGES:
+        s = data_coverage.get(key)
+        if s is None:
+            cells = "".join(("%%%ds" % widths[name]) % NOT_PROBED
+                            for name, _ in DATA_COVERAGE_OWNERS)
+        else:
+            cells = "".join(
+                coverage_cell(executed, owner, s.get(name, 0), widths[name])
+                for name, owner in DATA_COVERAGE_OWNERS)
+        w("  %-58s%s\n" % (key, cells))
+    w("  every column reads \"%s\" unless its owning check ran in this invocation:\n"
+      % NOT_PROBED)
+    for owner in sorted({o for _, o in DATA_COVERAGE_OWNERS}):
+        names = ", ".join(n for n, o in DATA_COVERAGE_OWNERS if o == owner)
+        w("    %-18s owns %s\n" % (owner, names))
+    w("  a probed 0 means the page genuinely offered nothing; an unprobed column "
+      "is not a pass\n")
+    w("  a page that failed to load also reads \"%s\" and raises page-load above\n"
+      % NOT_PROBED)
+    w("  ldNames = names read from the JSON-LD ItemList; cards = %s nodes in the "
+      "hydrated DOM;\n" % JSONLD_RENDER_SELECTOR)
+    w("  pool = items still shipped in window.FILM_PAGE.relatedPool\n")
+    w("  sample: the %d film pages this harness probes, the same list the layout "
+      "sweep uses\n" % len(FILM_PAGES))
+
+
 def render(results, hard, advisory, executed, coverage, image_coverage,
-           per_selector, out):
+           per_selector, data_coverage, out):
     w = out.write
     layout = {k: v for k, v in results.items() if "cls" in v}
     contrast = {k: v for k, v in results.items() if "cls" not in v}
@@ -727,6 +853,7 @@ def render(results, hard, advisory, executed, coverage, image_coverage,
     if legend:
         w(legend + "\n")
     render_image_coverage(executed, image_coverage, per_selector, out)
+    render_data_coverage(executed, data_coverage, out)
 
     w("\nMEASUREMENTS\n")
     if layout:
@@ -794,7 +921,7 @@ def run(base, requested, as_json):
     enabled = lambda n: n in executed
 
     hard, advisory, results, coverage, taps = [], [], {}, {}, {}
-    image_coverage, per_selector = {}, {}
+    image_coverage, per_selector, data_coverage = {}, {}, {}
     total_combos = len(PAGES) * len(WIDTHS)
 
     with sync_playwright() as p:
@@ -805,6 +932,8 @@ def run(base, requested, as_json):
             run_images(browser, base, enabled, hard, image_coverage, per_selector)
         if enabled("related-stable"):
             run_related_stable(browser, base, hard)
+        if any(enabled(c) for c in DATA_CHECKS):
+            run_jsonld_render(browser, base, hard, data_coverage)
         if enabled("contrast-floor"):
             run_contrast(browser, base, hard, advisory, results)
         browser.close()
@@ -815,7 +944,7 @@ def run(base, requested, as_json):
 
     if as_json:
         probes = total_probes(coverage)
-        print(json.dumps({
+        payload = {
             "checksExecuted": executed,
             "measurements": results,
             "hardFailures": sorted(set(hard)),
@@ -831,10 +960,13 @@ def run(base, requested, as_json):
                 "hardFailures": len(set(hard)),
                 "advisory": len(set(advisory)),
             },
-        }, indent=1, sort_keys=True))
+        }
+        if any(enabled(c) for c in DATA_CHECKS):
+            payload["relatedDataCoverage"] = data_coverage
+        print(json.dumps(payload, indent=1, sort_keys=True))
     else:
         render(results, hard, advisory, executed, coverage, image_coverage,
-               per_selector, sys.stdout)
+               per_selector, data_coverage, sys.stdout)
 
     if hard:
         print("ui_audit: %d hard failure(s), %d advisory"

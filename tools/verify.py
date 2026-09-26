@@ -153,7 +153,7 @@ for item in catalog:
         errors.append(f"documentary leaked into related pool: {item['titleEn']}")
     if not {item_slug(r) for r in rel} <= {item_slug(r) for r in pool}:
         errors.append(f"static related not inside related pool: {item['titleEn']}")
-    expected = gen_pages.render(item, rel, pool)
+    expected = gen_pages.render(item, rel)
     if page.read_text(encoding="utf-8") != expected:
         errors.append(f"Stale film page: films/{slug}/ — run gen_pages.py ({item['titleEn']})")
 
@@ -425,11 +425,17 @@ for rel, content in (
         errors.append(f"{rel} is stale — run gen_pages.py")
 print("Derived JS files (catalog.js, .min.js): checked against gen_pages.py")
 
-# 9b. Related selection rules (Python only, node-independent)
+# 9b. Related selection rules + three-way source parity + client fidelity (Python only, node-independent)
+RELATED_ITEMLIST_NAME = "Похожее в каталоге IT Movies"
+CLIENT_RELATED_BANNED = ("relatedPool", "Math.random")
+
+
 def check_related():
     problems = []
+    parity = []
     picks = set()
     overlaps = []
+    pages_checked = 0
     for item in catalog:
         slug = item_slug(item)
         pool = gen_pages.related_pool(item, catalog)
@@ -448,6 +454,133 @@ def check_related():
         picks.add(tuple(item_slug(r) for r in rel))
         genres = set(item["genres"])
         overlaps.extend(len(genres & set(r["genres"])) for r in rel)
+
+        page = gen_pages.OUT / slug / "index.html"
+        if not page.exists():
+            parity.append(
+                f"{slug}: film page missing — JSON-LD, noscript and FILM_PAGE "
+                f"cannot be compared (run gen_pages.py)"
+            )
+            continue
+        pages_checked += 1
+        text = page.read_text(encoding="utf-8")
+        expected = [r["titleRu"] for r in rel]
+        expected_ld = [
+            {
+                "position": i + 1,
+                "name": r["titleRu"],
+                "url": f"{SITE_BASE}/films/{item_slug(r)}/",
+            }
+            for i, r in enumerate(rel)
+        ]
+
+        ld = re.search(
+            r'<script type="application/ld\+json">(.*?)</script>', text, re.S
+        )
+        if not ld:
+            parity.append(f"{slug}: no JSON-LD block")
+        else:
+            try:
+                graph = json.loads(ld.group(1)).get("@graph", [])
+            except json.JSONDecodeError:
+                graph = []
+                parity.append(f"{slug}: JSON-LD is not valid JSON")
+            lists = [
+                n
+                for n in graph
+                if n.get("@type") == "ItemList"
+                and n.get("name") == RELATED_ITEMLIST_NAME
+                and n.get("numberOfItems") == len(expected)
+            ]
+            if not lists:
+                parity.append(
+                    f"{slug}: no related ItemList ({RELATED_ITEMLIST_NAME!r}, "
+                    f"numberOfItems {len(expected)}) in JSON-LD"
+                )
+            else:
+                got_items = [
+                    {
+                        "position": e.get("position"),
+                        "name": e.get("name"),
+                        "url": e.get("url"),
+                    }
+                    for e in lists[0].get("itemListElement", [])
+                ]
+                if got_items != expected_ld:
+                    names = [e["name"] for e in got_items]
+                    if names != expected:
+                        parity.append(
+                            f"{slug}: JSON-LD {names} != generated {expected}"
+                        )
+                    else:
+                        parity.append(
+                            f"{slug}: JSON-LD itemListElement {got_items} != "
+                            f"generated {expected_ld}"
+                        )
+
+        payload = re.search(
+            r"window\.FILM_PAGE = (.*?);\s*</script>", text, re.S
+        )
+        if not payload:
+            parity.append(f"{slug}: no FILM_PAGE payload")
+        else:
+            try:
+                page_data = json.loads(payload.group(1))
+            except json.JSONDecodeError:
+                page_data = {}
+                parity.append(f"{slug}: FILM_PAGE is not valid JSON")
+            if "relatedPool" in page_data:
+                parity.append(
+                    f"{slug}: FILM_PAGE carries a relatedPool key "
+                    f"({len(page_data.get('relatedPool') or [])} items) — the "
+                    f"client must render pageData.related, a pool only "
+                    f"reopens the shuffled-4-of-16 defect"
+                )
+            got = [r.get("titleRu") for r in page_data.get("related", [])]
+            if got != expected:
+                parity.append(
+                    f"{slug}: FILM_PAGE.related {got} != generated {expected}"
+                )
+
+        noscript = re.findall(r'<span class="rc-title">(.*?)</span>', text, re.S)
+        if noscript != expected:
+            parity.append(
+                f"{slug}: noscript cards {noscript} != generated {expected}"
+            )
+        for r in rel:
+            if f'href="../{item_slug(r)}/"' not in text:
+                parity.append(
+                    f"{slug}: noscript is missing a link to {item_slug(r)}"
+                )
+                break
+
+    if pages_checked != len(catalog):
+        parity.append(
+            f"three-way source parity compared {pages_checked} of "
+            f"{len(catalog)} pages"
+        )
+
+    client_checked = []
+    for path in (ROOT / "js" / "film.js", ROOT / "js" / "film.min.js"):
+        if not path.exists():
+            parity.append(f"js/{path.name}: missing — cannot check the client")
+            continue
+        src = path.read_text(encoding="utf-8")
+        hits = sorted({b for b in CLIENT_RELATED_BANNED if b in src})
+        if hits:
+            parity.append(
+                f"js/{path.name} still references {', '.join(hits)} — the film-page "
+                f"client must render FILM_PAGE.related verbatim, never a random "
+                f"subset of a larger pool"
+            )
+        elif not re.search(r"pageData\s*\.\s*related", src):
+            parity.append(
+                f"js/{path.name} does not read pageData.related — it must render "
+                f"the generator's list, not a list of its own"
+            )
+        else:
+            client_checked.append(path.name)
+
     floor = max(3, len(catalog) * 3 // 5)
     if len(picks) < floor:
         problems.append(
@@ -473,6 +606,20 @@ def check_related():
             f"{len(picks)} distinct 4-sets floor {floor}, "
             f"mean overlap {sum(overlaps) / len(overlaps):.3f} "
             f"floor {relevance - RELATED_MEAN_TOLERANCE:.3f})"
+        )
+    for p in parity[:5]:
+        errors.append(f"related parity: {p}")
+    if len(parity) > 5:
+        errors.append(f"related parity: {len(parity) - 5} more problems")
+    if not parity:
+        print(
+            f"Related three-way source parity JSON-LD<->noscript<->FILM_PAGE: OK "
+            f"({pages_checked}/{len(catalog)} pages, no FILM_PAGE.relatedPool)"
+        )
+        print(
+            f"Client renders FILM_PAGE.related verbatim: OK "
+            f"({', '.join(client_checked)}: no relatedPool, no Math.random, "
+            f"reads pageData.related)"
         )
 
 
