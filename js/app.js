@@ -15,7 +15,6 @@ const { createApp, computed, reactive, ref, watch, onMounted, onUnmounted, nextT
 const {
   safeRead,
   safeWrite,
-  itemSlug,
   filmUrl,
   kpUrl,
   imdbUrl,

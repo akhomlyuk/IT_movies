@@ -38,7 +38,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not(.light) {
+  :root:not(.light):not(.dark) {
     color-scheme: dark;
     --bg: #121722;
     --paper: #171d2a;
@@ -814,6 +814,7 @@ tbody tr:hover td:first-child {
 .title-cell {
   min-width: 0;
   position: relative;
+  overflow-wrap: anywhere;
 }
 
 .title-layout {
@@ -962,10 +963,6 @@ tbody tr:hover td:first-child {
 .fav-icon .fav-icon-svg {
   width: 1.2rem;
   height: 1.2rem;
-}
-
-.title-cell {
-  overflow-wrap: anywhere;
 }
 
 .title-copy {
@@ -1123,10 +1120,6 @@ a.imdb .star,
   text-align: center;
   color: var(--muted);
   line-height: 1.6;
-}
-
-.no-js-catalog h3 {
-  margin: 1.5rem 0 0.5rem;
 }
 
 .no-js-catalog ul {
@@ -1293,31 +1286,6 @@ html.no-scroll-state.scrolled .scroll-top {
   .featured-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
-  th:nth-child(1),
-  td:nth-child(1) {
-    width: 34%;
-  }
-
-  th:nth-child(2),
-  td:nth-child(2) {
-    width: 30%;
-  }
-
-  th:nth-child(3),
-  td:nth-child(3) {
-    width: 9%;
-  }
-
-  th:nth-child(4),
-  td:nth-child(4) {
-    width: 13.5%;
-  }
-
-  th:nth-child(5),
-  td:nth-child(5) {
-    width: 13.5%;
-  }
 }
 
 @media (max-width: 720px) {
@@ -1395,10 +1363,6 @@ html.no-scroll-state.scrolled .scroll-top {
     right: 1rem;
   }
 
-  .table-wrap {
-    overflow-x: auto;
-  }
-
   .table-wrap table {
     width: 100%;
     min-width: 0;
@@ -1458,10 +1422,6 @@ html.no-scroll-state.scrolled .scroll-top {
   td:nth-child(5) {
     width: 14%;
     text-align: center;
-  }
-
-  .mobile-meta {
-    display: none;
   }
 
   .nav span {
