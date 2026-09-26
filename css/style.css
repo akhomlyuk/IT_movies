@@ -1861,7 +1861,6 @@ html.no-scroll-state.scrolled .scroll-top {
   margin-top: auto;
   padding-top: var(--space-1);
 }
-}
 
 .rc-rating {
   font-variant-numeric: tabular-nums;
