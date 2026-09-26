@@ -161,6 +161,36 @@ def _seo_desc(text):
 
 
 POSTER_SIZES = "(max-width: 720px) 92vw, 300px"
+RELATED_POSTER_SIZES = "96px"
+FILMS_PREFIX = "../../"
+
+
+def poster_candidates(poster, prefix, single=False):
+    """srcset candidates for a poster, each carrying its own measured width.
+
+    The 400w variant exists for every catalog poster, so its width is 400; the
+    full poster is usually wider, but for a poster whose full width is also
+    exactly 400 the two candidates would collide on the same width descriptor,
+    which makes the whole srcset invalid. Emit one candidate in that case.
+    """
+    poster400 = poster[: -len(".webp")] + "_400.webp"
+    d400 = webp_size(ROOT / poster400)
+    full = webp_size(ROOT / poster)
+    candidates = []
+    if d400:
+        candidates.append(f"{prefix}{poster400} {d400[0]}w")
+        if not single and full and full[0] != d400[0]:
+            candidates.append(f"{prefix}{poster} {full[0]}w")
+    elif full:
+        candidates.append(f"{prefix}{poster} {full[0]}w")
+    return candidates
+
+
+def poster_srcset_attr(poster, sizes, prefix, single=False):
+    candidates = poster_candidates(poster, prefix, single)
+    if not candidates:
+        return ""
+    return ' srcset="%s" sizes="%s"' % (", ".join(candidates), sizes)
 
 
 def index_ld_json(catalog):
@@ -679,11 +709,12 @@ def render(item, related, pool):
     if poster:
         preload_attrs = ""
         if poster_dims:
-            v400 = poster[: -len(".webp")] + "_400.webp"
-            preload_attrs = (
-                f' imagesrcset="../../{v400} 400w, ../../{poster} {poster_dims[0]}w"'
-                f' imagesizes="{POSTER_SIZES}"'
-            )
+            candidates = poster_candidates(poster, FILMS_PREFIX)
+            if candidates:
+                preload_attrs = (
+                    f' imagesrcset="{", ".join(candidates)}"'
+                    f' imagesizes="{POSTER_SIZES}"'
+                )
         preload_poster = (
             f'  <link rel="preload" as="image" href="../../{poster}"'
             f'{preload_attrs} fetchpriority="high">\n'
@@ -692,13 +723,7 @@ def render(item, related, pool):
     noscript_poster = ""
     if poster:
         dims = f' width="{poster_dims[0]}" height="{poster_dims[1]}"' if poster_dims else ""
-        srcset_attr = ""
-        if poster_dims:
-            v400 = poster[: -len(".webp")] + "_400.webp"
-            srcset_attr = (
-                f' srcset="../../{v400} 400w, ../../{poster} {poster_dims[0]}w"'
-                f' sizes="{POSTER_SIZES}"'
-            )
+        srcset_attr = poster_srcset_attr(poster, POSTER_SIZES, FILMS_PREFIX)
         noscript_poster = (
             f'      <figure class="film-poster">\n'
             f'        <img src="../../{poster}"{srcset_attr} alt="{esc(title_ru)}"{dims} decoding="async">\n'
@@ -713,9 +738,9 @@ def render(item, related, pool):
         related_poster = (r.get("poster") or "").lstrip("/")
         if related_poster:
             poster400 = related_poster[: -len(".webp")] + "_400.webp"
-            dims = webp_size(ROOT / poster400) or webp_size(ROOT / related_poster)
-            dims_attr = f' width="{dims[0]}" height="{dims[1]}"' if dims else ""
-            srcset_attr = f' srcset="../../{poster400} 400w, ../../{related_poster} {dims[0]}w" sizes="96px"' if dims else ""
+            box = webp_size(ROOT / poster400) or webp_size(ROOT / related_poster)
+            dims_attr = f' width="{box[0]}" height="{box[1]}"' if box else ""
+            srcset_attr = poster_srcset_attr(related_poster, RELATED_POSTER_SIZES, FILMS_PREFIX, single=True)
             poster_html = (
                 f'<img class="rc-poster" src="../../{related_poster}"{srcset_attr}{dims_attr} alt="" loading="lazy" decoding="async">'
             )

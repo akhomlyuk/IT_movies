@@ -215,6 +215,7 @@ const app = createApp({
     const posterSrcset = computed(() => {
       if (!posterSrc.value || !posterW.value) return null;
       const v400 = posterSrc.value.replace(/\.webp$/, "_400.webp");
+      if (posterW.value === 400) return `${v400} 400w`;
       return `${v400} 400w, ${posterSrc.value} ${posterW.value}w`;
     });
     const kpHref = computed(() => (item ? kpUrl(item) : ""));
@@ -308,7 +309,10 @@ const app = createApp({
     function relatedPosterSrcset(r) {
       if (!r.poster) return null;
       const src = relatedPoster(r);
-      return `${src.replace(/\.webp$/, "_400.webp")} 400w, ${src} 800w`;
+      const small = src.replace(/\.webp$/, "_400.webp");
+      const full = Number(r.posterW) || 0;
+      if (full > 0 && full !== 400) return `${small} 400w, ${src} ${full}w`;
+      return `${small} 400w`;
     }
 
     return {

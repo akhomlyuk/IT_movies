@@ -53,6 +53,23 @@ CONTRAST_HEIGHT = 900
 NON_MATCHING_QUERY = "zzqqxx-no-such-title-42"
 EXPECTED_STATUS = 200
 
+IMAGE_VIEWPORTS = (("desktop", 1280, 900), ("mobile", 375, 812))
+POSTER_IMG_SELECTORS = (
+    ".poster-modal-inner > img",
+    ".film-poster img",
+    ".poster-wrap img",
+    ".rc-poster",
+)
+POSTER_ASPECT_TOLERANCE = 0.02
+CROPPING_OBJECT_FIT = "cover"
+NOT_PROBED = "not probed"
+COVERAGE_OWNERS = (
+    ("inspected", "no-broken-srcset"),
+    ("defects", "no-broken-srcset"),
+    ("compared", "poster-aspect"),
+    ("cropped", "poster-aspect"),
+)
+
 PAGE_SENTINELS = {CATALOG: ".search"}
 FILM_SENTINEL = ".back-catalog a"
 
@@ -61,9 +78,9 @@ DELIBERATE_TRUNCATORS = (".alt-title", ".rc-info", ".featured-card-meta",
 DELIBERATE_SCROLLERS = (".table-wrap", ".featured-grid")
 
 LAYOUT_CHECKS = ("no-h-overflow", "cls-zero", "tap-targets", "no-inner-overflow")
-IMPLEMENTED_CHECKS = LAYOUT_CHECKS + ("contrast-floor",)
+IMAGE_CHECKS = ("no-broken-srcset", "poster-aspect")
+IMPLEMENTED_CHECKS = LAYOUT_CHECKS + IMAGE_CHECKS + ("contrast-floor",)
 DECLARED_NOT_IMPLEMENTED = (
-    "no-broken-srcset",
     "related-stable",
     "jsonld-matches-render",
     "sort-controls-reachable",
@@ -71,7 +88,6 @@ DECLARED_NOT_IMPLEMENTED = (
     "skip-link-present",
     "focus-ring-visible",
     "no-star-rating-when-unrated",
-    "poster-aspect",
 )
 
 TAP_TARGETS = [
@@ -197,6 +213,71 @@ CONTRAST = """
     out[name] = entry;
   }
   return { out, surfaces };
+}
+"""
+
+IMAGES = """
+(cfg) => {
+  const name = (el) => el.tagName.toLowerCase() +
+    (el.className ? "." + String(el.className).trim().split(/\\s+/).join(".") : "");
+  const out = { srcset: [], srcsetInspected: 0, poster: [] };
+  const carriers = [
+    ["img[srcset]", (el) => el.getAttribute("srcset")],
+    ["link[imagesrcset]", (el) => el.getAttribute("imagesrcset")],
+  ];
+  for (const [sel, read] of carriers) {
+    for (const el of document.querySelectorAll(sel)) {
+      const raw = read(el) || "";
+      out.srcsetInspected += 1;
+      const seen = [], problems = [];
+      let parsed = 0;
+      for (const part of raw.split(",")) {
+        const cand = part.trim();
+        if (!cand) continue;
+        const m = cand.match(/\\s(\\d+(?:\\.\\d+)?)([wx])$/);
+        if (!m) {
+          problems.push("candidate without a width or density descriptor: " + cand);
+          continue;
+        }
+        parsed += 1;
+        if (m[2] === "x") continue;
+        const w = Number(m[1]);
+        if (!Number.isInteger(w) || w <= 0) {
+          problems.push("width descriptor is not a positive integer: " + cand);
+        } else if (seen.indexOf(w) !== -1) {
+          problems.push("duplicate width descriptor " + w + "w");
+        } else {
+          seen.push(w);
+        }
+      }
+      if (parsed < 1 && problems.length < 1) {
+        problems.push("no candidate carries a width or density descriptor");
+      }
+      if (problems.length) {
+        out.srcset.push({ selector: sel + " " + name(el), raw: raw, problems: problems });
+      }
+    }
+  }
+  for (const sel of cfg.posters) {
+    for (const img of document.querySelectorAll(sel)) {
+      const cs = getComputedStyle(img);
+      if (cs.display === "none" || cs.visibility === "hidden") continue;
+      const nw = img.naturalWidth, nh = img.naturalHeight;
+      if (!nw || !nh) continue;
+      const r = img.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      out.poster.push({
+        selector: sel,
+        rendered: +(r.width / r.height).toFixed(4),
+        natural: +(nw / nh).toFixed(4),
+        delta: +Math.abs(r.width / r.height - nw / nh).toFixed(4),
+        objectFit: cs.objectFit,
+        naturalSize: nw + "x" + nh,
+        renderedSize: Math.round(r.width) + "x" + Math.round(r.height),
+      });
+    }
+  }
+  return out;
 }
 """
 
@@ -468,6 +549,61 @@ def run_contrast(browser, base, hard, advisory, results):
                     "palettes: %s" % bgs)
 
 
+def run_images(browser, base, enabled, hard, image_coverage, per_selector):
+    want_srcset = enabled("no-broken-srcset")
+    want_aspect = enabled("poster-aspect")
+    for path in PAGES:
+        for label, width, height in IMAGE_VIEWPORTS:
+            key = "%s@%s" % (path, label)
+            ctx = browser.new_context(viewport={"width": width, "height": height},
+                                      color_scheme="light")
+            page = ctx.new_page()
+            response = page.goto(base + path, wait_until="load")
+            page.wait_for_timeout(2000)
+            sentinel_found = page.query_selector(sentinel_for(path)) is not None
+            if not check_page_response(key, response, sentinel_found, path, hard):
+                ctx.close()
+                continue
+            if want_aspect and path == CATALOG:
+                icons = page.locator(".poster-icon")
+                if icons.count():
+                    icons.first.click()
+                    page.wait_for_timeout(600)
+            probe = page.evaluate(IMAGES, {"posters": list(POSTER_IMG_SELECTORS)})
+            ctx.close()
+            stats = image_coverage.setdefault(key, {})
+            if want_srcset:
+                stats["inspected"] = probe["srcsetInspected"]
+                stats["defects"] = len(probe["srcset"])
+                for e in probe["srcset"]:
+                    hard.append("[%s] no-broken-srcset: %s declares srcset %r: %s"
+                                % (key, e["selector"], e["raw"], "; ".join(e["problems"])))
+            if want_aspect:
+                stats.setdefault("compared", 0)
+                stats.setdefault("cropped", 0)
+                for e in probe["poster"]:
+                    sel = per_selector.setdefault(
+                        e["selector"], {"matched": 0, "compared": 0, "cropped": 0})
+                    sel["matched"] += 1
+                    if e["objectFit"] == CROPPING_OBJECT_FIT:
+                        stats["cropped"] += 1
+                        sel["cropped"] += 1
+                        continue
+                    stats["compared"] += 1
+                    sel["compared"] += 1
+                    if e["delta"] > POSTER_ASPECT_TOLERANCE:
+                        hard.append("[%s] poster-aspect: %s renders %s (%s) against a "
+                                    "natural %s (%s), off by %g which exceeds the %g "
+                                    "tolerance and object-fit is %s"
+                                    % (key, e["selector"], e["renderedSize"],
+                                       e["rendered"], e["naturalSize"], e["natural"],
+                                       e["delta"], POSTER_ASPECT_TOLERANCE,
+                                       e["objectFit"]))
+    if want_aspect:
+        for sel in POSTER_IMG_SELECTORS:
+            per_selector.setdefault(sel, {"matched": 0, "compared": 0, "cropped": 0})
+
+
 def cell(row, name, fmt):
     return fmt % row[name] if name in row else "-"
 
@@ -486,10 +622,56 @@ def tier_legend(executed):
     if "no-inner-overflow" in executed:
         parts.append("inner overflow at %s"
                      % ", ".join("%dpx" % x for x in INNER_OVERFLOW_WIDTHS))
+    if "poster-aspect" in executed:
+        parts.append("poster aspect tolerance %g" % POSTER_ASPECT_TOLERANCE)
     return "tiers: " + " | ".join(parts) if parts else ""
 
 
-def render(results, hard, advisory, executed, coverage, out):
+def coverage_cell(executed, owner, value, width):
+    if owner not in executed:
+        return ("%%%ds" % width) % NOT_PROBED
+    return ("%%%dd" % width) % value
+
+
+def render_image_coverage(executed, image_coverage, per_selector, out):
+    if not any(c in executed for c in IMAGE_CHECKS):
+        return
+    w = out.write
+    widths = {"inspected": 11, "defects": 11, "compared": 11, "cropped": 11}
+    w("\nCHECK COVERAGE (image checks)\n")
+    w("  %-58s %10s %10s %10s %10s\n"
+      % ("page@viewport", "inspected", "defects", "compared", "cropped"))
+    for key in sorted(image_coverage):
+        s = image_coverage[key]
+        cells = "".join(
+            coverage_cell(executed, owner, s.get(name, 0), widths[name])
+            for name, owner in COVERAGE_OWNERS)
+        w("  %-58s%s\n" % (key, cells))
+    w("  every column reads \"%s\" unless its owning check ran in this invocation:\n"
+      % NOT_PROBED)
+    for owner in sorted({o for _, o in COVERAGE_OWNERS}):
+        names = ", ".join(n for n, o in COVERAGE_OWNERS if o == owner)
+        w("    %-18s owns %s\n" % (owner, names))
+    w("  a probed 0 means the page genuinely offered nothing; an unprobed column "
+      "is not a pass\n")
+    w("  inspected = srcset/imagesrcset attributes read; defects = inspected "
+      "attributes that failed\n")
+    w("  compared = poster images whose rendered ratio was compared against "
+      "natural; cropped = poster images skipped because object-fit is %s\n"
+      % CROPPING_OBJECT_FIT)
+    if "poster-aspect" not in executed:
+        return
+    w("\n  per-selector poster coverage, summed over every page@viewport probe\n")
+    w("  %-28s %8s %9s %8s\n" % ("selector", "matched", "compared", "cropped"))
+    for sel in POSTER_IMG_SELECTORS:
+        s = per_selector.get(sel, {"matched": 0, "compared": 0, "cropped": 0})
+        w("  %-28s %8d %9d %8d%s\n"
+          % (sel, s["matched"], s["compared"], s["cropped"],
+             "   DEAD SELECTOR" if s["matched"] == 0 else ""))
+
+
+def render(results, hard, advisory, executed, coverage, image_coverage,
+           per_selector, out):
     w = out.write
     layout = {k: v for k, v in results.items() if "cls" in v}
     contrast = {k: v for k, v in results.items() if "cls" not in v}
@@ -508,6 +690,7 @@ def render(results, hard, advisory, executed, coverage, out):
     legend = tier_legend(executed)
     if legend:
         w(legend + "\n")
+    render_image_coverage(executed, image_coverage, per_selector, out)
 
     w("\nMEASUREMENTS\n")
     if layout:
@@ -575,12 +758,15 @@ def run(base, requested, as_json):
     enabled = lambda n: n in executed
 
     hard, advisory, results, coverage, taps = [], [], {}, {}, {}
+    image_coverage, per_selector = {}, {}
     total_combos = len(PAGES) * len(WIDTHS)
 
     with sync_playwright() as p:
         browser = p.chromium.launch()
         if any(enabled(c) for c in LAYOUT_CHECKS):
             run_layout(browser, base, enabled, hard, advisory, results, coverage, taps)
+        if any(enabled(c) for c in IMAGE_CHECKS):
+            run_images(browser, base, enabled, hard, image_coverage, per_selector)
         if enabled("contrast-floor"):
             run_contrast(browser, base, hard, advisory, results)
         browser.close()
@@ -601,13 +787,16 @@ def run(base, requested, as_json):
                 sel: (rendered_count(coverage, sel) if probes else None)
                 for sel in WATCHED
             },
+            "imageCoverage": image_coverage,
+            "posterCoverageBySelector": per_selector,
             "summary": {
                 "hardFailures": len(set(hard)),
                 "advisory": len(set(advisory)),
             },
         }, indent=1, sort_keys=True))
     else:
-        render(results, hard, advisory, executed, coverage, sys.stdout)
+        render(results, hard, advisory, executed, coverage, image_coverage,
+               per_selector, sys.stdout)
 
     if hard:
         print("ui_audit: %d hard failure(s), %d advisory"

@@ -920,6 +920,7 @@ tbody tr:hover td:first-child {
   display: block;
   max-width: 90vw;
   max-height: 90vh;
+  height: auto;
   border-radius: 8px;
   box-shadow: var(--shadow);
 }

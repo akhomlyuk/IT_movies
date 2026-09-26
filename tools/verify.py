@@ -9,12 +9,13 @@ import unicodedata
 from xml.etree import ElementTree
 
 import gen_pages
-from lib import ROOT, SITE_BASE, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating
+from lib import ROOT, SITE_BASE, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating, webp_size
 
 sys.stdout.reconfigure(encoding="utf-8")
 errors = []
 NO_WRITE = "--no-write" in sys.argv
 STRICT = "--strict" in sys.argv
+POSTER_VARIANT_WIDTH = 400
 
 # 1. Parse data.js as JSON (array between the first '[' and last ']')
 raw = (ROOT / "js" / "data.js").read_text(encoding="utf-8")
@@ -106,11 +107,10 @@ for key, group in name_groups.items():
         errors.append(f"Posters differing only by case: {sorted(group)}")
 
 catalog_posters = sorted({i["poster"].lstrip("/") for i in catalog if i.get("poster")})
-missing_variants = [
-    p
-    for p in catalog_posters
-    if not (ROOT / (p[: -len(".webp")] + "_400.webp")).exists()
-]
+variant_paths = {
+    p: ROOT / (p[: -len(".webp")] + "_400.webp") for p in catalog_posters
+}
+missing_variants = [p for p, path in variant_paths.items() if not path.exists()]
 if missing_variants:
     errors.append(
         f"poster _400 variants missing: {len(missing_variants)} — run tools/gen_posters.py"
@@ -119,6 +119,22 @@ else:
     print(
         f"Poster variants: _400 present for {len(catalog_posters)} posters (gen_posters.py)"
     )
+    wrong_width = []
+    for p, path in variant_paths.items():
+        dims = webp_size(path)
+        if not dims or dims[0] != POSTER_VARIANT_WIDTH:
+            wrong_width.append((p, dims[0] if dims else "unreadable"))
+    if wrong_width:
+        errors.append(
+            f"poster _400 variants not exactly {POSTER_VARIANT_WIDTH}px wide: "
+            f"{len(wrong_width)} of {len(catalog_posters)} — "
+            + ", ".join("%s (%s)" % (p, w) for p, w in wrong_width[:5])
+        )
+    else:
+        print(
+            f"Poster variants: all {len(catalog_posters)} _400 files exactly "
+            f"{POSTER_VARIANT_WIDTH}px wide"
+        )
 
 # 4b. Film pages exist and match the current generator (gen_pages.py)
 for item in catalog:
