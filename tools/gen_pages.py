@@ -183,7 +183,6 @@ def _seo_desc(text):
 
 
 POSTER_SIZES = poster_sizes()
-RELATED_POSTER_SIZES = "96px"
 FILMS_PREFIX = "../../"
 
 
@@ -619,6 +618,191 @@ def inject_last_updated(src):
     )
 
 
+# The related card has ONE hand-maintained source: the Vue fragment below.
+# js/film.js receives it verbatim as window.FILM_RC_CARD and splices it into its
+# own template, so the client keeps owning every value it displays -- what
+# crosses into the page is a template with Vue bindings in it, never
+# interpolated text. The no-JS card all 154 film pages ship is the same
+# fragment with every expression resolved from RC_STATIC, which is keyed by the
+# exact expression text: an expression the table does not know, or a table
+# entry the fragment no longer uses, stops the generator instead of letting the
+# two renderings drift apart in silence.
+RC_CARD = """<a class="rc" :href="'../' + itemSlug(r) + '/'">
+  <img v-if="relatedPoster(r)" class="rc-poster" :src="relatedPoster(r)" :srcset="relatedPosterSrcset(r)" sizes="96px" alt="" width="120" height="180" loading="lazy" decoding="async">
+  <span class="rc-content">
+    <span class="rc-head">
+      <span class="rc-title">{{ relatedTitle(r) }}</span>
+    </span>
+    <span class="rc-info">{{ relatedInfo(r) }}</span>
+    <span class="rc-meta">
+      <span class="rc-rating kp" v-if="hasRating(r.kpRating)">{{ t.kpShort }} {{ formatRating(r.kpRating) }}</span>
+      <span class="rc-rating imdb" v-if="r.imdbId && hasRating(r.imdbRating)">{{ t.imdb }} {{ formatRating(r.imdbRating) }}</span>
+    </span>
+  </span>
+</a>"""
+
+RC_VOID_TAGS = frozenset((
+    "area", "base", "br", "col", "embed", "hr", "img", "input",
+    "link", "meta", "param", "source", "track", "wbr",
+))
+RC_TAG_RE = re.compile(r"""<(/?)([a-zA-Z][^\s/>]*)((?:"[^"]*"|'[^']*'|[^>"'])*?)(/?)>""")
+RC_ATTR_RE = re.compile(r"""([^\s=/>]+)(?:\s*=\s*"([^"]*)")?""")
+RC_MUSTACHE_RE = re.compile(r"\{\{\s*(.+?)\s*\}\}")
+
+
+def rc_attrs(raw):
+    return RC_ATTR_RE.findall(raw)
+
+
+def rc_operands(expr):
+    return [part.strip() for part in expr.split("&&")]
+
+
+def rc_expressions(fragment):
+    """Every Vue expression the fragment binds, with && compounds split into
+    their operands so the set can be compared with RC_STATIC's keys."""
+    found = set()
+    for m in RC_TAG_RE.finditer(fragment):
+        for name, value in rc_attrs(m.group(3)):
+            if value is not None and (name == "v-if" or name.startswith(":")):
+                found.update(rc_operands(value))
+    for m in RC_MUSTACHE_RE.finditer(fragment):
+        found.update(rc_operands(m.group(1)))
+    return found
+
+
+RC_EXPRESSIONS = rc_expressions(RC_CARD)
+
+
+def rc_value(expr, values):
+    parts = rc_operands(expr)
+    if len(parts) > 1:
+        return all(rc_value(part, values) for part in parts)
+    if expr not in values:
+        raise SystemExit(
+            f"related card: RC_CARD binds {expr!r} and RC_STATIC has no static value "
+            f"for it, so the no-JS card cannot be rendered from the one source. Add "
+            f"the value it stands for, or drop the binding -- do not let one "
+            f"rendering fall back to a value of its own"
+        )
+    return values[expr]
+
+
+def rc_matching_close(fragment, pos, name):
+    """Index just past the tag closing <name>, or None if it never closes."""
+    depth = 1
+    for m in RC_TAG_RE.finditer(fragment, pos):
+        closing, tag, _, selfclose = m.groups()
+        if closing:
+            depth -= 1
+            if depth == 0:
+                return m.end()
+        elif not selfclose and tag.lower() not in RC_VOID_TAGS:
+            depth += 1
+    return None
+
+
+def rc_interpolate(text, values):
+    return RC_MUSTACHE_RE.sub(lambda m: esc(rc_value(m.group(1), values)), text)
+
+
+def rc_render_tag(tag, attrs, values):
+    parts = []
+    for name, value in attrs:
+        if name == "v-if":
+            continue
+        if value is None:
+            parts.append(name)
+        elif name.startswith(":"):
+            parts.append(f'{name[1:]}="{esc(rc_value(value, values))}"')
+        else:
+            parts.append(f'{name}="{value}"')
+    name = RC_TAG_RE.match(tag).group(2)
+    return f"<{name} " + " ".join(parts) + ">"
+
+
+def rc_values(r):
+    """The values one no-JS related card binds, keyed by the Vue expression the
+    client binds in the same place. The page is lang="ru" and static, so a
+    title is the Russian one and a label is the Russian one; the client
+    resolves the same bindings against I18N[lang] and the current language."""
+    poster = (r.get("poster") or "").lstrip("/")
+    genres = " / ".join(sorted(RU_GENRES.get(g, g) for g in r.get("genres", [])))
+    values = {
+        "'../' + itemSlug(r) + '/'": f"../{item_slug(r)}/",
+        "relatedPoster(r)": f"{FILMS_PREFIX}{poster}" if poster else "",
+        "relatedPosterSrcset(r)": ", ".join(
+            poster_candidates(poster, FILMS_PREFIX, single=True)
+        ),
+        "relatedTitle(r)": r["titleRu"],
+        "relatedInfo(r)": " · ".join(
+            p for p in (genres, str(r.get("year") or "")) if p
+        ),
+        "hasRating(r.kpRating)": has_rating(r.get("kpRating")),
+        "r.imdbId": bool(r.get("imdbId")),
+        "hasRating(r.imdbRating)": has_rating(r.get("imdbRating")),
+        "t.kpShort": "КП",
+        "formatRating(r.kpRating)": fmt_rating(r.get("kpRating")),
+        "t.imdb": "IMDb",
+        "formatRating(r.imdbRating)": fmt_rating(r.get("imdbRating")),
+    }
+    if set(values) != RC_EXPRESSIONS:
+        unknown = sorted(RC_EXPRESSIONS - set(values))
+        unused = sorted(set(values) - RC_EXPRESSIONS)
+        raise SystemExit(
+            f"related card: RC_CARD and RC_STATIC disagree. RC_CARD binds nothing "
+            f"for {unknown}; RC_STATIC carries {unused}, which RC_CARD no longer "
+            f"binds. The card has one source, so this is a generation error, not a "
+            f"warning"
+        )
+    return values
+
+
+def rc_card_html(r):
+    """RC_CARD with every binding resolved to its no-JS value and every element "
+    "whose v-if is false dropped with its subtree."""
+    values = rc_values(r)
+    out = []
+    pos = 0
+    for m in RC_TAG_RE.finditer(RC_CARD):
+        closing, name, raw, selfclose = m.groups()
+        if not closing:
+            out.append(rc_interpolate(RC_CARD[pos:m.start()], values))
+            attrs = rc_attrs(raw)
+            cond = next((v for k, v in attrs if k == "v-if"), None)
+            if cond is not None and not rc_value(cond, values):
+                if name.lower() in RC_VOID_TAGS or selfclose:
+                    pos = m.end()
+                    continue
+                end = rc_matching_close(RC_CARD, m.end(), name)
+                if end is None:
+                    raise SystemExit(
+                        f"related card: <{name} v-if=\"{cond}\"> in RC_CARD is never "
+                        f"closed, so the no-JS card could not be cut out of it"
+                    )
+                pos = end
+                continue
+            out.append(rc_render_tag(m.group(0), attrs, values))
+        else:
+            out.append(rc_interpolate(RC_CARD[pos:m.start()], values))
+            out.append(m.group(0))
+        pos = m.end()
+    out.append(rc_interpolate(RC_CARD[pos:], values))
+    return "".join(out)
+
+
+def rc_cards_html(related):
+    lis = []
+    for r in related:
+        lines = rc_card_html(r).split("\n")
+        lis.append(
+            '        <li>' + lines[0]
+            + "".join("\n          " + line for line in lines[1:])
+            + "</li>\n"
+        )
+    return "".join(lis)
+
+
 def render(item, related):
     slug = item_slug(item)
     page_url = f"{SITE_BASE}/films/{slug}/"
@@ -751,39 +935,8 @@ def render(item, related):
             "      </figure>\n"
         )
 
-    related_items = ""
-    for r in related:
-        r_genres = " / ".join(sorted(RU_GENRES.get(g, g) for g in r.get("genres", [])))
-        info = " · ".join(p for p in (r_genres, str(r.get("year") or "")) if p)
-        poster_html = ""
-        related_poster = (r.get("poster") or "").lstrip("/")
-        if related_poster:
-            poster400 = related_poster[: -len(".webp")] + "_400.webp"
-            box = webp_size(ROOT / poster400) or webp_size(ROOT / related_poster)
-            dims_attr = f' width="{box[0]}" height="{box[1]}"' if box else ""
-            srcset_attr = poster_srcset_attr(related_poster, RELATED_POSTER_SIZES, FILMS_PREFIX, single=True)
-            poster_html = (
-                f'<img class="rc-poster" src="../../{related_poster}"{srcset_attr}{dims_attr} alt="" loading="lazy" decoding="async">'
-            )
-        rates = []
-        if has_rating(r.get("kpRating")):
-            rates.append(
-                f'<span class="rc-rating kp">КП {esc(fmt_rating(r.get("kpRating")))}</span>'
-            )
-        if r.get("imdbId") and has_rating(r.get("imdbRating")):
-            rates.append(
-                f'<span class="rc-rating imdb">IMDb {esc(fmt_rating(r.get("imdbRating")))}</span>'
-            )
-        related_items += (
-            f'        <li><a class="rc" href="../{item_slug(r)}/">\n'
-            f'          {poster_html}\n'
-            f'          <span class="rc-content">\n'
-            f'            <span class="rc-head"><span class="rc-title">{esc(r["titleRu"])}</span></span>\n'
-            f'            <span class="rc-info">{esc(info)}</span>\n'
-            f'            <span class="rc-meta">{"".join(rates)}</span>\n'
-            f"          </span>\n"
-            f"        </a></li>\n"
-        )
+    related_items = rc_cards_html(related)
+    rc_card_js = json.dumps(RC_CARD, ensure_ascii=False).replace("<", "\\u003c")
 
     fav_badge = (
         '              <span class="film-badge">Выбор автора</span>\n'
@@ -891,6 +1044,7 @@ def render(item, related):
   </div>
 
   <script>window.FILM_PAGE = {page_data};</script>
+  <script>window.FILM_RC_CARD = {rc_card_js};</script>
   <script src="../../js/vue.global.prod.js" defer></script>
   <script src="../../js/i18n.min.js" defer></script>
   <script src="../../js/common.min.js" defer></script>

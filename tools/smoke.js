@@ -228,13 +228,19 @@ if (mode === "slug") {
   if (!filmSource.includes('class="bc-type"')) {
     throw new Error("film.js must expose a compact breadcrumb category");
   }
-  if (!filmSource.includes('class="rc-poster"')) {
-    throw new Error("film.js must render related poster thumbnails");
+  if (!filmSource.includes("FILM_RC_CARD")) {
+    throw new Error("film.js must render the related card from window.FILM_RC_CARD, the one source the page carries");
+  }
+  if (filmSource.includes('class="rc-poster"')) {
+    throw new Error("film.js must not hold a second copy of the related card");
   }
   if (filmSource.includes('class="fav-icon"')) {
     throw new Error("film.js must not render recommendation hearts in related cards");
   }
   const generatorSource = read("tools/gen_pages.py");
+  if (!generatorSource.includes('class="rc-poster"')) {
+    throw new Error("the one related-card source must render poster thumbnails");
+  }
   if (!generatorSource.includes('film-header-title')) {
     throw new Error("generated film pages must keep the title in the header");
   }

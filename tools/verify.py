@@ -1010,13 +1010,15 @@ def check_media_conditions():
 check_media_conditions()
 
 
-# 6g. Related-card markup parity. The .rc card exists twice: once as the Vue
-# template in js/film.js and once as the no-JS card emitted by
-# gen_pages.render(), which is what all 154 film pages ship inside <noscript>.
-# Their element trees must be identical -- same tags, same classes, same
-# nesting, same document order -- or the JS and no-JS renderings differ.
+# 6g. Related-card markup parity. The .rc card has ONE hand-maintained source,
+# gen_pages.RC_CARD, and two renderings of it: the no-JS card that
+# gen_pages.render() puts in the <noscript> of all 154 film pages, and the Vue
+# template the same function emits into each page as window.FILM_RC_CARD for
+# js/film.js to splice into its own. Their element trees must be identical --
+# same tags, same classes, same nesting, same document order -- or the JS and
+# no-JS renderings differ.
 #
-# WHY THIS COMPARES TREES, NOT STRINGS. The two cards cannot be compared as
+# WHY THIS COMPARES TREES, NOT STRINGS. The two renderings cannot be compared as
 # strings at all: the clean-tree fragments are 602 and 832 bytes and differ in
 # indentation, in text, and in how every value is bound. Normalising that away
 # is the whole normalisation problem, and the shape it converges on is a tree.
@@ -1028,38 +1030,136 @@ check_media_conditions()
 # mutation, and any document-order-preserving comparison is DIFFERENT, so the
 # representation is what makes the verdict legible (node 5, parent 2 vs parent
 # 3) rather than what makes it possible. The alternative -- reading the Python
-# list the generator interpolated -- is the B1 trap from Stage 0-1: three
-# sources derived from one list agree by construction and prove nothing. So no
-# text and no attribute value participates here. The emitted card is rendered
-# from the catalog, the authored card is a hand-maintained template, and the two
-# sides are independent for structure, which is the only thing compared.
+# list the generator interpolated -- is the B1 trap from Stage 0-1: sources
+# derived from one list agree by construction and prove nothing. So no text and
+# no attribute value participates here. What the two sides have independently
+# is the RENDERING, which is what this compares.
+#
+# BOTH SIDES ARE RENDERED IN MEMORY, from gen_pages.render(), and neither is
+# read off disk. That is deliberate and it is the only thing that can see a
+# generator-side change: the client card is decoded out of the same render
+# output that produced the no-JS card, so deleting an element from RC_CARD, or
+# breaking the renderer, or mangling the emitted string all fail here. Had this
+# read the committed films/*/index.html instead, a generator-side change would
+# leave it green and only the freshness check above would notice.
 #
 # Classes are compared as a sorted tuple: the order of a class attribute is not
 # observable in the rendered page, and a gate that fails on it would be crying
 # wolf. Document order IS observable, and it is what the list index carries.
 #
-# THE PROBE IS A COMPLETE CARD. The emitted side is one real card, so it is
-# one rendering of the conditionals the authored side expresses with v-if. The
-# probe selector below mirrors the generator's own three guards and picks the
-# first card with all of them, so both sides show nine nodes. If the generator
-# ever grows a fourth branch this selector can miss, and it misses LOUDLY: the
-# emitted card would then be short a node the authored card still carries, and
-# the comparison fails. The failure direction of a stale probe is a false
-# alarm, never a silent pass.
+# THE PROBE IS A COMPLETE CARD. The no-JS side is one real card, so it is one
+# rendering of the conditionals the template expresses with v-if. The probe
+# selector below mirrors the generator's own three guards and picks the first
+# card with all of them, so both sides show nine nodes. If the card ever grows a
+# fourth branch this selector can miss, and it misses LOUDLY: the no-JS card
+# would then be short a node the template still carries, and the comparison
+# fails. The failure direction of a stale probe is a false alarm, never a
+# silent pass.
 #
-# TWO-SIDED BLINDNESS -- a property of the design, not a gap to be papered
-# over. This block compares two sources, so it catches divergence and CANNOT
-# catch a change applied to both at once. A class renamed in both copies is
-# invisible here, and no gate over two sources can see it: the two sides are
-# exactly what it treats as the truth. Read 6g as "these two have not drifted",
-# never as "this card is correct".
+# BLINDNESS, AND IT CHANGED SHAPE WHEN THE SECOND COPY WENT AWAY. While the card
+# was hand-maintained twice, this block caught divergence and could not catch a
+# change applied to both copies. With one source there is nothing left to
+# diverge: a change to RC_CARD moves both sides at once and is invisible here by
+# construction, and no gate over a single source can see it -- the source is
+# exactly what this block treats as the truth. What it can still catch is the
+# thing a single source creates: a renderer that resolves a binding wrongly, an
+# emitted template mangled in transit, a v-if dropped on one side only. Read 6g
+# as "the two renderings of this source agree", never as "this card is
+# correct". The two checks below cover the two ways the single source could be
+# undone silently: a second copy reappearing somewhere, and Russian text baked
+# into the client card.
 RELATED_CARD_ANCHOR = '<a class="rc"'
 RELATED_CARD_MIN_NODES = 9
+RELATED_CARD_OWNER = "tools/gen_pages.py"
+RELATED_CARD_GLOBAL = "window.FILM_RC_CARD = "
+RELATED_CARD_CYRILLIC = re.compile(r"[\u0400-\u04FF]+")
+RELATED_CARD_SOURCE_SCOPE = (
+    "js/film.js",
+    "js/film.min.js",
+    "js/app.js",
+    "js/app.min.js",
+    "js/about.js",
+    "js/common.js",
+    "js/i18n.js",
+    "js/data.js",
+    "index.html",
+    "404.html",
+    "about.html",
+    "privacy.html",
+)
 RC_TAG = re.compile(r"""<(/?)([a-zA-Z][^\s/>]*)((?:"[^"]*"|'[^']*'|[^>"'])*)(/?)>""")
 RC_VOID_TAGS = frozenset((
     "area", "base", "br", "col", "embed", "hr", "img", "input",
     "link", "meta", "param", "source", "track", "wbr",
 ))
+
+
+def check_related_card_single_source():
+    """The card must exist once. RC_CARD is the authoring site, and no other
+    hand-maintained file may carry the markup, or the two copies this stage
+    deleted come back with nothing watching them."""
+    owner = ROOT / RELATED_CARD_OWNER
+    copies = []
+    if not owner.exists():
+        errors.append(
+            f"related-card markup: {RELATED_CARD_OWNER} is missing, so the one source "
+            f"of the card cannot be read"
+        )
+    elif owner.read_text(encoding="utf-8").count(RELATED_CARD_ANCHOR) != 1:
+        errors.append(
+            f"related-card markup: {RELATED_CARD_OWNER} carries "
+            f"{owner.read_text(encoding='utf-8').count(RELATED_CARD_ANCHOR)} copies of "
+            f"{RELATED_CARD_ANCHOR!r} and the card is meant to have exactly one "
+            f"authoring site (gen_pages.RC_CARD)"
+        )
+    scope = list(RELATED_CARD_SOURCE_SCOPE)
+    scope += sorted(
+        p.relative_to(ROOT).as_posix() for p in (ROOT / "tools").glob("*.py")
+    )
+    for rel in scope:
+        if rel in (RELATED_CARD_OWNER, "tools/verify.py"):
+            continue
+        path = ROOT / rel
+        if path.exists() and RELATED_CARD_ANCHOR in path.read_text(encoding="utf-8"):
+            copies.append(rel)
+    if copies:
+        errors.append(
+            f"related-card markup: {len(copies)} hand-maintained file(s) carry "
+            f"{RELATED_CARD_ANCHOR!r} besides {RELATED_CARD_OWNER}: {copies}. The card "
+            f"has one source, gen_pages.RC_CARD; a second copy is the divergence this "
+            f"stage removed, and it comes back unobserved"
+        )
+
+
+def rc_client_card(page_html, label):
+    """The client card exactly as the rendered page carries it: the JSON string
+    literal assigned to window.FILM_RC_CARD, decoded the way the browser
+    decodes it, so what is compared is what Vue compiles."""
+    found = page_html.count(RELATED_CARD_GLOBAL)
+    if found != 1:
+        errors.append(
+            f"related-card markup: {label} appears {found} time(s) in the rendered "
+            f"page, expected 1. js/film.js renders the card from exactly one global, "
+            f"so a page that carries it twice or not at all is a page whose hydrated "
+            f"related section and no-JS card are not the same card"
+        )
+        return None
+    start = page_html.index(RELATED_CARD_GLOBAL) + len(RELATED_CARD_GLOBAL)
+    try:
+        value, _ = json.JSONDecoder().raw_decode(page_html, start)
+    except ValueError as exc:
+        errors.append(
+            f"related-card markup: {label} is not decodable as a JSON string ({exc}), "
+            f"so the client card could not be read out of the page that ships it"
+        )
+        return None
+    if not isinstance(value, str):
+        errors.append(
+            f"related-card markup: {label} decoded to {type(value).__name__} rather "
+            f"than a string, so this run compared something other than a card"
+        )
+        return None
+    return value
 
 
 def rc_card_fragments(src, label):
@@ -1139,6 +1239,26 @@ def rc_first_divergence(left, right):
     return None
 
 
+def check_related_card_classes(nodes):
+    """Every class the card puts on an element, checked against the stylesheet.
+
+    This is the witness that replaced the second copy. While the card was
+    hand-maintained twice, a class renamed in one copy was caught by the
+    comparison; renamed in the source it now moves both renderings at once and
+    that comparison is blind to it by construction. css/style.css is the one
+    file in the project that did not come out of RC_CARD, so it can still say
+    whether the card and its styling still meet."""
+    stylesheet = ROOT / "css" / "style.css"
+    if not stylesheet.exists():
+        errors.append("related-card markup: css/style.css is missing, so the card's classes cannot be checked")
+        return []
+    css = stylesheet.read_text(encoding="utf-8")
+    used = set()
+    for _tag, classes, _parent in nodes:
+        used.update(classes)
+    return sorted(name for name in used if ("." + name) not in css)
+
+
 def check_related_card_markup():
     probe = None
     for item in catalog:
@@ -1166,18 +1286,26 @@ def check_related_card_markup():
     item, rel = probe
     page_slug = item_slug(item)
 
-    emitted_label = f"gen_pages.render() card, emitted into /films/{page_slug}/"
-    authored_label = "js/film.js card, the authored Vue template"
-    emitted_frags = rc_card_fragments(gen_pages.render(item, rel), emitted_label)
-    film_js = ROOT / "js" / "film.js"
-    if not film_js.exists():
-        errors.append("related-card markup: js/film.js is missing, so the authored card cannot be read")
-        return
-    authored_frags = rc_card_fragments(film_js.read_text(encoding="utf-8"), authored_label)
+    emitted_label = f"gen_pages.render() no-JS card in /films/{page_slug}/"
+    client_label = f"client card {RELATED_CARD_GLOBAL.strip()} in /films/{page_slug}/"
+    rendered = gen_pages.render(item, rel)
+    emitted_frags = rc_card_fragments(rendered, emitted_label)
+    client_card = rc_client_card(rendered, client_label)
+    client_frags = rc_card_fragments(client_card or "", client_label)
+    if client_card is not None:
+        cyrillic = sorted(set(RELATED_CARD_CYRILLIC.findall(client_card)))
+        if cyrillic:
+            errors.append(
+                f"related-card markup: the client card carries Cyrillic text "
+                f"{cyrillic} with no binding around it. The client renders in two "
+                f"languages, so any value it displays has to come from a binding; "
+                f"text baked into the template is Russian whatever lang says, and only "
+                f"the language switch on a film page would show it"
+            )
 
     trees = {}
     for label, frags, want in ((emitted_label, emitted_frags, len(rel)),
-                               (authored_label, authored_frags, 1)):
+                               (client_label, client_frags, 1)):
         if len(frags) != want:
             errors.append(
                 f"related-card markup: {label} extracted {len(frags)} card(s) from "
@@ -1196,27 +1324,44 @@ def check_related_card_markup():
         return
 
     emitted = trees[emitted_label]
-    authored = trees[authored_label]
-    counts = f"{len(emitted)} emitted node(s) vs {len(authored)} authored node(s)"
-    diff = rc_first_divergence(emitted, authored)
+    client = trees[client_label]
+    counts = f"{len(emitted)} no-JS node(s) vs {len(client)} client node(s)"
+    diff = rc_first_divergence(emitted, client)
     if diff:
         i, a, b = diff
         errors.append(
-            f"related-card markup: the two .rc cards diverge at node {i} of the "
-            f"depth-first tree, {counts}. {emitted_label}[{i}] = {a}; "
-            f"{authored_label}[{i}] = {b}. (tag, classes, parent-index) -- the parent "
+            f"related-card markup: the two renderings of the one source diverge at "
+            f"node {i} of the depth-first tree, {counts}. {emitted_label}[{i}] = {a}; "
+            f"{client_label}[{i}] = {b}. (tag, classes, parent-index) -- the parent "
             f"index is what makes a re-nesting visible: identical nodes with a "
-            f"different parent are a different tree. Fix one side or the other, not "
-            f"this block"
+            f"different parent are a different tree. Both sides come from "
+            f"gen_pages.RC_CARD, so the fix is in the source or in the renderer that "
+            f"resolves it, not in this block"
         )
         return
-    if min(len(emitted), len(authored)) < RELATED_CARD_MIN_NODES:
+    if min(len(emitted), len(client)) < RELATED_CARD_MIN_NODES:
         errors.append(
             f"related-card markup: both sides extracted {len(emitted)} node(s) and the "
             f"trees are equal, but a complete card is {RELATED_CARD_MIN_NODES} nodes. "
             f"Equal-and-tiny is the silent collapse this guard exists for: a broken "
             f"extractor agrees with itself. If the card legitimately lost nodes, change "
-            f"it in both copies on purpose and raise RELATED_CARD_MIN_NODES with it"
+            f"it in RC_CARD on purpose and raise RELATED_CARD_MIN_NODES with it"
+        )
+        return
+    unstyled = check_related_card_classes(client)
+    if unstyled:
+        print(
+            f"Related-card markup parity: WARN -- {counts}, the trees agree, but "
+            f"{len(unstyled)} class(es) the card uses have no rule in css/style.css: "
+            f"{unstyled}"
+        )
+        errors.append(
+            f"related-card markup: the card uses {unstyled}, which css/style.css never "
+            f"mentions. One source means a class renamed in RC_CARD moves both "
+            f"renderings at once and is invisible to the comparison above, so the "
+            f"stylesheet is the only independent witness left that the card and its "
+            f"styling still meet. A class that is meant to be unstyled does not belong "
+            f"on this card"
         )
         return
     print(
@@ -1224,14 +1369,15 @@ def check_related_card_markup():
         f"sets and identical parent indices. Probe /films/{page_slug}/, related "
         f"{item_slug(rel[0])}, every branch present"
     )
-    print(f"  emitted  {emitted}")
-    print(f"  authored {authored}")
+    print(f"  no-JS   {emitted}")
+    print(f"  client  {client}")
     print(
-        "  two sources only: a change applied to both copies is invisible to this "
-        "block by construction"
+        "  one source (gen_pages.RC_CARD), two renderings compared in memory: a change "
+        "to the source itself is invisible here by construction"
     )
 
 
+check_related_card_single_source()
 check_related_card_markup()
 
 
