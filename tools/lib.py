@@ -172,3 +172,17 @@ def webp_size(path):
         h = 1 + (((b3 & 0x0F) << 10) | (b2 << 2) | ((b1 & 0xC0) >> 6))
         return w, h
     return None
+
+
+BREAKPOINT_SCALE = (575, 576, 768, 1024, 1200)
+
+CSS_MEDIA_EDGES = frozenset(
+    {BREAKPOINT_SCALE[0], BREAKPOINT_SCALE[2] - 1, BREAKPOINT_SCALE[2], BREAKPOINT_SCALE[3] - 1}
+    | {BREAKPOINT_SCALE[3], BREAKPOINT_SCALE[4]}
+)
+
+BELOW_MD_MAX = 720
+
+
+def poster_sizes():
+    return "(max-width: %dpx) 92vw, 300px" % BELOW_MD_MAX

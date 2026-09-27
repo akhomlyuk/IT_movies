@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Standalone data integrity and reference check for the IT Movies project."""
+import collections
 import json
 import re
 import shutil
@@ -9,7 +10,7 @@ import unicodedata
 from xml.etree import ElementTree
 
 import gen_pages
-from lib import ROOT, SITE_BASE, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating, webp_size
+from lib import BELOW_MD_MAX, ROOT, SITE_BASE, BREAKPOINT_SCALE, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating, poster_sizes, webp_size
 
 sys.stdout.reconfigure(encoding="utf-8")
 errors = []
@@ -615,6 +616,138 @@ def check_style_literals():
 
 
 check_style_literals()
+
+# 6e. The poster `sizes` attribute has exactly one definition, and it is policed as a
+# whole value: the media condition AND the slot sizes after it. css_diff.py reads
+# computed styles and cannot see `sizes` at all, and `sizes` decides which image the
+# browser fetches -- so a wrong breakpoint is a wrong band, and a wrong slot size is a
+# proportionally wrong download inside a correct band. Only `sizes`/`imagesizes`
+# attributes are read, and among those only the responsive ones (the ones carrying a
+# media condition): a film page also declares `sizes="96px"` for the related thumbnail and
+# `sizes="16x16"` and friends for its icons, and a `max-width` appearing anywhere else on
+# a page says nothing about which poster width the browser will ask for. Freshness is
+# 4b's job; this asks whether fresh is also right, and the answer has to hold for the slot
+# sizes and not just for the edge.
+POSTER_SIZES_ATTR = re.compile(
+    r"""\b(?:image)?sizes\s*=\s*(?P<q>["'])(?P<value>[^"']*)(?P=q)""")
+POSTER_SIZES_ASSIGNMENT = re.compile(r"^POSTER_SIZES\s*=\s*(?P<rhs>.+?)\s*$", re.MULTILINE)
+POSTER_SLOT_TAIL = "92vw, 300px"
+POSTER_SLOT_CONDITION = "(max-width: %dpx)" % BELOW_MD_MAX
+POSTER_SIZES_PER_PAGE = 2
+POSTER_SIZES_SHADOW = re.compile(r"^\s*(?:def\s+poster_sizes|poster_sizes\s*[:=])", re.MULTILINE)
+
+
+def sizes_attributes(text):
+    found = collections.Counter()
+    for match in POSTER_SIZES_ATTR.finditer(text):
+        found[match.group("value")] += 1
+    return found
+
+
+def responsive_sizes(values):
+    return {v: n for v, n in values.items() if POSTER_SLOT_CONDITION.split()[0] in v}
+
+
+def check_poster_slot_size(where, values, canonical):
+    for value in sorted(values):
+        if value == canonical:
+            continue
+        head, sep, tail = value.partition(POSTER_SLOT_CONDITION)
+        if not sep:
+            condition = head.strip()
+            errors.append(
+                f"Poster slot size: {where} declares a responsive sizes={value!r} whose "
+                f"condition is {condition!r}, not {POSTER_SLOT_CONDITION!r}. The "
+                f"breakpoint is the band the browser switches in, and the canonical value "
+                f"is {canonical!r}")
+        elif tail.strip() != POSTER_SLOT_TAIL:
+            errors.append(
+                f"Poster slot size: {where} declares sizes={value!r}, whose slot sizes "
+                f"after {POSTER_SLOT_CONDITION!r} are {tail.strip()!r}, not "
+                f"{POSTER_SLOT_TAIL!r}. A right breakpoint with a wrong slot size still "
+                f"overfetches: 100vw asks for the whole viewport width and 405px for the "
+                f"entire poster, either of which defeats every 400w variant. The "
+                f"canonical value is {canonical!r}")
+
+
+def check_poster_sizes():
+    canonical = poster_sizes()
+    if not canonical.endswith(POSTER_SLOT_TAIL) or POSTER_SLOT_CONDITION not in canonical:
+        errors.append(
+            f"Poster sizes: lib.poster_sizes() is {canonical!r}, which does not carry "
+            f"{POSTER_SLOT_CONDITION!r} followed by {POSTER_SLOT_TAIL!r}. This check "
+            f"polices the breakpoint and the slot sizes together, so if either were "
+            f"re-keyed its expectations have to be re-derived from the same source")
+    sources = [
+        ("js/film.js", sizes_attributes((ROOT / "js" / "film.js").read_text(encoding="utf-8"))),
+        ("js/film.min.js", sizes_attributes((ROOT / "js" / "film.min.js").read_text(encoding="utf-8"))),
+    ]
+    pages = sorted((ROOT / "films").glob("*/index.html"))
+    if not pages:
+        errors.append(
+            "Poster sizes: films/ holds no index.html, so this check compared no page at "
+            "all and would otherwise pass on an empty page set")
+    stale = []
+    responsive_total = 0
+    fixed_total = 0
+    for page in pages:
+        values = sizes_attributes(page.read_text(encoding="utf-8"))
+        fixed = sum(n for v, n in values.items() if "(max-width:" not in v)
+        responsive = responsive_sizes(values)
+        responsive_total += sum(responsive.values())
+        fixed_total += fixed
+        name = f"films/{page.parent.name}/index.html"
+        if canonical not in responsive:
+            stale.append((page.relative_to(ROOT).as_posix(), sorted(responsive) or ["none"]))
+        check_poster_slot_size(name, responsive, canonical)
+        if sum(responsive.values()) != POSTER_SIZES_PER_PAGE:
+            errors.append(
+                f"Poster sizes: {name} declares {sum(responsive.values())} responsive "
+                f"sizes attribute(s), expected {POSTER_SIZES_PER_PAGE} (a preload "
+                f"imagesizes and an img sizes). A page with one site deleted still passes "
+                f"every value check, so the count is checked, not printed")
+    gen_src = (ROOT / "tools" / "gen_pages.py").read_text(encoding="utf-8")
+    assignments = [m.group("rhs") for m in POSTER_SIZES_ASSIGNMENT.finditer(gen_src)]
+    derived = bool(assignments) and all(
+        rhs.split("#", 1)[0].strip() == "poster_sizes()" for rhs in assignments)
+    if not derived:
+        errors.append(
+            f"Poster sizes: tools/gen_pages.py has {len(assignments)} POSTER_SIZES "
+            f"assignment(s), {[a.strip() for a in assignments]}, and not all of them read "
+            f"poster_sizes(). Only the LAST assignment takes effect, so a check that read "
+            f"the first would certify a value that is never used and miss the one that is")
+    shadows = [m.group(0).strip() for m in POSTER_SIZES_SHADOW.finditer(gen_src)]
+    if shadows:
+        errors.append(
+            f"Poster sizes: tools/gen_pages.py binds the name poster_sizes itself -- "
+            f"{shadows} -- so POSTER_SIZES = poster_sizes() reads that local and not the "
+            f"lib import, and the structural check above passes while the value is no "
+            f"longer the single source. gen_pages.py must only import the name")
+    for where, values in sources:
+        responsive = responsive_sizes(values)
+        if canonical not in responsive:
+            errors.append(
+                f"Poster sizes: {where} carries {sorted(responsive) or ['no responsive sizes attribute']}"
+                f", lib.poster_sizes() is {canonical!r}")
+        check_poster_slot_size(where, responsive, canonical)
+    if stale:
+        sample = "; ".join(f"{p} -> {f}" for p, f in stale[:3])
+        errors.append(
+            f"Poster sizes: {len(stale)} of {len(pages)} film pages do not carry exactly "
+            f"{canonical!r} -- {sample} -- run gen_pages.py")
+    print(
+        f"Poster sizes: {canonical} -- single source lib.poster_sizes() on "
+        f"BREAKPOINT_SCALE {list(BREAKPOINT_SCALE)}; {len(pages)} film page(s), "
+        f"{responsive_total} responsive sizes attribute(s) checked "
+        f"({len(pages) * POSTER_SIZES_PER_PAGE} expected) alongside {fixed_total} "
+        f"fixed-size ones (related thumbnail, icons) deliberately ignored; "
+        f"gen_pages.POSTER_SIZES "
+        f"{'derived from lib' if derived else 'NOT derived from lib'} "
+        f"({len(assignments)} assignment(s) in source)")
+
+
+check_poster_sizes()
+
 
 # 6c. Sitemap / robots.txt / webmanifest: single source in gen_pages.py
 sitemap_xml = gen_pages.generate_sitemap(catalog)

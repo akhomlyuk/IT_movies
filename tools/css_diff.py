@@ -105,7 +105,7 @@ produced.
 ``--max-lines`` truncates the printed listing, never the counts, and when it
 does it says so in a bordered notice naming the suppressed count, the total and
 the two ways to see all of it. ``--full-diff FILE`` writes the complete
-transcript to a file. The default limit is high enough that the 30-record
+transcript to a file. The default limit is high enough that the 88-record
 light+dark run does not truncate.
 
 Everything else is captured. What is NOT captured is listed in
@@ -131,12 +131,41 @@ shift by about 1e-4 px when the scroll offset changes, so the pinned offset is
 load-bearing rather than merely tidy, and this harness reports that movement
 instead of hiding it.
 
+The probe widths matter as much as the properties. ``DEFAULT_WIDTHS`` used to be
+``375, 576, 768, 1024, 1280``, and that set was structurally blind: every one of
+those five widths falls in a viewport range whose applied rule-set is identical
+before and after css/style.css's 480/525/720/721/950 edges are re-keyed to
+575/576/768/1024/1200, so a complete and correct re-key reported ``IDENTICAL`` --
+a confident zero for a change that visibly alters four ranges. The set is now
+eleven widths on the 575/576/768/1024/1200 scale: the five controls above, which
+must stay byte-identical across such a change; four band interiors (520, 550,
+767, 990); and both sides of all three boundaries (575/576, 767/768,
+1023/1024). A width is not a sample of a band, it is the only thing this harness
+observes, so a band with no width in it is a band that cannot be seen.
+
+Two rules govern what a green exit code is allowed to mean, and both exist because
+the exit code is the only thing an automated caller reads.
+
+First, a comparison over zero records is not a pass. On a two-file ``compare`` the
+scope flags FILTER the records the two files already carry; they never re-capture.
+A ``--widths`` value absent from both files therefore compares nothing, and that run
+prints ``NOTHING WAS COMPARED`` and exits 2, not 0. An empty comparison and a real
+one are indistinguishable by exit code otherwise.
+
+Second, a comparison that skipped records is not a whole-file certification. A scope
+that excludes anything exits 2 unless ``--accept-partial-scope`` is passed, and even
+then the exit 0 names every excluded record and says it certifies the subset only.
+That flag can only downgrade a refusal into a partial pass; it never turns a
+difference into a pass, and a difference hiding in an excluded record exits 1 with or
+without it, because the excluded records are diffed rather than trusted.
+
 Usage:
     python -m http.server 8008                  # from the repo root, elsewhere
     python tools/css_diff.py capture --out _tmp/css-base.json
     python tools/css_diff.py compare _tmp/css-base.json
     python tools/css_diff.py compare _tmp/css-base-a.json _tmp/css-base-b.json
     python tools/css_diff.py capture --out _tmp/one.json --pages /about.html --widths 1280
+    python tools/css_diff.py capture --out _tmp/band.json --widths 520,550
     python tools/css_diff.py capture --out _tmp/dark.json --schemes dark
     python tools/css_diff.py capture --out _tmp/c.json --print-census
     python tools/css_diff.py capture --out _tmp/both.json --schemes light,dark
@@ -149,9 +178,15 @@ Exit codes: 0 identical, 1 differences found, 2 usage, settings or capture error
 With ``--ignore-token-deltas``, 0 additionally means "no difference outside the
 root-token channel" and the summary says so in those words. A page with no
 sentinel of its own is waited on for ``#app`` instead, so any static page in the
-repository can be captured without extra configuration. The three pages this
-plan migrates rules for -- the catalog, two film pages, and the
-long-description case -- are the built-in defaults.
+repository can be captured without extra configuration. The four pages this
+plan migrates rules for -- the catalog, two film pages, and the about page -- are
+the built-in defaults. ``/about.html`` is one of them because it is the only page
+that carries the ``@media (max-width: 480px)`` block, and a width alone cannot
+observe that block: 520 and 550 sit in 481-575, but until ``/about.html`` joined
+this list no record in the snapshot carried the selector those widths exist to
+probe. Nothing gates that pairing, so a future edit that drops the page or moves
+``.profile`` elsewhere would leave 520 and 550 silently observing a band they can
+no longer see. Re-probe a band by moving the page, not just the widths.
 """
 
 import argparse
@@ -173,8 +208,9 @@ DEFAULT_PAGES = [
     "/index.html",
     "/films/tt2085059-black-mirror/index.html",
     "/films/tt2543312-halt-and-catch-fire/index.html",
+    "/about.html",
 ]
-DEFAULT_WIDTHS = [375, 576, 768, 1024, 1280]
+DEFAULT_WIDTHS = [375, 520, 550, 575, 576, 767, 768, 990, 1023, 1024, 1280]
 DEFAULT_HEIGHT = 900
 DEFAULT_SCROLL = 0
 DEFAULT_SCHEMES = ["light"]
@@ -186,6 +222,7 @@ DEFAULT_SENTINELS = {
     CATALOG: ".search",
     "/films/tt2085059-black-mirror/index.html": ".back-catalog a",
     "/films/tt2543312-halt-and-catch-fire/index.html": ".back-catalog a",
+    "/about.html": ("#app:not([v-cloak])", "main#main > article.about-article"),
 }
 
 SNAPSHOT_ROOT = ":root"
@@ -696,6 +733,9 @@ def capture(base, pages, widths, height, scroll, schemes, pseudo, settle_ms,
         browser = pw.chromium.launch()
         records = []
         all_pruned = {}
+        widths = list(dict.fromkeys(widths))
+        pages = list(dict.fromkeys(pages))
+        schemes = list(dict.fromkeys(schemes))
         try:
             for scheme in schemes:
                 for page_path in pages:
@@ -713,8 +753,8 @@ def capture(base, pages, widths, height, scroll, schemes, pseudo, settle_ms,
                             response = page.goto(base + page_path, wait_until="load")
                             if response is not None and response.status != 200:
                                 raise RuntimeError("%s returned HTTP %s" % (page_path, response.status))
-                            page.wait_for_selector(sentinel or APP_ROOT,
-                                                   state="attached", timeout=20000)
+                            for ready in (sentinel or (APP_ROOT,)):
+                                page.wait_for_selector(ready, state="attached", timeout=20000)
                             page.wait_for_timeout(400)
                             initial = page.evaluate(BUILD_INITIAL, {"shorthands": SHORTHANDS})
                             cfg = {
@@ -866,6 +906,10 @@ def focus_diffs(b, l, out):
                 for which in sorted(set(lp) | set(rp)):
                     scalar_diffs("focus[%s].%s.%s::%s" % (phase, key, state, which),
                                  lp.get(which) or {}, rp.get(which) or {}, out)
+
+
+COUNTERS = ("changedRecords", "changedElements", "changedValues",
+            "tokenValues", "tokenRecords", "tokenElements", "tokenHeaders")
 
 
 def diff_snapshots(base, live, split_tokens=False):
@@ -1174,9 +1218,10 @@ def report_scope(args, mode, scoped, dropped):
         for key in dropped:
             w("      EXCLUDED  %s\n" % key)
         if dropped:
-            w("    check_settings passed, so both snapshots carry the same record set and the\n")
-            w("    same keys were dropped from each: a difference on an excluded record cannot\n")
-            w("    be hidden by this scope. Re-run without the flags to compare every record.\n")
+            w("    both snapshots carry the same record set, and the same keys were dropped\n")
+            w("    from each, so an excluded record is diffed against its own counterpart and\n")
+            w("    any difference in one is reported by name rather than hidden. Re-run without\n")
+            w("    the flags to compare every record.\n")
     else:
         w("  scope: no record excluded; all %d record(s) of both snapshots were compared%s\n"
           % (len(scoped["records"]),
@@ -1228,6 +1273,44 @@ def write_full_diff(path, base, live, token_blocks, lines, result, args, title, 
         print("css_diff: could not write --full-diff %s: %s" % (path, exc), file=sys.stderr)
 
 
+def dropped_diffs(base, live, dropped, split_tokens):
+    """Diff only the records a scope excluded, so a hidden difference can be found.
+
+    ``apply_scope`` drops the same keys from both sides, so a scope cannot by itself
+    surface a difference that lives in an excluded record. This diffs each excluded
+    record on its own and names the ones that differ, which is what lets a scoped run
+    refuse to certify rather than report a clean subset as if it were the whole file.
+    """
+    bmap = {record_key(r): r for r in base["records"]}
+    lmap = {record_key(r): r for r in live["records"]}
+    lines = []
+    token_blocks = []
+    differing = []
+    counts = {name: 0 for name in COUNTERS}
+    for key in dropped:
+        if key not in bmap or key not in lmap:
+            continue
+        pair = diff_snapshots({"records": [bmap[key]]}, {"records": [lmap[key]]},
+                              split_tokens=split_tokens)
+        if not pair["lines"] and not pair["tokenBlocks"]:
+            continue
+        differing.append(key)
+        lines.extend(pair["lines"])
+        token_blocks.extend(pair["tokenBlocks"])
+        for name in COUNTERS:
+            counts[name] += pair[name]
+    lines.sort()
+    token_blocks.sort()
+    out = {"lines": lines, "tokenBlocks": token_blocks, "differing": differing}
+    out.update(counts)
+    return out
+
+
+def duplicate_record_keys(snapshot):
+    seen = collections.Counter(record_key(r) for r in snapshot["records"])
+    return sorted(key for key, count in seen.items() if count > 1)
+
+
 def run_compare(args, paths):
     base = load(paths[0])
     mode = "two-files" if len(paths) == 2 else "live"
@@ -1256,6 +1339,28 @@ def run_compare(args, paths):
               "resulting file.", file=sys.stderr)
         return 2
 
+    for label, snapshot in (("baseline", base), ("live", live)):
+        duplicates = duplicate_record_keys(snapshot)
+        if duplicates:
+            print("css_diff: the %s snapshot carries %d duplicate record key(s): %s"
+                  % (label, len(duplicates), ", ".join(duplicates[:5]))
+                  + (" …" if len(duplicates) > 5 else ""), file=sys.stderr)
+            print("css_diff: REFUSING. A record key is page + width + scheme, and the diff "
+                  "keys both snapshots by it, so two records sharing a key would silently "
+                  "overwrite each other and a real difference in the first would never be "
+                  "read. capture() de-duplicates pages, widths and schemes, so a snapshot it "
+                  "wrote cannot contain this; a snapshot built by hand, or by an older "
+                  "version, can. Re-capture it.", file=sys.stderr)
+            return 2
+
+    if mode != "two-files" and args.accept_partial_scope:
+        print("css_diff: --accept-partial-scope is refused in live mode. A live compare "
+              "re-captures at the baseline's own settings, so no record is ever excluded "
+              "and there is no partial scope to accept; passing the flag would be a no-op "
+              "that looks like a decision. Pass two snapshot files if you need a scope.",
+              file=sys.stderr)
+        return 2
+
     problems = check_settings(base, live)
     if problems:
         print_header(title, base, live, verbose=False)
@@ -1277,9 +1382,60 @@ def run_compare(args, paths):
           % (result["tokenValues"], result["tokenRecords"], result["tokenElements"]),
           file=sys.stderr)
 
+    if not scoped_base["records"]:
+        print("css_diff: NOTHING WAS COMPARED -- 0 record(s) survived the scope, so this run "
+              "observed no computed style and no geometry at all.")
+        print("css_diff: *** EXIT 2, NOT 0. An empty comparison is not a pass: the only way to "
+              "distinguish it from a real one is the exit code, and a caller that checks the "
+              "exit code cannot. This happens when a scope flag names a page, width, height, "
+              "scroll offset or scheme that neither snapshot carries -- on a two-file compare "
+              "the scope flags FILTER the records already present, they never re-capture.")
+        print("css_diff: *** Re-capture at the widths you mean, or drop the flag. The %d "
+              "excluded record key(s) are listed above." % len(dropped))
+        return 2
+
+    if dropped:
+        hidden = dropped_diffs(base, live, dropped, args.ignore_token_deltas)
+        if hidden["lines"] or hidden["tokenBlocks"]:
+            print("css_diff: *** A DIFFERENCE IS HIDDEN INSIDE THE SCOPE. %d of the %d "
+                  "record(s) you excluded differ, so this run reports them instead of "
+                  "certifying the subset you asked for."
+                  % (len(hidden["differing"]), len(dropped)))
+            for key in hidden["differing"]:
+                print("css_diff:     DIFFERS, AND WAS EXCLUDED BY YOUR SCOPE: %s" % key)
+            print("css_diff: *** --accept-partial-scope DOES NOT HELP HERE, and is not meant "
+                  "to: it can only downgrade a refusal into a partial pass, and it can never "
+                  "turn a difference into a pass.")
+            print("css_diff: *** Re-run without the scope flags to certify the whole file, or "
+                  "fix the excluded record(s) and re-run.")
+            for line in hidden["lines"]:
+                lines.append(line)
+            for block in hidden["tokenBlocks"]:
+                token_blocks.append(block)
+            for name in COUNTERS:
+                result[name] += hidden[name]
+        elif not args.accept_partial_scope:
+            print("css_diff: SCOPED COMPARISON, NOT A CERTIFICATION -- %d of %d record(s) "
+                  "were compared and %d were excluded. The excluded record(s) are "
+                  "individually clean, but this run did not check them together with the "
+                  "rest and will not claim it did."
+                  % (len(scoped_base["records"]), len(base["records"]), len(dropped)))
+            print("css_diff: *** EXIT 2, NOT 0, unless you pass --accept-partial-scope. A "
+                  "scope that silently shrinks a gate is how a subset gets read as the "
+                  "whole file. The %d excluded record key(s) are listed above." % len(dropped))
+            return 2
+
     if not lines and not token_blocks:
         print("css_diff: IDENTICAL -- %d record(s), no computed style and no geometry differs"
               % len(scoped_base["records"]))
+        if dropped:
+            print("css_diff: *** THIS IS A SCOPED CERTIFICATION, NOT A WHOLE-FILE ONE. %d of "
+                  "%d record(s) were compared; %d were excluded by the scope and are named "
+                  "above. --accept-partial-scope was passed, so this exit 0 covers the "
+                  "compared subset ONLY and says nothing about the excluded records."
+                  % (len(scoped_base["records"]), len(base["records"]), len(dropped)))
+            for key in dropped:
+                print("css_diff:     EXCLUDED, NOT CERTIFIED BY THIS EXIT 0: %s" % key)
         if args.ignore_token_deltas:
             print("css_diff: EXIT 0 IS UNQUALIFIED: --ignore-token-deltas was passed but no "
                   "token delta was found, so nothing was set aside")
@@ -1345,12 +1501,14 @@ def parse_list(text, cast=str):
 
 
 def resolve_sentinels(args):
-    sentinels = dict(DEFAULT_SENTINELS)
+    sentinels = {path: (value,) if isinstance(value, str) else tuple(value)
+                 for path, value in DEFAULT_SENTINELS.items()}
     for pair in parse_list(args.sentinel):
         if "=" not in pair:
             raise ValueError("--sentinel wants path=selector pairs, got %r" % pair)
         path, selector = pair.split("=", 1)
-        sentinels[path.strip()] = selector.strip() or None
+        selector = selector.strip()
+        sentinels[path.strip()] = (selector,) if selector else (APP_ROOT,)
     return sentinels
 
 
@@ -1400,7 +1558,14 @@ def main():
                     help="compare: how many diff lines to print before the truncation "
                          "notice. The notice always states how many were suppressed and "
                          "how to see them all; the default is high enough that the "
-                         "30-record light+dark run does not truncate")
+                         "88-record light+dark run does not truncate")
+    ap.add_argument("--accept-partial-scope", action="store_true",
+                    help="compare: allow a scoped run to certify only the records the "
+                         "scope kept, instead of refusing. The exit 0 then names every "
+                         "excluded record and states that it certifies the subset only. "
+                         "This flag can only downgrade a refusal into a partial pass: it "
+                         "never turns a difference into a pass, and a difference hiding "
+                         "in an excluded record still exits 1 with or without it")
     ap.add_argument("--print-census", action="store_true")
     ap.add_argument("--census-top", type=int, default=25)
     ap.add_argument("--quiet", action="store_true")

@@ -16,7 +16,7 @@ import sys
 
 from datetime import datetime
 
-from lib import ROOT, SITE_BASE, load_catalog, make_slug, item_slug, ru_genres, has_rating, fmt_rating, webp_size
+from lib import ROOT, SITE_BASE, load_catalog, make_slug, item_slug, ru_genres, has_rating, fmt_rating, webp_size, poster_sizes
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -182,7 +182,7 @@ def _seo_desc(text):
     return text
 
 
-POSTER_SIZES = "(max-width: 720px) 92vw, 300px"
+POSTER_SIZES = poster_sizes()
 RELATED_POSTER_SIZES = "96px"
 FILMS_PREFIX = "../../"
 
