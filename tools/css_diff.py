@@ -82,6 +82,32 @@ no explicit flags it adopts the baseline's own settings, so the ordinary
 NOT in that list, because it changes no record set and each record carries its
 own ``scrollY``.
 
+The scope flags are honoured on both sides of a two-file ``compare``: the
+records they name are compared and every excluded record key is printed, and
+because ``check_settings`` has already established that both snapshots carry
+the same record set, the same keys are dropped from each, so scoping cannot
+hide a difference. The capture-only flags -- ``--sentinel``, ``--settle``,
+``--uniform-min``, ``--no-pseudo``, ``--no-focus``, ``--no-focus-conditional``
+-- are refused outright in that mode with exit 2 rather than ignored, because
+they describe a capture that already happened and cannot be applied to a file.
+
+Every snapshot records every custom property declared on ``:root``, in
+``record.rootTokens`` and again on the synthetic ``:root`` element. Declaring,
+renaming or re-valuing a token therefore *always* produces ``rootToken.*`` and
+``:root`` ``token.*`` lines, so a task whose whole purpose is to add tokens
+could never reach exit 0. ``--ignore-token-deltas`` splits that channel out at
+the point the lines are produced, prints and counts it in full, states in the
+summary that the exit code is qualified and by how much, and returns 0 only
+when nothing outside it differs. Without the flag every one of those lines is a
+difference and the transcript is byte-identical to what earlier versions
+produced.
+
+``--max-lines`` truncates the printed listing, never the counts, and when it
+does it says so in a bordered notice naming the suppressed count, the total and
+the two ways to see all of it. ``--full-diff FILE`` writes the complete
+transcript to a file. The default limit is high enough that the 30-record
+light+dark run does not truncate.
+
 Everything else is captured. What is NOT captured is listed in
 ``meta.notProbed`` and printed by ``compare``, because a name you do not know
 about is worse than a name you do.
@@ -115,11 +141,16 @@ Usage:
     python tools/css_diff.py capture --out _tmp/c.json --print-census
     python tools/css_diff.py capture --out _tmp/both.json --schemes light,dark
     python tools/css_diff.py capture --out _tmp/p.json --sentinel /index.html=.featured-card
+    python tools/css_diff.py compare _tmp/base.json _tmp/after.json --ignore-token-deltas
+    python tools/css_diff.py compare _tmp/base.json _tmp/after.json --pages /index.html
+    python tools/css_diff.py compare _tmp/base.json _tmp/after.json --full-diff _tmp/d.txt
 
 Exit codes: 0 identical, 1 differences found, 2 usage, settings or capture error.
-A page with no sentinel of its own is waited on for ``#app`` instead, so any
-static page in the repository can be captured without extra configuration. The
-three pages this plan migrates rules for -- the catalog, two film pages, and the
+With ``--ignore-token-deltas``, 0 additionally means "no difference outside the
+root-token channel" and the summary says so in those words. A page with no
+sentinel of its own is waited on for ``#app`` instead, so any static page in the
+repository can be captured without extra configuration. The three pages this
+plan migrates rules for -- the catalog, two film pages, and the
 long-description case -- are the built-in defaults.
 """
 
@@ -185,6 +216,13 @@ SHORTHANDS = sorted(set(SHORTHANDS))
 
 COMPARED_SETTINGS = ("pages", "widths", "height", "schemes", "pseudo", "focus",
                      "focusConditional", "focusTargets")
+
+SCOPE_FLAGS = ("pages", "widths", "height", "scroll", "schemes")
+
+CAPTURE_ONLY_FLAGS = ("sentinel", "settle", "uniform_min", "no_pseudo", "no_focus",
+                      "no_focus_conditional")
+
+CAPTURE_FLAG_DEFAULTS = {"sentinel": "", "settle": DEFAULT_SETTLE_MS, "uniform_min": 1}
 
 FOCUS_TARGETS = [
     {"key": "fav-filter", "selector": ".fav-filter", "state": "default"},
@@ -761,9 +799,18 @@ def scalar_diffs(label, left, right, out):
 
 
 def element_diffs(left, right, out):
+    """Diff one element, returning where its token lines belong and what they are.
+
+    The insertion index is returned rather than the lines being written straight
+    into ``out``, so the caller can either splice them back at exactly the
+    position they would have occupied (the default, byte-identical to earlier
+    versions of this tool) or divert them into a separate category.
+    """
     scalar_diffs("rect", left.get("rect") or {}, right.get("rect") or {}, out)
     scalar_diffs("prop", left.get("props") or {}, right.get("props") or {}, out)
-    scalar_diffs("token", left.get("tokens") or {}, right.get("tokens") or {}, out)
+    at = len(out)
+    token_lines = []
+    scalar_diffs("token", left.get("tokens") or {}, right.get("tokens") or {}, token_lines)
     lp = left.get("pseudo") or {}
     rp = right.get("pseudo") or {}
     for which in sorted(set(lp) | set(rp)):
@@ -778,6 +825,7 @@ def element_diffs(left, right, out):
             out.append("    %s %r -> %r" % (field, left.get(field), right.get(field)))
     if (left.get("classes") or []) != (right.get("classes") or []):
         out.append("    classes %r -> %r" % (left.get("classes"), right.get("classes")))
+    return at, token_lines
 
 
 def focus_diffs(b, l, out):
@@ -820,11 +868,27 @@ def focus_diffs(b, l, out):
                                  lp.get(which) or {}, rp.get(which) or {}, out)
 
 
-def diff_snapshots(base, live):
+def diff_snapshots(base, live, split_tokens=False):
+    """Diff two snapshots.
+
+    With ``split_tokens`` false the returned line list is exactly what earlier
+    versions of this tool produced, byte for byte, and the exit code turns on
+    every line. With it true the root-token channel -- ``rootToken.*`` on a
+    record, and the ``token.*`` lines of the synthetic ``:root`` element, which
+    carries the same dict -- is routed into ``tokenBlocks`` and counted, while
+    ``lines`` keeps only real computed-style and geometry differences. The split
+    is made where the lines are produced, not by matching the rendered text, so
+    a ``token.*`` line on any other element path can never be mistaken for one.
+    """
     lines = []
+    token_blocks = []
     changed_records = 0
     changed_elements = 0
     changed_values = 0
+    token_records = 0
+    token_elements = 0
+    token_values = 0
+    token_headers = 0
 
     bkeys = {record_key(r): r for r in base["records"]}
     lkeys = {record_key(r): r for r in live["records"]}
@@ -862,7 +926,20 @@ def diff_snapshots(base, live):
                 local.append("    PRUNE ASYMMETRY %s is uniform in the live record (%r) "
                              "but the baseline kept it per element"
                              % (name, lp[name]))
-        scalar_diffs("rootToken", b.get("rootTokens") or {}, l.get("rootTokens") or {}, local)
+        root_token_lines = []
+        scalar_diffs("rootToken", b.get("rootTokens") or {}, l.get("rootTokens") or {},
+                     root_token_lines)
+        if root_token_lines:
+            token_records += 1
+            token_values += len(root_token_lines)
+        if split_tokens:
+            if root_token_lines:
+                token_headers += 1
+                token_blocks.append("%s  TOKEN DELTA, :root custom properties (%d line(s))"
+                                    % (key, len(root_token_lines)))
+                token_blocks.extend(root_token_lines)
+        else:
+            local.extend(root_token_lines)
         for field in ("focusRing", "focusRingConditional"):
             focus_diffs(b.get(field), l.get(field), local)
 
@@ -874,7 +951,18 @@ def diff_snapshots(base, live):
             local.append("  + element added: %s" % path)
         for path in sorted(set(bmap) & set(lmap)):
             sub = []
-            element_diffs(bmap[path], lmap[path], sub)
+            at, token_lines = element_diffs(bmap[path], lmap[path], sub)
+            if token_lines:
+                token_values += len(token_lines)
+                token_elements += 1
+            if split_tokens:
+                if token_lines:
+                    token_headers += 1
+                    token_blocks.append("%s  TOKEN DELTA on element %s (%d line(s))"
+                                        % (key, path, len(token_lines)))
+                    token_blocks.extend(token_lines)
+            else:
+                sub[at:at] = token_lines
             if not sub:
                 continue
             changed_elements += 1
@@ -886,7 +974,21 @@ def diff_snapshots(base, live):
             changed_values += sum(1 for ln in local if ln.startswith("    "))
             lines.append("%s  %d change(s) outside per-element props" % (key, len(local)))
             lines.extend(local)
-    return lines, changed_records, changed_elements, changed_values
+
+    if not split_tokens:
+        token_blocks = []
+        token_headers = 0
+    return {
+        "lines": lines,
+        "tokenBlocks": token_blocks,
+        "tokenValues": token_values,
+        "tokenRecords": token_records,
+        "tokenElements": token_elements,
+        "tokenHeaders": token_headers,
+        "changedRecords": changed_records,
+        "changedElements": changed_elements,
+        "changedValues": changed_values,
+    }
 
 
 def check_settings(base, live):
@@ -1016,8 +1118,119 @@ def census(snapshot, top):
         print("    %-34s %d" % (name, count))
 
 
+def apply_scope(base, live, args, mode):
+    """Restrict both snapshots to the records the scope flags name.
+
+    With one baseline the flags already reached ``capture()`` and there is
+    nothing to drop. With two files the flags are applied here, to both sides,
+    and the excluded record keys are reported. That is safe precisely because
+    ``check_settings`` has already established that the two snapshots carry the
+    same ``pages``, ``widths``, ``height``, ``scroll`` and ``schemes``: the
+    record keys are therefore identical on both sides, the same keys are dropped
+    from each, and no one-sided difference can be hidden by the scope.
+    """
+    explicit = args.explicit_scope
+    if mode != "two-files" or not explicit:
+        return base, live, []
+    pages = set(args.pages) if explicit.get("pages") else None
+    widths = set(args.widths) if explicit.get("widths") else None
+    schemes = set(args.schemes) if explicit.get("schemes") else None
+    height = args.height if explicit.get("height") else None
+    scroll = args.scroll if explicit.get("scroll") else None
+
+    def keep(rec):
+        if pages is not None and rec["page"] not in pages:
+            return False
+        if widths is not None and rec["width"] not in widths:
+            return False
+        if schemes is not None and rec["scheme"] not in schemes:
+            return False
+        if height is not None and rec.get("height") != height:
+            return False
+        if scroll is not None and rec.get("scrollY") != scroll:
+            return False
+        return True
+
+    kept = [r for r in base["records"] if keep(r)]
+    kept_keys = {id(r) for r in kept}
+    dropped = [record_key(r) for r in base["records"] if not keep(r)]
+    live_kept = [r for r in live["records"] if keep(r)]
+    if len(kept) != len(live_kept):
+        raise RuntimeError("scope kept %d baseline record(s) but %d live record(s); the two "
+                           "snapshots are not comparable under this scope" % (len(kept), len(live_kept)))
+    del kept_keys
+    return (dict(base, records=kept), dict(live, records=live_kept), dropped)
+
+
+def report_scope(args, mode, scoped, dropped):
+    w = sys.stderr.write
+    explicit = [name for name in SCOPE_FLAGS if args.explicit_scope.get(name)]
+    if mode == "two-files" and explicit:
+        w("  SCOPE APPLIED to BOTH snapshots: %s\n" % ", ".join("--" + n for n in explicit))
+        w("    %d record(s) COMPARED:\n" % len(scoped["records"]))
+        for rec in scoped["records"]:
+            w("      compared  %s\n" % record_key(rec))
+        w("    %d record(s) EXCLUDED from both sides:\n" % len(dropped))
+        for key in dropped:
+            w("      EXCLUDED  %s\n" % key)
+        if dropped:
+            w("    check_settings passed, so both snapshots carry the same record set and the\n")
+            w("    same keys were dropped from each: a difference on an excluded record cannot\n")
+            w("    be hidden by this scope. Re-run without the flags to compare every record.\n")
+    else:
+        w("  scope: no record excluded; all %d record(s) of both snapshots were compared%s\n"
+          % (len(scoped["records"]),
+             " (the capture already honoured the flags)" if mode == "live" else ""))
+
+
+def reject_capture_only_flags(args, mode):
+    if mode != "two-files":
+        return []
+    given = []
+    for flag, attr in (("--sentinel", "sentinel"), ("--settle", "settle"),
+                       ("--uniform-min", "uniform_min"), ("--no-pseudo", "no_pseudo"),
+                       ("--no-focus", "no_focus"),
+                       ("--no-focus-conditional", "no_focus_conditional")):
+        if args.explicit_capture.get(attr):
+            given.append(flag)
+    return given
+
+
+def write_full_diff(path, base, live, token_blocks, lines, result, args, title, mode, scoped):
+    out = []
+    bs = base["meta"]["settings"]
+    out.append("css_diff: %s" % title)
+    out.append("  pages   %s" % ", ".join(bs["pages"]))
+    out.append("  widths  %s at %dpx, scroll offset %d, scheme(s) %s"
+               % (", ".join(str(x) for x in bs["widths"]), bs["height"], bs["scroll"],
+                  ", ".join(bs["schemes"])))
+    out.append("  records %d baseline, %d live, mode %s"
+               % (len(base["records"]), len(live["records"]), mode))
+    out.append("  compared %d record(s)" % len(scoped["records"]))
+    out.append("  --ignore-token-deltas %s" % bool(args.ignore_token_deltas))
+    out.append("  real differences: %d record(s), %d element(s), %d value(s) outside "
+               "per-element props"
+               % (result["changedRecords"], result["changedElements"], result["changedValues"]))
+    out.append("  root-token lines: %d on %d record(s), %d element(s)"
+               % (result["tokenValues"], result["tokenRecords"], result["tokenElements"]))
+    out.append("")
+    if token_blocks:
+        out.append("=== root-token channel: %d line(s) ===" % result["tokenValues"])
+        out.extend(token_blocks)
+        out.append("")
+    out.append("=== computed style and geometry: %d line(s) ===" % len(lines))
+    out.extend(lines)
+    target = Path(path)
+    try:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("\n".join(out) + "\n", encoding="utf-8")
+    except OSError as exc:
+        print("css_diff: could not write --full-diff %s: %s" % (path, exc), file=sys.stderr)
+
+
 def run_compare(args, paths):
     base = load(paths[0])
+    mode = "two-files" if len(paths) == 2 else "live"
     if len(paths) == 2:
         live = load(paths[1])
         title = "comparing two snapshot files"
@@ -1033,32 +1246,96 @@ def run_compare(args, paths):
             focus=not args.no_focus, focus_conditional=not args.no_focus_conditional)
         title = "comparing live capture against %s" % paths[0]
 
+    refused = reject_capture_only_flags(args, mode)
+    if refused:
+        print("css_diff: these flags only mean something while capturing, and this run "
+              "compares two snapshot files that already exist: %s" % ", ".join(refused),
+              file=sys.stderr)
+        print("css_diff: REFUSING, because honouring them is impossible and ignoring them "
+              "silently would be worse. Drop the flag, or capture with it and compare the "
+              "resulting file.", file=sys.stderr)
+        return 2
+
     problems = check_settings(base, live)
-    if not problems:
-        _, changed_records, changed_elements, _ = diff_snapshots(base, live)
-    else:
-        changed_records = -1
-    print_header(title, base, live, verbose=bool(changed_records))
     if problems:
+        print_header(title, base, live, verbose=False)
+        report_scope(args, mode, base, [])
         print("css_diff: NOT COMPARABLE, the two snapshots were taken with different settings")
         for line in problems:
             print(line, file=sys.stderr)
         return 2
 
-    lines, changed_records, changed_elements, changed_values = diff_snapshots(base, live)
-    if not lines:
+    scoped_base, scoped_live, dropped = apply_scope(base, live, args, mode)
+    result = diff_snapshots(scoped_base, scoped_live,
+                            split_tokens=args.ignore_token_deltas)
+    lines = result["lines"]
+    token_blocks = result["tokenBlocks"]
+
+    print_header(title, base, live, verbose=bool(result["changedRecords"] or token_blocks))
+    report_scope(args, mode, scoped_base, dropped)
+    print("css_diff: root-token channel: %d line(s) on %d record(s), %d element(s)"
+          % (result["tokenValues"], result["tokenRecords"], result["tokenElements"]),
+          file=sys.stderr)
+
+    if not lines and not token_blocks:
         print("css_diff: IDENTICAL -- %d record(s), no computed style and no geometry differs"
-              % len(base["records"]))
+              % len(scoped_base["records"]))
+        if args.ignore_token_deltas:
+            print("css_diff: EXIT 0 IS UNQUALIFIED: --ignore-token-deltas was passed but no "
+                  "token delta was found, so nothing was set aside")
         return 0
-    print("css_diff: DIFFERENT -- %d record(s) changed, %d element(s) changed, "
-          "%d value(s) changed outside per-element props"
-          % (changed_records, changed_elements, changed_values))
-    shown = lines[:args.max_lines]
-    for line in shown:
+
+    if not lines:
+        print("css_diff: NO COMPUTED-STYLE OR GEOMETRY DIFFERENCE -- %d record(s)"
+              % len(scoped_base["records"]))
+        print("css_diff: *** EXIT 0 IS QUALIFIED. %d root-token line(s) on %d record(s) were"
+              % (result["tokenValues"], result["tokenRecords"]))
+        print("css_diff: *** SET ASIDE by --ignore-token-deltas. WITHOUT THAT FLAG THIS RUN")
+        print("css_diff: *** EXITS 1. The set-aside lines are printed in full below.")
+    else:
+        print("css_diff: DIFFERENT -- %d record(s) changed, %d element(s) changed, "
+              "%d value(s) changed outside per-element props"
+              % (result["changedRecords"], result["changedElements"], result["changedValues"]))
+        if args.ignore_token_deltas:
+            print("css_diff: --ignore-token-deltas excuses only the %d root-token line(s); "
+                  "the %d line(s) above and below are real differences and are counted."
+                  % (result["tokenValues"], len(lines)))
+
+    body = list(lines) + list(token_blocks)
+    printed = body[:args.max_lines]
+    for line in printed:
         print(line)
-    if len(lines) > len(shown):
-        print("... %d more line(s) suppressed by --max-lines %d" % (len(lines) - len(shown), args.max_lines))
-    return 1
+    if len(body) > len(printed):
+        print("")
+        print("!" * 78)
+        print("css_diff: OUTPUT TRUNCATED. THIS TRANSCRIPT IS INCOMPLETE AND MUST NOT BE READ")
+        print("css_diff: AS IF IT WERE COMPLETE -- THE MISSING LINES MAY CONTAIN REAL")
+        print("css_diff: COMPUTED-STYLE OR GEOMETRY DIFFERENCES.")
+        print("css_diff:   %d more line(s) suppressed by --max-lines %d"
+              % (len(body) - len(printed), args.max_lines))
+        print("css_diff:   printed %d of %d line(s): %d real, %d root-token, %d block header(s)"
+              % (len(printed), len(body), len(lines), result["tokenValues"],
+                 result["tokenHeaders"]))
+        print("css_diff:   the counts above are complete; this listing is not.")
+        print("css_diff: re-run with --max-lines %d or more, or --full-diff FILE to write the"
+              % len(body))
+        print("css_diff: complete transcript to a file.")
+        print("!" * 78)
+
+    if args.full_diff:
+        write_full_diff(args.full_diff, base, live, token_blocks, lines, result,
+                        args, title, mode, scoped_base)
+        print("css_diff: complete diff written to %s: %d line(s) = %d real + %d root-token "
+              "+ %d block header(s)"
+              % (args.full_diff, len(body), len(lines), result["tokenValues"],
+                 result["tokenHeaders"]), file=sys.stderr)
+    if args.ignore_token_deltas and (len(body) != len(lines) + result["tokenValues"]
+                                     + result["tokenHeaders"]):
+        raise RuntimeError("internal accounting error: %d printed line(s) for %d real, "
+                           "%d root-token and %d block header line(s)"
+                           % (len(body), len(lines), result["tokenValues"],
+                              result["tokenHeaders"]))
+    return 1 if lines else 0
 
 
 def parse_list(text, cast=str):
@@ -1109,11 +1386,34 @@ def main():
                     help="skip the filtered and lightbox phases of the focus pass")
     ap.add_argument("--uniform-min", type=int, default=1,
                     help="minimum elements in a record before uniform hoisting applies")
-    ap.add_argument("--max-lines", type=int, default=500)
+    ap.add_argument("--ignore-token-deltas", action="store_true",
+                    help="compare: classify the root-token channel -- rootToken.* on a "
+                         "record and the token.* lines of the synthetic :root element -- "
+                         "as a separate reported category instead of as failures. The "
+                         "lines are still printed and counted, never dropped, and the "
+                         "summary says the exit code is qualified. Without this flag "
+                         "every one of those lines is a difference, exactly as before")
+    ap.add_argument("--full-diff", default="",
+                    help="compare: also write the complete transcript, with its header "
+                         "and both categories, to this file")
+    ap.add_argument("--max-lines", type=int, default=20000,
+                    help="compare: how many diff lines to print before the truncation "
+                         "notice. The notice always states how many were suppressed and "
+                         "how to see them all; the default is high enough that the "
+                         "30-record light+dark run does not truncate")
     ap.add_argument("--print-census", action="store_true")
     ap.add_argument("--census-top", type=int, default=25)
     ap.add_argument("--quiet", action="store_true")
     args = ap.parse_args()
+
+    args.explicit_scope = {name: getattr(args, name) is not None for name in SCOPE_FLAGS}
+    args.explicit_capture = {}
+    for name in CAPTURE_ONLY_FLAGS:
+        value = getattr(args, name)
+        if name in CAPTURE_FLAG_DEFAULTS:
+            args.explicit_capture[name] = value != CAPTURE_FLAG_DEFAULTS[name]
+        else:
+            args.explicit_capture[name] = bool(value)
 
     if args.command == "capture":
         args.pages = parse_list(args.pages) if args.pages else list(DEFAULT_PAGES)
