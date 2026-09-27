@@ -176,12 +176,14 @@ def webp_size(path):
 
 BREAKPOINT_SCALE = (575, 576, 768, 1024, 1200)
 
+# Every tier boundary in both spellings a media condition can use: the `min-width`
+# form (the boundary itself) and the `max-width` form ("below the next tier", the
+# boundary minus one). Derived, never listed -- a listed copy omitted 576 once.
 CSS_MEDIA_EDGES = frozenset(
-    {BREAKPOINT_SCALE[0], BREAKPOINT_SCALE[2] - 1, BREAKPOINT_SCALE[2], BREAKPOINT_SCALE[3] - 1}
-    | {BREAKPOINT_SCALE[3], BREAKPOINT_SCALE[4]}
+    set(BREAKPOINT_SCALE) | {boundary - 1 for boundary in BREAKPOINT_SCALE}
 )
 
-BELOW_MD_MAX = 767
+BELOW_MD_MAX = BREAKPOINT_SCALE[2] - 1
 
 
 def poster_sizes():

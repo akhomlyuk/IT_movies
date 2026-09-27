@@ -10,7 +10,7 @@ import unicodedata
 from xml.etree import ElementTree
 
 import gen_pages
-from lib import BELOW_MD_MAX, ROOT, SITE_BASE, BREAKPOINT_SCALE, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating, poster_sizes, webp_size
+from lib import BELOW_MD_MAX, ROOT, SITE_BASE, BREAKPOINT_SCALE, CSS_MEDIA_EDGES, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating, poster_sizes, webp_size
 
 sys.stdout.reconfigure(encoding="utf-8")
 errors = []
@@ -747,6 +747,266 @@ def check_poster_sizes():
 
 
 check_poster_sizes()
+
+
+# 6f. The media-condition gate. A width edge is the only thing that decides which
+# rule-set a viewport gets, and before this block the pre-Stage-2b ad-hoc set
+# (480 / 525 / 720 / 721 / 950) could be reintroduced one literal at a time with
+# every other check green: 6d only examines box-spacing properties and 6e only
+# the `sizes` attribute, so neither ever reads an at-rule prelude. This block
+# parses the preludes themselves, which is what the browser reads.
+#
+# SCOPE: the stylesheets named in CSS_MEDIA_FILES, and nothing else. It is
+# deliberately not a repository grep. A bare 480 or 950 is equally at home in
+# prose (this file's own docstring, AGENTS.md, the gitignored spec), in an SVG
+# path (static/share.svg), and in a table of retired edges, so a repo-scoped
+# version reports violations in files that are already correct, its remedy ("add
+# the value to lib.CSS_MEDIA_EDGES") does not even apply outside a stylesheet,
+# and every hit would need a human to decide whether it is prose. A second
+# stylesheet is added by appending its path to CSS_MEDIA_FILES. The 720 edge also
+# lived in js/film.js and gen_pages.POSTER_SIZES; those two are policed by 6e at
+# the value level, by reading the emitted `sizes` attributes rather than the text.
+CSS_MEDIA_FILES = ("css/style.css",)
+CSS_MEDIA_PREFERS = ("@media (prefers-color-scheme: dark)", "@media (prefers-reduced-motion: reduce)")
+CSS_MEDIA_CONTAINER = "@container scroll-state(scrollable: top)"
+CSS_MEDIA_XS_EDGE = BREAKPOINT_SCALE[0]
+CSS_MEDIA_XS_BLOCKS = 3
+CSS_MEDIA_RETIRED_NOTE = {
+    480: "480 was the pre-Stage-2b xs edge and collapses onto %d, which is BREAKPOINT_SCALE[0]" % BREAKPOINT_SCALE[0],
+    525: "525 was the pre-Stage-2b featured/related edge and collapses onto %d, which is BREAKPOINT_SCALE[0]" % BREAKPOINT_SCALE[0],
+    720: "720 was the pre-Stage-2b 'below md' ceiling; it is %d, lib.BELOW_MD_MAX" % BELOW_MD_MAX,
+    721: "721 was the pre-Stage-2b 'md and up' floor; it is %d, BREAKPOINT_SCALE[2]" % BREAKPOINT_SCALE[2],
+    950: "950 was the pre-Stage-2b band ceiling; the band is %d-%d, i.e. (min-width: %dpx) and (max-width: %dpx)"
+          % (BREAKPOINT_SCALE[2], BREAKPOINT_SCALE[3] - 1, BREAKPOINT_SCALE[2], BREAKPOINT_SCALE[3] - 1),
+}
+CSS_MEDIA_WIDTH_FEATURE = re.compile(r"\(\s*(min-width|max-width|width)\s*:\s*([^)]+)\)")
+CSS_MEDIA_WIDTH_TOKENS = re.compile(r"(min-width|max-width|width)")
+CSS_MEDIA_LENGTH = re.compile(r"^(-?\d*\.?\d+)(px|em|rem|pt|pc|in|cm|mm|q|ex|ch|vw|vh|vmin|vmax|%)?$")
+CSS_MEDIA_COVERAGE_LIMIT = 1500
+
+
+def blank_css_comments(src):
+    """Blank out comments without moving a byte or a line, so offsets and line
+    numbers stay true to css/style.css while a commented-out @media cannot be
+    mistaken for a live one."""
+    return re.sub(r"/\*.*?\*/", lambda m: "".join("\n" if c == "\n" else " " for c in m.group(0)),
+                  src, flags=re.S)
+
+
+def at_rule_preludes(src, keyword):
+    found = []
+    for m in re.finditer(r"@" + keyword + r"\b", src):
+        j = src.find("{", m.end())
+        if j == -1:
+            errors.append(
+                f"Media conditions: {keyword} at line "
+                f"{src.count(chr(10), 0, m.start()) + 1} has no '{{', so the gate cannot "
+                f"tell where its condition ends and this run compared a file it did not read"
+            )
+            continue
+        found.append((src.count(chr(10), 0, m.start()) + 1,
+                      " ".join(src[m.start():j].split()), j))
+    return found
+
+
+def media_width_features(prelude):
+    features, unreadable = [], []
+    for fm in CSS_MEDIA_WIDTH_FEATURE.finditer(prelude):
+        kind, raw = fm.group(1), fm.group(2).strip()
+        lm = CSS_MEDIA_LENGTH.match(raw)
+        if lm is None or lm.group(2) != "px":
+            unreadable.append((kind, raw))
+            continue
+        value = float(lm.group(1))
+        if value != int(value):
+            unreadable.append((kind, raw))
+            continue
+        features.append((kind, int(value)))
+    return features, unreadable
+
+
+def check_media_scale():
+    undeclared = sorted(set(BREAKPOINT_SCALE) - set(CSS_MEDIA_EDGES))
+    if undeclared:
+        errors.append(
+            f"Media conditions: lib.CSS_MEDIA_EDGES {sorted(CSS_MEDIA_EDGES)} does not admit "
+            f"{undeclared}, which lib.BREAKPOINT_SCALE {list(BREAKPOINT_SCALE)} declares. A tier "
+            f"on the scale but missing from the gate is a correct rule this gate rejects, and "
+            f"the remedy 6f offers for a rejected edge is to edit a constant that exists to be "
+            f"derived from the tuple. Derive CSS_MEDIA_EDGES from BREAKPOINT_SCALE instead of "
+            f"listing it"
+        )
+    if BELOW_MD_MAX not in CSS_MEDIA_EDGES:
+        errors.append(
+            f"Media conditions: lib.BELOW_MD_MAX is {BELOW_MD_MAX}, which lib.CSS_MEDIA_EDGES "
+            f"{sorted(CSS_MEDIA_EDGES)} does not admit, so the poster `sizes` breakpoint 6e "
+            f"enforces is a media edge this stylesheet is forbidden to use"
+        )
+    print(
+        f"Media scale: BREAKPOINT_SCALE {list(BREAKPOINT_SCALE)} -> CSS_MEDIA_EDGES "
+        f"{sorted(CSS_MEDIA_EDGES)} (each boundary, plus each boundary minus one for the "
+        f"`max-width` form); superset of the tuple: "
+        f"{'yes' if not undeclared else 'NO, missing ' + str(undeclared)}; "
+        f"BELOW_MD_MAX {BELOW_MD_MAX} admitted: {BELOW_MD_MAX in CSS_MEDIA_EDGES}"
+    )
+
+
+def check_media_conditions():
+    check_media_scale()
+    for rel in CSS_MEDIA_FILES:
+        path = ROOT / rel
+        if not path.exists():
+            errors.append(
+                f"Media conditions: {rel} is missing, so the edge gate compared no "
+                f"stylesheet at all and would pass on an empty file set"
+            )
+            continue
+        src = blank_css_comments(path.read_text(encoding="utf-8"))
+        medias = at_rule_preludes(src, "media")
+        containers = at_rule_preludes(src, "container")
+        if not medias:
+            errors.append(
+                f"Media conditions: {rel} declares no @media, so the edge gate compared "
+                f"nothing and would pass on a stylesheet with no conditions"
+            )
+        found, intervals, xs_blocks, non_width = {}, [], [], []
+        for line, prelude, brace in medias:
+            if not CSS_MEDIA_WIDTH_TOKENS.search(prelude):
+                non_width.append((line, prelude))
+                continue
+            features, unreadable = media_width_features(prelude)
+            for kind, raw in unreadable:
+                errors.append(
+                    f"Media conditions: {rel}:{line} declares ({kind}: {raw}), which is "
+                    f"not a plain px length. This gate compares width edges by resolved "
+                    f"px value, the way 6d compares a literal against a token, so a "
+                    f"width it cannot resolve to px is a width nothing else in the "
+                    f"project can check either -- use a px edge from lib.CSS_MEDIA_EDGES"
+                )
+            if not features:
+                errors.append(
+                    f"Media conditions: {rel}:{line} is width-based ({prelude}) but "
+                    f"carries no readable px width, so the edge gate cannot see it"
+                )
+                continue
+            for value in {v for _, v in features}:
+                found.setdefault(value, []).append(line)
+            lows = [v for kind, v in features if kind == "min-width"]
+            highs = [v for kind, v in features if kind == "max-width"]
+            intervals.append((min(lows) if lows else 0, max(highs) if highs else None, line, prelude))
+            if sorted(v for _, v in features) == [CSS_MEDIA_XS_EDGE]:
+                body = src[brace + 1 : _css_brace_end(src, brace)]
+                first = next((b.strip() for b in body.splitlines() if b.strip()), "(empty block)")
+                xs_blocks.append((line, first, len([b for b in body.splitlines() if b.strip()])))
+        if len(xs_blocks) != CSS_MEDIA_XS_BLOCKS:
+            where = ", ".join(":%d %s" % (line, first) for line, first, _ in xs_blocks) or "none"
+            gaps = [xs_blocks[i + 1][0] - xs_blocks[i][0] for i in range(len(xs_blocks) - 1)]
+            errors.append(
+                f"Media conditions: {rel} carries the xs edge max-width: {CSS_MEDIA_XS_EDGE}px "
+                f"in {len(xs_blocks)} block(s) ({where}), expected {CSS_MEDIA_XS_BLOCKS}. "
+                f"They are separate blocks on purpose: 480 and 525 both collapse onto "
+                f"{CSS_MEDIA_XS_EDGE}, and media conditions cannot read a custom property, "
+                f"so the spec's 'emit each boundary once' is realised as a canonical value "
+                f"set plus this gate rather than as one definition. Merging them is not "
+                f"tidying -- it moves rules across the source order of a stylesheet whose "
+                f"media queries were deliberately left on their original lines in Stage 2a "
+                f"so that source order could not shift, and it would promote or demote "
+                f"every rule between the blocks"
+                + (f"; the surviving block(s) sit at line(s) {[b[0] for b in xs_blocks]} "
+                   f"with gaps of {gaps} physical lines and a span of "
+                   f"{xs_blocks[-1][0] - xs_blocks[0][0]}"
+                   if xs_blocks else "")
+            )
+        for line, first, lines in xs_blocks:
+            if not lines:
+                errors.append(
+                    f"Media conditions: {rel}:{line} is an empty xs block, so a merged or "
+                    f"truncated block would satisfy the count above and this run would "
+                    f"certify rules that are not there"
+                )
+        rejected = sorted(set(found) - set(CSS_MEDIA_EDGES))
+        for value in rejected:
+            notes = []
+            if value in CSS_MEDIA_RETIRED_NOTE:
+                notes.append(CSS_MEDIA_RETIRED_NOTE[value])
+            if value in found and value in BREAKPOINT_SCALE and value not in CSS_MEDIA_EDGES:
+                notes.append(
+                    f"{value} is a BREAKPOINT_SCALE member that lib.CSS_MEDIA_EDGES does not "
+                    f"admit, which is a gap in lib.py rather than in the stylesheet"
+                )
+            errors.append(
+                f"Media conditions: {rel}:{','.join(str(l) for l in sorted(set(found[value])))} "
+                f"uses {value}px, which is not on the canonical scale "
+                f"lib.CSS_MEDIA_EDGES {sorted(CSS_MEDIA_EDGES)}"
+                + (" -- " + "; ".join(notes) if notes else "")
+                + ". The assertion is a SUBSET relation, not equality: 1024 and 1200 are "
+                f"permitted and currently unused because Stage 3 adds the lg and xl tiers, "
+                f"and a gate that has to be edited before a legitimate tier can be added is a "
+                f"gate that gets edited carelessly. If this value is a legitimate boundary, add "
+                f"it to lib.BREAKPOINT_SCALE, which is what lib.CSS_MEDIA_EDGES is derived from; "
+                f"if it is not, use a value that is. Do not add it to lib.CSS_MEDIA_EDGES and do "
+                f"not edit this block"
+            )
+        prefers = sorted(prelude for _, prelude, _ in medias if "prefers-" in prelude)
+        if prefers != sorted(CSS_MEDIA_PREFERS):
+            errors.append(
+                f"Media conditions: {rel} carries prefers- conditions {prefers}, expected "
+                f"exactly {sorted(CSS_MEDIA_PREFERS)}, one each. These are not width edges "
+                f"and must survive a re-key untouched: a second prefers-reduced-motion block "
+                f"is a duplicated intent, and a renamed or removed one is a lost preference"
+            )
+        container_preludes = [prelude for _, prelude, _ in containers]
+        if container_preludes.count(CSS_MEDIA_CONTAINER) != 1:
+            errors.append(
+                f"Media conditions: {rel} carries @container preludes {container_preludes}, "
+                f"expected exactly one {CSS_MEDIA_CONTAINER!r} with its original condition. "
+                f"It is a container query and not a width query, so anything that re-keys "
+                f"'all breakpoints' must leave it alone, and this is what proves it did"
+            )
+        uncovered = [w for w in range(CSS_MEDIA_COVERAGE_LIMIT + 1)
+                     if not any(lo <= w and (hi is None or w <= hi) for lo, hi, _, _ in intervals)]
+        seams = [(w, w + 1) for w in range(CSS_MEDIA_COVERAGE_LIMIT)
+                 if not any(lo <= w + 0.5 and (hi is None or w + 0.5 <= hi)
+                            for lo, hi, _, _ in intervals)]
+        print(
+            f"Media conditions: {rel} -- {len(medias)} @media block(s), "
+            f"{len(intervals)} width-based, {len(non_width)} non-width "
+            f"({', '.join(prelude for _, prelude in non_width) or 'none'}); "
+            f"{len(containers)} @container; edges found "
+            f"{ {v: len(found[v]) for v in sorted(found)} }; rejected {rejected or 'none'}"
+        )
+        for line, prelude, _ in medias:
+            if CSS_MEDIA_WIDTH_TOKENS.search(prelude):
+                print(f"  media edge :{line} {prelude}")
+        for line, first, _ in xs_blocks:
+            print(f"  xs block   :{line} max-width: {CSS_MEDIA_XS_EDGE}px -> {first}")
+        for value in rejected:
+            print(f"  REJECTED   {value}px at {','.join(str(l) for l in sorted(set(found[value])))}")
+        print(
+            f"Media conditions: integer coverage of 0-{CSS_MEDIA_COVERAGE_LIMIT}: "
+            f"{'every integer width is matched by at least one block' if not uncovered else 'UNMATCHED ' + str(uncovered)}"
+        )
+        print(
+            f"Media conditions: seam (information, NOT gated): "
+            + (
+                "; ".join(f"the open interval ({a}, {b}) matches no width block, {b - a:.2f} CSS px wide"
+                          for a, b in seams)
+                + " -- a consequence of CSS, not a defect to fix. The conditions tile every "
+                f"INTEGER width; the open interval between two integer edges is not a width "
+                f"any harness here can ask about, because Playwright refuses a fractional "
+                f"emulated viewport outright (Browser.setWindowBounds: Invalid parameters on "
+                f"both new_context and set_viewport_size), and the pre-re-key sheet had the "
+                f"identical 1px seam at (720, 721). Which way a browser rounds a genuinely "
+                f"fractional viewport is NOT established by this project and is not claimed "
+                f"here. Do not 'fix' this by asserting perfect tiling: a gate for it would fail "
+                f"on a property CSS does not have, and it would fail on a correct stylesheet"
+                if seams else
+                "none -- every real width in 0-1500 matches at least one block"
+            )
+        )
+
+
+check_media_conditions()
 
 
 # 6c. Sitemap / robots.txt / webmanifest: single source in gen_pages.py

@@ -134,9 +134,10 @@ instead of hiding it.
 The probe widths matter as much as the properties. ``DEFAULT_WIDTHS`` used to be
 ``375, 576, 768, 1024, 1280``, and that set was structurally blind: every one of
 those five widths falls in a viewport range whose applied rule-set is identical
-before and after css/style.css's 480/525/720/721/950 edges are re-keyed to
-575/576/768/1024/1200, so a complete and correct re-key reported ``IDENTICAL`` --
-a confident zero for a change that visibly alters four ranges. The set is now
+before and after css/style.css's pre-Stage-2b edges (480/525/720/721/950) were
+re-keyed to 575/576/768/1024/1200, so a complete and correct re-key reported
+``IDENTICAL`` -- a confident zero for a change that visibly alters four ranges.
+The set is now
 eleven widths on the 575/576/768/1024/1200 scale: the five controls above, which
 must stay byte-identical across such a change; four band interiors (520, 550,
 767, 990); and both sides of all three boundaries (575/576, 767/768,
@@ -181,12 +182,13 @@ sentinel of its own is waited on for ``#app`` instead, so any static page in the
 repository can be captured without extra configuration. The four pages this
 plan migrates rules for -- the catalog, two film pages, and the about page -- are
 the built-in defaults. ``/about.html`` is one of them because it is the only page
-that carries the ``@media (max-width: 480px)`` block, and a width alone cannot
-observe that block: 520 and 550 sit in 481-575, but until ``/about.html`` joined
-this list no record in the snapshot carried the selector those widths exist to
-probe. Nothing gates that pairing, so a future edit that drops the page or moves
-``.profile`` elsewhere would leave 520 and 550 silently observing a band they can
-no longer see. Re-probe a band by moving the page, not just the widths.
+that carries the ``@media (max-width: 575px)`` block's ``.profile`` rules, and a
+width alone cannot observe that block: 520 and 550 sit in 481-575, but until
+``/about.html`` joined this list no record in the snapshot carried the selector
+those widths exist to probe. Nothing gates that pairing, so a future edit that
+drops the page or moves ``.profile`` elsewhere would leave 520 and 550 silently
+observing a band they can no longer see. Re-probe a band by moving the page, not
+just the widths.
 """
 
 import argparse
