@@ -1,3 +1,7 @@
+@layer reset, tokens, base, components, utilities;
+
+@layer tokens {
+
 :root {
   color-scheme: light dark;
   accent-color: var(--accent);
@@ -175,12 +179,18 @@
 :root.light {
   color-scheme: light;
 }
+}
+
+@layer reset {
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
+}
+
+@layer base {
 
 html {
   scroll-behavior: smooth;
@@ -214,6 +224,9 @@ h2 {
   margin: 0 auto;
   padding: clamp(1rem, 1rem + 2vw, 2.25rem) clamp(0.75rem, 0.75rem + 2vw, 1.25rem);
 }
+}
+
+@layer utilities {
 
 html.js #app[v-cloak] > :not(noscript) {
   visibility: hidden;
@@ -238,6 +251,9 @@ html.js #app[v-cloak] .brand {
 #app[v-cloak] .post-mount {
   display: none;
 }
+}
+
+@layer components {
 
 .top {
   position: relative;
@@ -1291,6 +1307,9 @@ html.no-scroll-state.scrolled .scroll-top {
 #main:focus {
   outline: none;
 }
+}
+
+@layer base {
 
 .visually-hidden {
   position: absolute;
@@ -1303,6 +1322,9 @@ html.no-scroll-state.scrolled .scroll-top {
   white-space: nowrap;
   border: 0;
 }
+}
+
+@layer components {
 
 @media (min-width: 721px) and (max-width: 950px) {
   .top {
@@ -2133,4 +2155,6 @@ html.no-scroll-state.scrolled .scroll-top {
   .profile-links a {
     justify-content: center;
   }
+}
+
 }
