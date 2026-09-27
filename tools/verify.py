@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import unicodedata
+from html.parser import HTMLParser
 from xml.etree import ElementTree
 
 import gen_pages
@@ -1007,6 +1008,231 @@ def check_media_conditions():
 
 
 check_media_conditions()
+
+
+# 6g. Related-card markup parity. The .rc card exists twice: once as the Vue
+# template in js/film.js and once as the no-JS card emitted by
+# gen_pages.render(), which is what all 154 film pages ship inside <noscript>.
+# Their element trees must be identical -- same tags, same classes, same
+# nesting, same document order -- or the JS and no-JS renderings differ.
+#
+# WHY THIS COMPARES TREES, NOT STRINGS. The two cards cannot be compared as
+# strings at all: the clean-tree fragments are 602 and 832 bytes and differ in
+# indentation, in text, and in how every value is bound. Normalising that away
+# is the whole normalisation problem, and the shape it converges on is a tree.
+# So each side is flattened depth-first into an ordered list of
+# (tag, classes, parent-index), and the comparison is equality of those lists.
+# The parent index is an explicit field, so a re-nesting changes the list while
+# the set of nodes does not: same nine tags, same nine class lists, different
+# parents. Measured: a set-of-(tag, classes) comparison is EQUAL on that
+# mutation, and any document-order-preserving comparison is DIFFERENT, so the
+# representation is what makes the verdict legible (node 5, parent 2 vs parent
+# 3) rather than what makes it possible. The alternative -- reading the Python
+# list the generator interpolated -- is the B1 trap from Stage 0-1: three
+# sources derived from one list agree by construction and prove nothing. So no
+# text and no attribute value participates here. The emitted card is rendered
+# from the catalog, the authored card is a hand-maintained template, and the two
+# sides are independent for structure, which is the only thing compared.
+#
+# Classes are compared as a sorted tuple: the order of a class attribute is not
+# observable in the rendered page, and a gate that fails on it would be crying
+# wolf. Document order IS observable, and it is what the list index carries.
+#
+# THE PROBE IS A COMPLETE CARD. The emitted side is one real card, so it is
+# one rendering of the conditionals the authored side expresses with v-if. The
+# probe selector below mirrors the generator's own three guards and picks the
+# first card with all of them, so both sides show nine nodes. If the generator
+# ever grows a fourth branch this selector can miss, and it misses LOUDLY: the
+# emitted card would then be short a node the authored card still carries, and
+# the comparison fails. The failure direction of a stale probe is a false
+# alarm, never a silent pass.
+#
+# TWO-SIDED BLINDNESS -- a property of the design, not a gap to be papered
+# over. This block compares two sources, so it catches divergence and CANNOT
+# catch a change applied to both at once. A class renamed in both copies is
+# invisible here, and no gate over two sources can see it: the two sides are
+# exactly what it treats as the truth. Read 6g as "these two have not drifted",
+# never as "this card is correct".
+RELATED_CARD_ANCHOR = '<a class="rc"'
+RELATED_CARD_MIN_NODES = 9
+RC_TAG = re.compile(r"""<(/?)([a-zA-Z][^\s/>]*)((?:"[^"]*"|'[^']*'|[^>"'])*)(/?)>""")
+RC_VOID_TAGS = frozenset((
+    "area", "base", "br", "col", "embed", "hr", "img", "input",
+    "link", "meta", "param", "source", "track", "wbr",
+))
+
+
+def rc_card_fragments(src, label):
+    """Every <a class="rc">...</a> in src, cut by tag depth rather than by a
+    regex over the body, so nesting cannot end the slice early."""
+    found = []
+    for m in re.finditer(re.escape(RELATED_CARD_ANCHOR), src):
+        depth = 0
+        for t in RC_TAG.finditer(src, m.start()):
+            closing, name, _, selfclose = t.groups()
+            if closing:
+                depth -= 1
+                if depth == 0:
+                    found.append(src[m.start():t.end()])
+                    break
+            elif not selfclose and name.lower() not in RC_VOID_TAGS:
+                depth += 1
+        else:
+            errors.append(
+                f"related-card markup: {label} opens {RELATED_CARD_ANCHOR!r} and never "
+                f"closes it, so this run could not cut a card out of the file it was "
+                f"supposed to read"
+            )
+    return found
+
+
+class RcCardTree(HTMLParser):
+    """Depth-first (tag, classes, parent-index) list of one card's elements."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=False)
+        self.nodes = []
+        self.stack = []
+
+    def handle_starttag(self, tag, attrs):
+        classes = ()
+        for key, value in attrs:
+            if key == "class" and value:
+                classes = tuple(sorted(value.split()))
+        self.nodes.append((tag, classes, self.stack[-1] if self.stack else None))
+        if tag not in RC_VOID_TAGS:
+            self.stack.append(len(self.nodes) - 1)
+
+    def handle_startendtag(self, tag, attrs):
+        self.handle_starttag(tag, attrs)
+        if tag not in RC_VOID_TAGS:
+            self.stack.pop()
+
+    def handle_endtag(self, tag):
+        if self.stack:
+            self.stack.pop()
+
+
+def rc_card_nodes(fragment, label):
+    tree = RcCardTree()
+    tree.feed(fragment)
+    tree.close()
+    nodes = tree.nodes
+    if not nodes or nodes[0] != ("a", ("rc",), None):
+        errors.append(
+            f"related-card markup: {label} extracted {len(nodes)} node(s) from the "
+            f"{RELATED_CARD_ANCHOR!r} fragment and its first node is "
+            f"{nodes[0] if nodes else None} rather than the card root ('a', ('rc',), "
+            f"None). An extraction that is empty, or that does not begin at the card "
+            f"root, is an extractor failure and is reported as one: two sides that both "
+            f"fail to extract are two failures and never a match"
+        )
+    return nodes
+
+
+def rc_first_divergence(left, right):
+    for i in range(max(len(left), len(right))):
+        a = left[i] if i < len(left) else None
+        b = right[i] if i < len(right) else None
+        if a != b:
+            return i, a, b
+    return None
+
+
+def check_related_card_markup():
+    probe = None
+    for item in catalog:
+        rel = gen_pages.related_to(item, catalog, 4)
+        if not rel:
+            continue
+        r = rel[0]
+        if (
+            (r.get("poster") or "").lstrip("/")
+            and has_rating(r.get("kpRating"))
+            and r.get("imdbId")
+            and has_rating(r.get("imdbRating"))
+        ):
+            probe = (item, rel)
+            break
+    if probe is None:
+        errors.append(
+            "related-card markup: no catalog record renders a card carrying every "
+            "branch (poster + kpRating + imdbId + imdbRating), so there is no "
+            "complete card to compare the authored one against. Either the catalog "
+            "no longer fills all the branches, or the emitted card grew a branch "
+            "this probe selector does not know about"
+        )
+        return
+    item, rel = probe
+    page_slug = item_slug(item)
+
+    emitted_label = f"gen_pages.render() card, emitted into /films/{page_slug}/"
+    authored_label = "js/film.js card, the authored Vue template"
+    emitted_frags = rc_card_fragments(gen_pages.render(item, rel), emitted_label)
+    film_js = ROOT / "js" / "film.js"
+    if not film_js.exists():
+        errors.append("related-card markup: js/film.js is missing, so the authored card cannot be read")
+        return
+    authored_frags = rc_card_fragments(film_js.read_text(encoding="utf-8"), authored_label)
+
+    trees = {}
+    for label, frags, want in ((emitted_label, emitted_frags, len(rel)),
+                               (authored_label, authored_frags, 1)):
+        if len(frags) != want:
+            errors.append(
+                f"related-card markup: {label} extracted {len(frags)} card(s) from "
+                f"{RELATED_CARD_ANCHOR!r}, expected {want}. The card is the unit of "
+                f"comparison, so 0 of them means the extractor did not recognise the "
+                f"markup and the wrong number means the loop that produces them "
+                f"changed. An extraction of nothing is an extractor failure and is "
+                f"reported as one: two sides that both extracted nothing are two "
+                f"failures, never a match"
+            )
+            continue
+        nodes = rc_card_nodes(frags[0], label)
+        trees[label] = nodes
+
+    if len(trees) != 2:
+        return
+
+    emitted = trees[emitted_label]
+    authored = trees[authored_label]
+    counts = f"{len(emitted)} emitted node(s) vs {len(authored)} authored node(s)"
+    diff = rc_first_divergence(emitted, authored)
+    if diff:
+        i, a, b = diff
+        errors.append(
+            f"related-card markup: the two .rc cards diverge at node {i} of the "
+            f"depth-first tree, {counts}. {emitted_label}[{i}] = {a}; "
+            f"{authored_label}[{i}] = {b}. (tag, classes, parent-index) -- the parent "
+            f"index is what makes a re-nesting visible: identical nodes with a "
+            f"different parent are a different tree. Fix one side or the other, not "
+            f"this block"
+        )
+        return
+    if min(len(emitted), len(authored)) < RELATED_CARD_MIN_NODES:
+        errors.append(
+            f"related-card markup: both sides extracted {len(emitted)} node(s) and the "
+            f"trees are equal, but a complete card is {RELATED_CARD_MIN_NODES} nodes. "
+            f"Equal-and-tiny is the silent collapse this guard exists for: a broken "
+            f"extractor agrees with itself. If the card legitimately lost nodes, change "
+            f"it in both copies on purpose and raise RELATED_CARD_MIN_NODES with it"
+        )
+        return
+    print(
+        f"Related-card markup parity: OK -- {counts}, identical tags, identical class "
+        f"sets and identical parent indices. Probe /films/{page_slug}/, related "
+        f"{item_slug(rel[0])}, every branch present"
+    )
+    print(f"  emitted  {emitted}")
+    print(f"  authored {authored}")
+    print(
+        "  two sources only: a change applied to both copies is invisible to this "
+        "block by construction"
+    )
+
+
+check_related_card_markup()
 
 
 # 6c. Sitemap / robots.txt / webmanifest: single source in gen_pages.py
