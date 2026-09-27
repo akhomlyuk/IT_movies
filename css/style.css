@@ -1231,8 +1231,8 @@ footer .footer-privacy {
 
 .scroll-top {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  bottom: var(--space-6);
+  right: var(--space-6);
   width: 40px;
   height: 40px;
   border: 1px solid var(--line-control);
@@ -1411,8 +1411,8 @@ html.no-scroll-state.scrolled .scroll-top {
   }
 
   .scroll-top {
-    bottom: 1rem;
-    right: 1rem;
+    bottom: var(--space-4);
+    right: var(--space-4);
   }
 
   .table-wrap table {

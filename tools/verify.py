@@ -251,6 +251,371 @@ for u in sorted(css_urls):
         errors.append(f"Broken url() in CSS: {u} (expected css/{u})")
 print(f"url() references in style.css: {len(css_urls) + n_data}")
 
+# 6d. Stage 2a dead-literal gate. Values are compared after resolution to px,
+# not as text: `12px` and `0.75rem` are the same length, so one of them is a
+# regression against the other. Two scopes, because the two kinds of scale are
+# different shapes:
+#   scope "any"   radius, z-index -- the scale is CLOSED. Every value this design
+#                 uses is a token, so any bare value is a defect and the ceiling
+#                 is an absolute 0. It must not be raised: a bare value means a
+#                 token is missing, and the fix is the token, not the ceiling.
+#   scope "token" spacing -- the scale is OPEN. `0.1em` badge padding, `15vh`
+#                 boot centring, `-6px` hit-area bleed are legitimate and no
+#                 token can or should cover them, so only a value that
+#                 duplicates a token counts, against a stated ceiling.
+STYLE_LITERAL_CEILING = {"spacing": 6, "radius": 0, "z-index": 0}
+STYLE_LITERAL_SCOPE = {"spacing": "token", "radius": "any", "z-index": "any"}
+STYLE_LITERAL_PROPS = {
+    "spacing": {
+        prop
+        for base in ("margin", "padding", "inset", "scroll-margin", "scroll-padding")
+        for prop in (
+            base,
+            *(
+                f"{base}-{suffix}"
+                for suffix in (
+                    "top", "right", "bottom", "left",
+                    "block", "block-start", "block-end",
+                    "inline", "inline-start", "inline-end",
+                )
+            ),
+        )
+    }
+    | {"gap", "row-gap", "column-gap", "top", "right", "bottom", "left"},
+    "radius": {"border-radius"},
+    "z-index": {"z-index"},
+}
+STYLE_TOKEN_MEMBERS = {
+    "spacing": lambda name: name.startswith("--space-") or name == "--tap",
+    "radius": lambda name: name.startswith("--radius-"),
+    "z-index": lambda name: name.startswith("--z-"),
+}
+STYLE_NON_LENGTH = {
+    "auto", "none", "inherit", "initial", "unset", "revert", "normal",
+    "thin", "medium", "thick", "solid", "dashed", "dotted", "groove",
+}
+STYLE_DERIVED_FUNCTIONS = ("calc(", "clamp(", "min(", "max(", "env(")
+STYLE_CALC_FUNCTIONS = ("calc(", "min(", "max(")
+STYLE_VAR = "var("
+STYLE_BARE_LENGTH = re.compile(
+    r"^-?(?:\d+\.?\d*|\.\d+)(px|rem|em|ex|ch|vh|vw|vmin|vmax|pt|q|%)?$"
+)
+STYLE_CALC_TERM = re.compile(r"(-?(?:\d+\.?\d*|\.\d+))(px|rem)")
+STYLE_NESTING_AT_RULES = ("@media", "@supports", "@container", "@layer", "@document")
+STYLE_CSS_INITIAL_FONT_PX = 16.0
+STYLE_PX_EPSILON = 0.0001
+
+
+def _css_brace_end(src, start):
+    depth = 0
+    for i in range(start, len(src)):
+        if src[i] == "{":
+            depth += 1
+        elif src[i] == "}":
+            depth -= 1
+            if depth == 0:
+                return i
+    return len(src) - 1
+
+
+def _css_declarations(src, context=()):
+    prelude = []
+    i = 0
+    while i < len(src):
+        ch = src[i]
+        if ch == "{":
+            end = _css_brace_end(src, i)
+            head = " ".join("".join(prelude).split())
+            body = src[i + 1 : end]
+            prelude = []
+            i = end + 1
+            if head.startswith("@"):
+                if head.split(None, 1)[0].lower() in STYLE_NESTING_AT_RULES:
+                    yield from _css_declarations(body, context + (head,))
+                else:
+                    for m in re.finditer(r"([-\w]+)\s*:\s*([^;]+);", body):
+                        yield context, head, m.group(1).lower(), " ".join(m.group(2).split())
+            else:
+                for m in re.finditer(r"([-\w]+)\s*:\s*([^;]+);", body):
+                    yield context, head, m.group(1).lower(), " ".join(m.group(2).split())
+        elif ch == ";":
+            prelude = []
+            i += 1
+        else:
+            prelude.append(ch)
+            i += 1
+
+
+def _top_level_parts(value):
+    parts, depth, current = [], 0, []
+    for ch in value:
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth = max(0, depth - 1)
+        if ch.isspace() and depth == 0:
+            if current:
+                parts.append("".join(current))
+                current = []
+            continue
+        current.append(ch)
+    if current:
+        parts.append("".join(current))
+    return parts
+
+
+def _style_calc_px(part, root):
+    name, sep, rest = part.partition("(")
+    if not sep or not rest.endswith(")"):
+        return None
+    body = rest[:-1]
+    pos = 0
+
+    def skip():
+        nonlocal pos
+        while pos < len(body) and body[pos].isspace():
+            pos += 1
+
+    def primary():
+        nonlocal pos
+        skip()
+        if pos < len(body) and body[pos] == "(":
+            pos += 1
+            value = expression()
+            skip()
+            if pos >= len(body) or body[pos] != ")":
+                raise ValueError(part)
+            pos += 1
+            return value
+        term = STYLE_CALC_TERM.match(body, pos)
+        if not term:
+            raise ValueError(part)
+        pos = term.end()
+        return float(term.group(1)) * (root if term.group(2) == "rem" else 1.0)
+
+    def term():
+        nonlocal pos
+        value = primary()
+        while True:
+            skip()
+            if pos < len(body) and body[pos] in "*/":
+                operator = body[pos]
+                pos += 1
+                operand = primary()
+                value = value * operand if operator == "*" else value / operand
+            else:
+                return value
+
+    def expression():
+        nonlocal pos
+        value = term()
+        while True:
+            skip()
+            if pos < len(body) and body[pos] in "+-":
+                operator = body[pos]
+                pos += 1
+                operand = term()
+                value = value + operand if operator == "+" else value - operand
+            else:
+                return value
+
+    try:
+        result = expression()
+    except (ValueError, ZeroDivisionError):
+        return None
+    skip()
+    return round(result, 4) if pos == len(body) else None
+
+
+def _style_classify(part, root):
+    low = part.lower()
+    if low in STYLE_NON_LENGTH:
+        return "keyword", None
+    if low.startswith(STYLE_VAR):
+        return "token", None
+    if low.startswith(STYLE_DERIVED_FUNCTIONS):
+        if low.startswith(STYLE_CALC_FUNCTIONS):
+            return "derived", _style_calc_px(part, root)
+        return "derived", None
+    match = STYLE_BARE_LENGTH.match(part)
+    if not match:
+        return "other", None
+    unit = match.group(1) or ""
+    digits = match.group(0)[: len(match.group(0)) - len(unit)]
+    number = float(digits)
+    if unit == "%":
+        return "percent", None
+    if number == 0:
+        return "zero", None
+    if unit in ("px", ""):
+        return "length", round(number, 4)
+    if unit == "rem":
+        return "length", round(number * root, 4)
+    return "relative", number
+
+
+def _style_root_font_px(src):
+    declared = {}
+    for context, selector, prop, value in _css_declarations(src):
+        if prop != "font-size":
+            continue
+        if any(s.strip() in ("html", ":root") for s in selector.split(",")):
+            declared[selector] = value
+    if not declared:
+        return (
+            STYLE_CSS_INITIAL_FONT_PX,
+            "css/style.css declares no font-size on html or :root, so the root "
+            "font-size is the CSS initial value for font-size:medium. Not "
+            "measured in this process: verify.py runs no browser and takes no "
+            "dev-server dependency by design",
+        )
+    resolved = {}
+    for selector, value in declared.items():
+        kind, px = _style_classify(value, STYLE_CSS_INITIAL_FONT_PX)
+        resolved[selector] = px if kind == "length" and "%" not in value else None
+    distinct = {v for v in resolved.values() if v is not None}
+    if len(distinct) == 1:
+        return (
+            distinct.pop(),
+            "read from css/style.css: "
+            + ", ".join(f"{s} {{ font-size: {v} }}" for s, v in resolved.items()),
+        )
+    return (
+        STYLE_CSS_INITIAL_FONT_PX,
+        "css/style.css declares "
+        + str(len(resolved))
+        + " conflicting or unresolvable root font-size value(s) ("
+        + ", ".join(f"{s}: {v}" for s, v in resolved.items())
+        + "); falling back to the CSS initial value",
+    )
+
+
+def check_style_literals():
+    plain = re.sub(r"/\*.*?\*/", " ", css, flags=re.S)
+    plain = re.sub(r"url\(\s*(?:\"[^\"]*\"|'[^']*'|[^)]*)\s*\)", "url(0)", plain)
+    root, root_note = _style_root_font_px(plain)
+    token_px = {family: {} for family in STYLE_LITERAL_PROPS}
+    token_src = {family: {} for family in STYLE_LITERAL_PROPS}
+    for m in re.finditer(r"(--[\w-]+)\s*:\s*([^;{}]+);", plain):
+        for family, member in STYLE_TOKEN_MEMBERS.items():
+            if not member(m.group(1)):
+                continue
+            text = m.group(2).strip()
+            kind, value = _style_classify(text, root)
+            if kind == "zero":
+                value = 0.0
+            elif kind not in ("length", "percent", "relative"):
+                continue
+            token_px[family][m.group(1)] = value
+            token_src[family][m.group(1)] = text
+    token_names = {
+        family: {value: sorted(n for n, v in tokens.items() if v == value) for value in set(tokens.values())}
+        for family, tokens in token_px.items()
+    }
+    zero_is_token = {family: 0 in token_names[family] for family in token_px}
+    dead = {family: [] for family in STYLE_LITERAL_PROPS}
+    off_scale = {family: [] for family in STYLE_LITERAL_PROPS}
+    derived = set()
+    fallback = set()
+    for context, selector, prop, value in _css_declarations(plain):
+        for family, props in STYLE_LITERAL_PROPS.items():
+            if prop not in props:
+                continue
+            for part in _top_level_parts(value):
+                if part.startswith(STYLE_VAR):
+                    if "," in part:
+                        fallback.add((selector, prop, part))
+                    continue
+                kind, resolved = _style_classify(part, root)
+                if kind in ("keyword", "token", "other"):
+                    continue
+                if kind == "zero" and not zero_is_token[family]:
+                    continue
+                if kind == "percent" and family != "radius":
+                    continue
+                if kind == "derived":
+                    derived.add((selector, prop, part, resolved))
+                duplicates = resolved is not None and resolved in token_names[family]
+                if STYLE_LITERAL_SCOPE[family] == "any" or duplicates:
+                    named = token_names[family].get(resolved, []) if duplicates else []
+                    dead[family].append(
+                        (
+                            " ".join((*context, selector)),
+                            prop,
+                            part,
+                            named or sorted(
+                                n for n, v in token_src[family].items() if v == part
+                            ),
+                        )
+                    )
+                elif kind != "derived":
+                    off_scale[family].append(part)
+    for family, ceiling in STYLE_LITERAL_CEILING.items():
+        found = dead[family]
+        if len(found) <= ceiling:
+            continue
+        named = "; ".join(
+            f"{where} {{ {prop}: {part} }} re-implements {', '.join(names) or 'a bare value'}"
+            for where, prop, part, names in found[:6]
+        )
+        if len(found) > 6:
+            named += f"; and {len(found) - 6} more"
+        errors.append(
+            f"style literals: {family} has {len(found)} literal value(s) against a "
+            f"ceiling of {ceiling} — {named} — use var(<token>)"
+            + (
+                "; this family's scale is closed, so the ceiling is 0 and a bare "
+                "value means a token is missing"
+                if STYLE_LITERAL_SCOPE[family] == "any"
+                else ""
+            )
+        )
+    for family in STYLE_LITERAL_CEILING:
+        print(
+            f"Style literals: {family} {len(dead[family])}/{STYLE_LITERAL_CEILING[family]}"
+            f" ({STYLE_LITERAL_SCOPE[family]} scope"
+            + (", absolute: any bare value fails" if STYLE_LITERAL_SCOPE[family] == "any" else "")
+            + ")"
+        )
+    for family in STYLE_LITERAL_CEILING:
+        for where, prop, part, names in dead[family]:
+            print(
+                f"  {family} duplicate: {where} {{ {prop}: {part} }} = "
+                f"{', '.join(names) or 'a bare value, no token carries it'}"
+            )
+    print(
+        "Style literals: off-scale literal values "
+        + ", ".join(
+            f"{family} {len(off_scale[family])}"
+            + (
+                f" ({len(set(off_scale[family]))} distinct: "
+                f"{', '.join(sorted(set(off_scale[family])))})"
+                if off_scale[family]
+                else ""
+            )
+            for family in STYLE_LITERAL_CEILING
+        )
+    )
+    resolved_derived = sorted(f"{w} {{ {p}: {v} }} = {px}px" for w, p, v, px in derived if px is not None)
+    print(
+        f"Style literals: {len(derived)} calc()/clamp()/min()/max() value(s) in scope, "
+        f"{len(resolved_derived)} of them resolved to a constant and compared"
+        + (": " + "; ".join(resolved_derived) if resolved_derived else "")
+        + f"; {len(fallback)} var() fallback(s) in scope"
+    )
+    print(f"Style literals: rem base {root:g}px — {root_note}")
+    print(
+        "Style literal scope: box spacing (margin, padding, gap, inset, "
+        "scroll-margin, scroll-padding, top/right/bottom/left), border-radius, "
+        "z-index. Box sizing (width, height, min-*, max-*, flex-basis) and the "
+        "families Stage 2a never tokenised (color, font, letter-spacing, border "
+        "and outline shorthand, box-shadow, transition, translate) are not "
+        "examined."
+    )
+
+
+check_style_literals()
+
 # 6c. Sitemap / robots.txt / webmanifest: single source in gen_pages.py
 sitemap_xml = gen_pages.generate_sitemap(catalog)
 sitemap_file = ROOT / "sitemap.xml"
