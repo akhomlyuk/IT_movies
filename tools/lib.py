@@ -181,7 +181,7 @@ CSS_MEDIA_EDGES = frozenset(
     | {BREAKPOINT_SCALE[3], BREAKPOINT_SCALE[4]}
 )
 
-BELOW_MD_MAX = 720
+BELOW_MD_MAX = 767
 
 
 def poster_sizes():

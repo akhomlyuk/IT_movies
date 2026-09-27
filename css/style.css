@@ -1326,7 +1326,7 @@ html.no-scroll-state.scrolled .scroll-top {
 
 @layer components {
 
-@media (min-width: 721px) and (max-width: 950px) {
+@media (min-width: 768px) and (max-width: 1023px) {
   .top {
     flex-wrap: wrap;
   }
@@ -1340,7 +1340,7 @@ html.no-scroll-state.scrolled .scroll-top {
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   .top {
     flex-direction: column;
   }
@@ -1498,7 +1498,7 @@ html.no-scroll-state.scrolled .scroll-top {
   }
 }
 
-@media (max-width: 525px) {
+@media (max-width: 575px) {
   .featured-grid {
     display: grid;
     grid-auto-flow: column;
@@ -1937,7 +1937,7 @@ html.no-scroll-state.scrolled .scroll-top {
 .share-btn[data-net="reddit"]:hover .share-ico { color: #ff4500; }
 .share-btn[data-net="native"]:hover .share-ico { color: var(--accent); }
 
-@media (min-width: 721px) {
+@media (min-width: 768px) {
   .film-main {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1948,7 +1948,7 @@ html.no-scroll-state.scrolled .scroll-top {
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   .film-poster {
     width: min(100%, 240px);
   }
@@ -1989,7 +1989,7 @@ html.no-scroll-state.scrolled .scroll-top {
   }
 }
 
-@media (max-width: 525px) {
+@media (max-width: 575px) {
   .related ul {
     grid-auto-columns: minmax(200px, 82%);
   }
@@ -2040,7 +2040,7 @@ html.no-scroll-state.scrolled .scroll-top {
   text-decoration-color: var(--ink);
 }
 
-@media (max-width: 720px) {
+@media (max-width: 767px) {
   .about-article {
     margin-top: var(--space-5);
     margin-bottom: var(--space-6);
@@ -2143,7 +2143,7 @@ html.no-scroll-state.scrolled .scroll-top {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-@media (max-width: 480px) {
+@media (max-width: 575px) {
   .profile {
     flex-direction: column;
     align-items: center;
