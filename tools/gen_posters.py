@@ -3,19 +3,17 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from lib import ROOT, load_catalog
+from lib import POSTER_VARIANT_WIDTHS, ROOT, load_catalog, variant_path
 
 from PIL import Image
 
-VARIANT_W = 400
-VARIANT_SUFFIX = "_400"
 HEAVY_BYTES = 100_000
 TARGET_BYTES = 50_000
 VARIANT_QUALITY = 78
 
 
-def variant_path(poster):
-    return ROOT / (poster[: -len(".webp")] + f"{VARIANT_SUFFIX}.webp")
+def scaled_height(w, h, width):
+    return max(1, round(h * width / w))
 
 
 def main():
@@ -39,16 +37,16 @@ def main():
                         f"cannot squeeze {poster} under {TARGET_BYTES} bytes"
                     )
             recompressed += 1
-        dst = variant_path(poster)
-        if dst.exists():
-            continue
-        with Image.open(src) as im:
-            w, h = im.size
-            vh = max(1, round(h * VARIANT_W / w))
-            im.resize((VARIANT_W, vh), Image.LANCZOS).save(
-                dst, "WEBP", quality=VARIANT_QUALITY, method=6
-            )
-        created += 1
+        for width in POSTER_VARIANT_WIDTHS:
+            dst = variant_path(poster, width)
+            if dst.exists():
+                continue
+            with Image.open(src) as im:
+                w, h = im.size
+                im.resize((width, scaled_height(w, h, width)), Image.LANCZOS).save(
+                    dst, "WEBP", quality=VARIANT_QUALITY, method=6
+                )
+            created += 1
     print(
         f"posters: {len(posters)} total, {created} variants created, "
         f"{recompressed} originals recompressed"

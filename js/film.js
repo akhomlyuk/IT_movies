@@ -20,6 +20,11 @@ let currentLang = "ru";
 
 const RC_CARD = window.FILM_RC_CARD || "";
 
+// The poster variant ladder, mirrored from tools/lib.py POSTER_VARIANT_WIDTHS.
+// verify.py parses this line and fails if the two ever disagree, so the copy in
+// JS cannot drift from the one gen_posters.py writes and gen_pages.py emits.
+const POSTER_VARIANT_WIDTHS = [96, 192, 400];
+
 const FILM_TEMPLATE = `
   <header class="top">
     <div class="brand">
@@ -272,10 +277,9 @@ const app = createApp({
     function relatedPosterSrcset(r) {
       if (!r.poster) return null;
       const src = relatedPoster(r);
-      const small = src.replace(/\.webp$/, "_400.webp");
-      const full = Number(r.posterW) || 0;
-      if (full > 0 && full !== 400) return `${small} 400w, ${src} ${full}w`;
-      return `${small} 400w`;
+      return POSTER_VARIANT_WIDTHS.map(
+        (w) => `${src.replace(/\.webp$/, "_" + w + ".webp")} ${w}w`
+      ).join(", ");
     }
 
     return {

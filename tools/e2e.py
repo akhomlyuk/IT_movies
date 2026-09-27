@@ -31,7 +31,8 @@ film page
      label and the related titles
  11. mobile layout at 390px: single h1 in the header, 4 related cards in one
      horizontal row, 2:3 poster boxes that are not cropped past the recorded
-     ceiling, related slugs drawn from FILM_PAGE.related
+     ceiling, related slugs drawn from FILM_PAGE.related, and a related-card
+     srcset that offers the whole ladder with each candidate's own width
 
 Each scenario uses a fresh browser context (localStorage is not shared,
 so the lang/theme persistence cannot leak between tests). Exits non-zero
@@ -51,7 +52,7 @@ from urllib.parse import quote
 from playwright.sync_api import expect, sync_playwright
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lib import ROOT  # noqa: E402
+from lib import POSTER_VARIANT_WIDTHS, ROOT, variant_name, webp_size  # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -273,9 +274,22 @@ def assert_related_posters(page):
         )
     srcsets = posters.evaluate_all("els => els.map(el => el.getAttribute('srcset'))")
     for srcset in srcsets:
-        assert srcset and srcset.endswith(" 400w") and srcset.count(",") == 0, (
-            f"related poster srcset must be a single 400w candidate, got {srcset!r}"
+        parts = [p.strip() for p in (srcset or "").split(",")]
+        assert len(parts) == len(POSTER_VARIANT_WIDTHS), (
+            f"related poster srcset must offer the whole ladder "
+            f"{list(POSTER_VARIANT_WIDTHS)}, got {srcset!r}"
         )
+        for part, width in zip(parts, POSTER_VARIANT_WIDTHS):
+            url, _, descriptor = part.rpartition(" ")
+            assert descriptor == f"{width}w", (
+                f"candidate {part!r} must carry its own width {width}w, ascending"
+            )
+            name = url.rsplit("/", 1)[-1]
+            dims = webp_size(ROOT / "static/posters" / name)
+            assert dims and dims[0] == width, (
+                f"candidate {name!r} is not a {width}px-wide file, so its descriptor "
+                f"lies about the file the browser would fetch"
+            )
 
 
 def test_film_theme(page, base):

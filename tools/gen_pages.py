@@ -16,7 +16,7 @@ import sys
 
 from datetime import datetime
 
-from lib import ROOT, SITE_BASE, load_catalog, make_slug, item_slug, ru_genres, has_rating, fmt_rating, webp_size, poster_sizes
+from lib import ROOT, SITE_BASE, POSTER_VARIANT_WIDTHS, load_catalog, make_slug, item_slug, ru_genres, has_rating, fmt_rating, variant_name, webp_size, poster_sizes
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -186,23 +186,35 @@ POSTER_SIZES = poster_sizes()
 FILMS_PREFIX = "../../"
 
 
-def poster_candidates(poster, prefix, single=False):
+def poster_candidates(poster, prefix, single=False, widths=None):
     """srcset candidates for a poster, each carrying its own measured width.
 
-    The 400w variant exists for every catalog poster, so its width is 400; the
-    full poster is usually wider, but for a poster whose full width is also
-    exactly 400 the two candidates would collide on the same width descriptor,
-    which makes the whole srcset invalid. Emit one candidate in that case.
+    `widths` selects which ladder rungs to offer, and each one is named and
+    described by the file that is actually on disk, never by the rung's nominal
+    width -- that is the bug Stage 0 fixed on the full-poster path and the same
+    rule applies to a variant. A rung whose file is missing or whose measured
+    width is not the rung's is dropped here and reported by verify.py, so a
+    partial ladder cannot produce a srcset that lies about what it offers.
+
+    `single=True` omits the full poster, which is what the related card wants:
+    its 96px box never selects a file wider than the 400w variant. The full
+    poster is only offered when its own width differs from the last rung's,
+    because two candidates on the same width descriptor make the srcset invalid.
     """
-    poster400 = poster[: -len(".webp")] + "_400.webp"
-    d400 = webp_size(ROOT / poster400)
-    full = webp_size(ROOT / poster)
+    if widths is None:
+        widths = POSTER_VARIANT_WIDTHS[-1:]
     candidates = []
-    if d400:
-        candidates.append(f"{prefix}{poster400} {d400[0]}w")
-        if not single and full and full[0] != d400[0]:
-            candidates.append(f"{prefix}{poster} {full[0]}w")
-    elif full:
+    last = None
+    for width in widths:
+        name = variant_name(poster, width)
+        dims = webp_size(ROOT / name)
+        if dims and dims[0] == width:
+            candidates.append(f"{prefix}{name} {dims[0]}w")
+            last = dims[0]
+    if single:
+        return candidates
+    full = webp_size(ROOT / poster)
+    if full and full[0] != last:
         candidates.append(f"{prefix}{poster} {full[0]}w")
     return candidates
 
@@ -732,7 +744,8 @@ def rc_values(r):
         "'../' + itemSlug(r) + '/'": f"../{item_slug(r)}/",
         "relatedPoster(r)": f"{FILMS_PREFIX}{poster}" if poster else "",
         "relatedPosterSrcset(r)": ", ".join(
-            poster_candidates(poster, FILMS_PREFIX, single=True)
+            poster_candidates(poster, FILMS_PREFIX, single=True,
+                              widths=POSTER_VARIANT_WIDTHS)
         ),
         "relatedTitle(r)": r["titleRu"],
         "relatedInfo(r)": " · ".join(

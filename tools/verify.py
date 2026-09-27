@@ -11,13 +11,12 @@ from html.parser import HTMLParser
 from xml.etree import ElementTree
 
 import gen_pages
-from lib import BELOW_MD_MAX, ROOT, SITE_BASE, BREAKPOINT_SCALE, CSS_MEDIA_EDGES, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating, poster_sizes, webp_size
+from lib import BELOW_MD_MAX, ROOT, SITE_BASE, BREAKPOINT_SCALE, CSS_MEDIA_EDGES, POSTER_VARIANT_WIDTHS, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating, poster_sizes, variant_name, variant_path, webp_size
 
 sys.stdout.reconfigure(encoding="utf-8")
 errors = []
 NO_WRITE = "--no-write" in sys.argv
 STRICT = "--strict" in sys.argv
-POSTER_VARIANT_WIDTH = 400
 RELATED_MEAN_OVERLAP = 1.513
 RELATED_MEAN_TOLERANCE = 0.04
 
@@ -111,34 +110,87 @@ for key, group in name_groups.items():
         errors.append(f"Posters differing only by case: {sorted(group)}")
 
 catalog_posters = sorted({i["poster"].lstrip("/") for i in catalog if i.get("poster")})
-variant_paths = {
-    p: ROOT / (p[: -len(".webp")] + "_400.webp") for p in catalog_posters
-}
-missing_variants = [p for p, path in variant_paths.items() if not path.exists()]
+# The whole ladder is required, from lib.POSTER_VARIANT_WIDTHS, not a hand-typed
+# 400. A gate that named one rung would stay green while 96w or 192w silently
+# stopped being generated, which is the only way an incomplete ladder is visible
+# to a reviewer reading a diff.
+missing_variants = []
+wrong_width = []
+wrong_ratio = []
+for p in catalog_posters:
+    src_dims = webp_size(ROOT / p)
+    for width in POSTER_VARIANT_WIDTHS:
+        path = variant_path(p, width)
+        if not path.exists():
+            missing_variants.append((p, width))
+            continue
+        dims = webp_size(path)
+        if not dims or dims[0] != width:
+            wrong_width.append((p, width, dims[0] if dims else "unreadable"))
+        elif src_dims:
+            want_h = max(1, round(src_dims[1] * width / src_dims[0]))
+            if dims[1] != want_h:
+                wrong_ratio.append((p, width, dims[1], want_h))
 if missing_variants:
+    per_width = collections.Counter(w for _, w in missing_variants)
     errors.append(
-        f"poster _400 variants missing: {len(missing_variants)} — run tools/gen_posters.py"
+        "poster variants missing: %d file(s), by width %s — run tools/gen_posters.py"
+        % (len(missing_variants),
+           ", ".join("%dw:%d" % (w, per_width[w]) for w in POSTER_VARIANT_WIDTHS
+                     if per_width[w]))
+        + " first: " + ", ".join("%s@%dw" % (p, w) for p, w in missing_variants[:5])
     )
 else:
     print(
-        f"Poster variants: _400 present for {len(catalog_posters)} posters (gen_posters.py)"
+        "Poster variants: ladder %s present for %d posters (%d files)"
+        % (", ".join("%dw" % w for w in POSTER_VARIANT_WIDTHS), len(catalog_posters),
+           len(catalog_posters) * len(POSTER_VARIANT_WIDTHS))
     )
-    wrong_width = []
-    for p, path in variant_paths.items():
-        dims = webp_size(path)
-        if not dims or dims[0] != POSTER_VARIANT_WIDTH:
-            wrong_width.append((p, dims[0] if dims else "unreadable"))
-    if wrong_width:
+if wrong_width:
+    errors.append(
+        "poster variants not exactly their rung width: %d of %d — "
+        % (len(wrong_width), len(catalog_posters) * len(POSTER_VARIANT_WIDTHS))
+        + ", ".join("%s@%dw is %s" % (p, w, got) for p, w, got in wrong_width[:5])
+    )
+if wrong_ratio:
+    errors.append(
+        "poster variants whose height is not the source ratio rounded to its rung: "
+        "%d of %d — "
+        % (len(wrong_ratio), len(catalog_posters) * len(POSTER_VARIANT_WIDTHS))
+        + ", ".join("%s@%dw is %spx tall, ratio wants %spx" % r
+                    for r in wrong_ratio[:5])
+    )
+if not (missing_variants or wrong_width or wrong_ratio):
+    print(
+        "Poster variants: all %d files at their rung width and the source aspect ratio"
+        % (len(catalog_posters) * len(POSTER_VARIANT_WIDTHS))
+    )
+
+# The ladder is one definition in lib.py, mirrored into js/film.js because the
+# client builds the related card's srcset itself. A mirror nobody checks is a
+# second definition, so the two are compared here, in both shipped copies.
+ladder_re = re.compile(
+    r"POSTER_VARIANT_WIDTHS\s*=\s*\[([0-9,\s]*)\]"
+)
+for js_name in ("js/film.js", "js/film.min.js"):
+    js_text = (ROOT / js_name).read_text(encoding="utf-8")
+    m = ladder_re.search(js_text)
+    if not m:
         errors.append(
-            f"poster _400 variants not exactly {POSTER_VARIANT_WIDTH}px wide: "
-            f"{len(wrong_width)} of {len(catalog_posters)} — "
-            + ", ".join("%s (%s)" % (p, w) for p, w in wrong_width[:5])
+            f"{js_name}: POSTER_VARIANT_WIDTHS not found — the related card's "
+            f"srcset candidates come from this mirror, and a mirror that is not "
+            f"there is a mirror that has stopped being read"
+        )
+        continue
+    js_widths = tuple(int(n) for n in m.group(1).replace(" ", "").split(",") if n)
+    if js_widths != POSTER_VARIANT_WIDTHS:
+        errors.append(
+            f"{js_name}: POSTER_VARIANT_WIDTHS is {list(js_widths)} but "
+            f"lib.POSTER_VARIANT_WIDTHS is {list(POSTER_VARIANT_WIDTHS)} — one "
+            f"definition is the whole point; fix the mirror, not the ladder"
         )
     else:
-        print(
-            f"Poster variants: all {len(catalog_posters)} _400 files exactly "
-            f"{POSTER_VARIANT_WIDTH}px wide"
-        )
+        print(f"Poster ladder: {js_name} mirrors {list(POSTER_VARIANT_WIDTHS)}")
 
 # 4b. Film pages exist and match the current generator (gen_pages.py)
 for item in catalog:

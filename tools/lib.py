@@ -188,3 +188,24 @@ BELOW_MD_MAX = BREAKPOINT_SCALE[2] - 1
 
 def poster_sizes():
     return "(max-width: %dpx) 92vw, 300px" % BELOW_MD_MAX
+
+
+# The poster variant ladder, in one place. Widths are the source of truth and a
+# file's suffix is derived from its width, so a width cannot be added without its
+# naming. gen_posters.py writes the ladder, gen_pages.py emits it as srcset
+# candidates, verify.py gates on it and re-checks the copy js/film.js carries.
+# 96 and 192 are the related card's 96px box at 1x and 2x; 400 is the width the
+# lightbox and the catalog table already select.
+POSTER_VARIANT_WIDTHS = (96, 192, 400)
+
+
+def variant_suffix(width):
+    return "_%d" % width
+
+
+def variant_name(poster, width):
+    return poster[: -len(".webp")] + variant_suffix(width) + ".webp"
+
+
+def variant_path(poster, width, root=ROOT):
+    return root / variant_name(poster, width)
