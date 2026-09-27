@@ -11,7 +11,7 @@ from html.parser import HTMLParser
 from xml.etree import ElementTree
 
 import gen_pages
-from lib import BELOW_MD_MAX, ROOT, SITE_BASE, BREAKPOINT_SCALE, CSS_MEDIA_EDGES, POSTER_VARIANT_WIDTHS, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating, poster_sizes, variant_name, variant_path, webp_size
+from lib import BELOW_MD_MAX, ROOT, SITE_BASE, BREAKPOINT_SCALE, CSS_MEDIA_EDGES, POSTER_BOX_DESKTOP, POSTER_BOX_MOBILE, POSTER_VARIANT_WIDTHS, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating, poster_sizes, variant_name, variant_path, webp_size
 
 sys.stdout.reconfigure(encoding="utf-8")
 errors = []
@@ -681,13 +681,32 @@ check_style_literals()
 # a page says nothing about which poster width the browser will ask for. Freshness is
 # 4b's job; this asks whether fresh is also right, and the answer has to hold for the slot
 # sizes and not just for the edge.
+#
+# CONSISTENCY, AND WHAT IT CANNOT SEE. Comparing every emitted value to
+# lib.poster_sizes() tells you the tree agrees with itself. It cannot tell you the
+# agreed-on value is right: edit the value and every page follows it, and this check
+# stays green through a change that is wrong in both directions at once -- which is what
+# `(max-width: 767px) 92vw, 300px` was, +194% against the 240px mobile box at 767px and
+# -6.25% against the 320px desktop box at 1280px. So the check that was missing is
+# below, and it is a SHAPE check against the measured boxes, not a comparison to a
+# literal: every slot must be a bare px length, and it must be at least as large as the
+# box it describes. The direction is the whole point. A slot wider than its box only
+# costs bytes; a slot narrower than it makes the browser fetch a source smaller than the
+# box renders and scale it up into a blur, and that failure is invisible to every
+# consistency gate in this file. A viewport-relative slot cannot be compared at all,
+# which is why `92vw` is now an error and not a value: it is a guess about a box that is
+# a fixed width, and it was wrong at both ends of its range.
 POSTER_SIZES_ATTR = re.compile(
     r"""\b(?:image)?sizes\s*=\s*(?P<q>["'])(?P<value>[^"']*)(?P=q)""")
 POSTER_SIZES_ASSIGNMENT = re.compile(r"^POSTER_SIZES\s*=\s*(?P<rhs>.+?)\s*$", re.MULTILINE)
-POSTER_SLOT_TAIL = "92vw, 300px"
+POSTER_SLOT_LENGTH = re.compile(r"^(\d+(?:\.\d+)?)px$")
 POSTER_SLOT_CONDITION = "(max-width: %dpx)" % BELOW_MD_MAX
 POSTER_SIZES_PER_PAGE = 2
+POSTER_SIZES_SLOTS = 2
 POSTER_SIZES_SHADOW = re.compile(r"^\s*(?:def\s+poster_sizes|poster_sizes\s*[:=])", re.MULTILINE)
+POSTER_BOX_SELECTOR = ".film-poster"
+POSTER_BOX_DECLARATIONS = r"\b(?:min-)?(?:max-)?width\s*:\s*([^;]+);"
+POSTER_BOX_PX = re.compile(r"(\d+(?:\.\d+)?)px")
 
 
 def sizes_attributes(text):
@@ -701,36 +720,115 @@ def responsive_sizes(values):
     return {v: n for v, n in values.items() if POSTER_SLOT_CONDITION.split()[0] in v}
 
 
-def check_poster_slot_size(where, values, canonical):
-    for value in sorted(values):
-        if value == canonical:
+def poster_slot_slots(value):
+    """(governing condition, [slot, ...]) for a `sizes` value.
+
+    The condition is the value's own leading media condition, normalised to single
+    spaces, or None when the value declares an unconditional slot. `(None, None)`
+    means the leading condition never closes, so no slot can be attributed to a
+    band and the caller must not go on to compare any of them.
+    """
+    text = value.strip()
+    if text.startswith("("):
+        depth = 0
+        for i, ch in enumerate(text):
+            if ch == "(":
+                depth += 1
+            elif ch == ")":
+                depth -= 1
+                if depth == 0:
+                    return " ".join(text[:i + 1].split()), [
+                        p.strip() for p in text[i + 1:].split(",") if p.strip()]
+        return None, None
+    return None, [p.strip() for p in text.split(",") if p.strip()]
+
+
+def check_poster_slot_shape(where, value):
+    """Every declared slot is a px length, and none is narrower than its box."""
+    condition, slots = poster_slot_slots(value)
+    if slots is None:
+        errors.append(
+            f"Poster slot size: {where} declares sizes={value!r}, whose leading media "
+            f"condition never closes, so no slot can be attributed to a band and this "
+            f"check cannot tell which box it is describing"
+        )
+        return
+    if condition is not None and condition != POSTER_SLOT_CONDITION:
+        errors.append(
+            f"Poster slot size: {where} declares a responsive sizes={value!r} whose "
+            f"condition is {condition!r}, not {POSTER_SLOT_CONDITION!r}. The "
+            f"breakpoint is the band the browser switches in")
+        return
+    if len(slots) != POSTER_SIZES_SLOTS:
+        errors.append(
+            f"Poster slot size: {where} declares sizes={value!r} with {len(slots)} "
+            f"slot(s), expected {POSTER_SIZES_SLOTS} -- one for the {POSTER_BOX_MOBILE}px "
+            f"mobile box and one for the {POSTER_BOX_DESKTOP}px desktop box. A single slot "
+            f"describes neither band correctly"
+        )
+        return
+    for slot, box, name in zip(slots,
+                               (POSTER_BOX_MOBILE, POSTER_BOX_DESKTOP),
+                               ("mobile", "desktop")):
+        m = POSTER_SLOT_LENGTH.match(slot)
+        if m is None:
+            errors.append(
+                f"Poster slot size: {where} declares the {name} slot as {slot!r}, which is "
+                f"not a bare px length, so it cannot be compared with the {box}px {name} "
+                f"box this poster occupies. A viewport-relative or percentage slot is a "
+                f"guess about a box that is a fixed width, and it is unbounded above, so "
+                f"there is no value of it that this check could certify"
+            )
             continue
-        head, sep, tail = value.partition(POSTER_SLOT_CONDITION)
-        if not sep:
-            condition = head.strip()
+        declared = float(m.group(1))
+        if declared < box:
             errors.append(
-                f"Poster slot size: {where} declares a responsive sizes={value!r} whose "
-                f"condition is {condition!r}, not {POSTER_SLOT_CONDITION!r}. The "
-                f"breakpoint is the band the browser switches in, and the canonical value "
-                f"is {canonical!r}")
-        elif tail.strip() != POSTER_SLOT_TAIL:
+                f"Poster slot size: {where} declares {slot} for the {name} poster box, "
+                f"which is {box}px -- {box - declared:g}px too narrow. A slot smaller than "
+                f"its box makes the browser fetch a source smaller than the box renders "
+                f"and scale it up, and no consistency check can see that: the emitted "
+                f"value and lib.poster_sizes() agree perfectly while both are wrong. "
+                f"Declare {box}px or more"
+            )
+
+
+def check_poster_box_source():
+    """The two box widths are measured facts, but they are facts about
+    css/style.css, so the stylesheet is the witness. If the hero's caps move and
+    lib.POSTER_BOX_MOBILE/POSTER_BOX_DESKTOP do not, every emitted slot is wrong
+    and this says which px widths the hero rules actually carry. It reads
+    declarations, not text, and it names what it found rather than only what it
+    wanted."""
+    path = ROOT / "css" / "style.css"
+    if not path.exists():
+        errors.append(
+            f"Poster slot size: {path.name} is missing, so the box widths this check "
+            f"compares slots against have no witness in the stylesheet at all"
+        )
+        return
+    src = re.sub(r"/\*.*?\*/", "", path.read_text(encoding="utf-8"), flags=re.S)
+    found = set()
+    for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", src):
+        if POSTER_BOX_SELECTOR not in m.group(1):
+            continue
+        for d in re.finditer(POSTER_BOX_DECLARATIONS, m.group(2)):
+            found.update(float(px) for px in POSTER_BOX_PX.findall(d.group(1)))
+    for name, box in (("POSTER_BOX_MOBILE", POSTER_BOX_MOBILE),
+                      ("POSTER_BOX_DESKTOP", POSTER_BOX_DESKTOP)):
+        if box not in found:
             errors.append(
-                f"Poster slot size: {where} declares sizes={value!r}, whose slot sizes "
-                f"after {POSTER_SLOT_CONDITION!r} are {tail.strip()!r}, not "
-                f"{POSTER_SLOT_TAIL!r}. A right breakpoint with a wrong slot size still "
-                f"overfetches: 100vw asks for the whole viewport width and 405px for the "
-                f"entire poster, either of which defeats every 400w variant. The "
-                f"canonical value is {canonical!r}")
+                f"Poster slot size: lib.{name} is {box} but no {POSTER_BOX_SELECTOR} "
+                f"width declaration in {path.name} carries {box:g}px -- the widths those "
+                f"rules do carry are {sorted(found)}. The box is measured from the "
+                f"stylesheet, so if the stylesheet moved the cap this constant is stale "
+                f"and every slot compared against it is wrong"
+            )
 
 
 def check_poster_sizes():
     canonical = poster_sizes()
-    if not canonical.endswith(POSTER_SLOT_TAIL) or POSTER_SLOT_CONDITION not in canonical:
-        errors.append(
-            f"Poster sizes: lib.poster_sizes() is {canonical!r}, which does not carry "
-            f"{POSTER_SLOT_CONDITION!r} followed by {POSTER_SLOT_TAIL!r}. This check "
-            f"polices the breakpoint and the slot sizes together, so if either were "
-            f"re-keyed its expectations have to be re-derived from the same source")
+    check_poster_slot_shape("lib.poster_sizes()", canonical)
+    check_poster_box_source()
     sources = [
         ("js/film.js", sizes_attributes((ROOT / "js" / "film.js").read_text(encoding="utf-8"))),
         ("js/film.min.js", sizes_attributes((ROOT / "js" / "film.min.js").read_text(encoding="utf-8"))),
@@ -752,7 +850,9 @@ def check_poster_sizes():
         name = f"films/{page.parent.name}/index.html"
         if canonical not in responsive:
             stale.append((page.relative_to(ROOT).as_posix(), sorted(responsive) or ["none"]))
-        check_poster_slot_size(name, responsive, canonical)
+        for value in sorted(responsive):
+            if value != canonical:
+                check_poster_slot_shape(name, value)
         if sum(responsive.values()) != POSTER_SIZES_PER_PAGE:
             errors.append(
                 f"Poster sizes: {name} declares {sum(responsive.values())} responsive "
@@ -782,7 +882,9 @@ def check_poster_sizes():
             errors.append(
                 f"Poster sizes: {where} carries {sorted(responsive) or ['no responsive sizes attribute']}"
                 f", lib.poster_sizes() is {canonical!r}")
-        check_poster_slot_size(where, responsive, canonical)
+        for value in sorted(responsive):
+            if value != canonical:
+                check_poster_slot_shape(where, value)
     if stale:
         sample = "; ".join(f"{p} -> {f}" for p, f in stale[:3])
         errors.append(
@@ -790,7 +892,9 @@ def check_poster_sizes():
             f"{canonical!r} -- {sample} -- run gen_pages.py")
     print(
         f"Poster sizes: {canonical} -- single source lib.poster_sizes() on "
-        f"BREAKPOINT_SCALE {list(BREAKPOINT_SCALE)}; {len(pages)} film page(s), "
+        f"BREAKPOINT_SCALE {list(BREAKPOINT_SCALE)}; slots {POSTER_BOX_MOBILE}px mobile / "
+        f"{POSTER_BOX_DESKTOP}px desktop, each >= the measured box it describes; "
+        f"{len(pages)} film page(s), "
         f"{responsive_total} responsive sizes attribute(s) checked "
         f"({len(pages) * POSTER_SIZES_PER_PAGE} expected) alongside {fixed_total} "
         f"fixed-size ones (related thumbnail, icons) deliberately ignored; "

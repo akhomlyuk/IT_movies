@@ -185,9 +185,31 @@ CSS_MEDIA_EDGES = frozenset(
 
 BELOW_MD_MAX = BREAKPOINT_SCALE[2] - 1
 
+# The hero poster's real boxes, measured 2026-09-28 on a live film page with
+# Playwright at device_scale_factor 1: `getBoundingClientRect()` of
+# `.film-poster img` reads 240px at every viewport from 328px to 767px and 320px
+# at every viewport from 768px to 1920px. Both are constants, not viewport
+# fractions, because both are caps in css/style.css (`min(100%, 240px)` and
+# `min(320px, 100%)`); below 328px the figure is squeezed by the page padding and
+# reads smaller, so 240 is the largest the mobile band ever gets.
+#
+# `sizes` states a slot in CSS px and the browser scales it by the device pixel
+# ratio itself, so these are the numbers to declare -- a 3x DPR phone needing 720
+# device px is a missing-candidate problem, not a wrong-slot problem.
+#
+# There is a third poster box, `.poster-modal-inner > img` in the lightbox, and
+# it is deliberately absent: it lives on index.html, not on a film page, and it
+# carries a bare `src` with no `srcset` and no `sizes`, and a `sizes` with no
+# `srcset` is not read by the browser at all. One value cannot describe three
+# boxes; it describes the two this poster actually occupies, and the lightbox is
+# recorded as residue rather than guessed at from here.
+POSTER_BOX_MOBILE = 240
+POSTER_BOX_DESKTOP = 320
+
 
 def poster_sizes():
-    return "(max-width: %dpx) 92vw, 300px" % BELOW_MD_MAX
+    return "(max-width: %dpx) %dpx, %dpx" % (
+        BELOW_MD_MAX, POSTER_BOX_MOBILE, POSTER_BOX_DESKTOP)
 
 
 # The poster variant ladder, in one place. Widths are the source of truth and a
