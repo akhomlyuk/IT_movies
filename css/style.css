@@ -1810,7 +1810,9 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 .film-desc-alt-wrap > summary {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
   margin-bottom: var(--space-2);
   color: var(--muted);
   font-size: var(--fs-sm);
@@ -1897,6 +1899,9 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 .breadcrumb a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
   color: var(--ink);
   text-decoration: underline;
   text-decoration-color: var(--line-strong);
