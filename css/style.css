@@ -1590,6 +1590,10 @@ html.no-scroll-state.scrolled .scroll-top {
     display: none;
   }
 
+  html.js .catalog-tools {
+    margin-top: var(--space-4);
+  }
+
   .nav--dialog {
     flex-direction: column;
     flex-wrap: nowrap;

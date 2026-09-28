@@ -226,6 +226,12 @@ def test_featured_breakpoints(page, base):
     )
 
 
+HEADER_TOOLS_GAP = """
+  () => document.querySelector('.catalog-tools').getBoundingClientRect().top
+       - document.querySelector('header.top').getBoundingClientRect().bottom
+"""
+
+
 def test_nav_tier(page, base):
     """Exactly one navigation affordance at every width, with and without JS.
 
@@ -268,6 +274,12 @@ def test_nav_tier(page, base):
         assert page.evaluate(
             "document.documentElement.scrollWidth <= document.documentElement.clientWidth"
         ), f"@{width}: the document overflows horizontally"
+        assert page.evaluate(HEADER_TOOLS_GAP) >= 8, (
+            f"@{width}: the header's accent rule must not touch the tools row; "
+            f"measured {page.evaluate(HEADER_TOOLS_GAP):.2f}px. The separation is "
+            f"declared nowhere in the stylesheet -- it arrived as nav.nav's own "
+            f"margin, and display:none takes that margin with the element."
+        )
 
     page.set_viewport_size(XS)
     page.goto(base + "index.html", wait_until="domcontentloaded")
@@ -334,6 +346,10 @@ def test_nav_tier(page, base):
             )
             assert d["inlineAnchors"] == 3, (
                 f"@{width} without JS: expected 3 inline anchors, got {d['inlineAnchors']}"
+            )
+            assert npage.evaluate(HEADER_TOOLS_GAP) >= 8, (
+                f"@{width} without JS: the accent rule must not touch the tools row; "
+                f"measured {npage.evaluate(HEADER_TOOLS_GAP):.2f}px"
             )
     finally:
         nojs.close()
