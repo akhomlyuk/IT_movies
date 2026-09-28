@@ -1897,7 +1897,7 @@ html.no-scroll-state.scrolled .scroll-top {
 .share-row {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--space-1);
   margin: var(--space-4) 0 0;
 }
 
