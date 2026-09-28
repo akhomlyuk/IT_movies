@@ -193,17 +193,23 @@ for js_name in ("js/film.js", "js/film.min.js"):
     else:
         print(f"Poster ladder: {js_name} mirrors {list(POSTER_VARIANT_WIDTHS)}")
 
-# 4c. Poster crop: the discarded-AREA bound. The arithmetic lives in
-# poster_crop.py and is imported, never re-derived here, so the number this gate
-# fails on and the number `python tools/poster_crop.py` prints cannot drift.
+# 4c. Poster crop: the discarded-AREA bound, REPORTED and no longer gating.
+# The arithmetic lives in poster_crop.py and is imported, never re-derived here,
+# so the number printed below and the number `python tools/poster_crop.py` prints
+# cannot drift. That tool still EXITS 1 when the bound is exceeded, and the bound
+# is still 0.02; only this run's exit code is no longer derived from it.
 #
 # This is the successor to the browser probe's `POSTER_CROP_CEILING`, which was
 # 3.1x above the worst value in its own 4-poster sample and was an aspect-ratio
 # deviation rather than an area loss, so it bounded nothing anybody assumed it
-# bounded. The bound now is poster_crop.DISCARDED_AREA_CEILING and the library
-# does NOT meet it: the offenders are printed by name below, one line each,
-# because a ceiling whose failure list is truncated is a ceiling whose failure
-# nobody can act on.
+# bounded. Fixing the QUANTITY was correct and stands. But the library does not
+# meet the resulting bound, and on 2026-09-28 the partner viewed the rendered
+# cover-vs-frame comparison and ruled that the discarded area is not a visible
+# defect. A gate that fails on harm the product does not have is not a gate, it
+# is a veto on the wrong question, so it reports and no longer fails. The
+# offenders are still printed by name, one line each, in the same order and
+# wording as when this failed: the record has to stay readable, because a number
+# that can only be re-found by git archaeology is a number that has gone quiet.
 crop_records = poster_crop.measure_library()
 crop_failing = poster_crop.over_ceiling(crop_records, poster_crop.DISCARDED_AREA_CEILING)
 crop_proxy = poster_crop.describe([r.proxy for r in crop_records])
@@ -240,22 +246,35 @@ print(
                  for r in poster_crop.worst(crop_records, "discarded")))
 )
 if crop_failing:
-    for record in crop_failing:
-        errors.append(
-            "poster discards %.5f of its area into a %dx%d box (%dx%d source, proxy "
-            "%.5f) — over DISCARDED_AREA_CEILING %s: %s"
-            % (record.discarded, crop_box[0], crop_box[1], record.width,
-               record.height, record.proxy, poster_crop.DISCARDED_AREA_CEILING,
-               record.poster)
-        )
     print(
-        "  BOUND: %d of %d posters (%.1f%%) exceed DISCARDED_AREA_CEILING %s, worst "
-        "%.5f — the ceiling is the project's declared 0.02 standard applied to the "
-        "quantity that costs area, and the library does not meet it"
+        "  BOUND NOT MET: %d of %d posters (%.1f%%) exceed DISCARDED_AREA_CEILING "
+        "%s, worst %.5f"
         % (len(crop_failing), len(crop_records),
            len(crop_failing) * 100.0 / len(crop_records),
            poster_crop.DISCARDED_AREA_CEILING, crop_failing[0].discarded)
     )
+    print(
+        "  NOT A GATE FAILURE, AND NOT REPAIRED. The ceiling is unchanged at %s and "
+        "every offender below is still over it. The partner ruled on 2026-09-28, "
+        "having viewed the rendered comparison in _tmp/frame-preview.html, that "
+        "cover with no frame is the intended rendering and that the discarded "
+        "pixels do not read as damage; framing (one CSS declaration, zero discarded "
+        "area on all 154) and re-encoding 135 sources to 2:3 were both declined. "
+        "This gate was silenced because it measures harm the product does not "
+        "have, NOT because the library passes. Do not read the green run as a "
+        "repair, and do not raise the ceiling to make the wording match."
+        % poster_crop.DISCARDED_AREA_CEILING
+    )
+    print("  the %d offenders, by name, as they were when this failed:"
+          % len(crop_failing))
+    for record in crop_failing:
+        print(
+            "    poster discards %.5f of its area into a %dx%d box (%dx%d source, "
+            "proxy %.5f) - over DISCARDED_AREA_CEILING %s: %s"
+            % (record.discarded, crop_box[0], crop_box[1], record.width,
+               record.height, record.proxy, poster_crop.DISCARDED_AREA_CEILING,
+               record.poster)
+        )
 else:
     print("  BOUND: every poster is within DISCARDED_AREA_CEILING %s"
           % poster_crop.DISCARDED_AREA_CEILING)
