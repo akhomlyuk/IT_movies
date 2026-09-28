@@ -40,6 +40,12 @@ film page
      selected file verified against disk, related slugs drawn from
      FILM_PAGE.related, and a related-card srcset that offers the whole ladder with
      each candidate's own width
+  12. nav tier: exactly one navigation affordance reachable at 320/375/575/576/
+      768/1280 -- burger below xs, inline row above it, never both and never
+      neither; the xs dialog is a real modal (showModal) whose focus trap holds
+      and whose Esc returns focus to the burger; and with JavaScript DISABLED the
+      burger is absent and the inline row still carries all three anchors, so a
+      JS-only control cannot lock the no-JS reader out of the nav
 
 Each scenario uses a fresh browser context (localStorage is not shared,
 so the lang/theme persistence cannot leak between tests). Exits non-zero
@@ -88,6 +94,26 @@ RELATED_POSTER_RENDERED = """() => {
   return out;
 }"""
 RU_SORT_KEY = None
+
+AFFORDANCES = """() => {
+  const shown = (el) => {
+    if (!el) return false;
+    const r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0 && getComputedStyle(el).display !== 'none';
+  };
+  const burger = document.querySelector('button.menu-toggle');
+  const inline = document.querySelector('nav.nav:not(.nav--dialog)');
+  return {
+    burger: shown(burger),
+    burgerExpanded: burger ? burger.getAttribute('aria-expanded') : null,
+    burgerControls: burger ? burger.getAttribute('aria-controls') : null,
+    burgerHaspopup: burger ? burger.getAttribute('aria-haspopup') : null,
+    burgerLabel: burger ? burger.getAttribute('aria-label') : null,
+    inline: shown(inline),
+    inlineAnchors: shown(inline) ? inline.querySelectorAll('a').length : 0,
+    dialogInDom: !!document.getElementById('nav-dialog'),
+  };
+}"""
 
 
 def is_latin_script(text):
@@ -198,6 +224,119 @@ def test_featured_breakpoints(page, base):
     assert page.evaluate("document.documentElement.scrollWidth <= document.documentElement.clientWidth"), (
         "sm tier overflows the document horizontally"
     )
+
+
+def test_nav_tier(page, base):
+    """Exactly one navigation affordance at every width, with and without JS.
+
+    The invariant is reachability, not the mechanism: the burger and the inline
+    row are two implementations of one affordance, and the page may use either,
+    but never both at once and never neither. The dialog must be a real modal --
+    the platform's own, so that Esc and the focus trap are the browser's.
+    """
+    xs = [320, 375, 575]
+    above = [576, 768, 1280]
+    for width in xs + above:
+        page.set_viewport_size({"width": width, "height": 900})
+        page.goto(base + "index.html", wait_until="domcontentloaded")
+        expect(page.locator("nav.nav:not(.nav--dialog) a")).to_have_count(3)
+        d = page.evaluate(AFFORDANCES)
+        assert d["dialogInDom"], f"@{width}: the dialog must exist in the DOM"
+        total = int(d["burger"]) + int(d["inline"])
+        assert total == 1, (
+            f"@{width}: exactly one navigation affordance must be reachable, got "
+            f"burger={d['burger']} inline={d['inline']} (both/neither is the defect)"
+        )
+        if width in xs:
+            assert d["burger"], f"@{width}: xs must offer the burger, not the inline row"
+            assert d["burgerExpanded"] == "false", (
+                f"@{width}: a closed dialog must report aria-expanded=false, "
+                f"got {d['burgerExpanded']!r}"
+            )
+            assert d["burgerHaspopup"] == "dialog", (
+                f"@{width}: the burger must declare aria-haspopup=dialog, "
+                f"got {d['burgerHaspopup']!r}"
+            )
+            assert d["burgerControls"], f"@{width}: the burger must name what it controls"
+            assert d["burgerLabel"], f"@{width}: the burger needs an accessible name"
+        else:
+            assert d["inline"], f"@{width}: above xs the inline row is the affordance"
+            assert d["inlineAnchors"] == 3, (
+                f"@{width}: the inline row must keep all three anchors, "
+                f"got {d['inlineAnchors']}"
+            )
+        assert page.evaluate(
+            "document.documentElement.scrollWidth <= document.documentElement.clientWidth"
+        ), f"@{width}: the document overflows horizontally"
+
+    page.set_viewport_size(XS)
+    page.goto(base + "index.html", wait_until="domcontentloaded")
+    burger = page.locator("button.menu-toggle")
+    expect(burger).to_have_attribute("aria-expanded", "false")
+    burger.click()
+    dialog = page.locator("dialog#nav-dialog")
+    expect(dialog).to_have_attribute("open", "")
+    assert page.evaluate("document.getElementById('nav-dialog').matches(':modal')"), (
+        "the dialog must be a real modal (showModal), not a styled panel"
+    )
+    expect(burger).to_have_attribute("aria-expanded", "true")
+    assert page.evaluate("document.activeElement.closest('dialog') !== null"), (
+        "opening must move focus into the dialog"
+    )
+    inside = page.evaluate(
+        "() => document.getElementById('nav-dialog')"
+        ".querySelectorAll('a,button').length"
+    )
+    # The invariant is that no focusable control OUTSIDE the dialog ever takes
+    # focus. The browser's modal cycle passes through <body> on its way back
+    # around, so <body> is the seam, not an escape; a control outside is.
+    for i in range(inside + 2):
+        page.keyboard.press("Tab")
+        escaped = page.evaluate("""
+          () => {
+            const a = document.activeElement;
+            if (a === document.body || a === document.documentElement) return null;
+            return a.closest('dialog') ? null : (a.className || a.tagName);
+          }
+        """)
+        assert escaped is None, (
+            f"Tab {i + 1} put focus on {escaped!r}, outside the open dialog; "
+            f"the trap is the platform's to provide"
+        )
+    assert page.evaluate(
+        "document.activeElement.closest('dialog') !== null"
+    ), "the dialog's tab cycle must close back inside itself"
+    page.keyboard.press("Escape")
+    expect(dialog).not_to_have_attribute("open", "")
+    assert page.evaluate("document.getElementById('nav-dialog').open") is False, (
+        "Esc must close the dialog -- the browser's own, not a handler"
+    )
+    assert page.evaluate(
+        "document.activeElement === document.querySelector('button.menu-toggle')"
+    ), "Esc must return focus to the burger"
+    expect(burger).to_have_attribute("aria-expanded", "false")
+
+    nojs = page.context.browser.new_context(
+        java_script_enabled=False, locale="ru-RU"
+    )
+    try:
+        npage = nojs.new_page()
+        for width in xs:
+            npage.set_viewport_size({"width": width, "height": 900})
+            npage.goto(base + "index.html", wait_until="domcontentloaded")
+            d = npage.evaluate(AFFORDANCES)
+            assert not d["burger"], (
+                f"@{width} without JS: the burger cannot work, so it must not be shown"
+            )
+            assert d["inline"], (
+                f"@{width} without JS: the inline nav is the only affordance left and "
+                f"must stay visible -- a JS-only control would lock the nav out"
+            )
+            assert d["inlineAnchors"] == 3, (
+                f"@{width} without JS: expected 3 inline anchors, got {d['inlineAnchors']}"
+            )
+    finally:
+        nojs.close()
 
 
 def test_about_page(page, base):
@@ -481,6 +620,7 @@ def main():
                 test_main_filter,
                 test_genre_filter,
                 test_featured_breakpoints,
+                test_nav_tier,
                 test_about_page,
                 test_main_lang,
                 test_film_theme,

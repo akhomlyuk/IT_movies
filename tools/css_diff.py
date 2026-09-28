@@ -45,16 +45,23 @@ view. A target that is present but does NOT match ``:focus-visible`` after
 focusing is a hard capture error, never a silent pass, because a focus pass that
 stopped matching would otherwise go green while observing no ring.
 
-``FOCUS_TARGETS`` is the list of 19 selectors the pass reads. It is built from the
-13 rules in ``css/style.css`` that actually carry an ``outline`` declaration --
+``FOCUS_TARGETS`` is the list of 23 selectors the pass reads. It is built from the
+16 rules in ``css/style.css`` that actually carry an ``outline`` declaration --
 ``.reset-filters``, ``.theme-toggle``/``.lang``, ``.genre-filter``, ``.search``,
-``.fav-filter``, ``.lucky``, ``.featured-card``, ``th.sortable .th-sort``,
-``.poster-icon``, ``.poster-close``, ``.skip-link``, ``#main`` and
-``.related a.rc`` -- plus ``.nav a`` and a few other interactive controls with no
-author ring, so the absence of a ring is proved as well as its presence. Each
-entry's ``state`` names the phase that can reach the target: ``"default"`` when it
-is in the DOM as loaded, otherwise the phase that drives the page into the state
-rendering it.
+``.fav-filter``, ``.lucky``, ``.menu-toggle``, ``.nav-dialog-close``,
+``.featured-card``, ``th.sortable .th-sort``, ``.poster-icon``,
+``.poster-close``, ``.skip-link``, ``#main``, ``.related a.rc`` and
+``.profile-links a`` (the last is on ``/about.html`` only) -- plus the nav
+anchors and a few other interactive controls with no author ring, so the absence
+of a ring is proved as well as its presence.
+Each entry's ``state`` names the phase that can reach the target: ``"default"``
+when it is in the DOM as loaded, otherwise the phase that drives the page into
+the state rendering it. A target that is in the DOM but not *rendered* at the
+captured width (the xs nav anchors live behind a closed dialog) is recorded as
+``rendered: false`` and skipped rather than failed, because a ``display: none``
+element cannot take focus and has no ring to observe; whether a control *should*
+be visible at a width is a tier question, and ``tools/e2e.py``'s ``test_nav_tier``
+asserts it directly.
 
 Two things are pruned, both recorded in the snapshot so the exclusion is
 auditable rather than silent:
@@ -268,7 +275,10 @@ FOCUS_TARGETS = [
     {"key": "lucky", "selector": ".lucky", "state": "default"},
     {"key": "theme-toggle", "selector": ".theme-toggle", "state": "default"},
     {"key": "lang", "selector": ".lang", "state": "default"},
-    {"key": "nav-a", "selector": ".nav a", "state": "default"},
+    {"key": "nav-a", "selector": ".nav:not(.nav--dialog) a", "state": "default"},
+    {"key": "menu-toggle", "selector": ".menu-toggle", "state": "default"},
+    {"key": "nav-dialog-close", "selector": ".nav-dialog-close", "state": "menu"},
+    {"key": "nav-dialog-a", "selector": ".nav--dialog a", "state": "menu"},
     {"key": "search", "selector": ".search", "state": "default"},
     {"key": "genre-filter", "selector": ".genre-filter", "state": "default"},
     {"key": "th-sort", "selector": "th.sortable .th-sort", "state": "default"},
@@ -281,6 +291,7 @@ FOCUS_TARGETS = [
     {"key": "share-btn", "selector": ".share-btn", "state": "default"},
     {"key": "rc", "selector": ".related a.rc", "state": "default"},
     {"key": "back-catalog-a", "selector": ".back-catalog a", "state": "default"},
+    {"key": "profile-links-a", "selector": ".profile-links a", "state": "default"},
     {"key": "reset-filters", "selector": ".reset-filters", "state": "filtered"},
     {"key": "poster-close", "selector": ".poster-close", "state": "lightbox"},
 ]
@@ -307,7 +318,7 @@ NOT_PROBED = [
      "why": "html { container-type: scroll-state } makes .scroll-top visibility a "
             "function of scroll position; only the single captured offset is probed"},
     {"what": "interaction states other than :focus-visible",
-     "why": "the focus pass covers the 20 selectors in FOCUS_TARGETS under "
+     "why": "the focus pass covers the 23 selectors in FOCUS_TARGETS under "
             ":focus-visible and blurred, which is every rule in css/style.css that "
             "carries an outline declaration; :hover, :active and [open] are still "
             "never entered, so the hover, active and lightbox-open visual states "
@@ -316,6 +327,15 @@ NOT_PROBED = [
      "why": "the focus pass reads a fixed target list, not every focusable element; "
             "a new :focus-visible rule on a selector outside that list is unproved "
             "until the list is extended"},
+    {"what": "the ring on a control that is not rendered at the captured width",
+     "why": "a display:none element cannot take focus, so the focus pass records it "
+            "as rendered:false and does not require a ring from it; that a control is "
+            "hidden at a width where it should be visible is a tier defect and is "
+            "asserted in tools/e2e.py (test_nav_tier), not here"},
+    {"what": "the menu dialog's focusables above the xs tier",
+     "why": "the 'menu' phase is only run where the burger is rendered, because the "
+            "dialog can only be opened there; above xs the inline row is the "
+            "affordance and its own anchors are read in the default phase"},
     {"what": "the dark palette in the default capture",
      "why": "the default scheme is light, matching ui_audit.py; pass "
             "--schemes light,dark to cover both, which is required before the "
@@ -580,6 +600,18 @@ FOCUS_PASS = """
     if (document.activeElement && document.activeElement !== document.body) {
       document.activeElement.blur();
     }
+    // An element that is not rendered cannot take focus and has no ring to
+    // observe, so it is recorded as not rendered and excluded from the missed
+    // list. This is a skip, not a pass: a control that is hidden at a width
+    // where it should be visible is a tier defect, and that is asserted
+    // behaviourally in tools/e2e.py (test_nav_tier), not here.
+    const rect0 = el.getBoundingClientRect();
+    const rendered = rect0.width > 0 && rect0.height > 0
+      && getComputedStyle(el).visibility !== 'hidden';
+    if (!rendered) {
+      out[target.key] = { selector: target.selector, present: true, rendered: false };
+      continue;
+    }
     const noFocus = { props: readProps(el), pseudo: cfg.pseudo ? readPseudo(el) : null };
     el.focus({ preventScroll: true });
     const matched = el.matches(':focus-visible');
@@ -709,7 +741,7 @@ def run_focus_pass(page, cfg, initial, phase, targets=None):
 
 
 def run_conditional_focus(page, cfg, initial):
-    out = {"filtered": {}, "lightbox": {}}
+    out = {"filtered": {}, "lightbox": {}, "menu": {}}
     if page.query_selector(".search") is None:
         return out
     page.fill(".search", NON_MATCHING_QUERY)
@@ -724,6 +756,18 @@ def run_conditional_focus(page, cfg, initial):
         page.wait_for_timeout(LIGHTBOX_WAIT_MS)
         out["lightbox"] = run_focus_pass(page, cfg, initial, "lightbox", [
             t for t in FOCUS_TARGETS if t["state"] == "lightbox"])
+        page.keyboard.press("Escape")
+        page.wait_for_timeout(300)
+    # The xs menu is the dialog's own focusables, and they are only focusable
+    # while the dialog is open, so they are read in their own phase. At widths
+    # where the burger is not rendered this phase is empty by construction --
+    # the dialog cannot be opened there -- and that is reported as such.
+    burger = page.locator("button.menu-toggle")
+    if burger.count() and burger.first.is_visible():
+        burger.first.click()
+        page.wait_for_timeout(LIGHTBOX_WAIT_MS)
+        out["menu"] = run_focus_pass(page, cfg, initial, "menu", [
+            t for t in FOCUS_TARGETS if t["state"] == "menu"])
         page.keyboard.press("Escape")
         page.wait_for_timeout(300)
     return out

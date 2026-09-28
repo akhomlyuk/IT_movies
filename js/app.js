@@ -318,10 +318,18 @@ const app = createApp({
       colorScheme.addEventListener("change", onColorScheme);
       cleanupColorScheme = () =>
         colorScheme.removeEventListener("change", onColorScheme);
+      const el = navDialog();
+      if (el) {
+        el.addEventListener("close", onDialogClose);
+        cleanupMenu = () => el.removeEventListener("close", onDialogClose);
+      }
+      watchCurrentSection();
     });
 
     onUnmounted(() => {
       if (cleanupColorScheme) cleanupColorScheme();
+      if (cleanupMenu) cleanupMenu();
+      if (cleanupSection) cleanupSection();
       clearTimeout(urlSyncTimer);
     });
 
@@ -411,6 +419,55 @@ const app = createApp({
       location.href = filmUrl(pick);
     }
 
+    const menuOpen = ref(false);
+    const currentSection = ref("");
+
+    function navDialog() {
+      return document.getElementById("nav-dialog");
+    }
+
+    function openMenu() {
+      const el = navDialog();
+      if (!el) return;
+      if (typeof el.showModal === "function") el.showModal();
+      menuOpen.value = true;
+    }
+
+    function closeMenu() {
+      const el = navDialog();
+      if (el && el.open && typeof el.close === "function") el.close();
+      menuOpen.value = false;
+    }
+
+    function onDialogClose() {
+      menuOpen.value = false;
+    }
+
+    let cleanupMenu = null;
+    let cleanupSection = null;
+
+    function watchCurrentSection() {
+      if (typeof IntersectionObserver === "undefined") return;
+      const targets = ["movies", "series", "documentaries"]
+        .map((id) => document.getElementById(id))
+        .filter(Boolean);
+      if (targets.length === 0) return;
+      const visible = new Set();
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) visible.add(entry.target.id);
+            else visible.delete(entry.target.id);
+          }
+          const first = targets.find((el) => visible.has(el.id));
+          currentSection.value = first ? first.id : currentSection.value;
+        },
+        { rootMargin: "-20% 0px -70% 0px", threshold: 0 }
+      );
+      for (const el of targets) observer.observe(el);
+      cleanupSection = () => observer.disconnect();
+    }
+
     return {
       lang,
       theme,
@@ -436,6 +493,11 @@ const app = createApp({
       goLucky,
       scrollToTop,
       hasRating,
+      menuOpen,
+      currentSection,
+      openMenu,
+      closeMenu,
+      onDialogClose,
       formatRating: (value) => formatRating(value, t.value.noData),
     };
   },

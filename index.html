@@ -77,6 +77,9 @@
       </div>
       <div class="toolbar">
         <div class="tool-buttons">
+          <button type="button" class="menu-toggle" aria-haspopup="dialog" aria-controls="nav-dialog" :aria-expanded="menuOpen" :aria-label="t.menu" :title="t.menu" @click="openMenu">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
           <button type="button" class="fav-filter" :class="{ active: onlyFav }" :aria-pressed="onlyFav" :aria-label="t.favFilter" :title="t.favFilterTitle" @click="onlyFav = !onlyFav">
             <svg class="fav-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.8 1.7Z" fill="currentColor"/></svg>
           </button>
@@ -96,10 +99,23 @@
     </header>
 
     <nav class="nav">
-      <a href="#movies">{{ t.movies }} <span>{{ counts.movies }}</span></a>
-      <a href="#series">{{ t.series }} <span>{{ counts.series }}</span></a>
-      <a href="#documentaries">{{ t.documentaries }} <span>{{ counts.documentaries }}</span></a>
+      <a href="#movies" :aria-current="currentSection === 'movies' ? 'true' : null">{{ t.movies }} <span>{{ counts.movies }}</span></a>
+      <a href="#series" :aria-current="currentSection === 'series' ? 'true' : null">{{ t.series }} <span>{{ counts.series }}</span></a>
+      <a href="#documentaries" :aria-current="currentSection === 'documentaries' ? 'true' : null">{{ t.documentaries }} <span>{{ counts.documentaries }}</span></a>
     </nav>
+
+    <dialog class="nav-dialog" id="nav-dialog" :aria-label="t.menu">
+      <div class="nav-dialog-panel">
+        <button type="button" class="nav-dialog-close" :aria-label="t.close" :title="t.close" @click="closeMenu">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <nav class="nav nav--dialog">
+          <a href="#movies" :aria-current="currentSection === 'movies' ? 'true' : null" @click="closeMenu">{{ t.movies }} <span>{{ counts.movies }}</span></a>
+          <a href="#series" :aria-current="currentSection === 'series' ? 'true' : null" @click="closeMenu">{{ t.series }} <span>{{ counts.series }}</span></a>
+          <a href="#documentaries" :aria-current="currentSection === 'documentaries' ? 'true' : null" @click="closeMenu">{{ t.documentaries }} <span>{{ counts.documentaries }}</span></a>
+        </nav>
+      </div>
+    </dialog>
 
     <div class="catalog-tools">
       <input id="srch" class="search" v-model="query" type="search" :placeholder="t.search" :aria-label="t.search">

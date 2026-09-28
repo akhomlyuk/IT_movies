@@ -474,6 +474,94 @@ svg:not(.heart) {
   border-color: var(--accent);
 }
 
+.menu-toggle {
+  appearance: none;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-s);
+  background: var(--glass);
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.menu-toggle:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: var(--hover);
+}
+
+.menu-toggle:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.nav-dialog {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  max-width: none;
+  max-height: none;
+  width: 100%;
+  height: 100%;
+}
+
+.nav-dialog::backdrop {
+  background: rgba(23, 25, 35, 0.5);
+}
+
+.nav-dialog-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: min(100% - var(--space-4) * 2, 20rem);
+  margin: var(--space-4);
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-l);
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.nav-dialog-close {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-end;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-s);
+  background: var(--glass);
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.nav-dialog-close:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: var(--hover);
+}
+
+.nav-dialog-close:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
 .fav-filter {
   appearance: none;
   display: inline-flex;
@@ -578,6 +666,12 @@ svg:not(.heart) {
 .nav a:hover {
   border-color: var(--ink);
   background: var(--hover);
+}
+
+.nav a[aria-current="true"] {
+  border-color: var(--accent);
+  background: var(--paper-strong);
+  color: var(--accent);
 }
 
 .nav span {
@@ -1428,6 +1522,8 @@ html.no-scroll-state.scrolled .scroll-top {
   .theme-toggle,
   .search,
   .nav a,
+  .menu-toggle,
+  .nav-dialog-close,
   .reset-filters {
     height: var(--tap);
   }
@@ -1439,6 +1535,8 @@ html.no-scroll-state.scrolled .scroll-top {
   .scroll-top,
   .fav-filter,
   .lucky,
+  .menu-toggle,
+  .nav-dialog-close,
   .theme-toggle {
     width: var(--tap);
     height: var(--tap);
@@ -1484,6 +1582,33 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 @media (max-width: 575px) {
+  .menu-toggle {
+    display: inline-flex;
+  }
+
+  .nav:not(.nav--dialog) {
+    display: none;
+  }
+
+  .nav--dialog {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    margin: 0;
+  }
+
+  .nav--dialog a {
+    justify-content: space-between;
+  }
+
+  html:not(.js) .menu-toggle {
+    display: none;
+  }
+
+  html:not(.js) .nav:not(.nav--dialog) {
+    display: flex;
+  }
+
   .mobile-sort {
     display: inline-flex;
     align-items: center;
@@ -1588,6 +1713,8 @@ html.no-scroll-state.scrolled .scroll-top {
   .search,
   .fav-filter,
   .lucky,
+  .menu-toggle,
+  .nav-dialog-close,
   .nav a,
   .title-cell a,
   .poster-icon-svg {
