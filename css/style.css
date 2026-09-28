@@ -675,6 +675,7 @@ svg:not(.heart) {
 
 .featured-card-copy {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
   gap: var(--space-1);
   align-content: start;
@@ -700,7 +701,8 @@ svg:not(.heart) {
   display: -webkit-box;
   min-height: 2.5em;
   overflow: hidden;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  hyphens: auto;
   font-size: var(--fs-sm);
   font-weight: 700;
   line-height: 1.25;
@@ -710,13 +712,16 @@ svg:not(.heart) {
 }
 
 .featured-card-meta {
+  display: -webkit-box;
   overflow: hidden;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  hyphens: auto;
   color: var(--muted);
   font-size: var(--fs-xs);
   line-height: 1.35;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 
 .featured-ratings {
@@ -1563,7 +1568,8 @@ html.no-scroll-state.scrolled .scroll-top {
   .featured-card-title {
     display: -webkit-box;
     overflow: hidden;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+    hyphens: auto;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
@@ -1870,6 +1876,7 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .rc-content {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   flex: 1;
   min-width: 0;
   gap: var(--space-1);
@@ -1884,7 +1891,8 @@ html.no-scroll-state.scrolled .scroll-top {
 .rc-title {
   display: -webkit-box;
   overflow: hidden;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  hyphens: auto;
   font-weight: 500;
   line-height: 1.25;
   -webkit-box-orient: vertical;
@@ -1893,11 +1901,15 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 .rc-info {
+  display: -webkit-box;
   overflow: hidden;
+  overflow-wrap: break-word;
+  hyphens: auto;
   color: var(--muted);
   font-size: var(--fs-xs);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
 }
 
 .rc-meta {
