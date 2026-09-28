@@ -1941,7 +1941,6 @@ html.no-scroll-state.scrolled .scroll-top {
 .share-btn[data-net="vk"]:hover .share-ico { color: #0077ff; }
 .share-btn[data-net="x"]:hover .share-ico { color: var(--ink); }
 .share-btn[data-net="linkedin"]:hover .share-ico { color: #0a66c2; }
-.share-btn[data-net="reddit"]:hover .share-ico { color: #ff4500; }
 .share-btn[data-net="native"]:hover .share-ico { color: var(--accent); }
 
 @media (min-width: 768px) {

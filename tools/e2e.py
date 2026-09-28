@@ -330,7 +330,7 @@ def test_film_theme(page, base):
     expect(page.locator("html.dark")).to_have_count(1)
     page.locator(".share-row").wait_for(state="visible")
     share = page.locator(".share-row a.share-btn[data-net]")
-    expect(share).to_have_count(6)
+    expect(share).to_have_count(5)
     slug = page.evaluate("() => window.ITMoviesCommon.itemSlug(window.FILM_PAGE.item)")
     title_ru = page.evaluate("() => window.FILM_PAGE.item.titleRu")
     encoded_title = quote(title_ru, safe="!'()*")

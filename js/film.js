@@ -207,9 +207,8 @@ const app = createApp({
       vk: { label: "VK", href: (url, title) => `https://vk.com/share.php?url=${encodeURIComponent(url)}&title=${title}` },
       x: { label: "X", href: (url, title) => `https://x.com/intent/post?url=${encodeURIComponent(url)}&text=${title}` },
       linkedin: { label: "LinkedIn", href: (url) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}` },
-      reddit: { label: "Reddit", href: (url, title) => `https://www.reddit.com/submit?url=${encodeURIComponent(url)}&title=${title}` },
     };
-    const SHARE_ORDER = ["telegram", "whatsapp", "vk", "x", "linkedin", "reddit"];
+    const SHARE_ORDER = ["telegram", "whatsapp", "vk", "x", "linkedin"];
 
     function shareUrl() {
       const canon = typeof document !== "undefined" && document.querySelector
