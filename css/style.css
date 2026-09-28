@@ -1396,18 +1396,25 @@ html.no-scroll-state.scrolled .scroll-top {
   .theme-toggle,
   .search,
   .nav a,
-  .reset-filters,
+  .reset-filters {
+    height: var(--tap);
+  }
+
   .ratings a {
-    height: 44px;
+    min-height: var(--tap);
   }
 
   .scroll-top,
-  .share-btn,
   .fav-filter,
   .lucky,
   .theme-toggle {
-    width: 44px;
-    height: 44px;
+    width: var(--tap);
+    height: var(--tap);
+  }
+
+  .share-btn {
+    min-width: var(--tap);
+    min-height: var(--tap);
   }
 
   .scroll-top {

@@ -105,7 +105,7 @@ DECLARED_NOT_IMPLEMENTED = (
 TAP_TARGETS = [
     ".fav-filter", ".lucky", ".theme-toggle", ".lang", ".reset-filters",
     ".scroll-top", ".search", ".genre-filter", ".nav a", ".th-sort",
-    ".breadcrumb a", "summary", ".share-btn", ".back-catalog a",
+    ".breadcrumb a", "summary", ".share-btn", ".ratings a", ".back-catalog a",
     ".poster-close", ".mobile-sort",
 ]
 CONDITIONAL_STATES = {
