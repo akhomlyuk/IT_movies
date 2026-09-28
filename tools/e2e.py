@@ -182,9 +182,10 @@ def test_featured_breakpoints(page, base):
     )
     assert len(rows) == 1, f"xs tier must be one horizontal row, card tops {rows}"
     assert page.locator(".featured-card-meta").evaluate_all(
-        "els => els.every(el => getComputedStyle(el).textOverflow === 'ellipsis'"
-        " && getComputedStyle(el).whiteSpace === 'nowrap')"
-    ), "the featured meta line must stay on one line with an ellipsis"
+        "els => els.every(el => getComputedStyle(el).whiteSpace === 'normal'"
+        " && getComputedStyle(el).webkitLineClamp === '3'"
+        " && getComputedStyle(el).webkitBoxOrient === 'vertical')"
+    ), "the featured meta line must wrap, clamped to 3 lines"
     assert page.evaluate("document.documentElement.scrollWidth <= document.documentElement.clientWidth"), (
         "xs tier overflows the document horizontally"
     )
