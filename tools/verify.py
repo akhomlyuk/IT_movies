@@ -11,6 +11,7 @@ from html.parser import HTMLParser
 from xml.etree import ElementTree
 
 import gen_pages
+import poster_crop
 from lib import BELOW_MD_MAX, ROOT, SITE_BASE, BREAKPOINT_SCALE, CSS_MEDIA_EDGES, POSTER_BOX_DESKTOP, POSTER_BOX_MOBILE, POSTER_VARIANT_WIDTHS, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating, poster_sizes, variant_name, variant_path, webp_size
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -191,6 +192,73 @@ for js_name in ("js/film.js", "js/film.min.js"):
         )
     else:
         print(f"Poster ladder: {js_name} mirrors {list(POSTER_VARIANT_WIDTHS)}")
+
+# 4c. Poster crop: the discarded-AREA bound. The arithmetic lives in
+# poster_crop.py and is imported, never re-derived here, so the number this gate
+# fails on and the number `python tools/poster_crop.py` prints cannot drift.
+#
+# This is the successor to the browser probe's `POSTER_CROP_CEILING`, which was
+# 3.1x above the worst value in its own 4-poster sample and was an aspect-ratio
+# deviation rather than an area loss, so it bounded nothing anybody assumed it
+# bounded. The bound now is poster_crop.DISCARDED_AREA_CEILING and the library
+# does NOT meet it: the offenders are printed by name below, one line each,
+# because a ceiling whose failure list is truncated is a ceiling whose failure
+# nobody can act on.
+crop_records = poster_crop.measure_library()
+crop_failing = poster_crop.over_ceiling(crop_records, poster_crop.DISCARDED_AREA_CEILING)
+crop_proxy = poster_crop.describe([r.proxy for r in crop_records])
+crop_discarded = poster_crop.describe([r.discarded for r in crop_records])
+crop_box = poster_crop.RELATED_BOX_DESKTOP
+print(
+    "Poster crop: %d posters measured from real file dimensions, no browser; box "
+    "%dx%d (%.6f, exactly 2:3: %s)"
+    % (len(crop_records), crop_box[0], crop_box[1], crop_box[0] / crop_box[1],
+       poster_crop.is_two_by_three(crop_box))
+)
+print(
+    "  PROXY |w/h-2/3|      2:3 %d, lose area %d, over %g %d, median %.5f, p90 %.5f, max %.5f"
+    % (crop_proxy["exact"], crop_proxy["loses"], poster_crop.PROXY_ASPECT_STANDARD,
+       crop_proxy["over_standard"], crop_proxy["median"], crop_proxy["p90"],
+       crop_proxy["max"])
+)
+print(
+    "  DISCARDED AREA      2:3 %d, lose area %d, over %g %d, median %.5f, p90 %.5f, max %.5f"
+    % (crop_discarded["exact"], crop_discarded["loses"],
+       poster_crop.REPORT_TOLERANCE, crop_discarded["over_standard"],
+       crop_discarded["median"], crop_discarded["p90"], crop_discarded["max"])
+)
+print(
+    "  worst %d by PROXY:          %s"
+    % (poster_crop.WORST_N,
+       ", ".join("%s %dx%d %.5f" % (r.poster, r.width, r.height, r.proxy)
+                 for r in poster_crop.worst(crop_records, "proxy")))
+)
+print(
+    "  worst %d by DISCARDED AREA: %s"
+    % (poster_crop.WORST_N,
+       ", ".join("%s %dx%d %.5f" % (r.poster, r.width, r.height, r.discarded)
+                 for r in poster_crop.worst(crop_records, "discarded")))
+)
+if crop_failing:
+    for record in crop_failing:
+        errors.append(
+            "poster discards %.5f of its area into a %dx%d box (%dx%d source, proxy "
+            "%.5f) — over DISCARDED_AREA_CEILING %s: %s"
+            % (record.discarded, crop_box[0], crop_box[1], record.width,
+               record.height, record.proxy, poster_crop.DISCARDED_AREA_CEILING,
+               record.poster)
+        )
+    print(
+        "  BOUND: %d of %d posters (%.1f%%) exceed DISCARDED_AREA_CEILING %s, worst "
+        "%.5f — the ceiling is the project's declared 0.02 standard applied to the "
+        "quantity that costs area, and the library does not meet it"
+        % (len(crop_failing), len(crop_records),
+           len(crop_failing) * 100.0 / len(crop_records),
+           poster_crop.DISCARDED_AREA_CEILING, crop_failing[0].discarded)
+    )
+else:
+    print("  BOUND: every poster is within DISCARDED_AREA_CEILING %s"
+          % poster_crop.DISCARDED_AREA_CEILING)
 
 # 4b. Film pages exist and match the current generator (gen_pages.py)
 for item in catalog:

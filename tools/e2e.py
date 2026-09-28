@@ -7,8 +7,14 @@ up a throwaway http.server on a free port and runs the scenarios listed in
 main():
 
 Every run prints the genre-collation branch it resolved and, for the two film-page
-scenarios, the worst related-poster crop found in the 4 shipped related posters
-(FILM_PAGE.related, the complete list the generator chose — not a wider pool).
+scenarios, the DISCARDED AREA the related posters lose to the box they are
+rendered into -- the fraction of each selected file's area that `object-fit: cover`
+throws away, computed by tools/poster_crop.py, which owns the bound
+(POSTER_CROP_CEILING, the old aspect-ratio proxy, is gone; see poster_crop.py).
+This harness reports that number and does not gate on it: a 4-poster ceiling is
+how the previous one sat 3.1x above its own worst sample. What it does assert is
+the two things only a browser can see -- the rendered box is 2:3, and the file the
+browser selected is a real file on disk.
 
 main page
   1. search: typing "матриц" leaves exactly the two Matrix films
@@ -30,9 +36,10 @@ film page
  10. lang toggle switches html.lang, the h1, the alt title, the breadcrumb
      label and the related titles
  11. mobile layout at 390px: single h1 in the header, 4 related cards in one
-     horizontal row, 2:3 poster boxes that are not cropped past the recorded
-     ceiling, related slugs drawn from FILM_PAGE.related, and a related-card
-     srcset that offers the whole ladder with each candidate's own width
+     horizontal row, 2:3 poster boxes reported with the area they discard, the
+     selected file verified against disk, related slugs drawn from
+     FILM_PAGE.related, and a related-card srcset that offers the whole ladder with
+     each candidate's own width
 
 Each scenario uses a fresh browser context (localStorage is not shared,
 so the lang/theme persistence cannot leak between tests). Exits non-zero
@@ -52,6 +59,7 @@ from urllib.parse import quote
 from playwright.sync_api import expect, sync_playwright
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import poster_crop  # noqa: E402
 from lib import POSTER_VARIANT_WIDTHS, ROOT, variant_name, webp_size  # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -71,20 +79,11 @@ RU_COLLATE_PROBES = ((("яблоко", "Яблоко"), -1), (("ёлка", "ел
 CYRILLIC_FOLD = str.maketrans({"ё": "е", "й": "и"})
 POSTER_ASPECT = 2 / 3
 POSTER_ASPECT_TOLERANCE = 0.02
-POSTER_CROP_CEILING = 0.16
-RELATED_POSTER_RATIOS = """async () => {
-  const related = window.FILM_PAGE.related;
+RELATED_POSTER_RENDERED = """() => {
   const out = [];
-  for (const r of related) {
-    if (!r.poster) { out.push(['', null]); continue; }
-    const src = '../../' + r.poster.replace(/^\\//, '').replace(/\\.webp$/, '_400.webp');
-    const nat = await new Promise((res) => {
-      const im = new Image();
-      im.onload = () => res([im.naturalWidth, im.naturalHeight]);
-      im.onerror = () => res(null);
-      im.src = src;
-    });
-    out.push([r.poster.split('/').pop(), nat]);
+  for (const el of document.querySelectorAll('.related .rc-poster')) {
+    const r = el.getBoundingClientRect();
+    out.push([r.width, r.height, el.currentSrc.split('/').pop(), el.complete]);
   }
   return out;
 }"""
@@ -224,26 +223,59 @@ def test_main_lang(page, base):
 
 
 def report_related_crop(page):
-    rows = page.evaluate(RELATED_POSTER_RATIOS)
-    measured = [(name, nat[0] / nat[1]) for name, nat in rows if nat and nat[1]]
-    unmeasured = [name for name, nat in rows if not nat or not nat[1]]
-    assert len(measured) >= RELATED_COUNT, (
-        f"only {len(measured)} of {len(rows)} related posters could be measured;"
-        f" unloaded or broken: {unmeasured}"
+    """Report the discarded area of the related posters AS RENDERED, and bound nothing.
+
+    The bound lives in poster_crop.DISCARDED_AREA_CEILING and is measured there
+    over all 154 posters from real file dimensions. A second ceiling over 4
+    posters would be a second number meaning the same thing, so this function
+    reports the same quantity with the same code and asserts nothing about it.
+
+    What only a browser can see, and what this therefore checks, is that the
+    RENDERED box is 2:3 and that the file the browser actually selected is a real
+    file on disk. The old probe read neither: it built a bare `new Image()` on
+    the `_400` rung, which is not necessarily the rung that was selected, and
+    `assert_related_posters` read `naturalWidth` on a srcset image, which Chromium
+    density-corrects (measured: 240x355 reported for the 400x593 rung in a 240px
+    slot). Both are replaced by currentSrc plus the real file on disk.
+    """
+    rows = page.evaluate(RELATED_POSTER_RENDERED)
+    assert len(rows) == RELATED_COUNT, (
+        f"expected {RELATED_COUNT} rendered related posters, got {len(rows)}"
     )
-    deltas = [(name, abs(ratio - POSTER_ASPECT)) for name, ratio in measured]
-    worst_name, worst = max(deltas, key=lambda d: d[1])
-    over = [name for name, d in deltas if d > POSTER_ASPECT_TOLERANCE]
+    measured = []
+    for box_w, box_h, name, complete in rows:
+        assert complete and name, (
+            "a related poster never finished loading, so what it lost to the box "
+            "cannot be judged"
+        )
+        path = ROOT / "static" / "posters" / name
+        assert path.exists(), f"the browser selected {name!r}, which is not on disk"
+        width, height = poster_crop.poster_size(path)
+        measured.append((
+            name,
+            box_w,
+            box_h,
+            width,
+            height,
+            poster_crop.aspect_deviation(width, height),
+            poster_crop.discarded_area(width, height, box_w, box_h),
+        ))
+    worst_row = max(measured, key=lambda m: m[6])
+    over = [m for m in measured if m[6] > poster_crop.REPORT_TOLERANCE]
+    boxes = sorted({(round(m[1], 3), round(m[2], 3)) for m in measured})
     print(
-        f"    related-crop: worst {worst:.4f} ({worst_name}),"
-        f" {len(over)}/{RELATED_COUNT} off the {POSTER_ASPECT_TOLERANCE} project standard"
-        f" [{len(over) * 100 // RELATED_COUNT}%], target {POSTER_ASPECT:.4f}"
-        f" (complete sample: all {RELATED_COUNT} shipped related posters)"
+        f"    related-crop: rendered box {boxes} (2:3: "
+        f"{all(poster_crop.is_two_by_three((int(m[1]), int(m[2]))) for m in measured)}),"
+        f" worst discarded {worst_row[6]:.4f} ({worst_row[0]}, selected file"
+        f" {worst_row[3]}x{worst_row[4]}), {len(over)}/{RELATED_COUNT} over"
+        f" {poster_crop.REPORT_TOLERANCE}"
     )
-    assert worst <= POSTER_CROP_CEILING, (
-        f"related-crop {worst:.4f} ({worst_name}) exceeds the recorded ceiling"
-        f" {POSTER_CROP_CEILING}; the 2:3 crop defect is owned by Stage 2 and must not worsen"
+    print(
+        f"      bound is poster_crop.DISCARDED_AREA_CEILING"
+        f" {poster_crop.DISCARDED_AREA_CEILING}, owned by tools/poster_crop.py over all"
+        f" 154 posters; this function reports and does not gate"
     )
+    return measured
 
 
 def assert_related_posters(page):
@@ -258,20 +290,14 @@ def assert_related_posters(page):
             f"related poster box must keep the {POSTER_ASPECT:.4f} aspect ratio"
             f" (tolerance {POSTER_ASPECT_TOLERANCE}), got {ratio:.4f}"
         )
-    naturals = posters.evaluate_all(
-        "els => els.map(el => el.naturalWidth && el.naturalHeight"
-        " ? el.naturalWidth / el.naturalHeight : null)"
+    loaded = posters.evaluate_all(
+        "els => els.map(el => el.complete && el.naturalWidth > 0)"
     )
-    unmeasured = sum(1 for n in naturals if not n)
-    assert unmeasured < RELATED_COUNT, (
-        f"{unmeasured} of {len(naturals)} related posters never loaded,"
-        f" so their crop cannot be judged"
+    unmeasured = sum(1 for ok in loaded if not ok)
+    assert unmeasured == 0, (
+        f"{unmeasured} of {len(loaded)} related posters never loaded, so the box they"
+        f" are fitted into cannot be judged against what is in it"
     )
-    for ratio in (n for n in naturals if n):
-        assert abs(ratio - POSTER_ASPECT) <= POSTER_CROP_CEILING, (
-            f"a rendered related poster is cropped by {abs(ratio - POSTER_ASPECT):.4f},"
-            f" past the recorded ceiling {POSTER_CROP_CEILING}"
-        )
     srcsets = posters.evaluate_all("els => els.map(el => el.getAttribute('srcset'))")
     for srcset in srcsets:
         parts = [p.strip() for p in (srcset or "").split(",")]
