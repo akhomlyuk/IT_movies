@@ -86,7 +86,8 @@ FILM_SENTINEL = ".back-catalog a"
 
 DELIBERATE_TRUNCATORS = (".alt-title", ".rc-info", ".featured-card-meta",
                          ".film-header-alt")
-DELIBERATE_SCROLLERS = (".table-wrap", ".featured-grid")
+DELIBERATE_SCROLLERS = (".table-wrap", ".featured-grid", ".related ul")
+DELIBERATE_EXPANDERS = ("button.poster-icon", "span.poster-wrap")
 
 LAYOUT_CHECKS = ("no-h-overflow", "cls-zero", "tap-targets", "no-inner-overflow")
 IMAGE_CHECKS = ("no-broken-srcset", "poster-aspect")
@@ -139,10 +140,13 @@ PROBE = """
         if (acs.overflowX !== "visible") clips.push(name(a) + "[" + acs.overflowX + "]");
         a = a.parentElement;
       }
+      const path = [];
+      for (let p = el.parentElement; p && p.id !== "app" && path.length < 12;
+           p = p.parentElement) path.push(name(p));
       out.inner.push({
         selector: name(el), scrollW: el.scrollWidth, clientW: el.clientWidth,
         overflowX: cs.overflowX, textOverflow: cs.textOverflow,
-        clamp: cs.webkitLineClamp, clips: clips,
+        clamp: cs.webkitLineClamp, clips: clips, path: path,
       });
     }
   }
@@ -337,16 +341,25 @@ def is_hard_overflow(overflow_x):
     return overflow_x == "visible"
 
 
-def is_allowlisted_overflow(selector, overflow_x, text_overflow, clamp):
+def css_name(probe_name):
+    return "." + probe_name.split(".", 1)[1] if "." in probe_name else probe_name
+
+
+def is_allowlisted_overflow(selector, path, overflow_x, text_overflow, clamp):
     classes = set(selector.split(".")[1:])
     truncating = (text_overflow == "ellipsis") or (clamp not in ("none", ""))
     for entry in DELIBERATE_TRUNCATORS:
         if entry.lstrip(".") in classes:
             return truncating and overflow_x != "visible"
+    scroller = overflow_x in ("auto", "scroll")
     for entry in DELIBERATE_SCROLLERS:
         if entry.lstrip(".") in classes:
-            return overflow_x in ("auto", "scroll")
-    return False
+            return scroller
+        ancestor, _, element = entry.rpartition(" ")
+        if (element == selector
+                and any(css_name(a) == ancestor for a in path)):
+            return scroller
+    return selector in DELIBERATE_EXPANDERS
 
 
 def sentinel_for(path):
@@ -360,7 +373,7 @@ def rgb_text(rgb):
 def group_inner(entries):
     groups = {}
     for e in entries:
-        if is_allowlisted_overflow(e["selector"], e["overflowX"],
+        if is_allowlisted_overflow(e["selector"], e["path"], e["overflowX"],
                                    e["textOverflow"], e["clamp"]):
             continue
         key = (e["selector"], e["overflowX"], tuple(e["clips"]))
