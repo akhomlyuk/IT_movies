@@ -228,11 +228,19 @@ h2 {
 
 @layer utilities {
 
-html.js #app[v-cloak] > :not(noscript) {
+#app[v-cloak] > :not(noscript) {
   visibility: hidden;
 }
 
-html.js #app[v-cloak] .brand {
+#app[v-cloak] .brand {
+  visibility: visible;
+}
+
+#app[v-cloak] noscript {
+  visibility: visible;
+}
+
+html:not(.js) #app[v-cloak] nav.nav:not(.nav--dialog) {
   visibility: visible;
 }
 
@@ -674,7 +682,7 @@ svg:not(.heart) {
   color: var(--accent);
 }
 
-.nav span {
+.nav span.count {
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
@@ -1564,7 +1572,7 @@ html.no-scroll-state.scrolled .scroll-top {
     padding: 10px 4px;
   }
 
-  .nav span {
+  .nav span.count {
     background: var(--th-bg);
     border-radius: var(--radius-xs);
     padding: var(--space-1) var(--space-2);

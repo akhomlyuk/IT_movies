@@ -46,6 +46,11 @@ film page
       and whose Esc returns focus to the burger; and with JavaScript DISABLED the
       burger is absent and the inline row still carries all three anchors, so a
       JS-only control cannot lock the no-JS reader out of the nav
+  13. no-JS cloak: with JavaScript DISABLED no rendered text on /index.html
+      contains a {{ }} placeholder, the generated noscript catalogue renders all
+      154 of its links, and the pre-mount brand and the three static nav labels
+      read as content -- the cloak is unconditional, so the no-JS reader gets the
+      catalogue rather than the template source
 
 Each scenario uses a fresh browser context (localStorage is not shared,
 so the lang/theme persistence cannot leak between tests). Exits non-zero
@@ -95,11 +100,52 @@ RELATED_POSTER_RENDERED = """() => {
 }"""
 RU_SORT_KEY = None
 
+NOJS_RENDER = r"""() => {
+  const painted = (el) => !!el && el.checkVisibility({checkVisibilityCSS: true});
+  const potential = (el) => {
+    if (!el) return false;
+    let p = el;
+    while (p && p !== document.documentElement) {
+      const cs = getComputedStyle(p);
+      if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+      p = p.parentElement;
+    }
+    return true;
+  };
+  const leaked = [];
+  const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  let n;
+  while ((n = w.nextNode())) {
+    const t = n.nodeValue || '';
+    if (t.indexOf('{{') === -1 && t.indexOf('}}') === -1) continue;
+    if (potential(n.parentElement)) {
+      leaked.push(n.parentElement.tagName + '.' + (n.parentElement.className || '')
+        + ' -> ' + t.trim());
+    }
+  }
+  const nosc = document.querySelector('noscript.no-js-catalog');
+  const links = nosc ? Array.prototype.slice.call(nosc.querySelectorAll('a')) : [];
+  const nav = document.querySelector('nav.nav:not(.nav--dialog)');
+  const anchors = nav ? Array.prototype.slice.call(nav.querySelectorAll('a')) : [];
+  return {
+    innerText: document.body.innerText || '',
+    leaked: leaked,
+    catalogLinks: links.length,
+    catalogLinksRendered: links.filter(painted).length,
+    navRendered: painted(nav),
+    navAnchors: anchors.length,
+    navLabels: anchors.map((a) => (a.innerText || '').replace(/\s+/g, ' ').trim()),
+    brandRendered: painted(document.querySelector('.brand')),
+    h1: ((document.querySelector('#app h1') || {}).innerText || '').trim(),
+  };
+}"""
+
 AFFORDANCES = """() => {
   const shown = (el) => {
     if (!el) return false;
     const r = el.getBoundingClientRect();
-    return r.width > 0 && r.height > 0 && getComputedStyle(el).display !== 'none';
+    const cs = getComputedStyle(el);
+    return r.width > 0 && r.height > 0 && cs.display !== 'none' && cs.visibility !== 'hidden';
   };
   const burger = document.querySelector('button.menu-toggle');
   const inline = document.querySelector('nav.nav:not(.nav--dialog)');
@@ -350,6 +396,66 @@ def test_nav_tier(page, base):
             assert npage.evaluate(HEADER_TOOLS_GAP) >= 8, (
                 f"@{width} without JS: the accent rule must not touch the tools row; "
                 f"measured {npage.evaluate(HEADER_TOOLS_GAP):.2f}px"
+            )
+    finally:
+        nojs.close()
+
+
+def test_nojs_cloak(page, base):
+    """No rendered Vue placeholder anywhere on /index.html with JavaScript off.
+
+    The cloak is unconditional, so the no-JS reader gets the noscript catalogue
+    and the static pre-mount header, never the template source. The probe waits
+    for `load`, not `domcontentloaded`: with scripting disabled Chromium can run
+    DOMContentLoaded before the stylesheet is applied, and a probe that reads
+    computed style in that window would measure the uncloaked DOM and pass.
+    """
+    nojs = page.context.browser.new_context(
+        java_script_enabled=False, locale="ru-RU"
+    )
+    try:
+        npage = nojs.new_page()
+        for width in (320, 375, 575, 1280):
+            npage.set_viewport_size({"width": width, "height": 900})
+            npage.goto(base + "index.html", wait_until="load")
+            d = npage.evaluate(NOJS_RENDER)
+            assert not d["leaked"], (
+                f"@{width} without JS: {len(d['leaked'])} rendered placeholder(s): "
+                f"{d['leaked'][:4]}"
+            )
+            assert "{{" not in d["innerText"] and "}}" not in d["innerText"], (
+                f"@{width} without JS: the rendered page text contains a template "
+                f"placeholder"
+            )
+            assert d["catalogLinks"] > 0, (
+                f"@{width} without JS: the noscript catalogue carries no links"
+            )
+            assert d["catalogLinksRendered"] == d["catalogLinks"], (
+                f"@{width} without JS: {d['catalogLinks'] - d['catalogLinksRendered']}"
+                f" of {d['catalogLinks']} catalogue links are not rendered -- the "
+                f"cloak hides the <main> the <noscript> lives in"
+            )
+            assert d["navRendered"], (
+                f"@{width} without JS: the inline nav row is the only affordance "
+                f"left, so the cloak must not take it"
+            )
+            assert d["navAnchors"] == 3, (
+                f"@{width} without JS: expected 3 inline anchors, got {d['navAnchors']}"
+            )
+            for label in d["navLabels"]:
+                assert label, (
+                    f"@{width} without JS: a nav anchor renders no text at all -- "
+                    f"reachable but blank is not an affordance"
+                )
+                assert "{{" not in label and "}}" not in label, (
+                    f"@{width} without JS: the nav label is template source: {label!r}"
+                )
+            assert d["brandRendered"], (
+                f"@{width} without JS: the pre-mount brand must stay visible"
+            )
+            assert d["h1"] == "IT Movies", (
+                f"@{width} without JS: the pre-mount h1 must read 'IT Movies', "
+                f"got {d['h1']!r}"
             )
     finally:
         nojs.close()
@@ -637,6 +743,7 @@ def main():
                 test_genre_filter,
                 test_featured_breakpoints,
                 test_nav_tier,
+                test_nojs_cloak,
                 test_about_page,
                 test_main_lang,
                 test_film_theme,
