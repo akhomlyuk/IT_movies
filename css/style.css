@@ -1079,6 +1079,8 @@ tbody tr:hover td:first-child {
 
 .poster-close {
   position: absolute;
+  top: -10px;
+  right: -10px;
   margin: 0;
   border: none;
   background: transparent;
