@@ -87,7 +87,7 @@ def _related_seed(item):
     return int(digest[:12], 16)
 
 
-def related_to(item, catalog, n=4):
+def related_to(item, catalog, n=6):
     want = max(n, 1)
     pool = related_pool(item, catalog)
     if not pool:

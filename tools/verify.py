@@ -18,7 +18,8 @@ sys.stdout.reconfigure(encoding="utf-8")
 errors = []
 NO_WRITE = "--no-write" in sys.argv
 STRICT = "--strict" in sys.argv
-RELATED_MEAN_OVERLAP = 1.513
+RELATED_COUNT = 6
+RELATED_MEAN_OVERLAP = 1.410
 RELATED_MEAN_TOLERANCE = 0.04
 
 # 1. Parse data.js as JSON (array between the first '[' and last ']')
@@ -286,7 +287,7 @@ for item in catalog:
     if not page.exists():
         errors.append(f"Missing film page: films/{slug}/ ({item['titleEn']})")
         continue
-    rel = gen_pages.related_to(item, catalog, 4)
+    rel = gen_pages.related_to(item, catalog)
     pool = gen_pages.related_pool(item, catalog)
     if len(pool) < 6:
         errors.append(f"related pool too small ({len(pool)}): {item['titleEn']}")
@@ -1505,7 +1506,7 @@ def check_related_card_classes(nodes):
 def check_related_card_markup():
     probe = None
     for item in catalog:
-        rel = gen_pages.related_to(item, catalog, 4)
+        rel = gen_pages.related_to(item, catalog)
         if not rel:
             continue
         r = rel[0]
@@ -1815,14 +1816,16 @@ def check_related():
         if len(pool) < 6:
             problems.append(f"{slug}: related pool too small ({len(pool)})")
             continue
-        rel = gen_pages.related_to(item, catalog, 4)
-        if len(rel) != min(4, len(pool)):
-            problems.append(f"{slug}: related_to returned {len(rel)}, expected 4")
+        rel = gen_pages.related_to(item, catalog)
+        if len(rel) != min(RELATED_COUNT, len(pool)):
+            problems.append(
+                f"{slug}: related_to returned {len(rel)}, expected {RELATED_COUNT}"
+            )
         if {item_slug(r) for r in rel} - {item_slug(r) for r in pool}:
             problems.append(f"{slug}: related_to escaped the pool")
         if item["type"] != "documentary" and any(r["type"] == "documentary" for r in rel):
             problems.append(f"{slug}: documentary leaked into related")
-        if gen_pages.related_to(item, catalog, 4) != rel:
+        if gen_pages.related_to(item, catalog) != rel:
             problems.append(f"{slug}: related_to is not deterministic")
         picks.add(tuple(item_slug(r) for r in rel))
         genres = set(item["genres"])
@@ -1957,7 +1960,7 @@ def check_related():
     floor = max(3, len(catalog) * 3 // 5)
     if len(picks) < floor:
         problems.append(
-            f"{len(picks)} distinct 4-sets across {len(catalog)} items, "
+            f"{len(picks)} distinct {RELATED_COUNT}-sets across {len(catalog)} items, "
             f"floor {floor} — collapsed toward the 83 distinct sets of the "
             f"pre-Task-5 deterministic selection"
         )
@@ -1976,7 +1979,7 @@ def check_related():
     if not problems:
         print(
             f"Related selection rules: OK ({len(catalog)} items, "
-            f"{len(picks)} distinct 4-sets floor {floor}, "
+            f"{len(picks)} distinct {RELATED_COUNT}-sets floor {floor}, "
             f"mean overlap {sum(overlaps) / len(overlaps):.3f} "
             f"floor {relevance - RELATED_MEAN_TOLERANCE:.3f})"
         )
