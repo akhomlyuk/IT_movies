@@ -236,6 +236,41 @@ if (mode === "slug") {
   if (!filmSource.includes('class="film-meta"')) {
     throw new Error("film.js must expose a structured metadata block");
   }
+  // The rail: arrows and dots, shown only when the strip overflows. Asserted on
+  // film.js because this markup lives there (unlike the card, which is the
+  // generator's). The overflow condition is the design decision -- controls for a
+  // strip that does not scroll are worse than no controls.
+  for (const [what, needle] of [
+    ["a rail wrapper", 'class="related-rail"'],
+    ["a scrollable track", 'class="related-track"'],
+    ["a previous arrow", 'class="related-nav related-nav--prev"'],
+    ["a next arrow", 'class="related-nav related-nav--next"'],
+    ["dot pagination", 'class="related-dot"'],
+  ]) {
+    if (!filmSource.includes(needle)) {
+      throw new Error("film.js must render " + what + " (" + needle + ")");
+    }
+  }
+  const railOverflowUses = (filmSource.match(/v-if="railOverflow/g) || []).length;
+  if (railOverflowUses !== 3) {
+    throw new Error(
+      "railOverflow must gate the two arrows and the dots (3 uses), found "
+      + railOverflowUses + ". Controls for a strip that does not scroll are worse"
+      + " than no controls"
+    );
+  }
+  for (const fn of ["measureRail", "scrollRail", "scrollRailTo", "onRailScroll"]) {
+    if (!filmSource.includes("function " + fn)) {
+      throw new Error("film.js must define " + fn + "()");
+    }
+  }
+  if (!filmSource.includes('"resize"')) {
+    throw new Error("the rail must re-measure on resize, or the controls keep"
+      + " claiming a strip scrolls after the window has stopped scrolling it");
+  }
+  if (!filmSource.includes("prefers-reduced-motion: reduce")) {
+    throw new Error("the rail must honour prefers-reduced-motion: reduce");
+  }
   if (!filmSource.includes('class="bc-type"')) {
     throw new Error("film.js must expose a compact breadcrumb category");
   }

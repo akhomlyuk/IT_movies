@@ -1067,6 +1067,7 @@ def render(item, related):
   <script src="../../js/vue.global.prod.js" defer></script>
   <script src="../../js/i18n.min.js" defer></script>
   <script src="../../js/common.min.js" defer></script>
+  <script src="../../js/rail_math.js" defer></script>
   <script src="../../js/film.min.js" defer></script>
 {METRIKA_SCRIPT}
 </body>

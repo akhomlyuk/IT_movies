@@ -20,6 +20,17 @@ let currentLang = "ru";
 
 const RC_CARD = window.FILM_RC_CARD || "";
 
+// Aliased on import, and not by accident: js/rail_math.js and this file are
+// both CLASSIC scripts, so they share one global scope. A top-level `function`
+// in rail_math.js is a var-like global, and a top-level `const` of the same
+// name here is a "SyntaxError: Identifier has already been declared" that
+// `node --check` on either file alone cannot see -- only loading both can.
+const {
+  railPages: railPagesFor,
+  railPage: railPageFor,
+  railScrollLeft: railLeftFor,
+} = (typeof window !== "undefined" && window.ITMoviesRail) || {};
+
 // The poster variant ladder, mirrored from tools/lib.py POSTER_VARIANT_WIDTHS.
 // verify.py parses this line and fails if the two ever disagree, so the copy in
 // JS cannot drift from the one gen_posters.py writes and gen_pages.py emits.
@@ -91,12 +102,23 @@ const FILM_TEMPLATE = `
 
     <section class="related" :aria-label="t.relatedH">
       <h2>{{ t.relatedH }}</h2>
-      <ul v-if="related.length">
-        <li v-for="r in related" :key="itemSlug(r)">
-          ${RC_CARD}
-        </li>
-      </ul>
+      <div class="related-rail" v-if="related.length">
+        <button type="button" v-if="railOverflow" class="related-nav related-nav--prev" :aria-label="t.relatedPrev" :disabled="railAtStart" @click="scrollRail(-1)">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <ul class="related-track" ref="rail" tabindex="0" @scroll.passive="onRailScroll" @keydown.left.prevent="scrollRail(-1)" @keydown.right.prevent="scrollRail(1)">
+          <li v-for="r in related" :key="itemSlug(r)">
+            ${RC_CARD}
+          </li>
+        </ul>
+        <button type="button" v-if="railOverflow" class="related-nav related-nav--next" :aria-label="t.relatedNext" :disabled="railAtEnd" @click="scrollRail(1)">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
       <p class="empty" v-else>{{ t.empty }}</p>
+      <div class="related-dots" v-if="railOverflow && railPages > 1">
+        <button v-for="(label, i) in railDots" :key="i" type="button" class="related-dot" :class="{ 'is-active': i === railPage }" :aria-label="label" :aria-current="i === railPage ? 'true' : null" @click="scrollRailTo(i)"></button>
+      </div>
     </section>
     <p class="back-catalog"><a href="../../">← {{ t.backToCatalog }}</a></p>
   </main>
@@ -130,6 +152,78 @@ const app = createApp({
       { immediate: true }
     );
 
+    const rail = ref(null);
+    const railPages = ref(0);
+    const railPage = ref(0);
+    const railOverflow = ref(false);
+    let railFrame = 0;
+    let railCancel = clearTimeout;
+
+    const railAtStart = computed(() => railPage.value <= 0);
+    const railAtEnd = computed(() => railPage.value >= railPages.value - 1);
+    const railDots = computed(() =>
+      Array.from({ length: railPages.value }, (_, i) =>
+        t.value.relatedPage + " " + (i + 1) + " / " + railPages.value
+      )
+    );
+
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function measureRail() {
+      const el = rail.value;
+      if (!el) return;
+      railOverflow.value = el.scrollWidth > el.clientWidth + 1;
+      // Pages come from js/rail_math.js, which counts them from the distance
+      // left to scroll rather than from scrollWidth / clientWidth -- that ratio
+      // rounds the tail away and disables the next arrow with a fifth of the
+      // strip unreachable. tools/rail_math.mjs tests the same module the page
+      // runs, so the two cannot disagree.
+      railPages.value = railPagesFor
+        ? railPagesFor(el.clientWidth, el.scrollWidth)
+        : 1;
+      railPage.value = railPageFor
+        ? railPageFor(el.scrollLeft, el.clientWidth, el.scrollWidth, railPages.value)
+        : 0;
+    }
+
+    function onRailScroll() {
+      if (railFrame) return;
+      // tools/smoke.js stubs matchMedia and addEventListener but not
+      // requestAnimationFrame, so both frame helpers are looked up through
+      // typeof and fall back to timers. Without the guard setup() throws in the
+      // smoke harness, where there is no DOM to measure anyway.
+      const raf = typeof requestAnimationFrame === "function" ? requestAnimationFrame : null;
+      const caf = typeof cancelAnimationFrame === "function" ? cancelAnimationFrame : null;
+      railCancel = caf || clearTimeout;
+      railFrame = raf
+        ? raf(() => { railFrame = 0; measureRail(); })
+        : setTimeout(() => { railFrame = 0; measureRail(); }, 16);
+    }
+
+    function scrollRail(dir) {
+      const el = rail.value;
+      if (!el) return;
+      const next = Math.min(railPages.value - 1, Math.max(0, railPage.value + dir));
+      el.scrollTo({
+        left: railLeftFor ? railLeftFor(next, el.clientWidth, el.scrollWidth) : 0,
+        behavior: reduceMotion ? "auto" : "smooth",
+      });
+      railPage.value = next;
+    }
+
+    function scrollRailTo(index) {
+      const el = rail.value;
+      if (!el) return;
+      el.scrollTo({
+        left: railLeftFor ? railLeftFor(index, el.clientWidth, el.scrollWidth) : 0,
+        behavior: reduceMotion ? "auto" : "smooth",
+      });
+      railPage.value = index;
+    }
+
     onMounted(() => {
       const onColorScheme = (e) => {
         if (!safeRead("it-movies-theme")) {
@@ -139,11 +233,20 @@ const app = createApp({
       colorScheme.addEventListener("change", onColorScheme);
       cleanupColorScheme = () =>
         colorScheme.removeEventListener("change", onColorScheme);
+      measureRail();
     });
 
     onUnmounted(() => {
       if (cleanupColorScheme) cleanupColorScheme();
+      if (railFrame) { railCancel(railFrame); railFrame = 0; }
+      if (typeof removeEventListener === "function") {
+        removeEventListener("resize", measureRail);
+      }
     });
+
+    if (typeof addEventListener === "function") {
+      addEventListener("resize", measureRail);
+    }
 
     function setLang(next) {
       lang.value = next;
@@ -312,6 +415,16 @@ const app = createApp({
       nativeShare,
       shareStatus,
       doNativeShare,
+      rail,
+      railPages,
+      railPage,
+      railOverflow,
+      railAtStart,
+      railAtEnd,
+      railDots,
+      scrollRail,
+      scrollRailTo,
+      onRailScroll,
       setLang,
       setTheme,
       scrollToTop,

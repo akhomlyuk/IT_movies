@@ -1981,9 +1981,8 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 .related ul {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--space-4);
+  display: flex;
+  gap: var(--space-3);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1991,6 +1990,67 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .related li {
   display: flex;
+  flex: 0 0 170px;
+  scroll-snap-align: start;
+}
+
+.related-rail {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.related-track {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: var(--space-2);
+}
+
+.related-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 var(--tap);
+  width: var(--tap);
+  height: var(--tap);
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-circle);
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.related-nav:hover:not(:disabled) {
+  border-color: var(--line-strong);
+  background: var(--hover);
+}
+
+.related-nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.related-dots {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.related-dot {
+  width: var(--space-2);
+  height: var(--space-2);
+  border: 0;
+  border-radius: var(--radius-circle);
+  padding: 0;
+  background: var(--line-strong);
+  cursor: pointer;
+}
+
+.related-dot.is-active {
+  background: var(--accent);
 }
 
 .related a.rc {
