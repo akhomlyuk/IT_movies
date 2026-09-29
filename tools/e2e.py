@@ -80,8 +80,8 @@ if hasattr(sys.stdout, "reconfigure"):
 FILM_PAGE = "films/tt0133093-the-matrix/index.html"
 FILM_MOBILE_PAGE = "films/tt8488126-the-inventor-out-for-blood-in-silicon-valley/index.html"
 RELATED_COUNT = 4
-META_DARK = "#171b2d"
-META_LIGHT = "#eef1f6"
+META_DARK = "#14120F"
+META_LIGHT = "#F4F2ED"
 DESKTOP = {"width": 1280, "height": 800}
 XS = {"width": 390, "height": 900}
 SM = {"width": 576, "height": 900}

@@ -513,8 +513,8 @@ def generate_webmanifest():
         '  "short_name": "IT Movies",\n'
         '  "start_url": "/IT_movies/",\n'
         '  "display": "standalone",\n'
-        '  "background_color": "#eef1f6",\n'
-        '  "theme_color": "#eef1f6",\n'
+        '  "background_color": "#F4F2ED",\n'
+        '  "theme_color": "#F4F2ED",\n'
         '  "description": "Каталог фильмов и сериалов о компьютерах, технологиях и ИИ",\n'
         '  "icons": [\n'
         '    { "src": "favicons/favicon-16x16.png", "sizes": "16x16", "type": "image/png" },\n'
@@ -983,8 +983,8 @@ def render(item, related):
   <meta name="twitter:image" content="{poster_abs}">
   <link rel="canonical" href="{page_url}">
   <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" content="#eef1f6">
-  <meta name="theme-color" content="#171b2d" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#F4F2ED">
+  <meta name="theme-color" content="#14120F" media="(prefers-color-scheme: dark)">
 {preload_poster}{THEME_SCRIPT}
   <link rel="manifest" href="../../static/site.webmanifest">
   <link rel="icon" href="../../static/favicons/favicon.ico" sizes="48x48">
@@ -998,7 +998,7 @@ def render(item, related):
   <link rel="apple-touch-icon" sizes="114x114" href="../../static/favicons/apple-touch-icon-114x114.png">
   <link rel="apple-touch-icon" sizes="120x120" href="../../static/favicons/apple-touch-icon-120x120.png">
   <link rel="apple-touch-icon" href="../../static/favicons/apple-touch-icon.png">
-  <meta name="msapplication-TileColor" content="#eef1f6">
+  <meta name="msapplication-TileColor" content="#F4F2ED">
   <link rel="stylesheet" href="../../css/style.css">
   <link rel="preload" href="../../static/fonts/ubuntu-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../static/fonts/ubuntu-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
