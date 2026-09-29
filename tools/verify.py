@@ -758,8 +758,8 @@ def check_style_literals():
 check_style_literals()
 
 # 6e. The poster `sizes` attribute has exactly one definition, and it is policed as a
-# whole value: the media condition AND the slot sizes after it. css_diff.py reads
-# computed styles and cannot see `sizes` at all, and `sizes` decides which image the
+# whole value: the media condition AND the slot sizes after it. A computed-style
+# comparison cannot see `sizes` at all, and `sizes` decides which image the
 # browser fetches -- so a wrong breakpoint is a wrong band, and a wrong slot size is a
 # proportionally wrong download inside a correct band. Only `sizes`/`imagesizes`
 # attributes are read, and among those only the responsive ones (the ones carrying a

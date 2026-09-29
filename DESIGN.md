@@ -427,9 +427,8 @@ The system uses **hairline borders** as the primary depth cue, not shadows. Shad
 2. When introducing a section, decide first which surface lift it lives on.
 3. Default body to `{typography.body}` at weight 400.
 4. Run `python tools/verify.py` after any CSS change to check token/literal/breakpoint constraints.
-5. Re-baseline with `python tools/css_diff.py capture` before any stylesheet change.
-6. Treat the green accent as scarce: brand mark, featured badge, fav icon, focus rings, primary buttons.
-7. Keep the 96px poster column on every card — the image is a thumbnail, not a hero.
+5. Treat the green accent as scarce: brand mark, featured badge, fav icon, focus rings, primary buttons.
+6. Keep the 96px poster column on every card — the image is a thumbnail, not a hero.
 
 ## Known Gaps
 
