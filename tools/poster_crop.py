@@ -74,8 +74,13 @@ POSTER_ASPECT = 2 / 3
 DISCARDED_AREA_CEILING = 0.02
 PROXY_ASPECT_STANDARD = 0.02
 REPORT_TOLERANCE = 0.02
-RELATED_BOX_DESKTOP = (96, 144)
-RELATED_BOX_MOBILE = (84, 126)
+RELATED_BOX_DESKTOP = (120, 180)
+# There is no separate mobile box. These two constants said 96x144 and 84x126
+# while the rendered card measured 104x156 at every width, because the xs
+# override that produced the small box was deleted on 2026-09-29. The related
+# card renders ONE box, now 120x180 after the rail change moved the poster above
+# the text.
+RELATED_BOX_MOBILE = RELATED_BOX_DESKTOP
 HERO_BOX_WIDTH_MOBILE = 240
 HERO_BOX_WIDTH_DESKTOP = 320
 WORST_N = 5
