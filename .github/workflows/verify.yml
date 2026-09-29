@@ -18,6 +18,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Install Python dependencies
+        run: python3 -m pip install "Pillow>=11,<13"
       - name: Regenerate derived files
         run: python3 tools/gen_pages.py
       - name: Integrity and smoke checks
