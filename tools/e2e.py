@@ -34,12 +34,17 @@ film page
      light + dark (media) metas, not swapped by JS; breadcrumb, share hrefs
      carrying the film slug and the encoded title, 4 related cards at 1280px
  10. lang toggle switches html.lang, the card h1, the alt title, the breadcrumb
-     label and the related titles; the header carries the site name and no h1
- 11. mobile layout at 390px: exactly one h1, inside .film-info, 4 related cards
-     in one horizontal row, 2:3 poster boxes reported with the area they discard,
-     the selected file verified against disk, related slugs drawn from
-     FILM_PAGE.related, and a related-card srcset that offers the whole ladder with
-     each candidate's own width
+     label and the related titles; the header carries the site name and no h1,
+     and the rail's arrow labels follow the language
+ 11. mobile layout at 390px: exactly one h1, inside .film-info, 6 related cards
+     in one horizontal row, the rail's arrows and dots walked to the end and
+     back, the ratings asserted on one line, 2:3 poster boxes reported with the
+     area they discard, the selected file verified against disk, related slugs
+     drawn from FILM_PAGE.related, and a related-card srcset that offers the
+     whole ladder with each candidate's own width. At desktop width the rail is
+     checked too, and then with narrowed cards -- the only way to reach the
+     "the strip fits, so no controls" branch, which the shipped six cards
+     overflow past at every width
   12. nav tier: exactly one navigation affordance reachable at 320/375/575/576/
       768/1280 -- burger below xs, inline row above it, never both and never
       neither; the xs dialog is a real modal (showModal) whose focus trap holds
