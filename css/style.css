@@ -1258,18 +1258,20 @@ a.imdb .star,
 .empty {
   color: var(--muted);
   padding: var(--space-4) var(--space-3);
+  text-align: center;
 }
 
 .empty-state {
   display: grid;
-  justify-items: start;
-  gap: var(--space-3);
-  padding: var(--space-1-25);
+  justify-items: center;
+  gap: var(--space-4);
+  margin: var(--space-5) 0;
+  padding: var(--space-6) var(--space-4);
   border: 1px solid var(--line);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-l);
   background: var(--paper);
   color: var(--muted);
-  box-shadow: var(--shadow);
+  text-align: center;
 }
 
 .empty-state p {
