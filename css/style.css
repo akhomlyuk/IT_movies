@@ -802,7 +802,8 @@ svg:not(.heart) {
 .featured-card-title {
   display: -webkit-box;
   overflow: hidden;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
+  text-overflow: ellipsis;
   hyphens: auto;
   font-size: var(--fs-sm);
   font-weight: 700;
@@ -835,7 +836,8 @@ svg:not(.heart) {
 .featured-card-meta {
   display: -webkit-box;
   overflow: hidden;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
+  text-overflow: ellipsis;
   hyphens: auto;
   color: var(--muted);
   font-size: var(--fs-xs);
@@ -914,15 +916,6 @@ td {
   text-align: left;
   padding: var(--space-2) var(--space-3);
   border-bottom: 1px solid var(--line);
-}
-
-th:nth-child(3),
-th:nth-child(4),
-th:nth-child(5),
-td:nth-child(3),
-td:nth-child(4),
-td:nth-child(5) {
-  text-align: right;
 }
 
 th {
@@ -1161,6 +1154,7 @@ tbody tr:hover td:first-child {
   min-width: 0;
   max-width: 100%;
   overflow: hidden;
+  text-overflow: ellipsis;
   line-height: 1.25;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -1171,7 +1165,7 @@ tbody tr:hover td:first-child {
   text-decoration: none;
   border-bottom: 1px solid var(--line-strong);
   transition: border-color var(--transition-fast) ease;
-  word-break: break-word;
+  word-break: normal;
 }
 
 .title-cell a:hover {
@@ -1695,12 +1689,15 @@ html.no-scroll-state.scrolled .scroll-top {
   th:nth-child(4),
   td:nth-child(4) {
     width: 14%;
-    text-align: center;
   }
 
   th:nth-child(5),
   td:nth-child(5) {
     width: 14%;
+  }
+
+  th:nth-child(4),
+  th:nth-child(5) {
     text-align: center;
   }
 
@@ -1730,7 +1727,8 @@ html.no-scroll-state.scrolled .scroll-top {
   .featured-card-title {
     display: -webkit-box;
     overflow: hidden;
-    overflow-wrap: break-word;
+    overflow-wrap: normal;
+    text-overflow: ellipsis;
     hyphens: auto;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
@@ -2052,7 +2050,8 @@ html.no-scroll-state.scrolled .scroll-top {
 .rc-title {
   display: -webkit-box;
   overflow: hidden;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
+  text-overflow: ellipsis;
   hyphens: auto;
   font-weight: 500;
   line-height: 1.25;
@@ -2064,7 +2063,8 @@ html.no-scroll-state.scrolled .scroll-top {
 .rc-info {
   display: -webkit-box;
   overflow: hidden;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
+  text-overflow: ellipsis;
   hyphens: auto;
   color: var(--muted);
   font-size: var(--fs-xs);
@@ -2189,12 +2189,6 @@ html.no-scroll-state.scrolled .scroll-top {
     flex-direction: row;
     gap: 0.55rem;
     padding: var(--space-3);
-  }
-}
-
-@media (max-width: 575px) {
-  .related ul {
-    grid-auto-columns: minmax(200px, 82%);
   }
 }
 

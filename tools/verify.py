@@ -1014,7 +1014,7 @@ CSS_MEDIA_FILES = ("css/style.css",)
 CSS_MEDIA_PREFERS = ("@media (prefers-color-scheme: dark)", "@media (prefers-reduced-motion: reduce)")
 CSS_MEDIA_CONTAINER = "@container scroll-state(scrollable: top)"
 CSS_MEDIA_XS_EDGE = BREAKPOINT_SCALE[0]
-CSS_MEDIA_XS_BLOCKS = 3
+CSS_MEDIA_XS_BLOCKS = 2
 CSS_MEDIA_RETIRED_NOTE = {
     480: "480 was the pre-Stage-2b xs edge and collapses onto %d, which is BREAKPOINT_SCALE[0]" % BREAKPOINT_SCALE[0],
     525: "525 was the pre-Stage-2b featured/related edge and collapses onto %d, which is BREAKPOINT_SCALE[0]" % BREAKPOINT_SCALE[0],
