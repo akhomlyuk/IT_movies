@@ -252,6 +252,26 @@ if (mode === "slug") {
   if (!generatorSource.includes('class="rc-poster"')) {
     throw new Error("the one related-card source must render poster thumbnails");
   }
+  // The card and its poster are the two repeated shapes in a six-up row, and the
+  // partner asked for 6px on both. The radius gate in verify.py only fails a
+  // BARE value, so tokenising to --radius-m would pass it while shipping the
+  // wrong radius; only an assertion on the token itself catches that.
+  const styleSource = read("css/style.css");
+  for (const sel of [".related a.rc", ".rc-poster"]) {
+    const block = styleSource.match(
+      new RegExp(sel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*\\{([^}]*)\\}")
+    );
+    if (!block) {
+      throw new Error("css/style.css has no rule for " + sel);
+    }
+    if (!/border-radius:\s*var\(--radius-s\)/.test(block[1])) {
+      throw new Error(
+        sel + " must use var(--radius-s) (6px). A bare value is caught by"
+        + " verify.py, but a different token is not: --radius-m is 7px and"
+        + " --radius-l is 8px, and the partner asked for 6"
+      );
+    }
+  }
   if (!generatorSource.includes('<h1 class="film-title">')) {
     throw new Error("generated film pages must carry the title as the card's h1"
       + " (their header carries the site name, not the film)");
