@@ -1959,7 +1959,7 @@ html.no-scroll-state.scrolled .scroll-top {
 .related ul {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--space-2);
+  gap: var(--space-3);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1976,23 +1976,21 @@ html.no-scroll-state.scrolled .scroll-top {
   align-items: stretch;
   gap: var(--space-2);
   min-width: 0;
-  padding: 0.6rem;
+  padding: var(--space-4);
   border: 1px solid var(--line);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-l);
   background: var(--paper);
   color: var(--ink);
   text-decoration: none;
   cursor: pointer;
   transition:
     border-color 0.15s ease,
-    background-color 0.15s ease,
-    transform 0.15s ease;
+    background-color 0.15s ease;
 }
 
 .related a.rc:hover {
-  border-color: var(--accent);
+  border-color: var(--line-strong);
   background: var(--hover);
-  transform: translateY(-2px);
 }
 
 .related a.rc:focus-visible {
@@ -2002,9 +2000,9 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .rc-poster {
   display: block;
-  flex: 0 0 96px;
-  width: 96px;
-  height: 144px;
+  flex: 0 0 104px;
+  width: 104px;
+  height: 156px;
   border-radius: var(--radius-m);
   object-fit: cover;
   background: var(--hover);
@@ -2043,9 +2041,10 @@ html.no-scroll-state.scrolled .scroll-top {
   hyphens: auto;
   color: var(--muted);
   font-size: var(--fs-xs);
+  line-height: 1.5;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 
 .rc-meta {
@@ -2162,17 +2161,13 @@ html.no-scroll-state.scrolled .scroll-top {
   .related a.rc {
     flex-direction: row;
     gap: 0.55rem;
-    padding: 0.65rem;
-  }
-
-  .related a.rc:hover {
-    transform: none;
+    padding: var(--space-3);
   }
 
   .rc-poster {
-    flex-basis: 84px;
-    width: 84px;
-    height: 126px;
+    flex-basis: 96px;
+    width: 96px;
+    height: 144px;
   }
 }
 
