@@ -1971,7 +1971,7 @@ html.no-scroll-state.scrolled .scroll-top {
 .related ul {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--space-3);
+  gap: var(--space-4);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -2174,12 +2174,6 @@ html.no-scroll-state.scrolled .scroll-top {
     flex-direction: row;
     gap: 0.55rem;
     padding: var(--space-3);
-  }
-
-  .rc-poster {
-    flex-basis: 96px;
-    width: 96px;
-    height: 144px;
   }
 }
 

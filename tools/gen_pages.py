@@ -639,7 +639,7 @@ def inject_last_updated(src):
 # entry the fragment no longer uses, stops the generator instead of letting the
 # two renderings drift apart in silence.
 RC_CARD = """<a class="rc" :href="'../' + itemSlug(r) + '/'">
-  <img v-if="relatedPoster(r)" class="rc-poster" :src="relatedPoster(r)" :srcset="relatedPosterSrcset(r)" sizes="96px" alt="" width="120" height="180" loading="lazy" decoding="async">
+  <img v-if="relatedPoster(r)" class="rc-poster" :src="relatedPoster(r)" :srcset="relatedPosterSrcset(r)" sizes="104px" alt="" width="120" height="180" loading="lazy" decoding="async">
   <span class="rc-content">
     <span class="rc-head">
       <span class="rc-title">{{ relatedTitle(r) }}</span>
