@@ -727,8 +727,8 @@ svg:not(.heart) {
 
 .featured-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--space-3);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -746,10 +746,10 @@ svg:not(.heart) {
   align-items: stretch;
   gap: var(--space-3);
   min-width: 0;
-  padding: var(--space-2);
+  padding: var(--space-3);
   border: 1px solid var(--line);
   border-radius: var(--radius-l);
-  background: var(--glass-card);
+  background: var(--paper);
   color: inherit;
   text-decoration: none;
   transition: border-color var(--transition-fast) ease, background-color var(--transition-fast) ease;
