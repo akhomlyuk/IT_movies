@@ -239,11 +239,17 @@ if (mode === "slug") {
   if (!filmSource.includes('class="bc-type"')) {
     throw new Error("film.js must expose a compact breadcrumb category");
   }
+  // Poster on top, text under it, ratings last. The order is the design: the
+  // partner's second screenshot puts the artwork above the caption, and the
+  // ratings sit at the bottom of the card. film.js receives the card as an
+  // opaque FILM_RC_CARD string, so the order is asserted against the generator
+  // source (below) and film.js is only checked for holding no second copy.
+  if (filmSource.includes('class="rc-poster"')) {
+    throw new Error("film.js must not hold its own copy of the related card; it"
+      + " renders window.FILM_RC_CARD, whose only source is gen_pages.RC_CARD");
+  }
   if (!filmSource.includes("FILM_RC_CARD")) {
     throw new Error("film.js must render the related card from window.FILM_RC_CARD, the one source the page carries");
-  }
-  if (filmSource.includes('class="rc-poster"')) {
-    throw new Error("film.js must not hold a second copy of the related card");
   }
   if (filmSource.includes('class="fav-icon"')) {
     throw new Error("film.js must not render recommendation hearts in related cards");
@@ -251,6 +257,35 @@ if (mode === "slug") {
   const generatorSource = read("tools/gen_pages.py");
   if (!generatorSource.includes('class="rc-poster"')) {
     throw new Error("the one related-card source must render poster thumbnails");
+  }
+  // Card order, asserted as a sequence so a later edit that swaps two spans
+  // fails here instead of in someone's eye. It lives in gen_pages.RC_CARD
+  // because film.js renders the card as an opaque FILM_RC_CARD string.
+  const rcOrder = ["rc-poster", "rc-info", "rc-title", "rc-meta"];
+  const genRc = generatorSource.slice(
+    generatorSource.indexOf("RC_CARD = "),
+    generatorSource.indexOf("RC_VOID_TAGS")
+  );
+  const rcAt = rcOrder.map((cls) => genRc.indexOf('class="' + cls));
+  for (let i = 0; i < rcAt.length; i++) {
+    if (rcAt[i] === -1) {
+      throw new Error(
+        "gen_pages.RC_CARD must render ." + rcOrder[i] + " (position " + i
+        + " of " + rcOrder.join(" -> ") + ")"
+      );
+    }
+  }
+  for (let i = 1; i < rcAt.length; i++) {
+    if (rcAt[i] < rcAt[i - 1]) {
+      throw new Error(
+        "related card order must be " + rcOrder.join(" -> ") + ", but ."
+        + rcOrder[i - 1] + " comes after ." + rcOrder[i]
+      );
+    }
+  }
+  if (!genRc.includes('class="rc-rating kp rating-chip rating-chip--kp"')) {
+    throw new Error("related rating chips must carry rating-chip so the pill"
+      + " styling is shared with the rest of the site, not re-declared per card");
   }
   // The card and its poster are the two repeated shapes in a six-up row, and the
   // partner asked for 6px on both. The radius gate in verify.py only fails a

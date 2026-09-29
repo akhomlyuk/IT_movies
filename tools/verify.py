@@ -1313,7 +1313,11 @@ check_media_conditions()
 # undone silently: a second copy reappearing somewhere, and Russian text baked
 # into the client card.
 RELATED_CARD_ANCHOR = '<a class="rc"'
-RELATED_CARD_MIN_NODES = 9
+# The card is 8 nodes after the 2026-09-29 rail change dropped the .rc-head
+# wrapper, which existed only to group the title and now has one child. The
+# count is a collapse alarm for the extractor, not a style preference: equal
+# trees of 8 nodes are the correct shape for the card as authored.
+RELATED_CARD_MIN_NODES = 8
 RELATED_CARD_OWNER = "tools/gen_pages.py"
 RELATED_CARD_GLOBAL = "window.FILM_RC_CARD = "
 RELATED_CARD_CYRILLIC = re.compile(r"[\u0400-\u04FF]+")

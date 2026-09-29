@@ -1996,7 +1996,7 @@ html.no-scroll-state.scrolled .scroll-top {
 .related a.rc {
   display: flex;
   flex: 1;
-  flex-direction: row;
+  flex-direction: column;
   align-items: stretch;
   gap: var(--space-2);
   min-width: 0;
@@ -2024,25 +2024,19 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .rc-poster {
   display: block;
-  flex: 0 0 104px;
-  width: 104px;
-  height: 156px;
+  flex: 0 0 auto;
+  width: 120px;
+  height: 180px;
   border-radius: var(--radius-s);
   object-fit: cover;
   background: var(--hover);
 }
 
 .rc-content {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  flex: 1;
-  min-width: 0;
-  gap: var(--space-1);
-}
-
-.rc-head {
   display: flex;
-  align-items: center;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
   gap: var(--space-1);
 }
 
@@ -2075,7 +2069,7 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .rc-meta {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--space-2);
   margin-top: auto;
   padding-top: var(--space-1);
@@ -2154,12 +2148,6 @@ html.no-scroll-state.scrolled .scroll-top {
   }
 }
 
-@media (min-width: 768px) and (max-width: 1023px) {
-  .related ul {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 @media (max-width: 767px) {
   .film-poster {
     width: min(100%, 240px);
@@ -2168,26 +2156,6 @@ html.no-scroll-state.scrolled .scroll-top {
   .film-poster img {
     width: 100%;
     max-width: none;
-  }
-
-  .related ul {
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-columns: none;
-    grid-auto-columns: minmax(240px, 75%);
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding-bottom: var(--space-2);
-  }
-
-  .related li {
-    scroll-snap-align: start;
-  }
-
-  .related a.rc {
-    flex-direction: row;
-    gap: 0.55rem;
-    padding: var(--space-3);
   }
 }
 
