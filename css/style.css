@@ -1143,6 +1143,7 @@ tbody tr:hover td:first-child {
   text-decoration: none;
   border-bottom: 1px solid var(--line-strong);
   transition: border-color var(--transition-fast) ease;
+  word-break: break-word;
 }
 
 .title-cell a:hover {
