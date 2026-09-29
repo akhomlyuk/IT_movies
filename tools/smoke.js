@@ -216,11 +216,22 @@ if (mode === "slug") {
   console.log("app.js smoke (catalog.js, sections sum == CATALOG): OK" + MIN_LABEL);
 } else if (mode === "film") {
   const filmSource = read("js/film.js");
-  if (!filmSource.includes('class="film-header-title"')) {
-    throw new Error("film.js must expose the film title in the header");
+  if (!filmSource.includes('<h1 class="film-title">{{ title }}</h1>')) {
+    throw new Error("film.js must expose the film title as the card's h1"
+      + " (the header carries the site name, not the film)");
   }
-  if (filmSource.includes('class="film-title"')) {
-    throw new Error("film.js must not duplicate the giant film title in the hero");
+  if (filmSource.includes('film-header-title')) {
+    throw new Error("film.js must not repeat the film title in the header");
+  }
+  if (!/class="film-info">\s*\n\s*<h1 class="film-title">/.test(filmSource)) {
+    throw new Error("the film title must be the first child of .film-info, not"
+      + " something below the metadata row");
+  }
+  if (!/<figure class="film-poster"[^>]*>\s*\n\s*<img[^>]*>\s*\n\s*<span class="film-badge"/.test(filmSource)) {
+    throw new Error("the author-pick badge belongs on the poster, inside .film-poster");
+  }
+  if (/\.film-info">[\s\S]{0,400}?class="film-badge"/.test(filmSource)) {
+    throw new Error("the author-pick badge must not stay in .film-info");
   }
   if (!filmSource.includes('class="film-meta"')) {
     throw new Error("film.js must expose a structured metadata block");
@@ -241,11 +252,19 @@ if (mode === "slug") {
   if (!generatorSource.includes('class="rc-poster"')) {
     throw new Error("the one related-card source must render poster thumbnails");
   }
-  if (!generatorSource.includes('film-header-title')) {
-    throw new Error("generated film pages must keep the title in the header");
+  if (!generatorSource.includes('<h1 class="film-title">')) {
+    throw new Error("generated film pages must carry the title as the card's h1"
+      + " (their header carries the site name, not the film)");
   }
-  if (generatorSource.includes('class="film-title"')) {
-    throw new Error("generated film pages must not duplicate the giant title in the hero");
+  if (generatorSource.includes('film-header-title')) {
+    throw new Error("generated film pages must not repeat the film title in the header");
+  }
+  if (!/class="film-poster">\\n[\s\S]{0,300}?\{fav_badge\}/.test(generatorSource)) {
+    throw new Error("the generated no-JS author-pick badge belongs inside the poster figure");
+  }
+  if ((generatorSource.match(/\{fav_badge\}/g) || []).length !== 1) {
+    throw new Error("fav_badge must be interpolated exactly once, into the poster figure;"
+      + " anywhere else it would put the badge back in the info column");
   }
   if (!generatorSource.includes('film-meta')) {
     throw new Error("generated film pages must include structured metadata");

@@ -32,8 +32,8 @@ const FILM_TEMPLATE = `
         <a href="../../"><img src="../../static/logo.webp" alt="IT Movies" fetchpriority="high" decoding="async" width="100" height="100"></a>
       </div>
       <div class="brand-text">
-        <h1 class="film-header-title">{{ title }}</h1>
-        <p class="film-header-alt">{{ altTitle }}</p>
+        <div class="brand-name">IT Movies</div>
+        <p>{{ t.subtitle }}</p>
       </div>
     </div>
     <div class="toolbar">
@@ -57,9 +57,11 @@ const FILM_TEMPLATE = `
     <article class="film-main">
       <figure class="film-poster" v-if="posterSrc">
         <img :src="posterSrc" :srcset="posterSrcset" sizes="(max-width: 767px) 240px, 320px" :alt="title" :width="posterW" :height="posterH" loading="eager" fetchpriority="high" decoding="async">
+        <span class="film-badge" v-if="isFav">{{ t.authorPick }}</span>
       </figure>
       <div class="film-info">
-        <span class="film-badge" v-if="isFav">{{ t.authorPick }}</span>
+        <h1 class="film-title">{{ title }}</h1>
+        <p class="film-alt" v-if="altTitle">{{ altTitle }}</p>
         <div class="film-meta">
           <span class="film-meta-item">{{ year }}</span>
           <span class="film-meta-item">{{ genreLabel }}</span>

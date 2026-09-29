@@ -25,7 +25,7 @@ main page
      document-level horizontal overflow
   4. lang toggle: document.title switches to the English variant
   5. boot fallback: blocking js/catalog.js reveals the #boot-fallback message
-  6. lucky button: navigates to a film page whose title leads with its h1
+  6. lucky button: navigates to a film page whose title leads with its card h1
   7. poster modal: the lightbox img matches its natural size and the _400 src
 about page
   8. structure: one article, six sections, one svg per toolbar button
@@ -33,11 +33,11 @@ film page
   9. theme toggle flips html.dark; theme-color is declared statically as
      light + dark (media) metas, not swapped by JS; breadcrumb, share hrefs
      carrying the film slug and the encoded title, 4 related cards at 1280px
- 10. lang toggle switches html.lang, the h1, the alt title, the breadcrumb
-     label and the related titles
- 11. mobile layout at 390px: single h1 in the header, 4 related cards in one
-     horizontal row, 2:3 poster boxes reported with the area they discard, the
-     selected file verified against disk, related slugs drawn from
+ 10. lang toggle switches html.lang, the card h1, the alt title, the breadcrumb
+     label and the related titles; the header carries the site name and no h1
+ 11. mobile layout at 390px: exactly one h1, inside .film-info, 4 related cards
+     in one horizontal row, 2:3 poster boxes reported with the area they discard,
+     the selected file verified against disk, related slugs drawn from
      FILM_PAGE.related, and a related-card srcset that offers the whole ladder with
      each candidate's own width
   12. nav tier: exactly one navigation affordance reachable at 320/375/575/576/
@@ -80,6 +80,7 @@ if hasattr(sys.stdout, "reconfigure"):
 FILM_PAGE = "films/tt0133093-the-matrix/index.html"
 FILM_MOBILE_PAGE = "films/tt8488126-the-inventor-out-for-blood-in-silicon-valley/index.html"
 RELATED_COUNT = 4
+I18N_RU_SUBTITLE = "Подборка фильмов и сериалов о компьютерах, технологиях, ИИ и т.д."
 META_DARK = "#14120F"
 META_LIGHT = "#F4F2ED"
 DESKTOP = {"width": 1280, "height": 800}
@@ -623,6 +624,37 @@ def test_film_theme(page, base):
     # a type label (see .superpowers/sdd/.../task-4-report.md).
     expect(bc.locator(".bc-type")).to_have_text("Матрица")
     expect(bc.locator(".bc-current")).to_have_text("Матрица")
+    assert_badge_on_poster(page)
+
+
+def assert_badge_on_poster(page):
+    """The author's pick is a badge ON the poster, not a chip in the info column.
+
+    Asserted geometrically rather than by markup alone: only a browser can say the
+    badge actually lands inside the poster's painted box, and the whole point of the
+    change is where it renders. `.film-poster` is the positioned ancestor, so a
+    regression that moves the badge out of the figure moves it out of the box.
+    """
+    poster = page.locator(".film-poster")
+    badge = page.locator(".film-badge")
+    assert page.locator(".film-info .film-badge").count() == 0, (
+        "the author's-pick badge must not stay in .film-info"
+    )
+    if not badge.count():
+        # A record without fav:true legitimately renders no badge. The Matrix has
+        # one, so on the pages that use this the assertion is not vacuous.
+        return
+    p = poster.bounding_box()
+    b = badge.bounding_box()
+    assert b["x"] >= p["x"] and b["y"] >= p["y"], (
+        f"the badge must sit inside the poster box, got badge {b} poster {p}"
+    )
+    assert b["x"] + b["width"] <= p["x"] + p["width"] + 0.5, (
+        f"the badge must not overhang the poster's right edge, got badge {b} poster {p}"
+    )
+    assert b["y"] + b["height"] <= p["y"] + p["height"] + 0.5, (
+        f"the badge must not overhang the poster's bottom edge, got badge {b} poster {p}"
+    )
 
 
 def test_film_lang(page, base):
@@ -631,12 +663,18 @@ def test_film_lang(page, base):
     en = page.evaluate("() => window.FILM_PAGE.item.titleEn")
     assert en.strip() and is_latin_script(en), f"titleEn must be Latin script: {en!r}"
     expect(page.locator("html")).to_have_attribute("lang", "ru")
-    expect(page.locator("h1.film-header-title")).to_have_text(ru)
-    expect(page.locator(".film-header-alt")).to_have_text(en)
+    expect(page.locator(".brand .brand-name")).to_have_text("IT Movies")
+    expect(page.locator(".brand-text p")).to_have_text(I18N_RU_SUBTITLE)
+    assert page.locator("header.top h1").count() == 0, (
+        "the header carries the site name, so the film page's single h1 belongs to"
+        " the card, not the header"
+    )
+    expect(page.locator("h1.film-title")).to_have_text(ru)
+    expect(page.locator(".film-alt")).to_have_text(en)
     page.locator(".lang").click()
     expect(page.locator("html")).to_have_attribute("lang", "en")
-    expect(page.locator("h1.film-header-title")).to_have_text(en)
-    expect(page.locator(".film-header-alt")).to_have_text(ru)
+    expect(page.locator("h1.film-title")).to_have_text(en)
+    expect(page.locator(".film-alt")).to_have_text(ru)
     expect(page.locator("nav.breadcrumb")).to_have_attribute("aria-label", "Home")
     expect(page).to_have_title(re.compile(rf"^{re.escape(en)}( \(\d{{4}}\))? — "))
     titles = page.locator(".related .rc-title").all_text_contents()
@@ -648,9 +686,13 @@ def test_film_mobile_layout(page, base):
     page.set_viewport_size(XS)
     page.goto(base + FILM_MOBILE_PAGE, wait_until="domcontentloaded")
     assert page.locator("h1").count() == 1, "the film page must have exactly one h1"
-    assert page.locator(".film-info h1").count() == 0, (
-        "the film title must not be repeated inside .film-info"
+    assert page.locator(".film-info h1.film-title").count() == 1, (
+        "the one h1 must be the card's film title, not a repeat of the header one"
     )
+    assert page.locator("header.top h1").count() == 0, (
+        "the header carries the site name, so it must not hold an h1"
+    )
+    assert_badge_on_poster(page)
     ul = page.locator(".related ul")
     expect(ul).to_have_css("grid-auto-flow", "column")
     expect(ul).to_have_css("overflow-x", "auto")
@@ -697,7 +739,7 @@ def test_lucky(page, base):
     expect(btn).to_have_attribute("aria-label", "Мне повезёт")
     btn.click()
     page.wait_for_url(re.compile(r"/films/[^/]+/$"))
-    h1 = page.locator("h1.film-header-title")
+    h1 = page.locator("h1.film-title")
     expect(h1).to_be_visible()
     expect(page).to_have_title(re.compile(rf"^{re.escape(h1.inner_text().strip())}( \(\d{{4}}\))? — "))
 

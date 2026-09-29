@@ -783,13 +783,16 @@ svg:not(.heart) {
 }
 
 .film-badge {
-  justify-self: start;
-  max-width: 100%;
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  max-width: calc(100% - var(--space-3));
   overflow: hidden;
-  border: 1px solid var(--accent);
   border-radius: var(--radius-s);
   padding: 0.1em 0.5em;
-  color: var(--accent);
+  background: var(--accent);
+  box-shadow: var(--shadow);
+  color: var(--accent-ink);
   font-size: var(--fs-xs);
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -1777,12 +1780,12 @@ html.no-scroll-state.scrolled .scroll-top {
   min-width: 0;
 }
 
-.film-header-title {
+.film-title {
   display: -webkit-box;
   max-width: min(var(--measure), 100%);
-  margin: 0;
+  margin: 0 0 var(--space-1);
   overflow: hidden;
-  font-size: clamp(1rem, 1.8vw, 1.45rem);
+  font-size: clamp(1.15rem, 2vw, 1.6rem);
   font-weight: 700;
   letter-spacing: -0.01em;
   line-height: 1.15;
@@ -1790,9 +1793,9 @@ html.no-scroll-state.scrolled .scroll-top {
   -webkit-line-clamp: 2;
 }
 
-.film-header-alt {
+.film-alt {
   max-width: min(60ch, 100%);
-  margin: var(--space-0-2) 0 0;
+  margin: 0 0 var(--space-3);
   overflow: hidden;
   color: var(--muted);
   font-size: var(--fs-sm);
@@ -1824,11 +1827,6 @@ html.no-scroll-state.scrolled .scroll-top {
   color: var(--line-strong);
 }
 
-.film-badge {
-  display: inline-block;
-  margin-bottom: var(--space-2);
-}
-
 .film-desc-alt-wrap {
   max-width: var(--measure);
   margin: 0 0 var(--space-4);
@@ -1853,12 +1851,13 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 .film-poster {
+  position: relative;
   margin: 0;
 }
 
 .film-poster img {
   display: block;
-  max-width: min(320px, 100%);
+  max-width: 320px;
   height: auto;
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow);

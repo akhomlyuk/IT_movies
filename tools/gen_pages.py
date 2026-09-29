@@ -936,24 +936,34 @@ def render(item, related):
             f'{preload_attrs} fetchpriority="high">\n'
         )
 
+    fav_badge = (
+        '\n            <span class="film-badge">Выбор автора</span>'
+        if item.get("fav")
+        else ""
+    )
+
+    # The client hides the alt line when the two titles are identical; the no-JS
+    # card must agree, or 9 documentaries print their title twice.
+    noscript_alt = (
+        f'            <p class="film-alt">{esc(title_en)}</p>\n'
+        if title_en and title_en != title_ru
+        else ""
+    )
+
     noscript_poster = ""
     if poster:
         dims = f' width="{poster_dims[0]}" height="{poster_dims[1]}"' if poster_dims else ""
         srcset_attr = poster_srcset_attr(poster, POSTER_SIZES, FILMS_PREFIX)
         noscript_poster = (
             f'      <figure class="film-poster">\n'
-            f'        <img src="../../{poster}"{srcset_attr} alt="{esc(title_ru)}"{dims} decoding="async">\n'
+            f'        <img src="../../{poster}"{srcset_attr} alt="{esc(title_ru)}"{dims} decoding="async">'
+            f'{fav_badge}\n'
             "      </figure>\n"
         )
 
     related_items = rc_cards_html(related)
     rc_card_js = json.dumps(RC_CARD, ensure_ascii=False).replace("<", "\\u003c")
 
-    fav_badge = (
-        '              <span class="film-badge">Выбор автора</span>\n'
-        if item.get("fav")
-        else ""
-    )
     rat_tiles = (
         f'        <div class="ratings">\n'
         f'          <a class="kp rating-chip rating-chip--kp" href="https://www.kinopoisk.ru/film/{item["kpId"]}/" target="_blank" rel="noopener noreferrer">Кинопоиск: {esc(fmt_rating(item.get("kpRating")))}{esc(star(item.get("kpRating")))}</a>\n'
@@ -1013,8 +1023,8 @@ def render(item, related):
             <a href="../../"><img src="../../static/logo.webp" alt="IT Movies" width="100" height="100"></a>
           </div>
           <div class="brand-text">
-            <h1 class="film-header-title">{esc(title_ru)}</h1>
-            <p class="film-header-alt">{esc(title_en)}</p>
+            <div class="brand-name">IT Movies</div>
+            <p>Подборка фильмов и сериалов о компьютерах, технологиях, ИИ и т.д.</p>
           </div>
         </div>
       </header>
@@ -1024,7 +1034,8 @@ def render(item, related):
         </nav>
         <article class="film-main">
 {noscript_poster}          <div class="film-info">
-{fav_badge}            <div class="film-meta">
+            <h1 class="film-title">{esc(title_ru)}</h1>
+{noscript_alt}            <div class="film-meta">
               <span class="film-meta-item">{esc(str(item["year"]))}</span>
               <span class="film-meta-item">{esc(genre_list)}</span>
             </div>
