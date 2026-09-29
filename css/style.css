@@ -1528,6 +1528,10 @@ html.no-scroll-state.scrolled .scroll-top {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .featured-badge {
+    font-size: 0.75rem;
+  }
+
   .section-heading {
     display: grid;
     gap: var(--space-0-35);
@@ -1631,6 +1635,10 @@ html.no-scroll-state.scrolled .scroll-top {
 
   html:not(.js) .nav:not(.nav--dialog) {
     display: flex;
+  }
+
+  th {
+    letter-spacing: 0.04em;
   }
 
   .mobile-sort {
