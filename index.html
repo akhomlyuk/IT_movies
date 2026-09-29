@@ -133,7 +133,6 @@
     <section v-if="featured.length && !hasActiveFilters" class="featured" aria-labelledby="featured-title">
       <div class="section-heading">
         <h2 id="featured-title">{{ t.startHere }}</h2>
-        <p>{{ t.startHereLead }}</p>
       </div>
       <ul class="featured-grid">
         <li v-for="item in featured" :key="'featured-' + (item.imdbId || item.kpId)">
