@@ -895,7 +895,7 @@ th,
 td {
   text-align: left;
   padding: var(--space-2) var(--space-3);
-  border-bottom: 1px dotted var(--line);
+  border-bottom: 1px solid var(--line);
 }
 
 th:nth-child(3),
@@ -1312,7 +1312,7 @@ a.imdb .star,
 footer {
   margin-top: var(--space-9);
   padding-top: var(--space-4);
-  border-top: 1px dotted var(--line);
+  border-top: 1px solid var(--line);
   text-align: center;
   color: var(--muted);
   font-size: var(--fs-sm);
