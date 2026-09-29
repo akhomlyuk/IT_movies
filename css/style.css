@@ -40,6 +40,7 @@
   --space-6: 2rem;
   --space-7: 2.5rem;
   --space-8: 3rem;
+  --space-9: 4.5rem;
   --space-0-2: 0.2rem;
   --space-0-35: 0.35rem;
   --space-1-25: 1.25rem;
@@ -696,7 +697,7 @@ svg:not(.heart) {
 }
 
 .featured {
-  margin: 0 0 var(--space-6);
+  margin: 0 0 var(--space-9);
   padding: var(--space-1-25) 0 var(--space-5);
   border-block: 1px solid var(--line);
 }
@@ -1309,7 +1310,7 @@ a.imdb .star,
 }
 
 footer {
-  margin-top: var(--space-4);
+  margin-top: var(--space-9);
   padding-top: var(--space-4);
   border-top: 1px dotted var(--line);
   text-align: center;
@@ -1955,7 +1956,7 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 .related {
-  margin: var(--space-7) 0 var(--space-5);
+  margin: var(--space-9) 0 var(--space-5);
   padding-top: var(--space-5);
   border-top: 1px solid var(--line);
 }
