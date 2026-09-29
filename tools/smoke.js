@@ -169,7 +169,7 @@ if (mode === "slug") {
   if (styleSource.includes("min-width: 640px")) {
     throw new Error("style.css must not force horizontal table scrolling on mobile");
   }
-  if (!styleSource.includes("font-size: clamp(1.3rem, 2vw, 1.7rem)")) {
+  if (!styleSource.includes("font-size: clamp(1.3rem, 2vw, 1.6rem)")) {
     throw new Error("brand heading scale must use the reduced compact clamp");
   }
   if (!styleSource.includes(".title-layout {\n  display: flex")) {

@@ -296,7 +296,7 @@ html:not(.js) #app[v-cloak] nav.nav:not(.nav--dialog) {
 .brand h1,
 .brand .brand-name {
   margin: 0;
-  font-size: clamp(1.3rem, 2vw, 1.7rem);
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
   font-weight: 700;
   letter-spacing: -0.01em;
   text-wrap: balance;
@@ -1079,9 +1079,6 @@ tbody tr:hover td:first-child {
 
 .poster-close {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  padding: 6px;
   margin: 0;
   border: none;
   background: transparent;
@@ -1678,7 +1675,7 @@ html.no-scroll-state.scrolled .scroll-top {
   .featured-grid {
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(230px, 72%);
+    grid-auto-columns: minmax(240px, 72%);
     grid-template-columns: none;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
@@ -1778,12 +1775,6 @@ html.no-scroll-state.scrolled .scroll-top {
   white-space: nowrap;
 }
 
-.film-type {
-  margin: var(--space-0-2) 0 0;
-  color: var(--muted);
-  font-size: var(--fs-sm);
-  line-height: 1.3;
-}
 
 .film-meta {
   display: flex;

@@ -21,7 +21,6 @@ from lib import ROOT, SITE_BASE, POSTER_VARIANT_WIDTHS, load_catalog, make_slug,
 sys.stdout.reconfigure(encoding="utf-8")
 
 OUT = ROOT / "films"
-TYPE_LABELS = {"movie": "Фильм", "series": "Сериал", "documentary": "Документальный"}
 
 catalog = load_catalog()
 
@@ -824,7 +823,6 @@ def render(item, related):
     title_en = item["titleEn"]
     desc_ru = item["desc"]["ru"]
     desc_en = item["desc"]["en"]
-    type_label = TYPE_LABELS.get(item["type"], item["type"])
     poster = (item.get("poster") or "").lstrip("/")
     poster_dims = webp_size(ROOT / poster) if poster else None
     genres_ru = sorted(RU_GENRES.get(g, g) for g in item["genres"])
@@ -1017,7 +1015,6 @@ def render(item, related):
           <div class="brand-text">
             <h1 class="film-header-title">{esc(title_ru)}</h1>
             <p class="film-header-alt">{esc(title_en)}</p>
-            <p class="film-type">{esc(type_label)}</p>
           </div>
         </div>
       </header>

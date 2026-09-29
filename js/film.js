@@ -34,7 +34,6 @@ const FILM_TEMPLATE = `
       <div class="brand-text">
         <h1 class="film-header-title">{{ title }}</h1>
         <p class="film-header-alt">{{ altTitle }}</p>
-        <p class="film-type">{{ typeLabel }}</p>
       </div>
     </div>
     <div class="toolbar">
@@ -172,9 +171,6 @@ const app = createApp({
       item ? item.desc[lang.value === "ru" ? "en" : "ru"] : ""
     );
     const isFav = computed(() => !!(item && item.fav));
-    const typeLabel = computed(() =>
-      item ? t.value.typeLabels[item.type] || item.type : ""
-    );
     const genreLabel = computed(() =>
       item ? item.genres.map((g) => t.value.genres[g] || g).join(" / ") : ""
     );
@@ -290,7 +286,6 @@ const app = createApp({
       desc,
       descAlt,
       isFav,
-      typeLabel,
       genreLabel,
       year,
       posterSrc,
