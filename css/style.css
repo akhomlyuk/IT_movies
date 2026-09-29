@@ -792,8 +792,10 @@ svg:not(.heart) {
   color: var(--accent);
   font-size: var(--fs-xs);
   font-weight: 700;
+  letter-spacing: 0.06em;
   line-height: 1.35;
   text-overflow: ellipsis;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
@@ -895,12 +897,21 @@ td {
   border-bottom: 1px dotted var(--line);
 }
 
+th:nth-child(3),
+th:nth-child(4),
+th:nth-child(5),
+td:nth-child(3),
+td:nth-child(4),
+td:nth-child(5) {
+  text-align: right;
+}
+
 th {
   background: var(--th-bg);
   font-weight: 500;
   color: var(--muted);
   font-size: var(--fs-xs);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   white-space: nowrap;
   user-select: none;
@@ -1758,7 +1769,7 @@ html.no-scroll-state.scrolled .scroll-top {
   margin: 0;
   overflow: hidden;
   font-size: clamp(1rem, 1.8vw, 1.45rem);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.01em;
   line-height: 1.15;
   -webkit-box-orient: vertical;
@@ -1951,9 +1962,9 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .related h2 {
   margin: 0 0 var(--space-4);
-  font-size: var(--fs-xl);
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .related ul {
