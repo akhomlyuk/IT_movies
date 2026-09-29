@@ -742,7 +742,7 @@ svg:not(.heart) {
 .featured-card {
   display: grid;
   flex: 1;
-  grid-template-columns: 94px minmax(0, 1fr);
+  grid-template-columns: 70px minmax(0, 1fr);
   align-items: stretch;
   gap: var(--space-3);
   min-width: 0;
@@ -767,8 +767,8 @@ svg:not(.heart) {
 
 .featured-card img {
   display: block;
-  width: 96px;
-  height: 144px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   border-radius: var(--radius-s);
   background: var(--paper-strong);
@@ -779,10 +779,9 @@ svg:not(.heart) {
   grid-template-columns: minmax(0, 1fr);
   min-width: 0;
   gap: var(--space-1);
-  align-content: start;
+  align-content: space-between;
 }
 
-.featured-badge,
 .film-badge {
   justify-self: start;
   max-width: 100%;
@@ -802,7 +801,6 @@ svg:not(.heart) {
 
 .featured-card-title {
   display: -webkit-box;
-  min-height: 2.5em;
   overflow: hidden;
   overflow-wrap: break-word;
   hyphens: auto;
@@ -812,6 +810,26 @@ svg:not(.heart) {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   line-clamp: 2;
+}
+
+.featured-card-alt {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.featured-card-year,
+.featured-card-genre {
+  display: block;
+}
+
+.featured-star {
+  color: var(--accent);
 }
 
 .featured-card-meta {
@@ -1528,10 +1546,6 @@ html.no-scroll-state.scrolled .scroll-top {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .featured-badge {
-    font-size: 0.75rem;
-  }
-
   .section-heading {
     display: grid;
     gap: var(--space-0-35);
@@ -1703,15 +1717,6 @@ html.no-scroll-state.scrolled .scroll-top {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     padding-bottom: var(--space-2);
-  }
-
-  .featured-grid .featured-card {
-    grid-template-columns: 80px minmax(0, 1fr);
-  }
-
-  .featured-grid .featured-card img {
-    width: 80px;
-    height: 120px;
   }
 
   .featured-grid li {

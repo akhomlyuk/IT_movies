@@ -20,7 +20,7 @@ main page
   1. search: typing "матриц" leaves exactly the two Matrix films
   2. genre filter: ?genre=ai is preselected, option labels are sorted the way
      js/app.js sorts them, the result count disappears when no filter is active
-  3. featured grid: 8 distinct cards each with a poster; a horizontal snap
+  3. featured grid: 6 distinct cards each with a poster; a horizontal snap
      scroller at 390px (xs) and a 2-column grid at 576px (sm), with no
      document-level horizontal overflow
   4. lang toggle: document.title switches to the English variant
@@ -240,12 +240,12 @@ def test_featured_breakpoints(page, base):
     page.set_viewport_size(XS)
     page.goto(base + "index.html", wait_until="domcontentloaded")
     grid = page.locator(".featured-grid")
-    expect(page.locator(".featured-card")).to_have_count(8)
+    expect(page.locator(".featured-card")).to_have_count(6)
     hrefs = page.locator(".featured-card").evaluate_all(
         "els => els.map(el => el.getAttribute('href'))"
     )
-    assert len(set(hrefs)) == 8, f"featured cards must be 8 distinct films: {hrefs}"
-    expect(page.locator(".featured-card img")).to_have_count(8)
+    assert len(set(hrefs)) == 6, f"featured cards must be 6 distinct films: {hrefs}"
+    expect(page.locator(".featured-card img")).to_have_count(6)
     expect(grid).to_have_css("grid-auto-flow", "column")
     expect(grid).to_have_css("overflow-x", "auto")
     expect(grid).to_have_css("scroll-snap-type", "x mandatory")

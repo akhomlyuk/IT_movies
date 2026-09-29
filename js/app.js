@@ -71,20 +71,20 @@ function shuffle(items, random) {
 function pickFeatured(catalog, random = Math.random) {
   const favorites = catalog.filter((item) => item.fav);
   const selected = ["movie", "documentary", "series"].flatMap((type) =>
-    shuffle(favorites.filter((item) => item.type === type), random).slice(0, type === "series" ? 2 : 3)
+    shuffle(favorites.filter((item) => item.type === type), random).slice(0, 2)
   );
   const shuffled = shuffle(selected, random);
-  if (shuffled.length < 8) {
+  if (shuffled.length < 6) {
     const picked = new Set(shuffled);
     for (const item of favorites) {
-      if (shuffled.length >= 8) break;
+      if (shuffled.length >= 6) break;
       if (!picked.has(item)) {
         picked.add(item);
         shuffled.push(item);
       }
     }
   }
-  return shuffled.slice(0, 8);
+  return shuffled.slice(0, 6);
 }
 
 const CatalogTable = {
@@ -392,6 +392,15 @@ const app = createApp({
       return item.genres.map((genre) => I18N[lang.value].genres[genre] || genre).join(" · ");
     }
 
+    function firstGenre(item) {
+      const genre = item.genres && item.genres[0];
+      return genre ? (I18N[lang.value].genres[genre] || genre) : "";
+    }
+
+    function altTitle(item) {
+      return altTitleC(item, lang.value);
+    }
+
     function setLang(next) {
       lang.value = next;
     }
@@ -490,6 +499,8 @@ const app = createApp({
       sortBy,
       filmUrl,
       genreLabel,
+      firstGenre,
+      altTitle,
       goLucky,
       scrollToTop,
       hasRating,

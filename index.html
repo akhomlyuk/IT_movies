@@ -139,9 +139,12 @@
           <a class="featured-card" :href="filmUrl(item)">
             <img :src="item.poster400 || item.poster" alt="" width="240" height="360" loading="lazy" decoding="async">
             <span class="featured-card-copy">
-              <span class="featured-badge">{{ t.authorPick }}</span>
               <span class="featured-card-title">{{ lang === 'ru' ? item.titleRu : item.titleEn }}</span>
-              <span class="featured-card-meta">{{ item.year }} · {{ genreLabel(item) }}</span>
+              <span v-if="altTitle(item)" class="featured-card-alt">{{ altTitle(item) }}</span>
+              <span class="featured-card-meta">
+                <span class="featured-card-year"><span class="featured-star" aria-hidden="true">&#9733;</span> {{ item.year }}</span>
+                <span class="featured-card-genre">{{ firstGenre(item) }}</span>
+              </span>
               <span class="featured-ratings">
                 <span v-if="hasRating(item.kpRating)" class="rating-chip rating-chip--kp">{{ t.kpShort }} {{ formatRating(item.kpRating) }}</span>
                 <span v-if="hasRating(item.imdbRating)" class="rating-chip rating-chip--imdb">{{ t.imdb }} {{ formatRating(item.imdbRating) }}</span>

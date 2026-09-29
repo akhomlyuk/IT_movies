@@ -113,8 +113,8 @@ if (mode === "slug") {
     throw new Error("app.js must expose pickFeatured for recommendation shuffling");
   }
   const featuredWithSeed = state.pickFeatured(global.CATALOG, () => 0.25);
-  if (featuredWithSeed.length !== 8 || new Set(featuredWithSeed.map((item) => item.type)).size < 3) {
-    throw new Error("pickFeatured must return eight mixed recommended titles");
+  if (featuredWithSeed.length !== 6 || new Set(featuredWithSeed.map((item) => item.type)).size < 3) {
+    throw new Error("pickFeatured must return six mixed recommended titles");
   }
   if (typeof state.resetFilters !== "function" || !state.hasActiveFilters) {
     throw new Error("app.js must expose filter reset state");
