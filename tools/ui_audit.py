@@ -85,7 +85,7 @@ PAGE_SENTINELS = {CATALOG: ".search"}
 FILM_SENTINEL = ".back-catalog a"
 
 DELIBERATE_TRUNCATORS = (".alt-title", ".rc-info", ".featured-card-meta",
-                         ".film-header-alt")
+                         ".featured-card-alt", ".film-header-alt")
 DELIBERATE_SCROLLERS = (".table-wrap", ".featured-grid", ".related ul")
 DELIBERATE_EXPANDERS = ("button.poster-icon", "span.poster-wrap")
 
