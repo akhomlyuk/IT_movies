@@ -966,7 +966,7 @@ tbody tr:hover td:first-child {
 .title-cell {
   min-width: 0;
   position: relative;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
 }
 
 .title-layout {
