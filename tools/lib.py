@@ -254,6 +254,18 @@ def featured_poster_sizes():
 # measured as the alternative and covers no need 256 does not, for 436 256 B more
 # in the repo and 2 472 B more per file.
 POSTER_VARIANT_WIDTHS = (96, 192, 256, 400)
+# The height every poster master in this library is held at, and it is not a
+# preference: 85 of 86 masters measured EXACTLY 600px tall when this was added,
+# the only exception being a 1920x2843 file that had just been placed. Nothing
+# above the ladder's top rung (400w) is ever fetched -- the widest CSS box is the
+# film hero at 320px and the lightbox at 400px -- so a master taller than this is
+# pixels no consumer can use, and at DPR 2 the 400w rung already outruns what a
+# 600px master can add. The partner's own practice was to reduce large posters to
+# 600 by height with the proportions kept, which is what gen_posters.py now does
+# on sight rather than relying on the byte target further down: that target
+# (TARGET_BYTES) is unreachable for a 5.4-megapixel source and the tool used to
+# destroy the master trying, so the size is fixed at the geometry instead.
+POSTER_MAX_HEIGHT = 600
 
 
 def variant_suffix(width):

@@ -3058,5 +3058,26 @@ window.CATALOG = [
     "kpVotes": 11561,
     "fav": true,
     "poster": "static/posters/travelers_series_poster.webp"
+  },
+  {
+    "type": "series",
+    "titleEn": "Terminator: The Sarah Connor Chronicles",
+    "titleRu": "Терминатор: Битва за будущее",
+    "desc": {
+      "ru": "Судный день не отменён, а отложен: Кэмерон, модель T-1001, выброшенная из будущего, которого больше нет, появилась на пятнадцать лет раньше — и у Сары Коннор, скрывающейся с сыном в 2007 году, появился шанс, которого у её поколения не было. Это история о сопротивлении, в чьих рядах оказался пришелец из будущего — над которым у них нет власти и чью собственную историю они не могут себе присвоить, — а также о том, что происходит с человеком, когда он узнаёт своё будущее, которое уже невозможно отменить.",
+      "en": "Judgment Day is not avoided in this version of Terminator, only deferred: Cameron, a T-1001 thrown out of a future that no longer exists, arrived fifteen years early, and Sarah Connor, hiding with her son in 2007, has the chance her generation never had. Two seasons about a resistance line that has a visitor from the future but neither control over it nor any claim on its own history, and about what knowing your own future does to a person when it can no longer be called off."
+    },
+    "genres": [
+      "scifi",
+      "action"
+    ],
+    "year": 2008,
+    "imdbId": "tt0851851",
+    "imdbRating": 7.6,
+    "imdbVotes": 65000,
+    "kpId": 260995,
+    "kpRating": 6.9,
+    "kpVotes": 18493,
+    "poster": "static/posters/terminatorthesarahconnorchronicles_series_poster.webp"
   }
 ];
