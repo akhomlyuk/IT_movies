@@ -21,6 +21,23 @@
   --kp: #ff5500;
   --imdb: #f6c600;
   --signal: #ff6b6f;
+  /* The Telegram brand blue, and the same shape of decision as --kp/--imdb one
+     line up: the brand hex verbatim in the dark theme, a darker value of the SAME
+     hue in the light one, because the brand hex cannot carry text on a light
+     surface. Measured against the rendered header, label and glyph together,
+     worst of the label's own background and `body` (which carries a 1px dot grid,
+     so the two are different colours and the worse one is what a reader can hit):
+
+       #26a5e4  dark  7.15:1   light  2.56:1   FAILS 4.5 text AND 3.0 glyph
+       #156f9f  dark  3.59:1   light  5.10:1   passes 3.0 in both, 4.5 in light
+
+     So: brand in dark, #156f9f in light. Hue 200deg against the brand's 200deg --
+     a value shift, not a different colour, which is what --kp/#c74000 does. The
+     same hex the telegram SHARE button already uses on hover
+     (`.share-btn[data-net="telegram"]:hover .share-ico { color: #26a5e4 }`), so
+     the brand value is the one already in this stylesheet rather than a new one
+     brought in from outside. */
+  --telegram: #26a5e4;
   /* Text that sits on photographic media (the featured card's scrim), not on a
      themed surface. Declared once and overridden in NEITHER theme: --ink is
      dark ink in the light theme and would be invisible on a black gradient, so
@@ -171,6 +188,7 @@
   --ink: #000000;
   --ink-muted: #62666d;
   --ink-subtle: #8a8f98;
+  --telegram: #156f9f;
   --accent: #5e6ad2;
   --accent-focus: #5e69d1;
   --rating: #c92c34;
@@ -372,38 +390,45 @@ html:not(.js) #app[v-cloak] nav.nav:not(.nav--dialog) {
   font-size: var(--fs-md);
 }
 
-/* The channel link, under the brand's subtitle. It was FIRST built as a sixth
-   control in `.tool-buttons`, which is where the human partner's "all controls
-   equal" rule put it by default -- and measurement killed that: six controls at
-   375 measure 296px of control plus five 8px gaps = 336px against 321px
-   available, 15px short, so the row wrapped onto two lines at 375 and 390 and
-   the header grew 52px there. Halving the row's mobile gap recovered those two
-   widths and left 337-369 still 48px tall, and no spacing change closed that
-   band: six 44px tap floors plus the language button do not fit in 285-307px,
-   and 44px is an accessibility floor, not a preference. The link therefore does
-   not compete for the row at all.
+/* The channel link, under the brand's subtitle.
 
-   `color: var(--ink)`, NOT `var(--accent)`. This is text, and `--accent` as text
-   measures 4.21:1 dark and 4.34:1 light -- below the 4.5:1 floor, which is the
-   finding that once justified a separate `--accent-text` token and that token was
-   then deleted. The ICON keeps `--accent` through the existing
-   `svg:not(.heart)` rule, where 1.4.11's 3:1 graphics floor is the right one and
-   every painted icon on the site measures 3.95:1 dark and 4.27:1 light at worst.
-   So the accent stays where it is measured to pass and the text does not borrow
-   it. Do not "tidy" this into a single accent-coloured link.
-*/
+   Placement and the sprite are recorded above; this rule is the link's own
+   appearance, and the partner ruled on it twice.
+
+   It is an ordinary link in the site's own idiom -- the same treatment
+   `.title-cell a` gives a film title: no underline, a 1px `--line-strong`
+   bottom border that goes to `--ink` on hover, and NO `color` of its own so the
+   label inherits the surrounding text. That was the second ruling: painting the
+   label itself in Telegram's blue was tried first and rejected, because a
+   blue word beside the site's own link styling reads as a different kind of
+   thing entirely rather than as a link to a channel.
+
+   Only the GLYPH carries the brand colour. It has to be named outright rather
+   than left as `currentColor`: on the <svg> element `currentColor` resolves to
+   THAT element's own `color`, and `svg:not(.heart) { color: var(--accent) }`
+   sets it, so with `currentColor` the glyph rendered --accent -- a purple plane
+   -- and with no fill at all it fell back to the SVG default and rendered BLACK
+   in both themes, because the share sprite declares no fill on any of its seven
+   symbols and every consumer inherits one from `.share-ico`, which this link is
+   not a member of. Both shipped. */
 .tg-link {
   display: inline-flex;
   align-items: center;
   gap: var(--space-0-35);
   margin-top: var(--space-1);
-  color: var(--ink);
+  color: inherit;
   font-size: var(--fs-sm);
   text-decoration: none;
+  border-bottom: 1px solid var(--line-strong);
+  transition: border-color var(--transition-fast) ease;
+}
+
+.tg-link svg {
+  fill: var(--telegram);
 }
 
 .tg-link:hover {
-  text-decoration: underline;
+  border-bottom-color: var(--ink);
 }
 
 .tg-link:focus-visible {

@@ -6,6 +6,7 @@ import re
 import shutil
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 import unicodedata
 from html.parser import HTMLParser
 from xml.etree import ElementTree
@@ -1426,6 +1427,89 @@ CHANNEL_OVERRIDES = (
 )
 
 
+def check_channel_colour():
+    """`--telegram` must exist in BOTH themes, and the glyph must have a fill.
+
+    Two defects this closes, both of which shipped once:
+
+    1. **The glyph painted BLACK in both themes.** `static/share.svg` declares no
+       `fill` on any of its seven symbols -- every consumer inherits
+       `fill: currentColor` from `.share-ico`, and the header link is not a
+       member of that class. With only `class="icon"` the path fell back to the
+       SVG default, so a dark disc sat on a near-black header and the partner
+       read it as "paint it in Telegram's colours" when the real complaint was a
+       black blob wearing a Telegram logo. A screenshot is a poor guard, so the
+       declaration is asserted here.
+
+    2. **A brand hue that cannot carry text on a light surface.** The brand hex
+       measures 7.15:1 on the dark header and **2.56:1** on the light one, under
+       the 4.5:1 text floor and the 3:1 graphics floor both. So the token is a
+       PAIR -- brand in dark, a darker value of the same hue in light, which is
+       the shape `--kp`/`--imdb` already use for exactly this reason. A token
+       declared in one theme and not the other is therefore a real defect, not a
+       style preference, and `verify.py` runs no browser so the measured numbers
+       live in this comment while the STRUCTURE is what is checked.
+    """
+    problems = []
+    css = (ROOT / "css" / "style.css").read_text(encoding="utf-8")
+    decls = re.findall(r"^\s*--telegram:\s*(#[0-9a-fA-F]{3,8})\s*;", css, re.M)
+    if len(decls) != 2:
+        problems.append(
+            f"--telegram is declared {len(decls)} time(s), expected 2 -- once for "
+            f"the default (dark) theme and once in the light theme block. A brand "
+            f"hue that only exists in one theme is a defect, not a preference: the "
+            f"brand hex measures 2.56:1 on the light header, under the 4.5:1 text "
+            f"floor and the 3:1 graphics floor, which is why the light value is a "
+            f"darker shade of the same hue (see the token's own comment)"
+        )
+    elif decls[0].lower() == decls[1].lower():
+        problems.append(
+            f"--telegram is {decls[0]} in BOTH themes, so one of them is carrying a "
+            f"value measured to fail on its own background"
+        )
+    tg_rule = re.search(r"^\.tg-link\s*\{([^}]*)\}", css, re.M)
+    if tg_rule and re.search(r"color:\s*var\(--telegram\)", tg_rule.group(1)):
+        problems.append(
+            ".tg-link sets `color: var(--telegram)`. The partner ruled twice on "
+            "this: the anchor is an ordinary link in the site's own idiom, the same "
+            "treatment `.title-cell a` gives a film title, and only the GLYPH "
+            "carries the brand colour. A blue word beside the site's link styling "
+            "reads as a different kind of thing rather than as a link to a channel"
+        )
+    if not re.search(r"\.tg-link svg\s*\{[^}]*fill:\s*var\(--telegram\)", css, re.S):
+        problems.append(
+            ".tg-link svg has no `fill: var(--telegram)`. Two defects hide here. "
+            "With no fill at all the path falls back to the SVG default and paints "
+            "BLACK in both themes, because the share sprite declares none on any "
+            "symbol and every consumer inherits it from `.share-ico`, which this "
+            "link is not a member of. And `fill: currentColor` is ALSO wrong: on "
+            "the <svg> element currentColor resolves to that element's own color, "
+            "which `svg:not(.heart)` sets to var(--accent), so the glyph came out "
+            "accent-purple beside a --telegram label"
+        )
+    # The sprite must PARSE. XML forbids a double hyphen inside a comment, and a
+    # sprite that breaks that way keeps every expected id while resolving nothing
+    # at all -- every <use> of it goes 0x0, silently. Grepping the file for the id
+    # cannot see it, which is how the first version of this note broke the sprite
+    # while describing how not to.
+    try:
+        ET.fromstring((ROOT / "static" / "share.svg").read_text(encoding="utf-8"))
+    except ET.ParseError as exc:
+        problems.append(
+            f"static/share.svg does not parse as XML: {exc}. Every symbol in it "
+            f"stops resolving while the ids are all still present, so every <use> "
+            f"renders 0x0 and the page looks merely empty rather than broken"
+        )
+    for p in problems:
+        errors.append(f"Channel colour: {p}")
+    if not problems:
+        print(
+            f"Channel colour: --telegram declared in both themes ({decls[0]} dark, "
+            f"{decls[1]} light); the anchor inherits the site's link colour and "
+            f"only .tg-link svg fills with the token; static/share.svg parses as XML"
+        )
+
+
 def check_channel_link():
     """The header's Telegram link must be present, correct and resolvable on every
     page type that carries a header.
@@ -1503,6 +1587,7 @@ def check_channel_link():
 
 
 check_channel_link()
+check_channel_colour()
 
 
 # 6f. The media-condition gate. A width edge is the only thing that decides which

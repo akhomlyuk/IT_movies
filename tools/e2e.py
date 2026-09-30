@@ -618,8 +618,56 @@ def test_header_controls(page, base):
                 )
 
 
+COLOUR_READ = """el => {
+  const parse = (s) => {
+    const m = s.match(/rgba?\\(([^)]+)\\)/);
+    if (!m) return null;
+    return m[1].split(',').map(x => parseFloat(x)).slice(0, 3);
+  };
+  const lum = (c) => {
+    const a = c.map(v => { v /= 255; return v <= 0.03928 ? v / 12.92
+      : Math.pow((v + 0.055) / 1.055, 2.4); });
+    return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+  };
+  const ratio = (a, b) => {
+    const la = lum(a), lb = lum(b);
+    return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+  };
+  // Walk up for the label's own painted background, and read `body` separately:
+  // `body` carries a 1px dot grid, so it is a DIFFERENT colour from a flat --bg
+  // and the worse of the two is what a reader can actually land on. Reporting
+  // only one of them is how a colour that fails still measures as passing.
+  const label = el.querySelector('span') || el;
+  const glyph = el.querySelector('svg');
+  let node = label, own = null;
+  while (node && node !== document.documentElement) {
+    const raw = getComputedStyle(node).backgroundColor;
+    const c = parse(raw);
+    if (c && !/rgba\\([^)]*,\\s*0\\s*\\)/.test(raw)) { own = c; break; }
+    node = node.parentElement;
+  }
+  const bodyBg = parse(getComputedStyle(document.body).backgroundColor);
+  const bgs = [own, bodyBg].filter(Boolean);
+  const fillRaw = getComputedStyle(glyph).fill;
+  const fill = parse(fillRaw);
+  const labelFg = parse(getComputedStyle(label).color);
+  return {
+    theme: document.documentElement.classList.contains('light') ? 'light' : 'dark',
+    fill: fillRaw,
+    // the label is the site's own link colour and the glyph is the brand one, so
+    // they are two different colours against the same backgrounds and are held to
+    // two different floors: 4.5:1 for text, 3:1 for non-text. They were one
+    // number only while both were the same colour.
+    label: Math.min(...bgs.map(b => ratio(labelFg, b))),
+    glyph: fill ? Math.min(...bgs.map(b => ratio(fill, b))) : null,
+    token: getComputedStyle(document.documentElement)
+      .getPropertyValue('--telegram').trim(),
+  };
+}"""
+
+
 def test_channel_link(page, base):
-    """The header's Telegram link must be on EVERY page type, and be a square.
+    """The header's Telegram link must be on EVERY page type, in BOTH themes.
 
     The header is hand-maintained six times over and the film pages are generated
     from `FILM_TEMPLATE`, so a page type that lost the anchor would be a page with
@@ -636,9 +684,14 @@ def test_channel_link(page, base):
     the header grew 52px at the two commonest phone widths. It lives under the
     brand subtitle instead, which costs the row nothing.
 
-    The glyph must actually resolve. `use` has no size of its own, so a missing
-    symbol shows as an empty box rather than an error, and that is the one failure
-    a screenshot of the finished page would not catch.
+    The colour is asserted, not just present, for the reason that made this
+    feature go wrong once already: the glyph painted BLACK in both themes because
+    the share sprite declares no fill and this link does not inherit
+    `.share-ico`'s, and the partner read that black blob wearing a Telegram logo
+    as a request for a colour. A screenshot caught it once; this catches it
+    always. The 4.5:1 floor is the brand blue's own weak point -- it measures
+    7.15:1 on the dark header and 2.56:1 on the light one -- so both themes have
+    to be visited or the assertion only ever checks the half that already passes.
     """
     PAGES = (
         ("index", "index.html"),
@@ -670,71 +723,106 @@ def test_channel_link(page, base):
                       body=html)
 
     four_oh_four = re.compile(r"404\.html$")
-    for width in (320, 575, 768, 1280):
-        for name, rel in PAGES:
-            page.set_viewport_size({"width": width, "height": 900})
-            if name == "404":
-                page.route(four_oh_four, serve_404)
-            page.goto(base + rel, wait_until="domcontentloaded")
-            page.wait_for_selector(".tg-link", timeout=5000)
-            if name == "404":
-                page.unroute(four_oh_four)
+    for theme in ("dark", "light"):
+        for width in (320, 575, 768, 1280):
+            for name, rel in PAGES:
+                page.set_viewport_size({"width": width, "height": 900})
+                page.add_init_script(
+                    "localStorage.setItem('it-movies-theme', '%s');" % theme)
+                if name == "404":
+                    page.route(four_oh_four, serve_404)
+                page.goto(base + rel, wait_until="domcontentloaded")
+                page.wait_for_selector(".tg-link", timeout=5000)
+                if name == "404":
+                    page.unroute(four_oh_four)
 
-            link = page.locator(".tg-link")
-            assert link.get_attribute("href") == "https://t.me/wh_lab", (
-                f"@{width} {name}: the header link points at "
-                f"{link.get_attribute('href')!r}, not the channel"
-            )
-            assert link.get_attribute("target") == "_blank", (
-                f"@{width} {name}: the header link must open in a new tab"
-            )
-            # Placement: under the subtitle, out of the control row.
-            assert link.evaluate("el => !!el.closest('.brand-text')"), (
-                f"@{width} {name}: the header link is not inside .brand-text. It was "
-                f"rejected as a sixth control in .tool-buttons because six controls "
-                f"do not fit at 375 and the row wrapped"
-            )
-            assert link.evaluate("el => !el.closest('.tool-buttons')"), (
-                f"@{width} {name}: the header link is back inside the control row"
-            )
-            assert link.evaluate("el => !!(el.previousElementSibling "
-                                 "&& el.previousElementSibling.tagName === 'P')"), (
-                f"@{width} {name}: the header link must sit directly under the "
-                f"brand's subtitle paragraph"
-            )
-            # A visible label, not an icon-only control.
-            assert link.evaluate("el => el.textContent.trim() === 'Whitehat Lab'"), (
-                f"@{width} {name}: the header link's visible text is "
-                f"{link.text_content()!r}, expected 'Whitehat Lab'"
-            )
-            # The control row must be back to the widths it had before the link
-            # existed: 40px for the icon squares, 76px for the labelled toggle.
-            row = page.locator(".tool-buttons")
-            if row.count():
-                widest = row.evaluate(
-                    "el => Math.max(...[...el.children]"
-                    ".filter(c => c.offsetParent !== null)"
-                    ".map(c => c.getBoundingClientRect().width))")
-                assert widest <= 76.5, (
-                    f"@{width} {name}: a control in the row is {widest:.1f}px wide, "
-                    f"past the 76px language toggle. If the channel link went back "
-                    f"into the row it would be a sixth control and the row would "
-                    f"wrap at 375"
+                link = page.locator(".tg-link")
+                assert link.get_attribute("href") == "https://t.me/wh_lab", (
+                    f"{theme} @{width} {name}: the header link points at "
+                    f"{link.get_attribute('href')!r}, not the channel"
                 )
-            # The glyph must actually resolve. `use` has no size of its own, so a
-            # missing symbol shows up as an empty box rather than an error -- this
-            # is the only assertion here that can tell the two apart.
-            painted = link.evaluate(
-                "el => { const u = el.querySelector('use');"
-                " if (!u) return 'no <use>';"
-                " const r = u.getBoundingClientRect();"
-                " return r.width > 0 && r.height > 0 ? 'ok' : 'zero-sized'; }"
-            )
-            assert painted == "ok", (
-                f"@{width} {name}: the Telegram glyph is not rendering ({painted}). "
-                f"The sprite reference resolves to nothing, which looks like an "
-                f"empty box rather than an error"
-            )
+                assert link.get_attribute("target") == "_blank", (
+                    f"{theme} @{width} {name}: the header link must open in a new tab"
+                )
+                # Placement: under the subtitle, out of the control row.
+                assert link.evaluate("el => !!el.closest('.brand-text')"), (
+                    f"{theme} @{width} {name}: the header link is not inside "
+                    f".brand-text. It was rejected as a sixth control in "
+                    f".tool-buttons because six controls do not fit at 375"
+                )
+                assert link.evaluate("el => !el.closest('.tool-buttons')"), (
+                    f"{theme} @{width} {name}: the header link is back inside the "
+                    f"control row"
+                )
+                assert link.evaluate("el => !!(el.previousElementSibling "
+                                     "&& el.previousElementSibling.tagName === 'P')"), (
+                    f"{theme} @{width} {name}: the header link must sit directly "
+                    f"under the brand's subtitle paragraph"
+                )
+                # A visible label, not an icon-only control.
+                assert link.evaluate(
+                    "el => el.textContent.trim() === 'Whitehat Lab'"), (
+                    f"{theme} @{width} {name}: the header link's visible text is "
+                    f"{link.text_content()!r}, expected 'Whitehat Lab'"
+                )
+                # The control row must be back to the widths it had before the
+                # link existed: 40px squares, 76px for the labelled toggle.
+                row = page.locator(".tool-buttons")
+                if row.count():
+                    widest = row.evaluate(
+                        "el => Math.max(...[...el.children]"
+                        ".filter(c => c.offsetParent !== null)"
+                        ".map(c => c.getBoundingClientRect().width))")
+                    assert widest <= 76.5, (
+                        f"{theme} @{width} {name}: a control in the row is "
+                        f"{widest:.1f}px wide, past the 76px language toggle. If the "
+                        f"channel link went back into the row it would be a sixth "
+                        f"control and the row would wrap at 375"
+                    )
+                # The glyph must resolve to something with size.
+                painted = link.evaluate(
+                    "el => { const u = el.querySelector('use');"
+                    " if (!u) return 'no <use>';"
+                    " const r = u.getBoundingClientRect();"
+                    " return r.width > 0 && r.height > 0 ? 'ok' : 'zero-sized'; }"
+                )
+                assert painted == "ok", (
+                    f"{theme} @{width} {name}: the Telegram glyph is not rendering "
+                    f"({painted}). The sprite reference resolves to nothing, which "
+                    f"looks like an empty box rather than an error"
+                )
+                colour = link.evaluate(COLOUR_READ)
+                assert colour["fill"] != "rgb(0, 0, 0)", (
+                    f"{theme} @{width} {name}: the glyph paints {colour['fill']}. "
+                    f"The share sprite declares no fill on any symbol and every "
+                    f"consumer inherits `fill: currentColor` from `.share-ico`, "
+                    f"which this link is not a member of -- without the declaration "
+                    f"on `.tg-link svg` the path falls back to the SVG default and "
+                    f"paints black in BOTH themes. It shipped that way once and read "
+                    f"as a colour problem rather than a missing rule"
+                )
+                assert colour["fill"] != "rgb(94, 106, 210)", (
+                    f"{theme} @{width} {name}: the glyph paints {colour['fill']}, "
+                    f"which is --accent. That is what `fill: currentColor` produces "
+                    f"here: on the <svg> element currentColor resolves to THAT "
+                    f"element's own colour, and `svg:not(.heart)` sets it to "
+                    f"--accent. The token has to be named outright"
+                )
+                assert colour["label"] >= 4.5, (
+                    f"{theme} @{width} {name}: the label is at "
+                    f"{colour['label']:.2f}:1 against its background, under the "
+                    f"4.5:1 text floor. The label is the site's own link colour, so "
+                    f"this is about inheriting the right one, not about "
+                    f"--telegram -- whose brand value measures 2.56:1 in light and "
+                    f"is why the token is a pair"
+                )
+                assert colour["glyph"] is not None and colour["glyph"] >= 3.0, (
+                    f"{theme} @{width} {name}: the glyph is at "
+                    f"{colour['glyph']:.2f}:1, under the 3:1 non-text floor. The "
+                    f"brand hex alone measures 2.56:1 on the light header, which is "
+                    f"why --telegram is a darker shade of the same hue there and the "
+                    f"brand value in dark"
+                )
 
 
 CLICK_NAV = """
