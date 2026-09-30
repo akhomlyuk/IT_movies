@@ -587,13 +587,12 @@ def assert_related_posters(page):
 
 
 def assert_rail_controls(page, expect_overflow):
-    """The rail's controls must exist exactly when the strip scrolls.
+    """The rail's dots must exist exactly when the strip scrolls.
 
     Asserted by measurement, not by markup: only a browser can say whether the
-    track overflows, and controls for a strip that cannot be paged are worse
-    than no controls. Six cards at 170px plus 12px gaps is 1080px of strip,
-    which overflows the 1040px container at every width -- the arrows are not a
-    narrow-viewport affordance.
+    track overflows, and dots for a strip that cannot be paged are worse than no
+    dots. There are no arrow buttons -- the strip is dragged with a finger or a
+    mouse and paged with the left/right keys, so the dots only jump.
     """
     track = page.locator(".related-track")
     overflows = track.evaluate("el => el.scrollWidth > el.clientWidth + 1")
@@ -603,50 +602,40 @@ def assert_rail_controls(page, expect_overflow):
             f" width, but scrollWidth={track.evaluate('el => el.scrollWidth')}"
             f" clientWidth={track.evaluate('el => el.clientWidth')}"
         )
-    nav = page.locator(".related-nav")
     dots = page.locator(".related-dot")
-    if expect_overflow:
-        expect(nav).to_have_count(2)
-        assert dots.count() >= 1, "a scrolling rail must offer dots"
-        expect(page.locator(".related-nav--prev")).to_be_disabled()
-        expect(page.locator(".related-nav--next")).to_be_enabled()
-        # Walk to the end one page at a time. How many clicks that takes depends
-        # on the width -- two pages at 1280, four at 390 -- so a single click
-        # only proves the arithmetic on the widest tier.
-        next_btn = page.locator(".related-nav--next")
-        for _ in range(dots.count() + 1):
-            if next_btn.is_disabled():
-                break
-            next_btn.click()
-            page.wait_for_timeout(120)
-        # Reaching the end must enable "previous" again. The browser clamps
-        # scrollLeft, so on a short last page the index has to be recognised
-        # from the end position rather than read back from the offset.
-        page.wait_for_function(
-            "() => { const el = document.querySelector('.related-track');"
-            " return el && el.scrollLeft >= el.scrollWidth - el.clientWidth - 2; }"
+    assert page.locator(".related-nav").count() == 0, (
+        "the strip has no arrow buttons; it is dots, drag and the arrow keys"
+    )
+    if not expect_overflow:
+        expect(dots).to_have_count(0), (
+            "a rail that fits must not offer dots for a strip it cannot page"
         )
-        expect(next_btn).to_be_disabled()
-        expect(page.locator(".related-nav--prev")).to_be_enabled()
+        return
+    assert dots.count() >= 1, "a scrolling rail must offer dots"
+    expect(dots.first).to_have_attribute("aria-label", re.compile(r"^.*\s1\s*/\s\d+$"))
+    expect(page.locator(".related-dot.is-active")).to_have_count(1)
+    # Every dot is reachable and lands somewhere real.
+    for i in range(dots.count()):
+        dots.nth(i).click()
+        page.wait_for_timeout(120)
         expect(page.locator(".related-dot.is-active")).to_have_count(1)
-        # And back to the start, where the roles swap.
-        prev_btn = page.locator(".related-nav--prev")
-        for _ in range(dots.count() + 1):
-            if prev_btn.is_disabled():
-                break
-            prev_btn.click()
-            page.wait_for_timeout(120)
-        page.wait_for_function(
-            "() => { const el = document.querySelector('.related-track');"
-            " return el && el.scrollLeft <= 2; }"
-        )
-        expect(prev_btn).to_be_disabled()
-        expect(next_btn).to_be_enabled()
-    else:
-        expect(nav).to_have_count(0), (
-            "a rail that fits must not offer arrows for scrolling it cannot do"
-        )
-        expect(dots).to_have_count(0)
+    dots.first.click()
+    page.wait_for_function(
+        "() => { const el = document.querySelector('.related-track');"
+        " return el && el.scrollLeft <= 2; }"
+    )
+    # The keyboard is the only non-pointer route left, so it has to work.
+    track.focus()
+    page.keyboard.press("ArrowRight")
+    page.wait_for_function(
+        "() => { const el = document.querySelector('.related-track');"
+        " return el && el.scrollLeft > 2; }"
+    )
+    page.keyboard.press("ArrowLeft")
+    page.wait_for_function(
+        "() => { const el = document.querySelector('.related-track');"
+        " return el && el.scrollLeft <= 2; }"
+    )
 
 
 def assert_ratings_on_one_line(page, max_height=32):
@@ -713,7 +702,8 @@ def test_film_theme(page, base):
     expect(bc.locator(".bc-type")).to_have_text("Матрица")
     expect(bc.locator(".bc-current")).to_have_text("Матрица")
     assert_badge_on_poster(page)
-    assert_rail_controls(page, expect_overflow=True)
+    # DESKTOP is 1280, so this is the grid tier: no scroll, no dots.
+    assert_rail_controls(page, expect_overflow=False)
     assert_ratings_on_one_line(page)
 
 
@@ -755,7 +745,6 @@ def test_film_lang(page, base):
     expect(page.locator("html")).to_have_attribute("lang", "ru")
     expect(page.locator(".brand .brand-name")).to_have_text("IT Movies")
     expect(page.locator(".brand-text p")).to_have_text(I18N_RU_SUBTITLE)
-    expect(page.locator(".related-nav--prev")).to_have_attribute("aria-label", "Предыдущие")
     assert page.locator("header.top h1").count() == 0, (
         "the header carries the site name, so the film page's single h1 belongs to"
         " the card, not the header"
@@ -766,8 +755,6 @@ def test_film_lang(page, base):
     expect(page.locator("html")).to_have_attribute("lang", "en")
     expect(page.locator("h1.film-title")).to_have_text(en)
     expect(page.locator(".film-alt")).to_have_text(ru)
-    expect(page.locator(".related-nav--prev")).to_have_attribute("aria-label", "Previous")
-    expect(page.locator(".related-nav--next")).to_have_attribute("aria-label", "Next")
     expect(page.locator("nav.breadcrumb")).to_have_attribute("aria-label", "Home")
     expect(page).to_have_title(re.compile(rf"^{re.escape(en)}( \(\d{{4}}\))? — "))
     titles = page.locator(".related .rc-title").all_text_contents()
@@ -792,6 +779,12 @@ def test_film_mobile_layout(page, base):
     expect(page.locator(".related .rc")).to_have_count(RELATED_COUNT)
     assert_rail_controls(page, expect_overflow=True)
     assert_ratings_on_one_line(page)
+    # The dots are the only visible control on the xs tier, so their labels are
+    # the only thing telling a screen reader how many pages the strip has. This
+    # is the tier where they exist at all: from lg up it is a grid with no dots.
+    expect(page.locator(".related-dot").first).to_have_attribute(
+        "aria-label", re.compile(r"^Страница\s1\s*/\s\d+$")
+    )
     rows = page.locator(".related-track > li").evaluate_all(
         "els => [...new Set(els.map(el => Math.round(el.getBoundingClientRect().top)))]"
     )
@@ -831,21 +824,10 @@ def test_film_mobile_layout(page, base):
         "() => { const t = document.querySelector('.related-track');"
         " return t && t.clientWidth > 800; }"
     )
-    assert_rail_controls(page, expect_overflow=True)
-    # min-width: 0 is load-bearing: a flex item's default min-width is auto, so
-    # without it the card text holds the track open at its content width and the
-    # strip never fits. The same is true of the shipped 170px track -- it is a
-    # floor, not a width, and the container can be narrower.
-    page.add_style_tag(
-        content=".related li { flex: 0 0 100px; min-width: 0; }"
-    )
-    # A style change fires neither resize nor scroll, and the rail only
-    # re-measures on those two. Nudging the viewport is what exercises the
-    # handler this assertion exists for.
-    page.set_viewport_size({"width": DESKTOP["width"] - 40, "height": DESKTOP["height"]})
-    page.wait_for_function(
-        "() => document.querySelectorAll('.related-nav').length === 0"
-    )
+    # From md up the related block is a grid, so it does not scroll and carries
+    # no dots at all. This is the second, and the stronger, statement of the
+    # rule: the first checked it at the xs tier, where the strip really does
+    # scroll and needs them.
     assert_rail_controls(page, expect_overflow=False)
     # The one-line check above passes at the shipped 170px card even with
     # flex-wrap: wrap, because the two chips do fit there -- it guards the

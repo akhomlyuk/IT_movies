@@ -240,24 +240,93 @@ if (mode === "slug") {
   // film.js because this markup lives there (unlike the card, which is the
   // generator's). The overflow condition is the design decision -- controls for a
   // strip that does not scroll are worse than no controls.
+  // The rail's controls are DOTS ONLY. The partner dropped the arrows on
+  // 2026-09-30: on a phone the strip is dragged with a finger, on a desktop
+  // with a mouse or the left/right keys, and the dots jump. A button that
+  // pages a strip the reader can already drag is a control for its own sake.
   for (const [what, needle] of [
-    ["a rail wrapper", 'class="related-rail"'],
     ["a scrollable track", 'class="related-track"'],
-    ["a previous arrow", 'class="related-nav related-nav--prev"'],
-    ["a next arrow", 'class="related-nav related-nav--next"'],
     ["dot pagination", 'class="related-dot"'],
   ]) {
     if (!filmSource.includes(needle)) {
       throw new Error("film.js must render " + what + " (" + needle + ")");
     }
   }
-  const railOverflowUses = (filmSource.match(/v-if="railOverflow/g) || []).length;
-  if (railOverflowUses !== 3) {
+  if (filmSource.includes('class="related-nav')) {
+    throw new Error("the related strip has no arrow buttons; it is dots, drag"
+      + " and the left/right keys. Remove .related-nav rather than hiding it");
+  }
+  if (filmSource.includes('class="related-rail')) {
+    throw new Error(".related-rail only existed to sit the two arrows beside"
+      + " the track; with them gone it is an empty wrapper around .related-track");
+  }
+  // From lg up there is no carousel at all: all six cards sit in one row and the
+  // dots have nothing to page. Six cards that scroll 40px on a desktop is not a
+  // carousel, it is a scrollbar with extra steps.
+  const railCss = read("css/style.css");
+  // Every @media (min-width: 1024px) block, not just the first: the stylesheet
+  // has several, and picking the first one silently checks somebody else's rules.
+  const mdBlocks = [];
+  const mdRe = /@media \(min-width: 1024px\)\s*\{/g;
+  let md;
+  while ((md = mdRe.exec(railCss)) !== null) {
+    let depth = 0;
+    let end = md.index + md[0].length;
+    for (let i = end - 1; i < railCss.length; i++) {
+      if (railCss[i] === "{") depth++;
+      else if (railCss[i] === "}") {
+        depth--;
+        if (depth === 0) { end = i + 1; break; }
+      }
+    }
+    mdBlocks.push(railCss.slice(md.index + md[0].length, end - 1));
+  }
+  const mdRail = mdBlocks.find(
+    (b) => /\.related ul\s*\{[^}]*display:\s*grid/.test(b)
+  );
+  if (!mdRail) {
     throw new Error(
-      "railOverflow must gate the two arrows and the dots (3 uses), found "
-      + railOverflowUses + ". Controls for a strip that does not scroll are worse"
-      + " than no controls"
+      "css/style.css must turn .related ul into a grid inside a"
+      + " @media (min-width: 1024px) block, so the cards stop being a carousel"
+      + " on a desktop. Found " + mdBlocks.length + " such block(s), none a grid"
     );
+  }
+  // One row, not two: six cards is the whole point of the rail, and a 3-column
+  // grid would halve it back to the layout this replaced.
+  const cols = (mdRail.match(/\.related ul\s*\{[^}]*grid-template-columns:\s*repeat\((\d+)/) || [])[1];
+  if (cols !== "6") {
+    throw new Error(
+      "the lg grid must lay the six related cards out in ONE row"
+      + " (repeat(6, minmax(0, 1fr))), found repeat(" + (cols || "none") + ")"
+    );
+  }
+  if (!/\.related-dots\s*\{[^}]*display:\s*none/.test(mdRail)) {
+    throw new Error(
+      ".related-dots must be display:none from lg up, so no dot row is left"
+      + " under a grid that has nothing to page"
+    );
+  }
+  // With no arrows the dots are the only visible control, so the gate that
+  // keeps them off a strip that does not scroll has exactly one site.
+  const railOverflowUses = (filmSource.match(/v-if="railOverflow/g) || []).length;
+  if (railOverflowUses !== 1) {
+    throw new Error(
+      "railOverflow must gate the dots (1 use), found " + railOverflowUses
+      + ". Dots for a strip that does not scroll are worse than no dots"
+    );
+  }
+  // Keyboard paging is now the only non-pointer way to move the strip.
+  for (const key of ["@keydown.left.prevent", "@keydown.right.prevent"]) {
+    if (!filmSource.includes(key)) {
+      throw new Error(
+        "the track must keep " + key + ": without arrows it is the only"
+        + " keyboard route to the rest of the strip"
+      );
+    }
+  }
+  if (!/class="related-track"[^>]*\stabindex="0"/.test(filmSource)) {
+    throw new Error("the track must stay focusable (tabindex=0) so the left and"
+      + " right keys can reach it");
   }
   for (const fn of ["measureRail", "scrollRail", "scrollRailTo", "onRailScroll"]) {
     if (!filmSource.includes("function " + fn)) {

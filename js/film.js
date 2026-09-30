@@ -102,23 +102,17 @@ const FILM_TEMPLATE = `
 
     <section class="related" :aria-label="t.relatedH">
       <h2>{{ t.relatedH }}</h2>
-      <div class="related-rail" v-if="related.length">
-        <button type="button" v-if="railOverflow" class="related-nav related-nav--prev" :aria-label="t.relatedPrev" :disabled="railAtStart" @click="scrollRail(-1)">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
+      <template v-if="related.length">
         <ul class="related-track" ref="rail" tabindex="0" @scroll.passive="onRailScroll" @keydown.left.prevent="scrollRail(-1)" @keydown.right.prevent="scrollRail(1)">
           <li v-for="r in related" :key="itemSlug(r)">
             ${RC_CARD}
           </li>
         </ul>
-        <button type="button" v-if="railOverflow" class="related-nav related-nav--next" :aria-label="t.relatedNext" :disabled="railAtEnd" @click="scrollRail(1)">
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      </div>
+        <div class="related-dots" v-if="railOverflow && railPages > 1">
+          <button v-for="(label, i) in railDots" :key="i" type="button" class="related-dot" :class="{ 'is-active': i === railPage }" :aria-label="label" :aria-current="i === railPage ? 'true' : null" @click="scrollRailTo(i)"></button>
+        </div>
+      </template>
       <p class="empty" v-else>{{ t.empty }}</p>
-      <div class="related-dots" v-if="railOverflow && railPages > 1">
-        <button v-for="(label, i) in railDots" :key="i" type="button" class="related-dot" :class="{ 'is-active': i === railPage }" :aria-label="label" :aria-current="i === railPage ? 'true' : null" @click="scrollRailTo(i)"></button>
-      </div>
     </section>
     <p class="back-catalog"><a href="../../">← {{ t.backToCatalog }}</a></p>
   </main>
@@ -159,8 +153,6 @@ const app = createApp({
     let railFrame = 0;
     let railCancel = clearTimeout;
 
-    const railAtStart = computed(() => railPage.value <= 0);
-    const railAtEnd = computed(() => railPage.value >= railPages.value - 1);
     const railDots = computed(() =>
       Array.from({ length: railPages.value }, (_, i) =>
         t.value.relatedPage + " " + (i + 1) + " / " + railPages.value
@@ -419,8 +411,6 @@ const app = createApp({
       railPages,
       railPage,
       railOverflow,
-      railAtStart,
-      railAtEnd,
       railDots,
       scrollRail,
       scrollRailTo,
