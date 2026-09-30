@@ -254,6 +254,39 @@ def featured_poster_sizes():
 # measured as the alternative and covers no need 256 does not, for 436 256 B more
 # in the repo and 2 472 B more per file.
 POSTER_VARIANT_WIDTHS = (96, 192, 256, 400)
+
+
+def hero_poster_widths():
+    """Which ladder rungs the FILM HERO should offer, derived rather than listed.
+
+    The hero's box is 240px below md and 320px from md up, and `sizes` states
+    that slot, so the browser asks for `slot x DPR` device pixels and takes the
+    smallest candidate at or above it. That makes the answer a property of the
+    slot and the ladder, not a taste decision: a rung narrower than the
+    SMALLEST box the hero ever occupies can never be selected, and a rung above
+    the largest can never be reached either, because the original is offered
+    alongside the top rung.
+
+    Offering only the top rung -- which is what this used to do -- is therefore
+    wrong at exactly one point of the whole matrix and right at the other nine.
+    Measured over all 155 posters, mean bytes per film page:
+
+        mobile  DPR 1     need 240   28 101 -> 14 385   -13 717  (-48.8%)
+        mobile  DPR 1.25  need 300   unchanged: 256 < 300, so 400 is still taken
+        mobile  DPR 1.5   need 360   unchanged
+        mobile  DPR 2/3   need 480+  unchanged: the original is taken anyway
+        desktop DPR 1     need 320   unchanged: 256 < 320, so 400 is still taken
+        desktop DPR 1.25  need 400   unchanged
+        desktop DPR 1.5+  need 480+  unchanged
+
+    The win is one cell and it is honest to say so: it is DPR-1 devices in the
+    mobile band. At DPR 2 and above the original is fetched whatever is offered,
+    which is the DPR residue recorded below and not fixable in this repository.
+    Nothing is added to the ladder and `sizes` is untouched, so the other nine
+    cells are byte-identical rather than merely small.
+    """
+    return tuple(w for w in POSTER_VARIANT_WIDTHS if w >= POSTER_BOX_MOBILE)
+
 # The height every poster master in this library is held at, and it is not a
 # preference: 85 of 86 masters measured EXACTLY 600px tall when this was added,
 # the only exception being a 1920x2843 file that had just been placed. Nothing

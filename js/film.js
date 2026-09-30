@@ -36,6 +36,28 @@ const {
 // JS cannot drift from the one gen_posters.py writes and gen_pages.py emits.
 const POSTER_VARIANT_WIDTHS = [96, 192, 256, 400];
 
+// The rungs the FILM HERO offers, mirrored from tools/lib.py
+// hero_poster_widths(). This is a second, independent implementation of the
+// same rule the generator applies, and it is the one every reader actually gets:
+// `posterSrcset` below binds to `:srcset` and OVERWRITES the srcset that
+// gen_pages.py wrote into the HTML, so a generator-only change to the hero's
+// candidates is invisible in the browser while the committed pages look correct.
+// That is not hypothetical -- the hero offered only 400w and the original on both
+// sides for the whole life of the 256w rung, because the static HTML and this
+// computed were fixed at different times and nothing compared them.
+//
+// Why the set is derived rather than chosen: the hero's box is 240px below md
+// and 320px from md up and `sizes` says so, so the browser asks for
+// `slot x DPR` and takes the smallest candidate at or above it. A rung narrower
+// than the smallest box can therefore never be selected -- 192 < 240, which is
+// why it is absent -- and the win is exactly one cell of the matrix. Measured
+// over all 155 posters, mean bytes per film page: mobile DPR 1 needs 240 and
+// takes this rung, 28 101 -> 14 385 B, -48.8%. Mobile DPR 1.25 needs 300 and
+// still takes 400; desktop DPR 1 needs 320 and still takes 400; everything at
+// DPR 1.5+ takes the original either way. verify.py compares this literal with
+// lib.hero_poster_widths() in both shipped copies of this file.
+const HERO_POSTER_WIDTHS = [256, 400];
+
 const FILM_TEMPLATE = `
   <header class="top">
     <div class="brand">
@@ -279,9 +301,17 @@ const app = createApp({
     const posterH = computed(() => (pageData && pageData.posterH) || null);
     const posterSrcset = computed(() => {
       if (!posterSrc.value || !posterW.value) return null;
-      const v400 = posterSrc.value.replace(/\.webp$/, "_400.webp");
-      if (posterW.value === 400) return `${v400} 400w`;
-      return `${v400} 400w, ${posterSrc.value} ${posterW.value}w`;
+      const parts = HERO_POSTER_WIDTHS.map(
+        (w) => `${posterSrc.value.replace(/\.webp$/, "_" + w + ".webp")} ${w}w`
+      );
+      const last = HERO_POSTER_WIDTHS[HERO_POSTER_WIDTHS.length - 1];
+      // The original is offered only when its own width differs from the last
+      // rung's, because two candidates on one width descriptor make the srcset
+      // invalid. Same rule as poster_candidates() in tools/gen_pages.py.
+      if (posterW.value !== last) {
+        parts.push(`${posterSrc.value} ${posterW.value}w`);
+      }
+      return parts.join(", ");
     });
     const kpHref = computed(() => (item ? kpUrl(item) : ""));
     const imdbHref = computed(() => (item && item.imdbId ? imdbUrl(item) : ""));

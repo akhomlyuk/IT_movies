@@ -16,7 +16,9 @@ import sys
 
 from datetime import datetime
 
-from lib import ROOT, SITE_BASE, POSTER_VARIANT_WIDTHS, load_catalog, make_slug, item_slug, ru_genres, has_rating, fmt_rating, variant_name, webp_size, poster_sizes
+from lib import (ROOT, SITE_BASE, POSTER_VARIANT_WIDTHS, load_catalog, make_slug,
+                  item_slug, ru_genres, has_rating, fmt_rating, variant_name,
+                  webp_size, poster_sizes, hero_poster_widths)
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -201,7 +203,7 @@ def poster_candidates(poster, prefix, single=False, widths=None):
     because two candidates on the same width descriptor make the srcset invalid.
     """
     if widths is None:
-        widths = POSTER_VARIANT_WIDTHS[-1:]
+        widths = hero_poster_widths()
     candidates = []
     last = None
     for width in widths:

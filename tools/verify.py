@@ -12,7 +12,7 @@ from xml.etree import ElementTree
 
 import gen_pages
 import poster_crop
-from lib import BELOW_MD_MAX, ROOT, SITE_BASE, BREAKPOINT_SCALE, CSS_MEDIA_EDGES, FEATURED_BOX_DESKTOP, FEATURED_BOX_MOBILE, FEATURED_SLOT_CONDITION, POSTER_BOX_DESKTOP, POSTER_BOX_MOBILE, POSTER_VARIANT_WIDTHS, featured_poster_sizes, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating, poster_sizes, variant_name, variant_path, webp_size
+from lib import BELOW_MD_MAX, ROOT, SITE_BASE, BREAKPOINT_SCALE, CSS_MEDIA_EDGES, FEATURED_BOX_DESKTOP, FEATURED_BOX_MOBILE, FEATURED_SLOT_CONDITION, POSTER_BOX_DESKTOP, POSTER_BOX_MOBILE, POSTER_VARIANT_WIDTHS, featured_poster_sizes, hero_poster_widths, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating, poster_sizes, variant_name, variant_path, webp_size
 
 sys.stdout.reconfigure(encoding="utf-8")
 errors = []
@@ -189,11 +189,44 @@ for js_name in ("js/film.js", "js/film.min.js", "js/app.js", "js/app.min.js"):
     if js_widths != POSTER_VARIANT_WIDTHS:
         errors.append(
             f"{js_name}: POSTER_VARIANT_WIDTHS is {list(js_widths)} but "
-            f"lib.POSTER_VARIANT_WIDTHS is {list(POSTER_VARIANT_WIDTHS)} — one "
+            f"lib.POSTER_VARIANT_WIDTHS is {list(POSTER_VARIANT_WIDTHS)} - one "
             f"definition is the whole point; fix the mirror, not the ladder"
         )
     else:
         print(f"Poster ladder: {js_name} mirrors {list(POSTER_VARIANT_WIDTHS)}")
+
+# The hero's candidate set is the SECOND implementation of the ladder rule, and
+# it is the one every reader gets: `posterSrcset` in js/film.js binds to the
+# hero's `:srcset` and overwrites what gen_pages.py wrote into the HTML. So the
+# committed pages can carry a correct srcset while the browser is handed a stale
+# one -- which is exactly what happened for the whole life of the 256w rung, on
+# both sides, with nothing comparing them. The set itself is derived in lib from
+# the hero's smallest box, so what is compared here is that derivation's result
+# against the client's copy, in both shipped files.
+hero_re = re.compile(r"HERO_POSTER_WIDTHS\s*=\s*\[([0-9,\s]*)\]")
+for js_name in ("js/film.js", "js/film.min.js"):
+    js_text = (ROOT / js_name).read_text(encoding="utf-8")
+    mh = hero_re.search(js_text)
+    if not mh:
+        errors.append(
+            f"{js_name}: HERO_POSTER_WIDTHS not found - the hero's srcset is built "
+            f"in the client and overwrites the generated one, so its candidate set "
+            f"is a second definition of lib.hero_poster_widths() and a mirror that "
+            f"is not there is a mirror that has stopped being read"
+        )
+        continue
+    js_hero = tuple(int(n) for n in mh.group(1).replace(" ", "").split(",") if n)
+    if js_hero != hero_poster_widths():
+        errors.append(
+            f"{js_name}: HERO_POSTER_WIDTHS is {list(js_hero)} but "
+            f"lib.hero_poster_widths() is {list(hero_poster_widths())} - the hero's "
+            f"box is {POSTER_BOX_MOBILE}px at its narrowest, so a rung narrower than "
+            f"that can never be selected and the set is derived, not chosen. Fix the "
+            f"mirror, not the derivation"
+        )
+    else:
+        print(f"Hero srcset candidates: {js_name} mirrors {list(js_hero)} "
+              f"(derived from the {POSTER_BOX_MOBILE}px box)")
 
 # 4c. Poster crop: the discarded-AREA bound, REPORTED and no longer gating.
 # The arithmetic lives in poster_crop.py and is imported, never re-derived here,
