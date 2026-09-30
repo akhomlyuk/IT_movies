@@ -803,6 +803,9 @@ svg:not(.heart) {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .featured-grid li {
@@ -1530,6 +1533,7 @@ html.no-scroll-state.scrolled .scroll-top {
 
   .featured-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
   }
 }
 
@@ -1769,16 +1773,17 @@ html.no-scroll-state.scrolled .scroll-top {
   }
 
   .featured-grid {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(240px, 72%);
-    grid-template-columns: none;
+    display: flex;
+    grid-auto-flow: unset;
+    grid-auto-columns: unset;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
+    gap: var(--space-3);
     padding-bottom: var(--space-2);
   }
 
   .featured-grid li {
+    flex: 0 0 280px;
     scroll-snap-align: start;
   }
 
@@ -2137,6 +2142,39 @@ html.no-scroll-state.scrolled .scroll-top {
   }
 }
 
+/* md: 4 columns */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .related ul {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+  .related li {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* below md: horizontal scroll */
+@media (max-width: 767px) {
+  .related ul {
+    display: flex;
+    gap: var(--space-3);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: var(--space-2);
+  }
+  .related li {
+    flex: 0 0 160px;
+    /* min-width: 0 is load-bearing: a flex item's default min-width is auto, so
+       without it the card's min-content (the poster's intrinsic width) holds the
+       track open at ~210px and the 160px basis is a no-op. The lg and md tiers
+       already carry min-width: 0 for the same reason. */
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+}
+
 .related a.rc {
   display: flex;
   flex-direction: column;
@@ -2271,20 +2309,20 @@ html.no-scroll-state.scrolled .scroll-top {
 
 @media (min-width: 768px) {
   .film-main {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .film-main:has(.film-poster) {
     grid-template-columns: auto 1fr;
-    align-items: start;
+    gap: var(--space-6);
   }
 }
 
 @media (max-width: 767px) {
-  .film-poster {
-    width: min(100%, 240px);
+  .film-main {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
   }
-
+  .film-poster {
+    max-width: 240px;
+    margin: 0 auto;
+  }
   .film-poster img {
     width: 100%;
     max-width: none;
