@@ -557,7 +557,7 @@ svg:not(.heart) {
   border-color: var(--accent);
 }
 
-.menu-toggle {
+.tool-buttons .menu-toggle {
   appearance: none;
   display: none;
   align-items: center;
@@ -1680,7 +1680,7 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 @media (max-width: 575px) {
-  .menu-toggle {
+  .tool-buttons .menu-toggle {
     display: inline-flex;
   }
 
@@ -1703,7 +1703,7 @@ html.no-scroll-state.scrolled .scroll-top {
     justify-content: space-between;
   }
 
-  html:not(.js) .menu-toggle {
+  html:not(.js) .tool-buttons .menu-toggle {
     display: none;
   }
 
@@ -2202,6 +2202,7 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .rc-poster {
   width: 100%;
+  height: auto;
   aspect-ratio: 2 / 3;
   object-fit: cover;
   border-radius: var(--radius-s);
