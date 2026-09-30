@@ -393,7 +393,7 @@ html:not(.js) #app[v-cloak] nav.nav:not(.nav--dialog) {
 /* The channel link, under the brand's subtitle.
 
    Placement and the sprite are recorded above; this rule is the link's own
-   appearance, and the partner ruled on it twice.
+   appearance, and the partner ruled on it THREE times.
 
    It is an ordinary link in the site's own idiom -- the same treatment
    `.title-cell a` gives a film title: no underline, a 1px `--line-strong`
@@ -403,27 +403,71 @@ html:not(.js) #app[v-cloak] nav.nav:not(.nav--dialog) {
    blue word beside the site's own link styling reads as a different kind of
    thing entirely rather than as a link to a channel.
 
-   Only the GLYPH carries the brand colour. It has to be named outright rather
+   The MARK is outside the anchor, and that is the third ruling, taken after
+   seeing the second one render. The glyph was a CHILD of the `<a>`, and a
+   `border-bottom` on an `inline-flex` anchor spans the whole box -- glyph
+   included -- so the underline the second ruling asked for ran under the
+   Telegram mark as well as under the label. `.title-cell a` underlines text.
+   Moving the mark out was the partner's call and it is not free, so the cost is
+   recorded rather than argued: the mark is no longer clickable and no longer in
+   the focus ring, and clicking it lands on nothing. `.tg-row` now owns the
+   layout the anchor used to own, and `.tg-link` holds the label only.
+
+   Only the MARK carries the brand colour. It has to be named outright rather
    than left as `currentColor`: on the <svg> element `currentColor` resolves to
    THAT element's own `color`, and `svg:not(.heart) { color: var(--accent) }`
-   sets it, so with `currentColor` the glyph rendered --accent -- a purple plane
+   sets it, so with `currentColor` the mark rendered --accent -- a purple plane
    -- and with no fill at all it fell back to the SVG default and rendered BLACK
    in both themes, because the share sprite declares no fill on any of its seven
-   symbols and every consumer inherits one from `.share-ico`, which this link is
-   not a member of. Both shipped. */
-.tg-link {
+   symbols and every consumer inherits one from `.share-ico`, which this mark is
+   not a member of. Both shipped.
+
+   THE SELECTOR IS `.tg-mark`, NOT `.tg-link svg`, and that is the third defect
+   this file records rather than the third fix. The mark is no longer a
+   DESCENDANT of the anchor, so a descendant selector written for the old shape
+   matches nothing -- SILENTLY, and with every other gate green, which is
+   precisely how both a black mark and an --accent mark came to look like colour
+   problems rather than like two dead rules. A selector that names a shape stops
+   working when the shape moves, and nothing else in the project notices. */
+.tg-row {
   display: inline-flex;
   align-items: center;
   gap: var(--space-0-35);
   margin-top: var(--space-1);
-  color: inherit;
+}
+
+.tg-link {
+  display: inline;
   font-size: var(--fs-sm);
   text-decoration: none;
   border-bottom: 1px solid var(--line-strong);
   transition: border-color var(--transition-fast) ease;
 }
 
-.tg-link svg {
+/* The fill is NOT optional, and it is NOT `currentColor`.
+
+   Three defects this closes, all of which shipped at least once:
+
+   1. There was no fill at all. `static/share.svg` declares none on any of its
+      seven symbols; every consumer inherits `fill: currentColor` from
+      `.share-ico`, and the mark is not a member of that class. With only
+      `class="icon"` the path fell back to the SVG default and painted BLACK in
+      both themes, which the partner read as a wrong colour rather than a
+      missing rule.
+
+   2. `currentColor` is the wrong value even once a fill exists. On the `<svg>`
+      element `currentColor` resolves to THAT element's own computed `color`,
+      and `svg:not(.heart) { color: var(--accent) }` sets it -- so the mark came
+      out --accent, a purple plane, beside a label in the site's own link
+      colour. The token is named outright instead.
+
+   3. The selector is `.tg-mark` and NOT `.tg-link svg`, because the mark is no
+      longer a descendant of the anchor -- it is its previous sibling. A
+      descendant selector written for the old shape matches nothing once the
+      markup moves, and it matches nothing SILENTLY, which is how the black
+      glyph and the --accent glyph both looked like colour problems rather than
+      dead rules. `check_channel_colour()` requires the class, not the shape. */
+.tg-mark {
   fill: var(--telegram);
 }
 

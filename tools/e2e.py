@@ -637,8 +637,14 @@ COLOUR_READ = """el => {
   // `body` carries a 1px dot grid, so it is a DIFFERENT colour from a flat --bg
   // and the worse of the two is what a reader can actually land on. Reporting
   // only one of them is how a colour that fails still measures as passing.
+  // The mark is a SIBLING of the anchor, not a child (the partner's third
+  // ruling), so it is reached through the row. Reading it off the anchor finds
+  // nothing, and a null here would silently become a skipped measurement rather
+  // than a failure -- so the row is required and a missing mark is returned as
+  // such, not as `null` to be compared against.
+  const row = el.closest('.tg-row');
   const label = el.querySelector('span') || el;
-  const glyph = el.querySelector('svg');
+  const glyph = row ? row.querySelector('svg') : null;
   let node = label, own = null;
   while (node && node !== document.documentElement) {
     const raw = getComputedStyle(node).backgroundColor;
@@ -648,10 +654,16 @@ COLOUR_READ = """el => {
   }
   const bodyBg = parse(getComputedStyle(document.body).backgroundColor);
   const bgs = [own, bodyBg].filter(Boolean);
+  // A missing mark must be loud. getComputedStyle(null) throws, which surfaces as
+  // an opaque harness error naming neither the element nor the ruling, so it is
+  // turned into a value the assertions below can report in their own words.
+  if (!row) return { row: false, theme: '?', fill: 'no .tg-row' };
+  if (!glyph) return { row: true, theme: '?', fill: 'no mark in the row' };
   const fillRaw = getComputedStyle(glyph).fill;
   const fill = parse(fillRaw);
   const labelFg = parse(getComputedStyle(label).color);
   return {
+    row: true,
     theme: document.documentElement.classList.contains('light') ? 'light' : 'dark',
     fill: fillRaw,
     // the label is the site's own link colour and the glyph is the brand one, so
@@ -754,10 +766,33 @@ def test_channel_link(page, base):
                     f"{theme} @{width} {name}: the header link is back inside the "
                     f"control row"
                 )
-                assert link.evaluate("el => !!(el.previousElementSibling "
-                                     "&& el.previousElementSibling.tagName === 'P')"), (
-                    f"{theme} @{width} {name}: the header link must sit directly "
+                # The mark is a SIBLING of the anchor, and that is the partner's
+                # third ruling. It used to be a child, which put a border-bottom
+                # under the glyph as well as under the label -- the border on an
+                # inline-flex anchor spans the whole box. `previousElementSibling`
+                # being the row rather than a <p> is exactly the shape that
+                # settling wrong looks like, so both facts are asserted: the row
+                # is a sibling of the subtitle paragraph, and the anchor's own
+                # previous sibling is the MARK, not the row.
+                assert link.evaluate(
+                    "el => { const row = el.closest('.tg-row'); return !!row "
+                    "&& !!row.previousElementSibling "
+                    "&& row.previousElementSibling.tagName === 'P'; }"), (
+                    f"{theme} @{width} {name}: the channel row must sit directly "
                     f"under the brand's subtitle paragraph"
+                )
+                assert link.evaluate(
+                    "el => { const p = el.previousElementSibling; "
+                    "return !!p && p.tagName === 'svg' "
+                    "&& p.classList.contains('tg-mark'); }"), (
+                    f"{theme} @{width} {name}: the mark must be the anchor's "
+                    f"immediate previous sibling, not a child. Inside the <a> the "
+                    f"border-bottom underlined the glyph as well as the label, and "
+                    f"the partner ruled `you put the icon in the href too`"
+                )
+                assert link.evaluate("el => !el.querySelector('svg')"), (
+                    f"{theme} @{width} {name}: the glyph is back inside the "
+                    f"anchor. It ships as a sibling"
                 )
                 # A visible label, not an icon-only control.
                 assert link.evaluate(
@@ -781,17 +816,28 @@ def test_channel_link(page, base):
                     )
                 # The glyph must resolve to something with size.
                 painted = link.evaluate(
-                    "el => { const u = el.querySelector('use');"
+                    "el => { const row = el.closest('.tg-row');"
+                    " if (!row) return 'no .tg-row';"
+                    " const u = row.querySelector('use');"
                     " if (!u) return 'no <use>';"
                     " const r = u.getBoundingClientRect();"
                     " return r.width > 0 && r.height > 0 ? 'ok' : 'zero-sized'; }"
                 )
                 assert painted == "ok", (
-                    f"{theme} @{width} {name}: the Telegram glyph is not rendering "
+                    f"{theme} @{width} {name}: the Telegram mark is not rendering "
                     f"({painted}). The sprite reference resolves to nothing, which "
-                    f"looks like an empty box rather than an error"
+                    f"looks like an empty box rather than an error. The mark is a "
+                    f"sibling of the anchor, so a <use> looked up on the anchor "
+                    f"itself finds nothing and reports the same thing"
                 )
                 colour = link.evaluate(COLOUR_READ)
+                # `row` first, so a structural miss is reported as itself rather
+                # than as a downstream `None >= 4.5` TypeError.
+                assert colour["row"] and str(colour["fill"]).startswith("rgb"), (
+                    f"{theme} @{width} {name}: the channel row or its mark is "
+                    f"missing ({colour['fill']!r}); cannot measure a colour on a "
+                    f"mark that is not there"
+                )
                 assert colour["fill"] != "rgb(0, 0, 0)", (
                     f"{theme} @{width} {name}: the glyph paints {colour['fill']}. "
                     f"The share sprite declares no fill on any symbol and every "

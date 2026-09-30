@@ -1401,13 +1401,27 @@ CHANNEL_COPIES = (
     ("404.html", "static/share.svg"),
     ("privacy.html", "static/share.svg"),
 )
-CHANNEL_ANCHOR_RE = re.compile(
+# The whole ROW, not just the anchor. The glyph is a SIBLING of the anchor, not a
+# child (partner's ruling: `but you put the icon in the href too`), and that
+# ordering is the invariant worth holding: the `<use>` must be the anchor's
+# IMMEDIATE previous sibling, so "the mark is not inside the link" is a thing this
+# pattern can fail on rather than an intention. A regex scoped to the anchor's
+# own body could not see a mark that had migrated back inside it, which is exactly
+# the state that shipped once and put a border under the glyph.
+CHANNEL_ROW_RE = re.compile(
+    # the mark, first, with its own sprite reference per depth
+    r'<span class="tg-row">'
+    r'<svg[^>]*class="icon tg-mark"[^>]*viewBox="0 0 16 16"[^>]*>'
+    r'<use href="([^"]+)"></use></svg>'
+    # then the anchor immediately after it, with nothing in between
     r'<a[^>]*class="tg-link"[^>]*href="([^"]+)"[^>]*target="_blank"'
     r'[^>]*rel="noopener noreferrer"[^>]*'
     # the STATIC label, not a `:aria-label` binding: the lookbehind is what keeps
     # a Vue page's binding from being read as the fallback
     r'(?<!:)aria-label="([^"]*)"'
-    r'[^>]*>(?:(?!</a>).)*?<use href="([^"]+)"></use>',
+    # text only: no second <use> may reopen inside the anchor
+    r'[^>]*>(?:(?!</a>).)*?</a>'
+    r'</span>',
     re.S,
 )
 # The static label is a FALLBACK for the moment before a page's own mechanism runs.
@@ -1476,16 +1490,30 @@ def check_channel_colour():
             "carries the brand colour. A blue word beside the site's link styling "
             "reads as a different kind of thing rather than as a link to a channel"
         )
-    if not re.search(r"\.tg-link svg\s*\{[^}]*fill:\s*var\(--telegram\)", css, re.S):
+    if not re.search(r"\.tg-mark\s*\{[^}]*fill:\s*var\(--telegram\)", css, re.S):
         problems.append(
-            ".tg-link svg has no `fill: var(--telegram)`. Two defects hide here. "
+            ".tg-mark has no `fill: var(--telegram)`. Two defects hide here. "
             "With no fill at all the path falls back to the SVG default and paints "
             "BLACK in both themes, because the share sprite declares none on any "
             "symbol and every consumer inherits it from `.share-ico`, which this "
-            "link is not a member of. And `fill: currentColor` is ALSO wrong: on "
+            "mark is not a member of. And `fill: currentColor` is ALSO wrong: on "
             "the <svg> element currentColor resolves to that element's own color, "
-            "which `svg:not(.heart)` sets to var(--accent), so the glyph came out "
-            "accent-purple beside a --telegram label"
+            "which `svg:not(.heart)` sets to var(--accent), so the mark came out "
+            "accent-purple"
+        )
+    # The selector must be the CLASS, never a descendant of the anchor. The mark
+    # moved out of the `<a>` (partner's ruling: `but you put the icon in the href
+    # too`), so `.tg-link svg` matches nothing -- silently, and with every other
+    # gate green. A selector that names a shape rather than an element stops
+    # working the moment the shape moves, and a dead fill declaration looks
+    # exactly like the colour defect it used to cause: black in both themes.
+    if re.search(r"\.tg-link\s+svg\s*\{", css):
+        problems.append(
+            "there is a `.tg-link svg` rule, but the mark is no longer a "
+            "descendant of the anchor -- it is its previous sibling. That selector "
+            "matches nothing, so the fill would be gone and the path would fall "
+            "back to the SVG default: BLACK, in both themes, reading as a colour "
+            "problem rather than a dead rule. Style `.tg-mark`"
         )
     # The sprite must PARSE. XML forbids a double hyphen inside a comment, and a
     # sprite that breaks that way keeps every expected id while resolving nothing
@@ -1505,8 +1533,9 @@ def check_channel_colour():
     if not problems:
         print(
             f"Channel colour: --telegram declared in both themes ({decls[0]} dark, "
-            f"{decls[1]} light); the anchor inherits the site's link colour and "
-            f"only .tg-link svg fills with the token; static/share.svg parses as XML"
+            f"{decls[1]} light); the anchor inherits the site's link colour, only "
+            f".tg-mark (a sibling, not a child) fills with the token, and "
+            f"static/share.svg parses as XML"
         )
 
 
@@ -1538,17 +1567,22 @@ def check_channel_link():
     seen_labels = {}
     for rel, prefix in CHANNEL_COPIES:
         text = (ROOT / rel).read_text(encoding="utf-8")
-        found = CHANNEL_ANCHOR_RE.search(text)
+        found = CHANNEL_ROW_RE.search(text)
         if not found:
             problems.append(
-                f"{rel}: no channel link matching the expected shape. Expected an "
-                f'<a class="tg-link" href="{CHANNEL_URL}" target="_blank" '
-                f'rel="noopener noreferrer" aria-label="..."> whose only child is '
-                f'<use href="{prefix}#{CHANNEL_SPRITE_SYMBOL}">. The header is '
-                f"hand-maintained in five places and nothing else compares them"
+                f"{rel}: no channel row matching the expected shape. Expected a "
+                f'<span class="tg-row"> holding a .tg-mark whose <use> is '
+                f'<use href="{prefix}#{CHANNEL_SPRITE_SYMBOL}"> followed '
+                f'IMMEDIATELY by <a class="tg-link" href="{CHANNEL_URL}" '
+                f'target="_blank" rel="noopener noreferrer" aria-label="..."> '
+                f"holding text only. The mark is a sibling of the anchor, not a "
+                f"child: it used to be inside the <a>, and then a "
+                f"`border-bottom` on the inline-flex anchor underlined the glyph as "
+                f"well as the label. The header is hand-maintained in five places "
+                f"and nothing else compares them"
             )
             continue
-        href, label, use = found.groups()
+        use, href, label = found.groups()
         if href != CHANNEL_URL:
             problems.append(
                 f"{rel}: channel link href is {href!r}, expected {CHANNEL_URL!r}")

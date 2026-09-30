@@ -21,7 +21,7 @@ const ABOUT_TEMPLATE = `
       <div class="brand-text">
         <h1>{{ about.heading }}</h1>
         <p v-if="altTitle">{{ altTitle }}</p>
-        <a class="tg-link" href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer" aria-label="Канал в Telegram: Whitehat Lab" :aria-label="t.telegramChannel" :title="t.telegramChannel"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="static/share.svg#icon-telegram"></use></svg><span>Whitehat Lab</span></a>
+        <span class="tg-row"><svg class="icon tg-mark" viewBox="0 0 16 16" aria-hidden="true"><use href="static/share.svg#icon-telegram"></use></svg><a class="tg-link" href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer" aria-label="Канал в Telegram: Whitehat Lab" :aria-label="t.telegramChannel" :title="t.telegramChannel"><span>Whitehat Lab</span></a></span>
       </div>
     </div>
     <div class="toolbar">
