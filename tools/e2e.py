@@ -590,7 +590,11 @@ def test_header_controls(page, base):
     for width in (320, 375, 575, 576, 768, 1280):
         page.set_viewport_size({"width": width, "height": 900})
         page.goto(base + "index.html", wait_until="domcontentloaded")
-        boxes = page.locator(".tool-buttons button").evaluate_all(
+        # `> *` and not `button`: the row now holds an anchor as well as buttons
+        # (the channel link), and a `button` selector would silently exclude it --
+        # so a control added as anything other than a <button> would escape the
+        # "one shared size" rule without anything failing.
+        boxes = page.locator(".tool-buttons > *").evaluate_all(
             "els => els.filter(el => el.offsetParent !== null)"
             ".map(el => { const r = el.getBoundingClientRect();"
             " return { cls: el.className, w: Math.round(r.width),"
@@ -612,6 +616,125 @@ def test_header_controls(page, base):
                 assert b["w"] >= 44 and b["h"] >= 44, (
                     f"@{width}: the xs burger is below the 44px floor: {b}"
                 )
+
+
+def test_channel_link(page, base):
+    """The header's Telegram link must be on EVERY page type, and be a square.
+
+    The header is hand-maintained six times over and the film pages are generated
+    from `FILM_TEMPLATE`, so a page type that lost the anchor would be a page with
+    no channel link anywhere and nothing saying so -- the footer link is
+    unchanged, so the page still looks complete. `verify.py` checks the markup of
+    every copy; this checks that they RENDER, which is the half a static read
+    cannot see.
+
+    Placement is asserted, not just presence, because the placement is what the
+    measurement decided. It was FIRST built as a sixth control in `.tool-buttons`,
+    which is where the human partner's "all controls equal" rule puts a new
+    control by default -- and six controls do not fit at 375: 296px of control
+    plus five 8px gaps is 336px against 321px available, so the row wrapped and
+    the header grew 52px at the two commonest phone widths. It lives under the
+    brand subtitle instead, which costs the row nothing.
+
+    The glyph must actually resolve. `use` has no size of its own, so a missing
+    symbol shows as an empty box rather than an error, and that is the one failure
+    a screenshot of the finished page would not catch.
+    """
+    PAGES = (
+        ("index", "index.html"),
+        ("film", "films/tt0133093-the-matrix/index.html"),
+        ("about", "about.html"),
+        ("404", "404.html"),
+        ("privacy", "privacy.html"),
+    )
+    root = Path(__file__).resolve().parents[1]
+
+    def serve_404(route):
+        # 404.html carries <base href="https://akhomlyuk.github.io/IT_movies/">,
+        # which is CORRECT for GitHub Pages -- it is what makes relative assets
+        # resolve for any missing path -- and which makes a locally served 404
+        # resolve every asset against the deployed domain instead. The
+        # stylesheet then throws SecurityError on cssRules, nothing is styled,
+        # and the link this test is here to check renders as unstyled text.
+        #
+        # The fix is to fulfil the route with the base rewritten to THIS run's
+        # origin; nothing on disk changes. `route.continue_(url=...)` is NOT the
+        # fix and looks like it: it re-issues the request against the URL passed
+        # to it, i.e. against the real deployed origin, so the stylesheet still
+        # comes from production and the test measures production.
+        html = (root / "404.html").read_text(encoding="utf-8")
+        html = html.replace(
+            '<base href="https://akhomlyuk.github.io/IT_movies/">',
+            '<base href="%s/">' % base)
+        route.fulfill(status=200, content_type="text/html; charset=utf-8",
+                      body=html)
+
+    four_oh_four = re.compile(r"404\.html$")
+    for width in (320, 575, 768, 1280):
+        for name, rel in PAGES:
+            page.set_viewport_size({"width": width, "height": 900})
+            if name == "404":
+                page.route(four_oh_four, serve_404)
+            page.goto(base + rel, wait_until="domcontentloaded")
+            page.wait_for_selector(".tg-link", timeout=5000)
+            if name == "404":
+                page.unroute(four_oh_four)
+
+            link = page.locator(".tg-link")
+            assert link.get_attribute("href") == "https://t.me/wh_lab", (
+                f"@{width} {name}: the header link points at "
+                f"{link.get_attribute('href')!r}, not the channel"
+            )
+            assert link.get_attribute("target") == "_blank", (
+                f"@{width} {name}: the header link must open in a new tab"
+            )
+            # Placement: under the subtitle, out of the control row.
+            assert link.evaluate("el => !!el.closest('.brand-text')"), (
+                f"@{width} {name}: the header link is not inside .brand-text. It was "
+                f"rejected as a sixth control in .tool-buttons because six controls "
+                f"do not fit at 375 and the row wrapped"
+            )
+            assert link.evaluate("el => !el.closest('.tool-buttons')"), (
+                f"@{width} {name}: the header link is back inside the control row"
+            )
+            assert link.evaluate("el => !!(el.previousElementSibling "
+                                 "&& el.previousElementSibling.tagName === 'P')"), (
+                f"@{width} {name}: the header link must sit directly under the "
+                f"brand's subtitle paragraph"
+            )
+            # A visible label, not an icon-only control.
+            assert link.evaluate("el => el.textContent.trim() === 'Whitehat Lab'"), (
+                f"@{width} {name}: the header link's visible text is "
+                f"{link.text_content()!r}, expected 'Whitehat Lab'"
+            )
+            # The control row must be back to the widths it had before the link
+            # existed: 40px for the icon squares, 76px for the labelled toggle.
+            row = page.locator(".tool-buttons")
+            if row.count():
+                widest = row.evaluate(
+                    "el => Math.max(...[...el.children]"
+                    ".filter(c => c.offsetParent !== null)"
+                    ".map(c => c.getBoundingClientRect().width))")
+                assert widest <= 76.5, (
+                    f"@{width} {name}: a control in the row is {widest:.1f}px wide, "
+                    f"past the 76px language toggle. If the channel link went back "
+                    f"into the row it would be a sixth control and the row would "
+                    f"wrap at 375"
+                )
+            # The glyph must actually resolve. `use` has no size of its own, so a
+            # missing symbol shows up as an empty box rather than an error -- this
+            # is the only assertion here that can tell the two apart.
+            painted = link.evaluate(
+                "el => { const u = el.querySelector('use');"
+                " if (!u) return 'no <use>';"
+                " const r = u.getBoundingClientRect();"
+                " return r.width > 0 && r.height > 0 ? 'ok' : 'zero-sized'; }"
+            )
+            assert painted == "ok", (
+                f"@{width} {name}: the Telegram glyph is not rendering ({painted}). "
+                f"The sprite reference resolves to nothing, which looks like an "
+                f"empty box rather than an error"
+            )
 
 
 CLICK_NAV = """
@@ -1446,6 +1569,7 @@ def main():
                 test_featured_breakpoints,
                 test_featured_poster_shape,
                 test_header_controls,
+                test_channel_link,
                 test_nav_lands_at_top,
                 test_nav_tier,
                 test_nojs_cloak,

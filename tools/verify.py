@@ -406,14 +406,37 @@ for page in (ROOT / "films").glob("*/index.html"):
         if m:
             refs.add(m.group(0))
 for r in refs:
-    if r.startswith("../../"):
-        path = ROOT / r[6:]
-    elif r.startswith("../static"):
-        path = ROOT / r.replace("../static", "static", 1)
+    # A reference may carry a fragment -- `static/share.svg#icon-telegram` is an
+    # SVG sprite lookup, and the film's own `<use>` elements are full of them.
+    # This gate used to hand the WHOLE string to `exists()`, so any fragment read
+    # as a broken path. It had simply never been shown one: the film's `<use>`
+    # lives inside the escaped `window.FILM_RC_CARD` string, whose `\"` does not
+    # match the `href="` pattern this scans for, and about.html's sprite is an
+    # inline `<symbol>` referenced as `#i-tg` with no path to check. The header's
+    # channel link put a literal sprite reference in static markup for the first
+    # time, and the gate reported it -- correctly diagnosing its own blindness
+    # rather than a bad link.
+    #
+    # Splitting it also buys the half that matters: a wrong fragment is a silent
+    # failure. The file loads, the page looks right in a screenshot, and the glyph
+    # is simply absent, so the fragment is resolved against the file's own ids.
+    ref, _, frag = r.partition("#")
+    if ref.startswith("../../"):
+        path = ROOT / ref[6:]
+    elif ref.startswith("../static"):
+        path = ROOT / ref.replace("../static", "static", 1)
     else:
-        path = ROOT / r
+        path = ROOT / ref
     if not path.exists():
         errors.append(f"Broken file reference: {r}")
+    elif frag and path.suffix == ".svg":
+        body = path.read_text(encoding="utf-8")
+        if ('id="%s"' % frag) not in body:
+            errors.append(
+                "Broken file reference: %s -- %s exists but carries no id=%r, so "
+                "the reference resolves to nothing and the icon renders as an "
+                "empty box rather than an error" % (r, ref, frag)
+            )
 
 # 6b. url(...) in styles resolve relative to css/
 css = (ROOT / "css" / "style.css").read_text(encoding="utf-8")
@@ -1352,6 +1375,136 @@ def check_related_poster_slot():
 check_related_poster_slot()
 
 
+# The channel link in the header. Five hand-maintained copies exist -- index.html,
+# js/film.js's FILM_TEMPLATE (which generates 155 pages), and about/404/privacy --
+# and nothing about the site's structure would notice if one of them lost the
+# anchor, so this check is the only witness. Each copy is checked for the href, the
+# new-tab rel pair, and a sprite reference that resolves to a symbol that exists;
+# the relative prefix is checked per page because it is the one thing that differs
+# between them and the one thing that fails silently (a wrong prefix 404s, and a
+# missing icon glyph renders as an empty box rather than an error).
+CHANNEL_URL = "https://t.me/wh_lab"
+CHANNEL_SPRITE_SYMBOL = "icon-telegram"
+CHANNEL_COPIES = (
+    ("index.html", "static/share.svg"),
+    ("js/film.js", "../../static/share.svg"),
+    ("js/film.min.js", "../../static/share.svg"),
+    # about.html carries a header inside <noscript> and the LIVE one is rendered
+    # from js/about.js, so both are copies and both are needed: the first is what a
+    # no-JS reader gets, the second is what everyone else gets. Reading only
+    # about.html is how the anchor ended up in the noscript copy while the live
+    # page had none -- and the regex could not tell, because both contain it.
+    ("about.html", "static/share.svg"),
+    ("js/about.js", "static/share.svg"),
+    ("js/about.min.js", "static/share.svg"),
+    ("404.html", "static/share.svg"),
+    ("privacy.html", "static/share.svg"),
+)
+CHANNEL_ANCHOR_RE = re.compile(
+    r'<a[^>]*class="tg-link"[^>]*href="([^"]+)"[^>]*target="_blank"'
+    r'[^>]*rel="noopener noreferrer"[^>]*'
+    # the STATIC label, not a `:aria-label` binding: the lookbehind is what keeps
+    # a Vue page's binding from being read as the fallback
+    r'(?<!:)aria-label="([^"]*)"'
+    r'[^>]*>(?:(?!</a>).)*?<use href="([^"]+)"></use>',
+    re.S,
+)
+# The static label is a FALLBACK for the moment before a page's own mechanism runs.
+# A language-aware page that carries the fallback without overriding it reads one
+# language forever, so each mechanism is named here and required in the file that
+# owns it: a Vue binding on the two Vue pages, an explicit attribute write on the
+# two static pages that have their own inline translation table.
+CHANNEL_OVERRIDES = (
+    ("index.html", ':aria-label="t.telegramChannel"'),
+    ("js/film.js", ':aria-label="t.telegramChannel"'),
+    ("js/film.min.js", "t.telegramChannel"),
+    ("js/about.js", ':aria-label="t.telegramChannel"'),
+    ("js/about.min.js", "t.telegramChannel"),
+    ("about.html", None),
+    ("404.html", 'tgLink.setAttribute("aria-label", t.telegramChannel)'),
+    ("privacy.html", 'tgLink.setAttribute("aria-label", t.telegramChannel)'),
+)
+
+
+def check_channel_link():
+    """The header's Telegram link must be present, correct and resolvable on every
+    page type that carries a header.
+
+    The header is hand-maintained five times over -- `index.html`, the
+    `FILM_TEMPLATE` in `js/film.js` (which generates all 155 film pages), and
+    `about.html` / `404.html` / `privacy.html`. Nothing else in the project
+    compares them, so a copy that lost the anchor, kept a stale href, or pointed
+    its `<use>` at a sprite path wrong for its own depth would ship silently: a
+    wrong prefix 404s and an unresolvable symbol renders as an empty box rather
+    than an error, so the page still looks right in a screenshot.
+
+    Checked per copy: the href, the new-tab rel pair, and the sprite reference
+    resolving to a symbol that exists. Checked ACROSS copies: agreement on the
+    static aria-label, because both languages are spelled out literally in
+    hand-written markup here (only `index.html` and `film.js` have a Vue binding
+    to override them) and a divergence reads the wrong language aloud.
+    """
+    problems = []
+    sprite = (ROOT / "static" / "share.svg").read_text(encoding="utf-8")
+    if 'id="%s"' % CHANNEL_SPRITE_SYMBOL not in sprite:
+        problems.append(
+            f"static/share.svg has no {CHANNEL_SPRITE_SYMBOL!r} symbol, so every "
+            f"copy of the channel link points at a glyph that cannot resolve"
+        )
+    seen_labels = {}
+    for rel, prefix in CHANNEL_COPIES:
+        text = (ROOT / rel).read_text(encoding="utf-8")
+        found = CHANNEL_ANCHOR_RE.search(text)
+        if not found:
+            problems.append(
+                f"{rel}: no channel link matching the expected shape. Expected an "
+                f'<a class="tg-link" href="{CHANNEL_URL}" target="_blank" '
+                f'rel="noopener noreferrer" aria-label="..."> whose only child is '
+                f'<use href="{prefix}#{CHANNEL_SPRITE_SYMBOL}">. The header is '
+                f"hand-maintained in five places and nothing else compares them"
+            )
+            continue
+        href, label, use = found.groups()
+        if href != CHANNEL_URL:
+            problems.append(
+                f"{rel}: channel link href is {href!r}, expected {CHANNEL_URL!r}")
+        if use != "%s#%s" % (prefix, CHANNEL_SPRITE_SYMBOL):
+            problems.append(
+                f"{rel}: channel link sprite reference is {use!r}, expected "
+                f"{prefix + '#' + CHANNEL_SPRITE_SYMBOL!r}. The page's own depth "
+                f"decides the prefix and getting it wrong 404s silently"
+            )
+        seen_labels.setdefault(label, []).append(rel)
+    if len(seen_labels) > 1:
+        problems.append(
+            "the copies disagree on the static aria-label, "
+            + "; ".join(f"{v!r} in {', '.join(f)}" for v, f in seen_labels.items())
+            + ". One of them will read the wrong language to a screen reader"
+        )
+    for rel, needed in CHANNEL_OVERRIDES:
+        if needed is None:
+            continue
+        if needed not in (ROOT / rel).read_text(encoding="utf-8"):
+            problems.append(
+                f"{rel}: the static label is a fallback for the moment before this "
+                f"page's own mechanism runs, but nothing overrides it -- expected "
+                f"{needed!r} in the file. A page with a working language toggle that "
+                f"keeps the fallback reads one language forever"
+            )
+    for p in problems:
+        errors.append(f"Channel link: {p}")
+    if not problems:
+        print(
+            f"Channel link: {CHANNEL_URL} on {len(CHANNEL_COPIES)} page type(s); "
+            f"target=_blank rel=noopener noreferrer; sprite resolves to "
+            f"#{CHANNEL_SPRITE_SYMBOL} with the right prefix per depth; "
+            f"static labels agree ({next(iter(seen_labels))!r})"
+        )
+
+
+check_channel_link()
+
+
 # 6f. The media-condition gate. A width edge is the only thing that decides which
 # rule-set a viewport gets, and before this block the pre-Stage-2b ad-hoc set
 # (480 / 525 / 720 / 721 / 950) could be reintroduced one literal at a time with
@@ -1633,6 +1786,7 @@ CONTROL_BOUNDARY_SELECTORS = (
     ".share-btn",
 )
 CONTROL_BOUNDARY_TOKEN = "--line-control"
+
 CSS_TOKEN_DECL = re.compile(r"^[ \t]+(--[a-z0-9-]+)\s*:", re.M)
 CSS_TOKEN_USE = re.compile(r"var\(\s*(--[a-z0-9-]+)")
 

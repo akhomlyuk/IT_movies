@@ -133,6 +133,7 @@
         <div class="brand-text">
           <div class="brand-name">IT Movies</div>
           <p data-i18n="subtitle">A curated list of films and series about computers, technology, AI, etc</p>
+          <a class="tg-link" href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer" aria-label="Канал в Telegram: Whitehat Lab" title="Канал в Telegram: Whitehat Lab"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="static/share.svg#icon-telegram"></use></svg><span>Whitehat Lab</span></a>
         </div>
       </div>
       <div class="toolbar">
@@ -169,6 +170,7 @@
           codedWith: "Сделано с",
           privacy: "Политика конфиденциальности",
           swapLang: "Переключить язык",
+          telegramChannel: "Канал в Telegram: Whitehat Lab",
           themeToDark: "Включить тёмную тему",
           themeToLight: "Включить светлую тему",
         },
@@ -182,6 +184,7 @@
           codedWith: "Coded with",
           privacy: "Privacy policy",
           swapLang: "Switch language",
+          telegramChannel: "Telegram channel: Whitehat Lab",
           themeToDark: "Enable dark theme",
           themeToLight: "Enable light theme",
         },
@@ -200,6 +203,11 @@
         if (langBtn) {
           langBtn.textContent = "🌐 " + lang.toUpperCase();
           langBtn.setAttribute("aria-label", t.swapLang);
+        }
+        var tgLink = document.querySelector(".tg-link");
+        if (tgLink) {
+          tgLink.setAttribute("aria-label", t.telegramChannel);
+          tgLink.setAttribute("title", t.telegramChannel);
         }
         var themeBtn = document.querySelector(".theme-toggle");
         if (themeBtn) {

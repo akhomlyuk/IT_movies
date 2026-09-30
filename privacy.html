@@ -118,6 +118,7 @@
         <div class="brand-text">
           <div class="brand-name">IT Movies</div>
           <p data-i18n="subtitle">Политика конфиденциальности / Privacy policy</p>
+          <a class="tg-link" href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer" aria-label="Канал в Telegram: Whitehat Lab" title="Канал в Telegram: Whitehat Lab"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><use href="static/share.svg#icon-telegram"></use></svg><span>Whitehat Lab</span></a>
         </div>
       </div>
       <div class="toolbar">
@@ -232,6 +233,7 @@
           codedWith: "Сделано с",
           privacyCurrent: "Политика конфиденциальности",
           swapLang: "Переключить язык",
+          telegramChannel: "Канал в Telegram: Whitehat Lab",
           themeToDark: "Включить тёмную тему",
           themeToLight: "Включить светлую тему",
         },
@@ -263,6 +265,7 @@
           codedWith: "Coded with",
           privacyCurrent: "Privacy policy",
           swapLang: "Switch language",
+          telegramChannel: "Telegram channel: Whitehat Lab",
           themeToDark: "Enable dark theme",
           themeToLight: "Enable light theme",
         },
@@ -311,6 +314,11 @@
         document.documentElement.classList.toggle("light", theme === "light");
         var csMeta = document.querySelector('meta[name="color-scheme"]');
         if (csMeta) csMeta.setAttribute("content", theme);
+        var tgLink = document.querySelector(".tg-link");
+        if (tgLink) {
+          tgLink.setAttribute("aria-label", t.telegramChannel);
+          tgLink.setAttribute("title", t.telegramChannel);
+        }
         var themeBtn = document.querySelector(".theme-toggle");
         if (themeBtn) {
           themeBtn.textContent = theme === "dark" ? "🌙" : "☀️";
