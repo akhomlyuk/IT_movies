@@ -8,22 +8,20 @@
   --bg: #0a0a0b;
   --surface-1: #131315;
   --surface-2: #1a1a1d;
-  --surface-3: #222225;
   --ink: #f7f8f8;
   --ink-muted: #8a8f98;
   --ink-subtle: #62666d;
   --accent: #5e6ad2;
-  --accent-hover: #828fff;
   --accent-focus: #5e69d1;
   --rating: #ff6b6b;
   --line: #23252a;
   --line-strong: #34343a;
+  --line-control: #62646c;
   --focus: #f2eee8;
-  --kp: #ff6b6b;
-  --imdb: #ff6b6b;
+  --kp: #ff5500;
+  --imdb: #f6c600;
   --signal: #ff6b6f;
   --paper: #131315;
-  --paper-strong: #1a1a1d;
   --th-bg: rgba(247, 248, 248, 0.04);
   --glass: rgba(19, 19, 21, 0.74);
   --glass-card: rgba(19, 19, 21, 0.92);
@@ -57,7 +55,6 @@
   --radius-l: 12px;
   --radius-xl: 16px;
   --radius-circle: 50%;
-  --radius-pill: 999px;
   /* container */
   --container: 1280px;
   --measure: 68ch;
@@ -82,22 +79,20 @@
     --bg: #0a0a0b;
     --surface-1: #131315;
     --surface-2: #1a1a1d;
-    --surface-3: #222225;
     --ink: #f7f8f8;
     --ink-muted: #8a8f98;
     --ink-subtle: #62666d;
     --accent: #5e6ad2;
-    --accent-hover: #828fff;
     --accent-focus: #5e69d1;
     --rating: #ff6b6b;
     --line: #23252a;
     --line-strong: #34343a;
+    --line-control: #62646c;
     --focus: #f2eee8;
-    --kp: #ff6b6b;
-    --imdb: #ff6b6b;
+    --kp: #ff5500;
+    --imdb: #f6c600;
     --signal: #ff6b6f;
     --paper: #131315;
-    --paper-strong: #1a1a1d;
     --th-bg: rgba(247, 248, 248, 0.04);
     --glass: rgba(19, 19, 21, 0.74);
     --glass-card: rgba(19, 19, 21, 0.92);
@@ -161,56 +156,25 @@
   unicode-range: U+0020-007E, U+00A0-00FF, U+0131, U+0152-0153, U+02BC, U+02C6, U+02DA, U+02DC, U+0300-0301, U+0303, U+0309, U+0323, U+2002, U+2009, U+200B, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026, U+2032-2033, U+2039-203A, U+2044, U+20AC, U+2122, U+2212, U+FEFF, U+FFFD;
 }
 
-:root.dark {
-  color-scheme: dark;
-  --bg: #0a0a0b;
-  --surface-1: #131315;
-  --surface-2: #1a1a1d;
-  --surface-3: #222225;
-  --ink: #f7f8f8;
-  --ink-muted: #8a8f98;
-  --ink-subtle: #62666d;
-  --accent: #5e6ad2;
-  --accent-hover: #828fff;
-  --accent-focus: #5e69d1;
-  --rating: #ff6b6b;
-  --line: #23252a;
-  --line-strong: #34343a;
-  --focus: #f2eee8;
-  --kp: #ff6b6b;
-  --imdb: #ff6b6b;
-  --signal: #ff6b6f;
-  --paper: #131315;
-  --paper-strong: #1a1a1d;
-  --th-bg: rgba(247, 248, 248, 0.04);
-  --glass: rgba(19, 19, 21, 0.74);
-  --glass-card: rgba(19, 19, 21, 0.92);
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
-  --hover: rgba(247, 248, 248, 0.07);
-  --dot: rgba(247, 248, 248, 0.05);
-}
-
 :root.light {
   color-scheme: light;
   --bg: #f5f6f6;
   --surface-1: #ffffff;
   --surface-2: #f6f7f7;
-  --surface-3: #f0f1f1;
   --ink: #000000;
   --ink-muted: #62666d;
   --ink-subtle: #8a8f98;
   --accent: #5e6ad2;
-  --accent-hover: #4a55b8;
   --accent-focus: #5e69d1;
-  --rating: #d9363e;
+  --rating: #c92c34;
   --line: #e5e6e8;
   --line-strong: #c9cbce;
+  --line-control: #8a8d94;
   --focus: #171923;
-  --kp: #d9363e;
-  --imdb: #d9363e;
+  --kp: #c74000;
+  --imdb: #8a6d00;
   --signal: #d9363e;
   --paper: #ffffff;
-  --paper-strong: #f6f7f7;
   --th-bg: rgba(0, 0, 0, 0.035);
   --glass: rgba(255, 255, 255, 0.72);
   --glass-card: rgba(255, 255, 255, 0.92);
@@ -231,6 +195,11 @@
 
 @layer base {
 
+/* No `scroll-padding-top` here, and the absence is the point. It existed only
+   to keep a nav target from landing under the sticky header; with the header no
+   longer sticky, an offset would push every section down the viewport for no
+   reason. `verify.py` asserts the property is absent, and `js/app.js` no longer
+   measures a header. */
 html {
   scroll-behavior: smooth;
   scrollbar-gutter: stable;
@@ -302,18 +271,62 @@ html:not(.js) #app[v-cloak] nav.nav:not(.nav--dialog) {
 
 @layer components {
 
+/* The header does not stick. Partner ruling, 2026-09-30: a sticky header is
+   not wanted. Removing it is not a three-line deletion -- `position: sticky`
+   was the only reason three other mechanisms existed, and each one is now
+   load-bearing on its absence:
+
+   - `scroll-padding-top: var(--header-offset)` parked every nav target below
+     the viewport top by the header's height. With no header over the content
+     that offset only pushed sections down, so the token, the token's CSS
+     fallback, the ResizeObserver in app.js and the 5rem default are all gone.
+   - the `backdrop-filter: blur(12px)` and `--glass` background existed to make
+     content readable *through* a translucent bar. Static, they are just a
+     tinted box over the page background, so the header is opaque now.
+   - `z-index: var(--z-raised)` kept the bar above the scrolling table.
+
+   What stays is the layout: the header is still the first block in `.wrap`, so
+   the page still opens with the logo and the controls, and every control keeps
+   its size and its tap target. */
+
+/* The panel is gone too, and that is a second ruling rather than a consequence
+   of the first. `.top` painted `background: var(--surface-1)`, which is not the
+   page colour in either theme (dark #131315 on #0a0a0b, light #ffffff on
+   #f5f6f6), so the header read as a raised block. Removing the declaration does
+   NOT reveal a flat `--bg`: `body` carries a 1px dot grid at 20px
+   (`background-image: radial-gradient(circle at 1px 1px, var(--dot) 1px,
+   transparent 0)`), and `.top` was the only paint masking it at the top of the
+   page. A dot pixel composites to rgb(22,22,23) dark and rgb(228,229,229)
+   light.
+
+   Measured over both arms on the same run, 4 pages, every icon in the document
+   and every text element inside the header (`_tmp/probe_header_nobg.py`):
+   the 8 icons painted directly on the header go 3.95 -> 4.02 dark and
+   4.70 -> 4.60 light; the tightest header text (16px/400, the subtitle and
+   the RU label) goes 5.71 -> 5.82 dark and 5.77 -> 5.33 light; the brand h1
+   (25.6px/700) 17.44 -> 18.6 and 21 -> 19.4. So the panel was worth up to
+   +0.44:1 and nothing crosses a floor -- the tightest figure anywhere in the
+   header afterwards is 4.60 (icons, light, floor 3) and 5.33 (16px text, light,
+   floor 4.5). Light is the losing theme in both cases because `--surface-1` is
+   white there and `--bg` is not.
+
+   The dots are 1px and cannot host a whole icon, but a 1px stroke can land on
+   one, so that case is computed rather than assumed: the worst icon on the
+   whole page (`footer .heart`, which is `--signal`) drops 7.15 -> 6.54 dark and
+   4.27 -> 3.65 light when read against a dot instead of flat `--bg`. That case
+   is unchanged by this edit -- it is the footer, and it was already the real
+   background everywhere outside the header.
+
+   `border-bottom` is deliberately kept. It is a rule under the header block,
+   not part of the panel, and `--line` is the token the project uses for exactly
+   this. Whether the header wants a rule at all with no panel behind it is a
+   design call, not a consequence of the ruling. */
 .top {
-  position: sticky;
-  top: 0;
-  z-index: var(--z-raised);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-5);
   padding-bottom: var(--space-4);
-  background: var(--glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
 }
 
@@ -390,15 +403,16 @@ html:not(.js) #app[v-cloak] nav.nav:not(.nav--dialog) {
   flex: none;
 }
 
-/* Icons are --muted, and the blue they used to be is gone. --icon was a token
-   of its own with exactly one consumer, so once icons became the muted warm
-   grey it was a second name for the same colour in both themes; deleting it
-   leaves one source. The blue was the only cool hue in an otherwise warm
-   palette -- warm paper, warm ink, orange KP, gold IMDb, green accent -- and
-   against a #14120f page it read as a foreign colour rather than as an icon.
-   Worst contrast across both themes and every surface icons sit on: 4.95:1. */
+/* Icons wear the accent, the same colour as `.featured-star`. Human partner,
+   2026-09-30: the icons had been demoted to `--ink-muted` on the argument that
+   a cool hue in a warm palette "reads as a foreign colour rather than as an
+   icon", and that is exactly the reading the partner did not want. The rule
+   below is where `--icon` used to be: a token with one consumer is a second
+   name for the same colour, so the value is named here once. `footer .heart`
+   is excluded and keeps `--signal`, and `.heart` is the only svg carrying that
+   class. */
 svg:not(.heart) {
-  color: var(--ink-muted);
+  color: var(--accent);
 }
 
 .tool-buttons {
@@ -408,21 +422,16 @@ svg:not(.heart) {
 }
 
 .tool-buttons button {
-  width: var(--tap);
-  height: var(--tap);
-  border-radius: var(--radius-m);
-  background: var(--surface-1);
-  border: 1px solid var(--line);
-  color: var(--ink);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.tool-buttons button:hover {
-  background: var(--surface-2);
-  border-color: var(--accent);
+  flex-shrink: 0;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast) ease,
+    color var(--transition-fast) ease,
+    border-color var(--transition-fast) ease;
 }
 
 .result-count {
@@ -436,7 +445,7 @@ svg:not(.heart) {
 .reset-filters {
   min-height: 40px;
   padding: 0 var(--space-3);
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: var(--radius-l);
   background: transparent;
   color: var(--ink);
@@ -463,9 +472,7 @@ svg:not(.heart) {
   display: inline-flex;
   align-items: center;
   gap: var(--space-0-35);
-  height: 40px;
-  padding: 0 var(--space-3);
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   background: var(--glass);
   color: var(--ink-muted);
   border-radius: var(--radius-s);
@@ -479,6 +486,29 @@ svg:not(.heart) {
     background-color 0.15s ease,
     color 0.15s ease,
     border-color 0.15s ease;
+}
+
+/* Boxes, declared separately from the paint above. The rule above used to hold
+   `height: 40px; padding: 0 var(--space-3)` and a `min-width` shared with
+   `.theme-toggle`, which made the theme button 76px wide -- the same class of
+   mistake as the (0,1,1) `.tool-buttons button` blanket, one level up. The
+   human partner's requirement is one row of identical squares with the language
+   toggle allowed to be wider, because it is the only control carrying a label.
+   `.theme-toggle` therefore joins `.fav-filter`/`.lucky` as an explicit square,
+   and only `.lang` gets the padded label box. The xs copy of the language
+   min-width needs the `.tool-buttons ` prefix to tie the mobile min-* floor. */
+.theme-toggle {
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+}
+
+.lang {
+  justify-content: center;
+  height: 40px;
+  padding: 0 var(--space-3);
+  min-width: calc(var(--tap) + var(--space-6));
 }
 
 .lang:hover,
@@ -510,7 +540,7 @@ svg:not(.heart) {
   max-width: 100%;
   height: 40px;
   border-radius: var(--radius-m);
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-control);
   background: var(--surface-1);
   color: var(--ink);
   font-size: var(--fs-sm);
@@ -529,7 +559,7 @@ svg:not(.heart) {
   max-width: 100%;
   height: 40px;
   padding: 0 var(--space-6) 0 var(--space-3);
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: var(--radius-s);
   background: var(--glass);
   color: var(--ink);
@@ -566,7 +596,7 @@ svg:not(.heart) {
   width: 40px;
   height: 40px;
   padding: 0;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: var(--radius-s);
   background: var(--glass);
   color: var(--ink-muted);
@@ -626,7 +656,7 @@ svg:not(.heart) {
   width: 40px;
   height: 40px;
   padding: 0;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: var(--radius-s);
   background: var(--glass);
   color: var(--ink-muted);
@@ -654,7 +684,7 @@ svg:not(.heart) {
   width: 40px;
   height: 40px;
   padding: 0;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: var(--radius-s);
   background: var(--glass);
   color: var(--ink-muted);
@@ -697,7 +727,7 @@ svg:not(.heart) {
   width: 40px;
   height: 40px;
   padding: 0;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: var(--radius-s);
   background: var(--glass);
   font-size: var(--fs-xl);
@@ -752,11 +782,6 @@ svg:not(.heart) {
   background: var(--surface-1);
 }
 
-.nav a[aria-current="true"] {
-  color: var(--accent);
-  box-shadow: inset 0 -1px 0 var(--accent);
-}
-
 .nav span.count {
   color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
@@ -787,7 +812,7 @@ svg:not(.heart) {
 .section-heading h2 {
   margin: 0;
   font-size: clamp(1.35rem, 2.2vw, 1.75rem);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.02em;
 }
 
@@ -839,6 +864,7 @@ svg:not(.heart) {
 
 .featured-card img {
   width: 100%;
+  height: auto;
   aspect-ratio: 2 / 3;
   object-fit: cover;
   border-radius: var(--radius-m);
@@ -882,6 +908,9 @@ svg:not(.heart) {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  overflow-wrap: normal;
+  text-overflow: ellipsis;
+  hyphens: auto;
 }
 
 .featured-card-alt {
@@ -902,6 +931,13 @@ svg:not(.heart) {
 }
 
 .featured-card-meta {
+  display: -webkit-box;
+  overflow: hidden;
+  overflow-wrap: normal;
+  text-overflow: ellipsis;
+  hyphens: auto;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   font-size: var(--fs-xs);
   color: var(--ink-muted);
   text-transform: uppercase;
@@ -1311,7 +1347,7 @@ a.imdb .star,
 .rating-chip {
   display: inline-flex;
   align-items: center;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-s);
   border: 1px solid var(--line-strong);
   padding: 0.1em 0.5em;
   font-size: var(--fs-xs);
@@ -1333,7 +1369,7 @@ a.imdb .star,
 
 
 .empty {
-  color: var(--ink-muted);
+  color: var(--ink-subtle);
   padding: var(--space-4) var(--space-3);
   text-align: center;
 }
@@ -1431,7 +1467,7 @@ footer .footer-privacy {
   right: var(--space-6);
   width: 40px;
   height: 40px;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   background: var(--glass);
   color: var(--ink);
   font-size: var(--fs-lg);
@@ -1616,14 +1652,10 @@ html.no-scroll-state.scrolled .scroll-top {
     text-align: start;
   }
 
-  .lang,
-  .theme-toggle,
   .search,
   .nav a,
-  .menu-toggle,
-  .nav-dialog-close,
   .reset-filters {
-    height: var(--tap);
+    min-height: var(--tap);
   }
 
   .ratings a {
@@ -1635,9 +1667,19 @@ html.no-scroll-state.scrolled .scroll-top {
   .lucky,
   .menu-toggle,
   .nav-dialog-close,
-  .theme-toggle {
-    width: var(--tap);
-    height: var(--tap);
+  .theme-toggle,
+  .tool-buttons button {
+    min-width: var(--tap);
+    min-height: var(--tap);
+  }
+
+  /* `.lang` carries a label, so it is a floor and not a square. It needs the
+     `.tool-buttons ` prefix to tie the blanket floor's (0,1,1) rather than lose
+     to it at (0,1,0), and it is declared after that floor so source order
+     settles it. A bare `.lang` here silently measures 44px wide. */
+  .tool-buttons .lang {
+    min-width: calc(var(--tap) + var(--space-6));
+    min-height: var(--tap);
   }
 
   .share-btn {
@@ -1723,7 +1765,7 @@ html.no-scroll-state.scrolled .scroll-top {
     min-height: var(--tap);
     margin: -0.25rem 0 var(--space-2) auto;
     padding: 0 var(--space-3);
-    border: 1px solid var(--line-strong);
+    border: 1px solid var(--line-control);
     border-radius: var(--radius-l);
     background: transparent;
     color: var(--ink);
@@ -1774,8 +1816,6 @@ html.no-scroll-state.scrolled .scroll-top {
 
   .featured-grid {
     display: flex;
-    grid-auto-flow: unset;
-    grid-auto-columns: unset;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     gap: var(--space-3);
@@ -1785,10 +1825,6 @@ html.no-scroll-state.scrolled .scroll-top {
   .featured-grid li {
     flex: 0 0 280px;
     scroll-snap-align: start;
-  }
-
-  .featured-grid .featured-card:hover {
-    transform: none;
   }
 
   .featured-card-title {
@@ -1849,8 +1885,8 @@ html.no-scroll-state.scrolled .scroll-top {
   max-width: min(var(--measure), 100%);
   margin: 0 0 var(--space-1);
   overflow: hidden;
-  font-size: clamp(1.15rem, 2vw, 1.6rem);
-  font-weight: 700;
+  font-size: clamp(1.5rem, 4vw, var(--fs-display));
+  font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1.15;
   -webkit-box-orient: vertical;
@@ -1953,7 +1989,7 @@ html.no-scroll-state.scrolled .scroll-top {
   align-items: center;
   height: 40px;
   padding: 0 var(--space-3);
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: var(--radius-s);
   text-decoration: none;
   background: var(--glass);
@@ -2218,9 +2254,13 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 .rc-title {
-  font-size: var(--fs-md);
+  font-size: var(--fs-lg);
   font-weight: 500;
   line-height: 1.25;
+  overflow: hidden;
+  overflow-wrap: normal;
+  text-overflow: ellipsis;
+  hyphens: auto;
   letter-spacing: -0.01em;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -2233,9 +2273,10 @@ html.no-scroll-state.scrolled .scroll-top {
   color: var(--ink-muted);
   text-transform: uppercase;
   letter-spacing: 0.035em;
-  white-space: nowrap;
   overflow: hidden;
+  overflow-wrap: normal;
   text-overflow: ellipsis;
+  hyphens: auto;
 }
 
 .rc-meta {
@@ -2273,7 +2314,7 @@ html.no-scroll-state.scrolled .scroll-top {
   width: 40px;
   height: 40px;
   padding: 0;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line-control);
   border-radius: var(--radius-s);
   background: transparent;
   color: var(--ink-muted);

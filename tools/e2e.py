@@ -22,7 +22,22 @@ main page
      js/app.js sorts them, the result count disappears when no filter is active
   3. featured grid: 6 distinct cards each with a poster; a horizontal snap
      scroller at 390px (xs) and a 2-column grid at 576px (sm), with no
-     document-level horizontal overflow
+     document-level horizontal overflow; the meta row clamped and never
+     overflowing its box
+  3a. featured poster: 2:3 at 320/375/576/768/1024/1280/1440. The `height`
+     attribute in the markup is a definite height, which is why it beats
+     `aspect-ratio` and the card measured 1.009 wide at 1440
+  3b. header controls: one shared height across .tool-buttons at every tier, the
+     icon buttons one shared width, a .lang wider than a square tap target
+     because it is the only one carrying a label, and the xs burger at or above
+     44px
+
+  --only <scenario> runs a single named scenario. Proving a guard is live means
+  breaking the code and re-reading the verdict; a full sweep per mutation turns
+  that into an unusable ritual.
+  3c. nav lands clear: clicking a nav anchor moves the marker to that section
+     on the click rather than at the end of the smooth scroll, and the section
+     comes to rest below the sticky header, at 320 through 1280
   4. lang toggle: document.title switches to the English variant
   5. boot fallback: blocking js/catalog.js reveals the #boot-fallback message
   6. lucky button: navigates to a film page whose title leads with its card h1
@@ -329,6 +344,13 @@ def test_featured_breakpoints(page, base):
         "els => els.every(el => getComputedStyle(el).fontSize === '12px'"
         " && getComputedStyle(el).textTransform === 'uppercase')"
     ), "the featured meta line must be styled as uppercase 12px text"
+    # Overflow guard. A card whose meta row outgrows its clamp silently pushes
+    # the ratings out of the box, and no count/distinctness check can see it.
+    assert page.locator(".featured-card-meta").evaluate_all(
+        "els => els.every(el => { const c = getComputedStyle(el);"
+        " return c.whiteSpace === 'normal' && c.webkitBoxOrient === 'vertical'"
+        " && /^[0-9]+$/.test(c.webkitLineClamp) && el.scrollWidth <= el.clientWidth; })"
+    ), "the featured meta line must clamp and not overflow its box"
     assert page.evaluate("document.documentElement.scrollWidth <= document.documentElement.clientWidth"), (
         "xs tier overflows the document horizontally"
     )
@@ -342,6 +364,175 @@ def test_featured_breakpoints(page, base):
         "sm tier overflows the document horizontally"
     )
 
+
+def test_featured_poster_shape(page, base):
+    """The featured poster must render 2:3 at EVERY tier.
+
+    `aspect-ratio` only fills an automatic dimension, so a presentational
+    `height` attribute on the <img> silently wins and the rule below it becomes
+    dead. That is how a 2:3 card shipped rendering 0.60 wide at sm, 0.76 at lg
+    and wider than square at xl while every other guard stayed green.
+    """
+    for width in (320, 375, 576, 768, 1024, 1280, 1440):
+        page.set_viewport_size({"width": width, "height": 900})
+        page.goto(base + "index.html", wait_until="domcontentloaded")
+        expect(page.locator(".featured-card img").first).to_be_visible()
+        ratios = page.locator(".featured-card img").evaluate_all(
+            "els => els.map(el => { const r = el.getBoundingClientRect();"
+            " return Math.round(r.width / r.height * 1000) / 1000; })"
+        )
+        off = [r for r in ratios if abs(r - 2 / 3) > 0.01]
+        assert not off, f"@{width}: featured poster must be 2:3, got {off}"
+
+
+def test_header_controls(page, base):
+    """Header controls: one shared size, and a label that fits.
+
+    `.tool-buttons button` used to carry `width`/`height` at (0,1,1), which beat
+    every component rule at (0,1,0) -- so the class meant to define the row did
+    nothing, and the xs tier's `height: var(--tap)` could not reach the burger
+    because Task 9 had raised it to (0,2,0).
+
+    Widths are asserted equal for the icon buttons and separately for `.lang`:
+    the human partner's requirement is one row of identical controls with the
+    language toggle allowed to be wider, because it is the only one carrying a
+    label. Asserting "all equal" would forbid the thing that makes the label
+    fit, and asserting only "lang is wider" would let the other four drift apart.
+    """
+    for width in (320, 375, 575, 576, 768, 1280):
+        page.set_viewport_size({"width": width, "height": 900})
+        page.goto(base + "index.html", wait_until="domcontentloaded")
+        boxes = page.locator(".tool-buttons button").evaluate_all(
+            "els => els.filter(el => el.offsetParent !== null)"
+            ".map(el => { const r = el.getBoundingClientRect();"
+            " return { cls: el.className, w: Math.round(r.width),"
+            " h: Math.round(r.height) }; })"
+        )
+        assert boxes, f"@{width}: no visible tool-buttons"
+        heights = {b["h"] for b in boxes}
+        assert len(heights) == 1, f"@{width}: tool-buttons heights differ: {boxes}"
+        lang = next(b for b in boxes if "lang" in b["cls"])
+        icons = [b for b in boxes if "lang" not in b["cls"]]
+        icon_widths = {b["w"] for b in icons}
+        assert len(icon_widths) == 1, (
+            f"@{width}: the icon buttons are not one size: {sorted(icon_widths)} "
+            f"({icons})"
+        )
+        assert lang["w"] > 44, f"@{width}: .lang must be wider than a square target, got {lang['w']}"
+        for b in icons:
+            if "menu-toggle" in b["cls"] and width <= 575:
+                assert b["w"] >= 44 and b["h"] >= 44, (
+                    f"@{width}: the xs burger is below the 44px floor: {b}"
+                )
+
+
+CLICK_NAV = """
+  async (id) => {
+    const visible = () => [...document.querySelectorAll('.nav a')]
+      .filter(a => a.offsetParent !== null);
+    // Settle BEFORE clicking, not only after. The page sets
+    // `scroll-behavior: smooth`, so a scroll still in flight swallows the next
+    // fragment navigation: measured at 320, a click issued while the harness's own
+    // reset was still animating left scrollY at exactly 0 with the target 1183px
+    // below the fold, which reads exactly like a dead anchor. The page is fine --
+    // every click scrolls when nothing else is animating, traced frame by frame
+    // (0 -> 6 -> 25 -> 57 -> 102 over ~750ms) -- so the harness waits for the
+    // stillness it needs instead of reporting a defect no reader can see.
+    const still = async (cap) => {
+      let same = 0, lastY = -1;
+      const t = performance.now();
+      while (performance.now() - t < cap) {
+        await new Promise(r => requestAnimationFrame(r));
+        const y = Math.round(window.scrollY);
+        same = y === lastY ? same + 1 : 0;
+        lastY = y;
+        if (same >= 3) return true;
+      }
+      return false;
+    };
+    await still(1500);
+    const burger = document.querySelector('.tool-buttons .menu-toggle');
+    const opened = burger && getComputedStyle(burger).display !== 'none'
+      && visible().length === 0;
+    if (opened) { burger.click(); await new Promise(r => setTimeout(r, 250)); }
+    const link = visible().find(a => a.getAttribute('href') === '#' + id);
+    if (!link) return { ok: false, why: 'no visible anchor for #' + id };
+    link.click();
+    // And settle AFTER clicking, so the whole travel is measured rather than a
+    // fixed prefix of it: a 300ms window is a 300ms sample of a ~750ms event,
+    // which is the mistake the previous version of this test made.
+    const t0 = performance.now();
+    await still(3000);
+    const header = document.querySelector('header.top').getBoundingClientRect();
+    const target = document.getElementById(id).getBoundingClientRect();
+    // Read BOTH nav copies, not only the visible ones. The anchors are rendered
+    // twice on purpose -- the inline row and the xs dialog -- and below xs the
+    // inline row is display:none while the dialog closes on the click, so a
+    // visible-only read would find nothing and report a clean sheet on a page
+    // that still sets the attribute.
+    const marked = [...document.querySelectorAll('.nav a')]
+      .filter(a => a.getAttribute('aria-current') !== null)
+      .map(a => a.getAttribute('href') + '=' + a.getAttribute('aria-current'));
+    const out = { ok: true, marked, readMs: Math.round(performance.now() - t0),
+                  opened: !!opened, headerTop: header.top,
+                  headerBottom: header.bottom, sectionTop: target.top,
+                  scrollY: Math.round(window.scrollY) };
+    if (opened) {
+      const close = document.querySelector('.nav-dialog-close');
+      if (close) close.click();
+    }
+    return out;
+  }
+"""
+
+
+def test_nav_lands_at_top(page, base):
+    """A nav click lands its target at the top of the viewport, and nothing marks
+    the current section.
+
+    Both halves are the partner's 2026-09-30 ruling, and both are here as
+    regressions rather than as descriptions. The header is no longer sticky, so a
+    nav target has nothing to hide under and must land AT the top: the
+    `scroll-padding-top: var(--header-offset)` and the measured write that used to
+    push it down are gone with it, and a surviving offset shows up here as a
+    `sectionTop` far from zero. And no anchor may carry `aria-current` at all --
+    the marker that attribute fed was three bugs deep (a 20-30% band observer that
+    overwrote the click at 214ms, then a click lock to defeat that, then a latch
+    that held #movies after scrolling back to the top) and the partner's call was
+    that it is not worth a mechanism of that shape.
+
+    The header assertion is the direct one for the sticky removal and is stated
+    as a relation, not a number: a sticky header's bottom would sit at or below
+    the target's top, because the target would be underneath it.
+    """
+    for width in (320, 360, 390, 575, 576, 767, 768, 1024, 1280):
+        page.set_viewport_size({"width": width, "height": 900})
+        page.goto(base + "index.html", wait_until="domcontentloaded")
+        page.wait_for_selector(".featured-card")
+        for target in ("series", "movies", "documentaries"):
+            d = page.evaluate(CLICK_NAV, target)
+            assert d["ok"], f"@{width}: {d.get('why')}"
+            assert d["marked"] == [], (
+                f"@{width}: after clicking #{target} these nav anchors still carry "
+                f"aria-current: {d['marked']}. The section marker was removed by the "
+                f"partner on 2026-09-30; nothing may set the attribute again"
+            )
+            assert abs(d["sectionTop"]) <= 2, (
+                f"@{width}: #{target} landed at top {d['sectionTop']:.1f} with "
+                f"scrollY {d['scrollY']} -- with no sticky header a nav target lands "
+                f"at the top of the viewport, so a non-zero top means something is "
+                f"still offsetting it (scroll-padding-top, or a .top that is "
+                f"sticky again)"
+            )
+            assert d["headerBottom"] < d["sectionTop"], (
+                f"@{width}: the header's bottom is {d['headerBottom']:.1f} and "
+                f"#{target}'s top is {d['sectionTop']:.1f} -- the header is still "
+                f"covering the target, so it is still sticky"
+            )
+            # Instant, not smooth: the page sets scroll-behavior: smooth, so a
+            # smooth reset would still be animating when the next click lands and
+            # that click would be swallowed (see CLICK_NAV's pre-click settle).
+            page.evaluate("() => window.scrollTo({top: 0, behavior: 'instant'})")
 
 HEADER_TOOLS_GAP = """
   () => document.querySelector('.catalog-tools').getBoundingClientRect().top
@@ -948,9 +1139,12 @@ def main():
         print(f"  WARNING: {note}")
     headed = "--headed" in sys.argv
     shots = None
+    only = None
     for i, arg in enumerate(sys.argv):
         if arg == "--shots":
             shots = sys.argv[i + 1]
+        if arg == "--only":
+            only = sys.argv[i + 1]
     httpd, base = start_server()
     try:
         with sync_playwright() as p:
@@ -959,6 +1153,9 @@ def main():
                 test_main_filter,
                 test_genre_filter,
                 test_featured_breakpoints,
+                test_featured_poster_shape,
+                test_header_controls,
+                test_nav_lands_at_top,
                 test_nav_tier,
                 test_nojs_cloak,
                 test_about_page,
@@ -970,6 +1167,17 @@ def main():
                 test_lucky,
                 test_poster_modal,
             ]
+            if only:
+                # Mutation testing needs one scenario per run: proving a guard is
+                # live means breaking the code and re-reading its verdict, and a
+                # full sweep per mutation turns that into an unusable ritual.
+                named = [f for f in scenarios if f.__name__ == only]
+                if not named:
+                    raise SystemExit(
+                        f"--only {only}: no such scenario; pick one of "
+                        + ", ".join(f.__name__ for f in scenarios)
+                    )
+                scenarios = named
             failed = 0
             if shots:
                 Path(shots).mkdir(parents=True, exist_ok=True)

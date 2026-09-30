@@ -323,13 +323,11 @@ const app = createApp({
         el.addEventListener("close", onDialogClose);
         cleanupMenu = () => el.removeEventListener("close", onDialogClose);
       }
-      watchCurrentSection();
     });
 
     onUnmounted(() => {
       if (cleanupColorScheme) cleanupColorScheme();
       if (cleanupMenu) cleanupMenu();
-      if (cleanupSection) cleanupSection();
       clearTimeout(urlSyncTimer);
     });
 
@@ -429,7 +427,6 @@ const app = createApp({
     }
 
     const menuOpen = ref(false);
-    const currentSection = ref("");
 
     function navDialog() {
       return document.getElementById("nav-dialog");
@@ -452,30 +449,36 @@ const app = createApp({
       menuOpen.value = false;
     }
 
-    let cleanupMenu = null;
-    let cleanupSection = null;
+    // There is no `goSection`, no `currentSection` and no section observer.
+    // Partner ruling, 2026-09-30: the nav no longer marks the current section,
+    // so `aria-current` is gone from the markup and nothing in this file writes
+    // it. The mechanism it used to need is recorded here because it was three
+    // real bugs deep and a re-implementer would walk into the same three:
+    //
+    //   1. an IntersectionObserver on a band at 20-30% of the viewport height
+    //      overwrote the click's marker mid-flight -- measured at 320 the marker
+    //      read #series for 197ms and flipped to #movies at 214ms, on a scroll
+    //      running 0 -> 5436 over ~700ms, during which #movies genuinely was the
+    //      section in the band. The observer was not wrong, it was early.
+    //   2. `sectionLock` held the click's marker until the scroll arrived, which
+    //      fixed (1) and introduced (3).
+    //   3. the observer latched: `first ? first.id : currentSection.value` kept
+    //      the last answer when the band was empty, so after scrolling back to
+    //      the top -- above all three sections, band empty -- the marker stayed
+    //      on #movies. Reproduced at 1280 by all three ways of returning to the
+    //      top (scrollTo, Home, wheel).
+    //
+    // A "current section" indicator needs to answer "which section am I in", and
+    // a band-and-observer scheme cannot answer it above the first section or
+    // during a smooth scroll without a lock that is itself a source of bugs. The
+    // partner's call is that the indicator is not worth any of that.
+    //
+    // The anchors are unchanged: `href="#series"` still scrolls, and
+    // `scroll-behavior: smooth` still animates it. What changed is that a target
+    // now lands at the top of the viewport, because the header is no longer
+    // sticky and there is no `scroll-padding-top` to push it down.
 
-    function watchCurrentSection() {
-      if (typeof IntersectionObserver === "undefined") return;
-      const targets = ["movies", "series", "documentaries"]
-        .map((id) => document.getElementById(id))
-        .filter(Boolean);
-      if (targets.length === 0) return;
-      const visible = new Set();
-      const observer = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) {
-            if (entry.isIntersecting) visible.add(entry.target.id);
-            else visible.delete(entry.target.id);
-          }
-          const first = targets.find((el) => visible.has(el.id));
-          currentSection.value = first ? first.id : currentSection.value;
-        },
-        { rootMargin: "-20% 0px -70% 0px", threshold: 0 }
-      );
-      for (const el of targets) observer.observe(el);
-      cleanupSection = () => observer.disconnect();
-    }
+    let cleanupMenu = null;
 
     return {
       lang,
@@ -505,7 +508,6 @@ const app = createApp({
       scrollToTop,
       hasRating,
       menuOpen,
-      currentSection,
       openMenu,
       closeMenu,
       onDialogClose,

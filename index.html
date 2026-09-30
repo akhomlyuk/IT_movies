@@ -99,9 +99,9 @@
     </header>
 
     <nav class="nav">
-      <a href="#movies" :aria-current="currentSection === 'movies' ? 'true' : null"><span class="pre-mount">Фильмы</span><span class="post-mount">{{ t.movies }}</span> <span class="count post-mount">{{ counts.movies }}</span></a>
-      <a href="#series" :aria-current="currentSection === 'series' ? 'true' : null"><span class="pre-mount">Сериалы</span><span class="post-mount">{{ t.series }}</span> <span class="count post-mount">{{ counts.series }}</span></a>
-      <a href="#documentaries" :aria-current="currentSection === 'documentaries' ? 'true' : null"><span class="pre-mount">Документальные</span><span class="post-mount">{{ t.documentaries }}</span> <span class="count post-mount">{{ counts.documentaries }}</span></a>
+      <a href="#movies"><span class="pre-mount">Фильмы</span><span class="post-mount">{{ t.movies }}</span> <span class="count post-mount">{{ counts.movies }}</span></a>
+      <a href="#series"><span class="pre-mount">Сериалы</span><span class="post-mount">{{ t.series }}</span> <span class="count post-mount">{{ counts.series }}</span></a>
+      <a href="#documentaries"><span class="pre-mount">Документальные</span><span class="post-mount">{{ t.documentaries }}</span> <span class="count post-mount">{{ counts.documentaries }}</span></a>
     </nav>
 
     <dialog class="nav-dialog" id="nav-dialog" :aria-label="t.menu">
@@ -110,9 +110,9 @@
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
         <nav class="nav nav--dialog">
-          <a href="#movies" :aria-current="currentSection === 'movies' ? 'true' : null" @click="closeMenu">{{ t.movies }} <span class="count">{{ counts.movies }}</span></a>
-          <a href="#series" :aria-current="currentSection === 'series' ? 'true' : null" @click="closeMenu">{{ t.series }} <span class="count">{{ counts.series }}</span></a>
-          <a href="#documentaries" :aria-current="currentSection === 'documentaries' ? 'true' : null" @click="closeMenu">{{ t.documentaries }} <span class="count">{{ counts.documentaries }}</span></a>
+          <a href="#movies" @click="closeMenu()">{{ t.movies }} <span class="count">{{ counts.movies }}</span></a>
+          <a href="#series" @click="closeMenu()">{{ t.series }} <span class="count">{{ counts.series }}</span></a>
+          <a href="#documentaries" @click="closeMenu()">{{ t.documentaries }} <span class="count">{{ counts.documentaries }}</span></a>
         </nav>
       </div>
     </dialog>

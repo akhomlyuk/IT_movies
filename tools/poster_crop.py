@@ -74,12 +74,14 @@ POSTER_ASPECT = 2 / 3
 DISCARDED_AREA_CEILING = 0.02
 PROXY_ASPECT_STANDARD = 0.02
 REPORT_TOLERANCE = 0.02
-RELATED_BOX_DESKTOP = (120, 180)
-# There is no separate mobile box. These two constants said 96x144 and 84x126
-# while the rendered card measured 104x156 at every width, because the xs
-# override that produced the small box was deleted on 2026-09-29. The related
-# card renders ONE box, now 120x180 after the rail change moved the poster above
-# the text.
+RELATED_BOX_DESKTOP = (170, 255)
+# There is no separate mobile box, and there is no single box at all: the card
+# is a flex scroller below 1024 and a six-column grid above it, so the rendered
+# poster measures 125.5x188.25 at lg, 134x201 at xs and 170.66x255.98 at xl.
+# Every one of those is exactly 2:3, which is the only thing this module
+# depends on -- DISCARDED_AREA is a function of the box's ASPECT RATIO alone, so
+# the absolute numbers here change no reported figure. They are the widest
+# tier's, because that is the one a reader renders sharpest.
 RELATED_BOX_MOBILE = RELATED_BOX_DESKTOP
 HERO_BOX_WIDTH_MOBILE = 240
 HERO_BOX_WIDTH_DESKTOP = 320

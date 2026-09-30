@@ -1251,8 +1251,281 @@ def check_media_conditions():
         )
 
 
+# 6h. Token lifecycle and control boundaries. Two contracts from AGENTS.md had
+# no gate at all, and both are the kind a stylesheet can violate silently:
+#   - "do not add a token you do not use" -- an unreferenced --custom-property is
+#     a palette entry that costs a line in every theme block and reads as an
+#     intent nobody carried out. The Linear+Runway redesign shipped five.
+#   - a control's visual boundary must clear WCAG 2.2 SC 1.4.11's 3:1. 6d caps
+#     bare LENGTHS in border-radius and box-spacing; it has nothing to say about
+#     which token a border is painted with, so deleting --line-control and
+#     routing every control border to a hairline passed green at 1.50:1.
+CONTROL_BOUNDARY_SELECTORS = (
+    ".reset-filters",
+    ".lang,\n.theme-toggle",
+    ".search",
+    ".genre-filter",
+    ".tool-buttons .menu-toggle",
+    ".nav-dialog-close",
+    ".fav-filter",
+    ".lucky",
+    ".scroll-top",
+    ".mobile-sort",
+    ".ratings a",
+    ".share-btn",
+)
+CONTROL_BOUNDARY_TOKEN = "--line-control"
+CSS_TOKEN_DECL = re.compile(r"^[ \t]+(--[a-z0-9-]+)\s*:", re.M)
+CSS_TOKEN_USE = re.compile(r"var\(\s*(--[a-z0-9-]+)")
+
+
+def check_token_lifecycle():
+    src = blank_css_comments((ROOT / "css/style.css").read_text(encoding="utf-8"))
+    declared, seen = [], set()
+    for name in CSS_TOKEN_DECL.findall(src):
+        if name not in seen:
+            seen.add(name)
+            declared.append(name)
+    used = set(CSS_TOKEN_USE.findall(src))
+    orphans = [name for name in declared if name not in used]
+    if orphans:
+        errors.append(
+            f"Token lifecycle: {len(orphans)} of {len(declared)} declared custom properties "
+            f"are never referenced: {orphans}. AGENTS.md's CSS contract says do not add a "
+            f"token you do not use. Either reference them or delete them; a token kept "
+            f"alive by nothing is a palette entry that reads as an intent nobody finished"
+        )
+    for sel in CONTROL_BOUNDARY_SELECTORS:
+        pattern = re.compile(re.escape(sel) + r"\s*\{([^}]*)\}", re.M)
+        found = False
+        for m in pattern.finditer(src):
+            found = True
+            for token in re.findall(r"border: 1px solid var\((--[a-z0-9-]+)\);", m.group(1)):
+                if token != CONTROL_BOUNDARY_TOKEN:
+                    errors.append(
+                        f"Control boundary: {sel.splitlines()[0]} paints its border with "
+                        f"var({token}), not var({CONTROL_BOUNDARY_TOKEN}). WCAG 2.2 SC 1.4.11 "
+                        f"wants 3:1 for a control's visual boundary and --line/--line-strong "
+                        f"are hairlines (1.21:1 and 1.50:1 dark). The fix is the token, not "
+                        f"the selector"
+                    )
+        if not found:
+            errors.append(
+                f"Control boundary: selector {sel.splitlines()[0]!r} is not in "
+                f"css/style.css, so this gate checked one fewer control than it claims"
+            )
+    print(
+        f"Token lifecycle: {len(declared)} declared, {len(declared) - len(orphans)} referenced, "
+        f"{len(orphans)} orphan(s){': ' + str(orphans) if orphans else ''}"
+    )
+    print(
+        f"Control boundary: {len(CONTROL_BOUNDARY_SELECTORS)} control selectors, every border "
+        f"painted with var({CONTROL_BOUNDARY_TOKEN})"
+    )
+
+
+check_token_lifecycle()
+
+
 check_media_conditions()
 
+
+# 6i. The sticky header and the section marker are gone (partner ruling,
+# 2026-09-30), and this gate is INVERTED with them: it asserts the mechanism
+# STAYS gone. It used to assert the opposite -- that something writes
+# `--header-offset` and that `scroll-padding-top` exists -- and that inversion is
+# the point worth recording. The old gate existed because the header's height is
+# content-driven and took six distinct values between 320 and 1280, so no per-tier
+# token could replace the measured write. With no sticky header there is nothing
+# for an offset to clear, and a surviving one pushes every nav target down the
+# viewport for no reason. A check that fails when the old mechanism is missing and
+# passes when it is present is a check that has to be deleted in order to make the
+# ruling -- the wrong order of events, and the reason this block asserts absence.
+#
+# Placed after check_media_conditions() rather than where the old check lived,
+# because it needs blank_css_comments() (defined above) to tell a live
+# declaration from the comment that explains why it is gone. A gate that greps raw
+# text trips on its own documentation, which is the surest way to get a
+# documentation comment deleted a year later.
+def _rule_bodies(src):
+    """(selector_part, declarations, at_rule_path) for every style rule.
+
+    Not a general CSS parser: it walks brace depth, which is all this needs. It
+    carries two scars, both of which made a gate green for the wrong reason, so
+    neither is optional:
+
+    DESCEND into an at-rule body rather than stepping over it. The first version
+    stepped over, and because the sheet opens with
+    `@layer reset, tokens, base, components, utilities;` followed by five
+    `@layer X {` blocks, every real rule in the file lives inside one of them --
+    stepping over found 0 rules and 6i.1 proved nothing.
+
+    REPORT the enclosing at-rules, because "found a `.top` rule" and "found the
+    `.top` rule" are different claims. The second version returned pairs, and the
+    zero-match guard below counted the two `.top` rules that live inside
+    `@media` blocks, so DELETING the base `.top` rule outright left the guard
+    satisfied and 6i.1 silent. That is not hypothetical: it is what happened while
+    a comment was being written with its opening `/*` missing, which turned a
+    block of prose into a qualified rule and swallowed `.top`'s declarations. A
+    guard that can be satisfied by a conditional copy cannot be trusted to notice
+    the unconditional one is gone, so the path is returned and the guard filters
+    on it. `@layer` is deliberately NOT treated as conditional: it wraps every
+    rule in this sheet, so treating it as one would make the filter reject
+    everything."""
+    out, i, n = [], 0, len(src)
+    stack = []  # (at-rule prelude, index just past its closing brace)
+    while i < n:
+        brace = src.find("{", i)
+        if brace == -1:
+            return out
+        head = src[i:brace].strip()
+        if head.startswith("@"):
+            stack.append((head, _css_brace_end(src, brace) + 1))
+            i = brace + 1
+            continue
+        end = _css_brace_end(src, brace)
+        path = tuple(p for p, _ in stack)
+        for part in head.split(","):
+            out.append((part.strip(), src[brace + 1:end], path))
+        i = end + 1
+        while stack and i >= stack[-1][1]:
+            stack.pop()
+    return out
+
+
+# At-rules that make a rule conditional. A `.top` copy inside one of these does
+# not stand in for the base rule: it applies at some widths only, and the base
+# rule is what governs every other width.
+_CONDITIONAL_AT = ("@media", "@container", "@supports")
+
+
+_6I_SHEET = blank_css_comments((ROOT / "css" / "style.css").read_text(encoding="utf-8"))
+
+# 6i.1 The header must not be sticky. Scoped to the `.top` CLASS, matched as a
+# whole selector part so `.scroll-top` (a fixed button, legitimately kept) is not
+# caught by a substring. A gate that banned `position: sticky` as a property would
+# have to be edited before any legitimate sticky element could exist, and a gate
+# that must be edited before a legitimate addition gets edited carelessly.
+#
+# The zero-match guard below demands an UNCONDITIONAL `.top` rule, which is why
+# _rule_bodies returns the at-rule path. Satisfying it with one of the two `.top`
+# rules inside `@media` blocks would leave this green after the base rule was
+# deleted, and that is not a theoretical failure -- see _rule_bodies' docstring.
+_ALL_TOP = [(sel, d) for sel, d, _ in _rule_bodies(_6I_SHEET)
+            if re.fullmatch(r"\.top", sel)]
+_TOP_RULES = [d for sel, d in _ALL_TOP]
+_TOP_BASE = [(sel, d) for sel, d, path in _rule_bodies(_6I_SHEET)
+             if re.fullmatch(r"\.top", sel)
+             and not any(p.startswith(_CONDITIONAL_AT) for p in path)]
+if not _TOP_BASE:
+    errors.append(
+        "css/style.css: no UNCONDITIONAL `.top` rule was found"
+        + (f" ({len(_ALL_TOP)} conditional one(s) matched: "
+           f"{[sel for sel, _ in _ALL_TOP]})" if _ALL_TOP else " at all")
+        + ", so 6i.1 proved nothing. A `.top` rule inside @media applies at some "
+        "widths only and cannot stand in for the base rule, which governs every "
+        "other width -- the two in the xs/767 blocks are exactly that. The header "
+        "is the subject of the partner's 2026-09-30 removal, and a gate that "
+        "matches nothing is green for the wrong reason: find out whether the "
+        "selector was renamed, or whether a comment lost its opening /* and "
+        "turned its own prose into a qualified rule, rather than concluding the "
+        "check is satisfied"
+    )
+for _body in _TOP_RULES:
+    if re.search(r"position\s*:\s*sticky", _body):
+        errors.append(
+            "css/style.css: .top is sticky again. Partner ruling 2026-09-30: the "
+            "header does not stick. Sticky is also the only reason "
+            "`scroll-padding-top: var(--header-offset)` existed, so restoring it "
+            "means restoring the whole measured-offset mechanism this ruling "
+            "removed, and a nav target starts landing under the header again "
+            "(measured 58-185px short at 320-768 on the tree that had it)"
+        )
+
+# 6i.2 No scroll offset at all: the property, and the writer that fed it.
+if re.search(r"scroll-padding-top", _6I_SHEET):
+    errors.append(
+        "css/style.css: scroll-padding-top is back. It existed only to keep a nav "
+        "target from landing under the sticky header; with the header no longer "
+        "sticky it offsets every section for nothing. A sticky header again is a "
+        "change to make with the partner, and it needs the measured "
+        "--header-offset write back with it"
+    )
+for _js in ("js/app.js", "js/app.min.js"):
+    if "header-offset" in (ROOT / _js).read_text(encoding="utf-8"):
+        errors.append(
+            f"{_js}: still mentions --header-offset. The token was deleted with the "
+            f"sticky header and the property it fed is gone, so a surviving write is "
+            f"a dead mechanism kept alive by nothing"
+        )
+
+# 6i.3 The section marker. Scoped to the MAIN page's nav, and deliberately not a
+# repo-wide ban: `js/film.js` binds aria-current on the related-rail pagination
+# dots, where it is correct -- it names which page of the rail you are on, a
+# position the reader chose by clicking rather than a scroll-derived guess. What
+# is gone is the scroll-derived marker on the catalog nav, which took a 20-30%
+# band observer, then a click lock, then a third fix for the band latching while
+# empty, and still misread after returning to the top. Matched on `aria-current`
+# followed by `=` and a quote, the shape both the Vue binding
+# (`:aria-current="expr"`) and a hand-written attribute take, so the prose in
+# app.js that names the mechanism does not trip this.
+for _name in ("index.html", "js/app.js", "js/app.min.js"):
+    _m = re.search(
+        r"""aria-current\s*=\s*["']""", (ROOT / _name).read_text(encoding="utf-8")
+    )
+    if _m:
+        errors.append(
+            f"{_name}: aria-current is set again ({_m.group(0)}). Partner ruling "
+            f"2026-09-30: the catalog nav does not mark the current section, so the "
+            f"three anchors and every mechanism behind them (a 20-30% band "
+            f"observer, a click lock, a latch) are gone. If the marker is wanted "
+            f"back that is a new feature, and the band scheme is the wrong shape for "
+            f"it: a scroll indicator cannot say 'above all sections', which is "
+            f"exactly the state the partner hit"
+        )
+
+# 6i.4 The header paints no panel. Same ruling class as 6i.1 and the same
+# reason it is worth a gate: `background: var(--surface-1)` on `.top` is what
+# made the header read as a raised block, and it was the only paint between
+# `body` and the header content.
+#
+# It protects the INVARIANT rather than the syntax: `background: none` and
+# `background-color: transparent` also paint nothing, so they pass. What fails
+# is any value that puts ink behind the header. Scoped to the `.top` class and
+# to the same zero-match guard as 6i.1 -- a renamed selector must fail loudly
+# rather than leave this check vacuously green. Unlike 6i.1 this scans EVERY
+# `.top` rule including the conditional copies, because a panel that appears at
+# one width is still a panel at that width.
+_NO_PAINT = {"none", "transparent", "initial", "unset", "revert", "revert-layer"}
+for _sel, _body in _ALL_TOP:
+    for _decl in _body.split(";"):
+        if ":" not in _decl:
+            continue
+        _prop, _val = (p.strip() for p in _decl.split(":", 1))
+        _prop_l, _val_l = _prop.lower(), _val.lower()
+        if _prop_l in ("background", "background-color", "background-image"):
+            if _prop_l == "background-image":
+                _paints = _val_l != "none"
+            else:
+                # A shorthand may carry a colour in any position, so check the
+                # whole value rather than assuming it leads with the colour.
+                _paints = not all(
+                    tok.strip() in _NO_PAINT or tok.strip().startswith("url(")
+                    for tok in _val_l.replace("/", " / ").split()
+                ) and _val_l not in _NO_PAINT
+            if _paints:
+                errors.append(
+                    f"css/style.css: .top paints a background again "
+                    f"(`{_prop}: {_val}`). Partner ruling 2026-09-30: the header has "
+                    f"no panel. Note this is not a flat-colour swap -- `body` carries "
+                    f"a 1px dot grid at 20px and .top was the only paint masking it "
+                    f"at the top of the page, so any value here also decides whether "
+                    f"the grid shows through the header. Measured cost of removing it: "
+                    f"the 8 icons painted on the header go 3.95 -> 4.02 dark and "
+                    f"4.70 -> 4.60 light, the tightest header text 5.77 -> 5.33 light "
+                    f"-- nothing crosses a floor. `background: none` also passes; what "
+                    f"is banned is putting ink behind the header"
+                )
 
 # 6g. Related-card markup parity. The .rc card has ONE hand-maintained source,
 # gen_pages.RC_CARD, and two renderings of it: the no-JS card that
@@ -1697,12 +1970,71 @@ if not (ROOT / ".nojekyll").exists():
     errors.append(".nojekyll is missing — add it to keep GitHub Pages from running Jekyll")
 
 # 7. Bracket balance in JS outside strings (coarse syntax check)
+#
+# A coarse check, and it has to know three things a naive brace counter does
+# not, or it reports a file `node --check` accepts:
+#   * strings and template literals, which is what it already handled;
+#   * comments, because a backticked identifier in a `//` line is an ordinary
+#     way to write one and otherwise opens a string that runs to the next
+#     backtick and swallows real code;
+#   * regex literals, because `/^\//` ends in an escaped slash immediately
+#     followed by its own closer, so a `//` test alone reads `^\//` as a
+#     comment and drops the rest of the line, and because a `/` inside a
+#     character class does not close the literal, so `/[a-z/]+/g` closes early.
+#     Telling a regex from a division is the usual heuristic: a `/` opens a
+#     regex where a value cannot already have ended.
 def balance(src):
     stack = []
     i = 0
+    prev = ""  # last significant char, outside comments and strings
+    word = ""  # last significant identifier
     pairs = {")": "(", "]": "[", "}": "{"}
+    value_end = set(")]}")  # chars after which a `/` is division, not a regex
+    regex_after = set("(,=:[!&|?{};+-*%~^<>")
+    regex_words = {
+        "return", "typeof", "case", "in", "of", "new", "delete", "void",
+        "instanceof", "do", "else", "yield", "await", "throw",
+    }
     while i < len(src):
         c = src[i]
+        if c.isspace():
+            i += 1
+            continue
+        if c == "/" and src.startswith("//", i):
+            j = src.find("\n", i)
+            i = len(src) if j == -1 else j + 1
+            continue
+        if c == "/" and src.startswith("/*", i):
+            j = src.find("*/", i + 2)
+            i = len(src) if j == -1 else j + 2
+            continue
+        if c == "/" and prev not in value_end and (
+            prev == "" or prev in regex_after or word in regex_words
+        ):
+            j = i + 1
+            in_class = False
+            while j < len(src):
+                ch = src[j]
+                if ch == "\\":
+                    j += 2
+                    continue
+                if in_class:
+                    # A `]` straight after `[` is a literal, not the close.
+                    if ch == "]" and src[j - 1] != "[":
+                        in_class = False
+                    j += 1
+                    continue
+                if ch == "[":
+                    in_class = True
+                    j += 1
+                    continue
+                if ch == "/":
+                    break
+                j += 1
+            i = j + 1
+            prev = "/"  # a regex is a value, so the next `/` is division
+            word = ""
+            continue
         if c in "\"'`":
             q = c
             i += 1
@@ -1713,12 +2045,25 @@ def balance(src):
                 if src[i] == q:
                     break
                 i += 1
+            prev = "x"  # a string is a value
+            word = ""
+        elif c.isalnum() or c in "_$":
+            j = i
+            while j < len(src) and (src[j].isalnum() or src[j] in "_$"):
+                j += 1
+            word = src[i:j]
+            prev = src[j - 1]
+            i = j
+            continue
         elif c in "([{":
             stack.append(c)
         elif c in ")]}":
             if not stack or stack[-1] != pairs[c]:
                 return f"Unbalanced near position {i}: {c!r}"
             stack.pop()
+        if not (c.isalnum() or c in "_$"):
+            word = ""
+        prev = c
         i += 1
     return "OK" if not stack else f"Unclosed brackets: {stack}"
 
