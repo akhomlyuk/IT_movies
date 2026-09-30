@@ -3,28 +3,33 @@
 @layer tokens {
 
 :root {
-  color-scheme: light dark;
+  color-scheme: dark light;
   accent-color: var(--accent);
-  --bg: #f4f2ed;
-  --paper: #fcfbf8;
-  --ink: #1a1815;
-  --muted: #6b6459;
-  --line: #e2ded6;
-  --line-strong: #c9c3b8;
-  --line-control: #8c857a;
-  --hover: rgba(23, 25, 35, 0.06);
-  --dot: rgba(23, 25, 35, 0.07);
-  --kp: #a54b12;
-  --imdb: #856414;
-  --focus: #171923;
-  --accent: #157a46;
-  --accent-ink: #ffffff;
-  --signal: #d9363e;
-  --paper-strong: #efece4;
-  --th-bg: rgba(26, 24, 21, 0.035);
-  --glass: rgba(252, 251, 248, 0.72);
-  --glass-card: rgba(252, 251, 248, 0.92);
-  --shadow: 0 1px 2px rgba(26, 24, 21, 0.10);
+  --bg: #0a0a0b;
+  --surface-1: #131315;
+  --surface-2: #1a1a1d;
+  --surface-3: #222225;
+  --ink: #f7f8f8;
+  --ink-muted: #8a8f98;
+  --ink-subtle: #62666d;
+  --accent: #5e6ad2;
+  --accent-hover: #828fff;
+  --accent-focus: #5e69d1;
+  --rating: #ff6b6b;
+  --line: #23252a;
+  --line-strong: #34343a;
+  --focus: #f2eee8;
+  --kp: #ff6b6b;
+  --imdb: #ff6b6b;
+  --signal: #ff6b6f;
+  --paper: #131315;
+  --paper-strong: #1a1a1d;
+  --th-bg: rgba(247, 248, 248, 0.04);
+  --glass: rgba(19, 19, 21, 0.74);
+  --glass-card: rgba(19, 19, 21, 0.92);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --hover: rgba(247, 248, 248, 0.07);
+  --dot: rgba(247, 248, 248, 0.05);
   --fs-xs: 0.8125rem;
   --fs-sm: 0.875rem;
   --fs-md: 1rem;
@@ -73,26 +78,31 @@
 @media (prefers-color-scheme: dark) {
   :root:not(.light):not(.dark) {
     color-scheme: dark;
-    --bg: #14120f;
-    --paper: #1c1a17;
-    --ink: #ede9e3;
-    --muted: #a6a099;
-    --line: #2e2b28;
-    --line-strong: #45413c;
-    --line-control: #7a736a;
-    --hover: rgba(237, 233, 227, 0.07);
-    --dot: rgba(237, 233, 227, 0.05);
-    --kp: #f29a5b;
-    --imdb: #e6c95c;
+    --bg: #0a0a0b;
+    --surface-1: #131315;
+    --surface-2: #1a1a1d;
+    --surface-3: #222225;
+    --ink: #f7f8f8;
+    --ink-muted: #8a8f98;
+    --ink-subtle: #62666d;
+    --accent: #5e6ad2;
+    --accent-hover: #828fff;
+    --accent-focus: #5e69d1;
+    --rating: #ff6b6b;
+    --line: #23252a;
+    --line-strong: #34343a;
     --focus: #f2eee8;
-    --accent: #57bd84;
-    --accent-ink: #0b130e;
+    --kp: #ff6b6b;
+    --imdb: #ff6b6b;
     --signal: #ff6b6f;
-    --paper-strong: #242220;
-    --th-bg: rgba(237, 233, 227, 0.04);
-    --glass: rgba(28, 26, 23, 0.74);
-    --glass-card: rgba(28, 26, 23, 0.92);
+    --paper: #131315;
+    --paper-strong: #1a1a1d;
+    --th-bg: rgba(247, 248, 248, 0.04);
+    --glass: rgba(19, 19, 21, 0.74);
+    --glass-card: rgba(19, 19, 21, 0.92);
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+    --hover: rgba(247, 248, 248, 0.07);
+    --dot: rgba(247, 248, 248, 0.05);
   }
 }
 
@@ -152,30 +162,60 @@
 
 :root.dark {
   color-scheme: dark;
-  --bg: #14120f;
-  --paper: #1c1a17;
-  --ink: #ede9e3;
-  --muted: #a6a099;
-  --line: #2e2b28;
-  --line-strong: #45413c;
-  --line-control: #7a736a;
-  --hover: rgba(237, 233, 227, 0.07);
-  --dot: rgba(237, 233, 227, 0.05);
-  --kp: #f29a5b;
-  --imdb: #e6c95c;
+  --bg: #0a0a0b;
+  --surface-1: #131315;
+  --surface-2: #1a1a1d;
+  --surface-3: #222225;
+  --ink: #f7f8f8;
+  --ink-muted: #8a8f98;
+  --ink-subtle: #62666d;
+  --accent: #5e6ad2;
+  --accent-hover: #828fff;
+  --accent-focus: #5e69d1;
+  --rating: #ff6b6b;
+  --line: #23252a;
+  --line-strong: #34343a;
   --focus: #f2eee8;
-  --accent: #57bd84;
-  --accent-ink: #0b130e;
+  --kp: #ff6b6b;
+  --imdb: #ff6b6b;
   --signal: #ff6b6f;
-  --paper-strong: #242220;
-  --th-bg: rgba(237, 233, 227, 0.04);
-  --glass: rgba(28, 26, 23, 0.74);
-  --glass-card: rgba(28, 26, 23, 0.92);
+  --paper: #131315;
+  --paper-strong: #1a1a1d;
+  --th-bg: rgba(247, 248, 248, 0.04);
+  --glass: rgba(19, 19, 21, 0.74);
+  --glass-card: rgba(19, 19, 21, 0.92);
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --hover: rgba(247, 248, 248, 0.07);
+  --dot: rgba(247, 248, 248, 0.05);
 }
 
 :root.light {
   color-scheme: light;
+  --bg: #f5f6f6;
+  --surface-1: #ffffff;
+  --surface-2: #f6f7f7;
+  --surface-3: #f0f1f1;
+  --ink: #000000;
+  --ink-muted: #62666d;
+  --ink-subtle: #8a8f98;
+  --accent: #5e6ad2;
+  --accent-hover: #4a55b8;
+  --accent-focus: #5e69d1;
+  --rating: #d9363e;
+  --line: #e5e6e8;
+  --line-strong: #c9cbce;
+  --focus: #171923;
+  --kp: #d9363e;
+  --imdb: #d9363e;
+  --signal: #d9363e;
+  --paper: #ffffff;
+  --paper-strong: #f6f7f7;
+  --th-bg: rgba(0, 0, 0, 0.035);
+  --glass: rgba(255, 255, 255, 0.72);
+  --glass-card: rgba(255, 255, 255, 0.92);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.10);
+  --hover: rgba(0, 0, 0, 0.06);
+  --dot: rgba(0, 0, 0, 0.07);
 }
 }
 
@@ -302,7 +342,7 @@ html:not(.js) #app[v-cloak] nav.nav:not(.nav--dialog) {
 
 .brand p {
   margin: var(--space-2) 0 0;
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: var(--fs-md);
 }
 
@@ -352,7 +392,7 @@ html:not(.js) #app[v-cloak] nav.nav:not(.nav--dialog) {
    against a #14120f page it read as a foreign colour rather than as an icon.
    Worst contrast across both themes and every surface icons sit on: 4.95:1. */
 svg:not(.heart) {
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 
 .tool-buttons {
@@ -363,7 +403,7 @@ svg:not(.heart) {
 
 .result-count {
   flex: none;
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: var(--fs-xs);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -372,7 +412,7 @@ svg:not(.heart) {
 .reset-filters {
   min-height: 40px;
   padding: 0 var(--space-3);
-  border: 1px solid var(--line-control);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-l);
   background: transparent;
   color: var(--ink);
@@ -401,9 +441,9 @@ svg:not(.heart) {
   gap: var(--space-0-35);
   height: 40px;
   padding: 0 var(--space-3);
-  border: 1px solid var(--line-control);
+  border: 1px solid var(--line-strong);
   background: var(--glass);
-  color: var(--muted);
+  color: var(--ink-muted);
   border-radius: var(--radius-s);
   font: inherit;
   font-size: var(--fs-xs);
@@ -429,7 +469,7 @@ svg:not(.heart) {
 .fav-filter:active,
 .lucky:active {
   background: var(--accent);
-  color: var(--accent-ink);
+  color: var(--ink);
   border-color: var(--accent);
 }
 
@@ -445,7 +485,7 @@ svg:not(.heart) {
   min-width: 160px;
   max-width: 100%;
   height: 40px;
-  border: 1px solid var(--line-control);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-s);
   background: var(--glass);
   color: var(--ink);
@@ -459,7 +499,7 @@ svg:not(.heart) {
   max-width: 100%;
   height: 40px;
   padding: 0 var(--space-6) 0 var(--space-3);
-  border: 1px solid var(--line-control);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-s);
   background: var(--glass);
   color: var(--ink);
@@ -496,10 +536,10 @@ svg:not(.heart) {
   width: 40px;
   height: 40px;
   padding: 0;
-  border: 1px solid var(--line-control);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-s);
   background: var(--glass);
-  color: var(--muted);
+  color: var(--ink-muted);
   font: inherit;
   cursor: pointer;
   transition:
@@ -556,10 +596,10 @@ svg:not(.heart) {
   width: 40px;
   height: 40px;
   padding: 0;
-  border: 1px solid var(--line-control);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-s);
   background: var(--glass);
-  color: var(--muted);
+  color: var(--ink-muted);
   font: inherit;
   cursor: pointer;
 }
@@ -584,10 +624,10 @@ svg:not(.heart) {
   width: 40px;
   height: 40px;
   padding: 0;
-  border: 1px solid var(--line-control);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-s);
   background: var(--glass);
-  color: var(--muted);
+  color: var(--ink-muted);
   font: inherit;
   cursor: pointer;
   transition:
@@ -627,7 +667,7 @@ svg:not(.heart) {
   width: 40px;
   height: 40px;
   padding: 0;
-  border: 1px solid var(--line-control);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-s);
   background: var(--glass);
   font-size: var(--fs-xl);
@@ -670,7 +710,7 @@ svg:not(.heart) {
   height: 40px;
   padding: 0 var(--space-3);
   text-decoration: none;
-  border: 1px solid var(--line-control);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-s);
   background: var(--glass);
   transition: border-color var(--transition-fast) ease, background-color var(--transition-fast) ease;
@@ -688,7 +728,7 @@ svg:not(.heart) {
 }
 
 .nav span.count {
-  color: var(--muted);
+  color: var(--ink-muted);
   font-variant-numeric: tabular-nums;
 }
 
@@ -724,7 +764,7 @@ svg:not(.heart) {
 .section-heading p {
   max-width: 42ch;
   margin: 0;
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: var(--fs-sm);
   text-align: end;
 }
@@ -796,7 +836,7 @@ svg:not(.heart) {
   padding: 0.1em 0.5em;
   background: var(--accent);
   box-shadow: var(--shadow);
-  color: var(--accent-ink);
+  color: var(--ink);
   font-size: var(--fs-xs);
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -824,7 +864,7 @@ svg:not(.heart) {
   display: block;
   max-width: 100%;
   overflow: hidden;
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: var(--fs-xs);
   line-height: 1.35;
   text-overflow: ellipsis;
@@ -846,7 +886,7 @@ svg:not(.heart) {
   overflow-wrap: normal;
   text-overflow: ellipsis;
   hyphens: auto;
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: var(--fs-xs);
   line-height: 1.35;
   -webkit-box-orient: vertical;
@@ -928,7 +968,7 @@ td {
 th {
   background: var(--th-bg);
   font-weight: 500;
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: var(--fs-xs);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -988,7 +1028,7 @@ tbody tr:hover {
 }
 
 tbody tr:hover td:first-child {
-  box-shadow: inset 3px 0 0 var(--line-control);
+  box-shadow: inset 3px 0 0 var(--line-strong);
 }
 
 .title-cell {
@@ -1046,7 +1086,7 @@ tbody tr:hover td:first-child {
   border: 1px solid transparent;
   border-radius: var(--radius-l);
   background: transparent;
-  color: var(--muted);
+  color: var(--ink-muted);
   line-height: 0;
   cursor: pointer;
   vertical-align: text-bottom;
@@ -1191,7 +1231,7 @@ tbody tr:hover td:first-child {
   display: block;
   max-width: 100%;
   overflow: hidden;
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: var(--fs-xs);
   line-height: 1.3;
   text-overflow: ellipsis;
@@ -1199,7 +1239,7 @@ tbody tr:hover td:first-child {
 }
 
 .genre {
-  color: var(--muted);
+  color: var(--ink-muted);
   max-width: 220px;
 }
 
@@ -1244,7 +1284,7 @@ a.imdb .star,
 }
 
 .num .no-data {
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: 0.9em;
   line-height: 1.2;
   white-space: normal;
@@ -1283,7 +1323,7 @@ a.imdb .star,
 
 
 .empty {
-  color: var(--muted);
+  color: var(--ink-muted);
   padding: var(--space-4) var(--space-3);
   text-align: center;
 }
@@ -1297,7 +1337,7 @@ a.imdb .star,
   border: 1px solid var(--line);
   border-radius: var(--radius-l);
   background: var(--paper);
-  color: var(--muted);
+  color: var(--ink-muted);
   text-align: center;
 }
 
@@ -1310,7 +1350,7 @@ a.imdb .star,
   margin: 15vh auto 0;
   padding: var(--space-6) var(--space-1-25);
   text-align: center;
-  color: var(--muted);
+  color: var(--ink-muted);
   line-height: 1.6;
 }
 
@@ -1333,7 +1373,7 @@ a.imdb .star,
 }
 
 .catalog-total {
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: var(--fs-sm);
   font-variant-numeric: tabular-nums;
 }
@@ -1343,7 +1383,7 @@ footer {
   padding-top: var(--space-4);
   border-top: 1px solid var(--line);
   text-align: center;
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: var(--fs-sm);
 }
 
@@ -1372,7 +1412,7 @@ footer .footer-line + .footer-line {
 
 footer .footer-privacy {
   font-size: var(--fs-xs);
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 
 .scroll-top {
@@ -1381,7 +1421,7 @@ footer .footer-privacy {
   right: var(--space-6);
   width: 40px;
   height: 40px;
-  border: 1px solid var(--line-control);
+  border: 1px solid var(--line-strong);
   background: var(--glass);
   color: var(--ink);
   font-size: var(--fs-lg);
@@ -1437,7 +1477,7 @@ html.no-scroll-state.scrolled .scroll-top {
   z-index: var(--z-skip);
   padding: var(--space-2) var(--space-3);
   background: var(--accent);
-  color: var(--accent-ink);
+  color: var(--ink);
   border-radius: var(--radius-s);
   font-size: var(--fs-xs);
   font-weight: 500;
@@ -1672,7 +1712,7 @@ html.no-scroll-state.scrolled .scroll-top {
     min-height: var(--tap);
     margin: -0.25rem 0 var(--space-2) auto;
     padding: 0 var(--space-3);
-    border: 1px solid var(--line-control);
+    border: 1px solid var(--line-strong);
     border-radius: var(--radius-l);
     background: transparent;
     color: var(--ink);
@@ -1809,7 +1849,7 @@ html.no-scroll-state.scrolled .scroll-top {
   max-width: min(60ch, 100%);
   margin: 0 0 var(--space-3);
   overflow: hidden;
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: var(--fs-sm);
   line-height: 1.3;
   text-overflow: ellipsis;
@@ -1823,7 +1863,7 @@ html.no-scroll-state.scrolled .scroll-top {
   align-items: center;
   gap: var(--space-1) var(--space-3);
   margin: 0 0 var(--space-4);
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: var(--fs-xs);
   line-height: 1.4;
 }
@@ -1849,7 +1889,7 @@ html.no-scroll-state.scrolled .scroll-top {
   align-items: center;
   min-height: 24px;
   margin-bottom: var(--space-2);
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: var(--fs-sm);
   cursor: pointer;
   text-decoration: underline;
@@ -1883,7 +1923,7 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .film-desc-alt {
   margin-top: 0;
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: var(--fs-md);
   padding-left: var(--space-3);
   border-left: 1px solid var(--accent);
@@ -1901,7 +1941,7 @@ html.no-scroll-state.scrolled .scroll-top {
   align-items: center;
   height: 40px;
   padding: 0 var(--space-3);
-  border: 1px solid var(--line-control);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-s);
   text-decoration: none;
   background: var(--glass);
@@ -1930,7 +1970,7 @@ html.no-scroll-state.scrolled .scroll-top {
   align-items: center;
   gap: var(--space-0-35);
   margin: var(--space-3) 0 var(--space-4);
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: var(--fs-sm);
 }
 
@@ -1954,7 +1994,7 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 .bc-type {
-  color: var(--muted);
+  color: var(--ink-muted);
 }
 
 .back-catalog {
@@ -1965,7 +2005,7 @@ html.no-scroll-state.scrolled .scroll-top {
 .back-catalog a {
   display: inline-block;
   padding: var(--space-2);
-  color: var(--muted);
+  color: var(--ink-muted);
   text-decoration: underline;
   text-decoration-color: var(--line-strong);
   font-size: var(--fs-md);
@@ -2156,7 +2196,7 @@ html.no-scroll-state.scrolled .scroll-top {
   overflow-wrap: normal;
   text-overflow: ellipsis;
   hyphens: auto;
-  color: var(--muted);
+  color: var(--ink-muted);
   font-size: var(--fs-xs);
   line-height: 1.5;
   -webkit-box-orient: vertical;
@@ -2199,10 +2239,10 @@ html.no-scroll-state.scrolled .scroll-top {
   width: 40px;
   height: 40px;
   padding: 0;
-  border: 1px solid var(--line-control);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-s);
   background: transparent;
-  color: var(--muted);
+  color: var(--ink-muted);
   cursor: pointer;
   transition:
     background 0.15s ease,
