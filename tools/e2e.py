@@ -21,10 +21,13 @@ main page
   2. genre filter: ?genre=ai is preselected, option labels are sorted the way
      js/app.js sorts them, the result count disappears when no filter is active
   3. featured grid: 6 distinct cards each with a poster; a horizontal snap
-     scroller at 390px (xs) and a 2-column grid at 576px (sm), with no
-     document-level horizontal overflow; the meta row clamped and never
-     overflowing its box
-  3a. featured poster: 2:3 at 320/375/576/768/1024/1280/1440. The `height`
+     scroller with a 156px track below lg (390 and 576 checked) and a
+     six-column grid from 1024 up (1024 and 1280 checked), with no
+     document-level horizontal overflow at any of them; the meta row on the
+     poster's scrim, one line, never overflowing its box
+  3a. featured poster: 2:3 at 320/375/576/768/1024/1280/1440, and its box
+     measured against the `sizes` slot index.html declares -- the 156px below
+     lg exactly, and never wider than 194px from lg up. The `height`
      attribute in the markup is a definite height, which is why it beats
      `aspect-ratio` and the card measured 1.009 wide at 1440
   3b. header controls: one shared height across .tool-buttons at every tier, the
@@ -91,7 +94,7 @@ from playwright.sync_api import expect, sync_playwright
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import poster_crop  # noqa: E402
-from lib import POSTER_VARIANT_WIDTHS, ROOT, variant_name, webp_size  # noqa: E402
+from lib import FEATURED_BOX_DESKTOP, FEATURED_BOX_MOBILE, POSTER_VARIANT_WIDTHS, ROOT, variant_name, webp_size  # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -324,65 +327,111 @@ def test_genre_filter(page, base):
 
 
 def test_featured_breakpoints(page, base):
-    page.set_viewport_size(XS)
-    page.goto(base + "index.html", wait_until="domcontentloaded")
-    grid = page.locator(".featured-grid")
-    expect(page.locator(".featured-card")).to_have_count(6)
-    hrefs = page.locator(".featured-card").evaluate_all(
-        "els => els.map(el => el.getAttribute('href'))"
-    )
-    assert len(set(hrefs)) == 6, f"featured cards must be 6 distinct films: {hrefs}"
-    expect(page.locator(".featured-card img")).to_have_count(6)
-    expect(grid).to_have_css("display", "flex")
-    expect(grid).to_have_css("overflow-x", "auto")
-    expect(grid).to_have_css("scroll-snap-type", "x mandatory")
-    rows = page.locator(".featured-grid > li").evaluate_all(
-        "els => [...new Set(els.map(el => Math.round(el.getBoundingClientRect().top)))]"
-    )
-    assert len(rows) == 1, f"xs tier must be one horizontal row, card tops {rows}"
-    assert page.locator(".featured-card-meta").evaluate_all(
-        "els => els.every(el => getComputedStyle(el).fontSize === '12px'"
-        " && getComputedStyle(el).textTransform === 'uppercase')"
-    ), "the featured meta line must be styled as uppercase 12px text"
-    # Overflow guard. A card whose meta row outgrows its clamp silently pushes
-    # the ratings out of the box, and no count/distinctness check can see it.
-    assert page.locator(".featured-card-meta").evaluate_all(
-        "els => els.every(el => { const c = getComputedStyle(el);"
-        " return c.whiteSpace === 'normal' && c.webkitBoxOrient === 'vertical'"
-        " && /^[0-9]+$/.test(c.webkitLineClamp) && el.scrollWidth <= el.clientWidth; })"
-    ), "the featured meta line must clamp and not overflow its box"
-    assert page.evaluate("document.documentElement.scrollWidth <= document.documentElement.clientWidth"), (
-        "xs tier overflows the document horizontally"
-    )
-    page.set_viewport_size(SM)
-    expect(grid).to_have_css("grid-auto-flow", "row")
-    expect(grid).to_have_css("overflow-x", "visible")
-    expect(grid).to_have_css("scroll-snap-type", "none")
-    cols = grid.evaluate("el => getComputedStyle(el).gridTemplateColumns.split(' ').length")
-    assert cols == 2, f"sm tier must be a 2-column grid, got {cols} columns"
-    assert page.evaluate("document.documentElement.scrollWidth <= document.documentElement.clientWidth"), (
-        "sm tier overflows the document horizontally"
-    )
+    """Below lg the block is a rail, from lg up it is a six-column grid.
+
+    The two tiers are the same ones `.related` uses and they change at the same
+    1024px, because the arithmetic is the same: six cards do not fit below lg at
+    a readable size, and they do above it. The one place this test differs from
+    a plain tier check is that it also reads the RENDERED card width, because
+    the track is 156px below lg and a grid FRACTION above it -- so the lg side of
+    the `sizes` slot in index.html has no declaration in the stylesheet to be
+    compared against, and this measurement is the only witness it has.
+    """
+    for width, tier in ((390, "rail"), (576, "rail"), (1024, "grid"), (1280, "grid")):
+        page.set_viewport_size({"width": width, "height": 900})
+        page.goto(base + "index.html", wait_until="domcontentloaded")
+        grid = page.locator(".featured-grid")
+        expect(page.locator(".featured-card")).to_have_count(6)
+        hrefs = page.locator(".featured-card").evaluate_all(
+            "els => els.map(el => el.getAttribute('href'))"
+        )
+        assert len(set(hrefs)) == 6, f"@{width}: featured cards must be 6 distinct films: {hrefs}"
+        expect(page.locator(".featured-card img")).to_have_count(6)
+        rows = page.locator(".featured-grid > li").evaluate_all(
+            "els => [...new Set(els.map(el => Math.round(el.getBoundingClientRect().top)))]"
+        )
+        assert len(rows) == 1, f"@{width}: the featured block must be one horizontal row, card tops {rows}"
+
+        if tier == "rail":
+            expect(grid).to_have_css("display", "flex")
+            expect(grid).to_have_css("overflow-x", "auto")
+            expect(grid).to_have_css("scroll-snap-type", "x mandatory")
+            snap = page.locator(".featured-grid > li").evaluate_all(
+                "els => els.every(el => getComputedStyle(el).scrollSnapAlign === 'start')"
+            )
+            assert snap, f"@{width}: every rail card must snap to the start of the track"
+        else:
+            expect(grid).to_have_css("overflow-x", "visible")
+            expect(grid).to_have_css("scroll-snap-type", "none")
+            cols = grid.evaluate(
+                "el => getComputedStyle(el).gridTemplateColumns.split(' ').length")
+            assert cols == 6, f"@{width}: lg tier must be a 6-column grid, got {cols}"
+
+        # The meta line lives on the scrim over the poster now, so the guard is
+        # no longer a line clamp. `scrollWidth <= clientWidth` would be the wrong
+        # test here: a label that ellipsizes is SUPPOSED to report a scrollWidth
+        # past its clientWidth, so that assertion would only ever pass while
+        # nothing is truncated. The invariant that actually matters is the one
+        # way round -- anything clipped must be marked as clipped, and nothing
+        # may spill out of the scrim it sits on.
+        assert page.locator(".featured-card-meta").evaluate_all(
+            "els => els.every(el => getComputedStyle(el).fontSize === '12px'"
+            " && el.scrollWidth <= el.clientWidth)"
+        ), f"@{width}: the featured meta line must be 12px and fit the scrim"
+        for part in (".featured-card-year", ".featured-card-genre"):
+            assert page.locator(part).evaluate_all(
+                "els => els.every(el => el.scrollWidth <= el.clientWidth"
+                " || getComputedStyle(el).textOverflow === 'ellipsis')"
+            ), (f"@{width}: {part} is clipped without an ellipsis, so the reader loses "
+                f"the rest of the label with nothing marking that it was cut")
+        assert page.locator(".featured-card-overlay").evaluate_all(
+            "els => els.every(el => el.scrollWidth <= el.clientWidth)"
+        ), f"@{width}: the scrim's contents overflow it"
+        assert page.evaluate(
+            "document.documentElement.scrollWidth <= document.documentElement.clientWidth"
+        ), f"@{width}: the featured block overflows the document horizontally"
 
 
 def test_featured_poster_shape(page, base):
-    """The featured poster must render 2:3 at EVERY tier.
+    """The featured poster must render 2:3 at EVERY tier, and its box must be the
+    one index.html's `sizes` describes.
 
     `aspect-ratio` only fills an automatic dimension, so a presentational
     `height` attribute on the <img> silently wins and the rule below it becomes
     dead. That is how a 2:3 card shipped rendering 0.60 wide at sm, 0.76 at lg
     and wider than square at xl while every other guard stayed green.
+
+    The second half is the check the stylesheet cannot make. The 156px track
+    below lg IS a declaration and verify.py reads it, but the lg box is one
+    track of `repeat(6, minmax(0, 1fr))` -- arithmetic over the container, not a
+    number anyone wrote. So the direction the slot has to be right in is
+    asserted here: the rendered box is never WIDER than the declared slot (a
+    wider slot only costs bytes) and below lg it is exactly it.
     """
-    for width in (320, 375, 576, 768, 1024, 1280, 1440):
+    slot_m, slot_d = FEATURED_BOX_MOBILE, FEATURED_BOX_DESKTOP
+    for width in (320, 375, 576, 768, 1023, 1024, 1280, 1440, 1600, 1920):
         page.set_viewport_size({"width": width, "height": 900})
         page.goto(base + "index.html", wait_until="domcontentloaded")
         expect(page.locator(".featured-card img").first).to_be_visible()
-        ratios = page.locator(".featured-card img").evaluate_all(
+        boxes = page.locator(".featured-card-media img").evaluate_all(
             "els => els.map(el => { const r = el.getBoundingClientRect();"
-            " return Math.round(r.width / r.height * 1000) / 1000; })"
+            " return [Math.round(r.width * 100) / 100, Math.round(r.height * 100) / 100]; })"
         )
-        off = [r for r in ratios if abs(r - 2 / 3) > 0.01]
+        off = [b for b in boxes if abs(b[0] / b[1] - 2 / 3) > 0.01]
         assert not off, f"@{width}: featured poster must be 2:3, got {off}"
+        widest = max(b[0] for b in boxes)
+        slot = slot_d if width >= 1024 else slot_m
+        assert widest <= slot + 0.5, (
+            f"@{width}: the rendered poster is {widest}px wide but index.html declares a "
+            f"{slot}px slot -- a slot narrower than its box makes the browser fetch a "
+            f"source smaller than the box renders and scale it up into a blur, and the "
+            f"stylesheet cannot see it because the lg box is a grid fraction"
+        )
+        if width < 1024:
+            assert abs(widest - slot_m) <= 0.5, (
+                f"@{width}: below lg the card is a flex item with a {slot_m}px basis, so "
+                f"the rendered poster must be exactly that, got {widest}px"
+            )
 
 
 def test_header_controls(page, base):

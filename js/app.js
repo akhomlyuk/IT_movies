@@ -31,6 +31,11 @@ const {
   installErrorHandler,
 } = window.ITMoviesCommon;
 
+// The poster variant ladder, mirrored from tools/lib.py POSTER_VARIANT_WIDTHS.
+// verify.py parses this line and fails if the two ever disagree, so the copy in
+// JS cannot drift from the one gen_posters.py writes and gen_pages.py emits.
+const POSTER_VARIANT_WIDTHS = [96, 192, 400];
+
 let currentLang = "ru";
 
 function compare(a, b, key, dir, lang) {
@@ -399,6 +404,21 @@ const app = createApp({
       return altTitleC(item, lang.value);
     }
 
+    // The featured card's poster box is 156px below lg and at most 194px from
+    // lg up, so the 400w rung it used to fetch unconditionally is 2-2.5x the
+    // slot at DPR 1. The ladder is the same one js/film.js offers the related
+    // card, and verify.py checks that this tuple mirrors lib.POSTER_VARIANT_
+    // WIDTHS -- a Vue template attribute cannot read a Python value, so this is
+    // a deliberate second copy tied to that one by a gate.
+    function featuredSrcset(item) {
+      const src = item.poster;
+      if (!src) return null;
+      const path = src.replace(/^\//, "");
+      return POSTER_VARIANT_WIDTHS.map(
+        (w) => `${path.replace(/\.webp$/, "_" + w + ".webp")} ${w}w`
+      ).join(", ");
+    }
+
     function setLang(next) {
       lang.value = next;
     }
@@ -504,6 +524,7 @@ const app = createApp({
       genreLabel,
       firstGenre,
       altTitle,
+      featuredSrcset,
       goLucky,
       scrollToTop,
       hasRating,

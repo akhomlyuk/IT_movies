@@ -12,7 +12,7 @@ from xml.etree import ElementTree
 
 import gen_pages
 import poster_crop
-from lib import BELOW_MD_MAX, ROOT, SITE_BASE, BREAKPOINT_SCALE, CSS_MEDIA_EDGES, POSTER_BOX_DESKTOP, POSTER_BOX_MOBILE, POSTER_VARIANT_WIDTHS, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating, poster_sizes, variant_name, variant_path, webp_size
+from lib import BELOW_MD_MAX, ROOT, SITE_BASE, BREAKPOINT_SCALE, CSS_MEDIA_EDGES, FEATURED_BOX_DESKTOP, FEATURED_BOX_MOBILE, FEATURED_SLOT_CONDITION, POSTER_BOX_DESKTOP, POSTER_BOX_MOBILE, POSTER_VARIANT_WIDTHS, featured_poster_sizes, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating, poster_sizes, variant_name, variant_path, webp_size
 
 sys.stdout.reconfigure(encoding="utf-8")
 errors = []
@@ -168,20 +168,21 @@ if not (missing_variants or wrong_width or wrong_ratio):
         % (len(catalog_posters) * len(POSTER_VARIANT_WIDTHS))
     )
 
-# The ladder is one definition in lib.py, mirrored into js/film.js because the
-# client builds the related card's srcset itself. A mirror nobody checks is a
-# second definition, so the two are compared here, in both shipped copies.
+# The ladder is one definition in lib.py, mirrored into js/film.js and js/app.js
+# because the client builds the related card's and the featured card's srcsets
+# itself. A mirror nobody checks is a second definition, so the two are compared
+# here, in both shipped copies of each file.
 ladder_re = re.compile(
     r"POSTER_VARIANT_WIDTHS\s*=\s*\[([0-9,\s]*)\]"
 )
-for js_name in ("js/film.js", "js/film.min.js"):
+for js_name in ("js/film.js", "js/film.min.js", "js/app.js", "js/app.min.js"):
     js_text = (ROOT / js_name).read_text(encoding="utf-8")
     m = ladder_re.search(js_text)
     if not m:
         errors.append(
             f"{js_name}: POSTER_VARIANT_WIDTHS not found — the related card's "
-            f"srcset candidates come from this mirror, and a mirror that is not "
-            f"there is a mirror that has stopped being read"
+            f"and the featured card's srcset candidates come from this mirror, "
+            f"and a mirror that is not there is a mirror that has stopped being read"
         )
         continue
     js_widths = tuple(int(n) for n in m.group(1).replace(" ", "").split(",") if n)
@@ -796,6 +797,18 @@ POSTER_BOX_SELECTOR = ".film-poster"
 POSTER_BOX_DECLARATIONS = r"\b(?:min-)?(?:max-)?width\s*:\s*([^;]+);"
 POSTER_BOX_PX = re.compile(r"(\d+(?:\.\d+)?)px")
 
+# The main page's featured card is a second poster slot, not a second copy of the
+# first: its boxes are FEATURED_BOX_* from lib, its band edge is the lg tier
+# rather than the md one, and it lives on index.html rather than on the film
+# pages. One per-page count because the main page carries exactly one of these
+# posters, and one srcset because the candidates are built by featuredSrcset
+# rather than written out.
+FEATURED_SIZES_PER_PAGE = 1
+FEATURED_SRCSETS_PER_PAGE = 1
+FEATURED_SRCSET_ATTR = re.compile(
+    r"""(?P<name>(?::|v-bind:)?srcset)\s*=\s*(?P<q>["'])(?P<value>[^"']*)(?P=q)""")
+FEATURED_SRCSET_BINDING = ':srcset="featuredSrcset(item)"'
+
 
 def sizes_attributes(text):
     found = collections.Counter()
@@ -831,8 +844,19 @@ def poster_slot_slots(value):
     return None, [p.strip() for p in text.split(",") if p.strip()]
 
 
-def check_poster_slot_shape(where, value):
-    """Every declared slot is a px length, and none is narrower than its box."""
+def check_poster_slot_shape(where, value, condition=POSTER_SLOT_CONDITION,
+                            boxes=(POSTER_BOX_MOBILE, POSTER_BOX_DESKTOP),
+                            label="poster"):
+    """Every declared slot is a px length, and none is narrower than its box.
+
+    `condition` and `boxes` are parameters because there is more than one poster
+    slot in this project, not because this check got looser. The hero's two boxes
+    are 240/320 keyed to the 767 edge; the featured card's are 156/194 keyed to
+    the 1023 edge, and the two are different bands describing different boxes.
+    Each is compared against its OWN pair, and each still fails a viewport-relative
+    slot, a wrong edge, and a slot narrower than the box it names.
+    """
+    condition_wanted, boxes_wanted = condition, boxes
     condition, slots = poster_slot_slots(value)
     if slots is None:
         errors.append(
@@ -841,29 +865,28 @@ def check_poster_slot_shape(where, value):
             f"check cannot tell which box it is describing"
         )
         return
-    if condition is not None and condition != POSTER_SLOT_CONDITION:
+    if condition is not None and condition != condition_wanted:
         errors.append(
             f"Poster slot size: {where} declares a responsive sizes={value!r} whose "
-            f"condition is {condition!r}, not {POSTER_SLOT_CONDITION!r}. The "
-            f"breakpoint is the band the browser switches in")
+            f"condition is {condition!r}, not {condition_wanted!r}. The "
+            f"breakpoint is the band the browser switches in"
+        )
         return
     if len(slots) != POSTER_SIZES_SLOTS:
         errors.append(
             f"Poster slot size: {where} declares sizes={value!r} with {len(slots)} "
-            f"slot(s), expected {POSTER_SIZES_SLOTS} -- one for the {POSTER_BOX_MOBILE}px "
-            f"mobile box and one for the {POSTER_BOX_DESKTOP}px desktop box. A single slot "
+            f"slot(s), expected {POSTER_SIZES_SLOTS} -- one for the {boxes_wanted[0]}px "
+            f"mobile box and one for the {boxes_wanted[1]}px desktop box. A single slot "
             f"describes neither band correctly"
         )
         return
-    for slot, box, name in zip(slots,
-                               (POSTER_BOX_MOBILE, POSTER_BOX_DESKTOP),
-                               ("mobile", "desktop")):
+    for slot, box, name in zip(slots, boxes_wanted, ("mobile", "desktop")):
         m = POSTER_SLOT_LENGTH.match(slot)
         if m is None:
             errors.append(
                 f"Poster slot size: {where} declares the {name} slot as {slot!r}, which is "
                 f"not a bare px length, so it cannot be compared with the {box}px {name} "
-                f"box this poster occupies. A viewport-relative or percentage slot is a "
+                f"box this {label} occupies. A viewport-relative or percentage slot is a "
                 f"guess about a box that is a fixed width, and it is unbounded above, so "
                 f"there is no value of it that this check could certify"
             )
@@ -871,12 +894,12 @@ def check_poster_slot_shape(where, value):
         declared = float(m.group(1))
         if declared < box:
             errors.append(
-                f"Poster slot size: {where} declares {slot} for the {name} poster box, "
+                f"Poster slot size: {where} declares {slot} for the {name} {label} box, "
                 f"which is {box}px -- {box - declared:g}px too narrow. A slot smaller than "
                 f"its box makes the browser fetch a source smaller than the box renders "
                 f"and scale it up, and no consistency check can see that: the emitted "
-                f"value and lib.poster_sizes() agree perfectly while both are wrong. "
-                f"Declare {box}px or more"
+                f"value and lib.featured_poster_sizes() agree perfectly while both are "
+                f"wrong. Declare {box}px or more"
             )
 
 
@@ -992,6 +1015,137 @@ def check_poster_sizes():
 
 
 check_poster_sizes()
+
+
+def check_featured_box_source():
+    """The featured card's mobile box is a DERIVATION, not a literal, and its
+    desktop box is not available to a stylesheet at all.
+
+    Below lg the card is a flex item with an explicit basis, so the card's width
+    IS written down in css/style.css. What is written down is the CARD, though,
+    and the poster is the card's content box: the basis less one border width on
+    each side. Reading the basis and comparing it to the slot directly would
+    pass at 156 against a 154px poster and be 2px wrong in the direction that
+    costs bytes, so this subtracts. From lg up the card is one track of
+    `repeat(6, minmax(0, 1fr))` and its width is arithmetic over a container
+    that is still growing at 1440 -- there is nothing here to read, which is why
+    lib.FEATURED_BOX_DESKTOP is the maximum over the whole band and not any
+    single width's measurement. That half is checked in tools/e2e.py against the
+    rendered box, which is the only witness a computed box has.
+    """
+    path = ROOT / "css" / "style.css"
+    if not path.exists():
+        errors.append(
+            f"Featured slot size: {path.name} is missing, so the mobile box this "
+            f"check compares the emitted slot against has no witness at all"
+        )
+        return
+    src = re.sub(r"/\*.*?\*/", "", path.read_text(encoding="utf-8"), flags=re.S)
+    bases, borders = set(), set()
+    for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", src):
+        body = m.group(2)
+        if ".featured-grid li" in m.group(1):
+            for f in re.finditer(r"\bflex\s*:[^;]+;", body):
+                bases.update(float(px) for px in POSTER_BOX_PX.findall(f.group(0)))
+        if ".featured-card" in m.group(1) and ".featured-card-" not in m.group(1):
+            for b in re.finditer(r"\bborder(?:-width)?\s*:\s*([^;]+);", body):
+                borders.update(float(px) for px in POSTER_BOX_PX.findall(b.group(1)))
+    if not bases:
+        errors.append(
+            f"Featured slot size: no `.featured-grid li` rule in {path.name} declares a "
+            f"px `flex` basis, so the rail's track width has no witness and "
+            f"lib.FEATURED_BOX_MOBILE cannot be derived from the stylesheet at all"
+        )
+        return
+    border = max(borders) if borders else 0.0
+    derived = sorted(b - 2 * border for b in bases)
+    if FEATURED_BOX_MOBILE not in derived:
+        errors.append(
+            f"Featured slot size: lib.FEATURED_BOX_MOBILE is {FEATURED_BOX_MOBILE} but the "
+            f"`flex` basis in `.featured-grid li` is {sorted(bases)} and the card's border "
+            f"{border:g}px, which makes the poster {derived}px. The rail's poster box is "
+            f"the track less the border on each side, so if the track or the border moved "
+            f"this constant is stale and every slot compared against it is wrong. Note "
+            f"that the DESKTOP box ({FEATURED_BOX_DESKTOP}) has no such witness: it is a "
+            f"grid fraction, and tools/e2e.py measures the rendered box instead"
+        )
+
+
+def check_featured_poster_sizes():
+    """The main page's featured card declares its own slot, and it is not the
+    hero's. Two different posters, two different boxes, two different bands:
+    the hero is 240/320 keyed to the 767 edge, the featured card is 156/194
+    keyed to the 1023 edge. Each is checked against its OWN boxes, so a value
+    lifted from the film pages onto index.html is caught rather than passed."""
+    canonical = featured_poster_sizes()
+    check_poster_slot_shape(
+        "lib.featured_poster_sizes()", canonical,
+        condition=FEATURED_SLOT_CONDITION,
+        boxes=(FEATURED_BOX_MOBILE, FEATURED_BOX_DESKTOP),
+        label="featured card")
+    check_featured_box_source()
+    path = ROOT / "index.html"
+    if not path.exists():
+        errors.append(
+            f"Featured slot size: {path.name} is missing, so this check compared no "
+            f"page at all and would otherwise pass on an empty page set")
+        return
+    text = path.read_text(encoding="utf-8")
+    values = sizes_attributes(text)
+    responsive = responsive_sizes(values)
+    if canonical not in responsive:
+        errors.append(
+            f"Featured slot size: index.html carries {sorted(responsive) or ['no responsive sizes attribute']}, lib.featured_poster_sizes() is {canonical!r}"
+        )
+    for value in sorted(responsive):
+        if value != canonical:
+            check_poster_slot_shape(
+                "index.html", value,
+                condition=FEATURED_SLOT_CONDITION,
+                boxes=(FEATURED_BOX_MOBILE, FEATURED_BOX_DESKTOP),
+                label="featured card")
+    total = sum(responsive.values())
+    if total != FEATURED_SIZES_PER_PAGE:
+        errors.append(
+            f"Featured slot size: index.html declares {total} responsive sizes "
+            f"attribute(s), expected {FEATURED_SIZES_PER_PAGE}. A card deleted down to a "
+            f"bare `src` still passes every value check, so the count is checked, not "
+            f"printed"
+        )
+    srcsets = [m.group(0).strip() for m in FEATURED_SRCSET_ATTR.finditer(text)]
+    if len(srcsets) != FEATURED_SRCSETS_PER_PAGE:
+        errors.append(
+            f"Featured slot size: index.html declares {len(srcsets)} srcset attribute(s), "
+            f"expected {FEATURED_SRCSETS_PER_PAGE}. Without one the card fetches the 400w "
+            f"rung into a {FEATURED_BOX_DESKTOP}px box, and the slot above would describe "
+            f"a choice the page never offers the browser"
+        )
+    elif srcsets[0] != FEATURED_SRCSET_BINDING:
+        errors.append(
+            f"Featured slot size: index.html binds srcset to {srcsets[0]!r}, not "
+            f"{FEATURED_SRCSET_BINDING!r}. A renamed helper would leave the candidates "
+            f"unbuilt and this page fetching its `src`, and every value check above would "
+            f"still be green because a srcset with no candidates is not a sizes question"
+        )
+    for js_name in ("js/app.js", "js/app.min.js"):
+        js_text = (ROOT / js_name).read_text(encoding="utf-8")
+        if not re.search(r"function\s+featuredSrcset\s*\(", js_text):
+            errors.append(
+                f"Featured slot size: {js_name} does not define featuredSrcset, which is "
+                f"what index.html binds the card's srcset to"
+            )
+    print(
+        f"Featured slot size: {canonical} -- single source "
+        f"lib.featured_poster_sizes() on the {FEATURED_SLOT_CONDITION} edge; slots "
+        f"{FEATURED_BOX_MOBILE}px below lg / {FEATURED_BOX_DESKTOP}px from lg up, each "
+        f">= the measured box it describes; index.html carries {total} responsive sizes "
+        f"({FEATURED_SIZES_PER_PAGE} expected) bound to {FEATURED_SRCSET_BINDING}, and "
+        f"the {FEATURED_BOX_MOBILE}px mobile box is derived from the `flex` basis less the "
+        f"card's border in css/style.css; the {FEATURED_BOX_DESKTOP}px desktop box is a "
+        f"grid fraction and is measured by tools/e2e.py instead")
+
+
+check_featured_poster_sizes()
 
 
 # 6f. The media-condition gate. A width edge is the only thing that decides which

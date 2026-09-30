@@ -212,6 +212,35 @@ def poster_sizes():
         BELOW_MD_MAX, POSTER_BOX_MOBILE, POSTER_BOX_DESKTOP)
 
 
+# The featured card's poster box on the MAIN page. This one is a COMPUTED box,
+# which is the whole difference from the hero's and the reason it is not policed
+# the same way: the hero's width is a literal cap in css/style.css that
+# check_poster_box_source() can read back, while the featured card's is
+# `width: 100%` of a track -- a flex basis below lg, a six-column grid above it.
+# There is no declaration in the stylesheet that states either number, so no
+# stylesheet can witness them; the witness is the rendered box, measured by
+# tools/e2e.py, and these constants are what that measurement is compared
+# against. Both are px lengths, not viewport fractions, for the reason the hero
+# has: `sizes` states a slot in CSS px and the browser scales it by the DPR.
+#
+# Both are the POSTER box, which is not the card: the card's basis is 156px and
+# its border takes the 1px on each side, so the image is 154. And 195 is the
+# measured maximum, not the width at 1280 -- the container is still growing at
+# 1440 (194.67px there against 192.16 at 1280) and caps at 1240px, so a slot
+# written from any single desktop width is already wrong at one of them. The
+# direction that matters is which way: 194 was 0.67px NARROWER than the box it
+# describes at 1440, which is the failure check_poster_slot_shape exists to stop
+# and the one a value copied off the 1280 measurement would have shipped.
+FEATURED_BOX_MOBILE = 154
+FEATURED_BOX_DESKTOP = 195
+FEATURED_SLOT_CONDITION = "(max-width: %dpx)" % (BREAKPOINT_SCALE[3] - 1)
+
+
+def featured_poster_sizes():
+    return "%s %dpx, %dpx" % (FEATURED_SLOT_CONDITION,
+                              FEATURED_BOX_MOBILE, FEATURED_BOX_DESKTOP)
+
+
 # The poster variant ladder, in one place. Widths are the source of truth and a
 # file's suffix is derived from its width, so a width cannot be added without its
 # naming. gen_posters.py writes the ladder, gen_pages.py emits it as srcset
