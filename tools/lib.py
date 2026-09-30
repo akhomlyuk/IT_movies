@@ -245,9 +245,15 @@ def featured_poster_sizes():
 # file's suffix is derived from its width, so a width cannot be added without its
 # naming. gen_posters.py writes the ladder, gen_pages.py emits it as srcset
 # candidates, verify.py gates on it and re-checks the copy js/film.js carries.
-# 96 and 192 are the related card's 96px box at 1x and 2x; 400 is the width the
-# lightbox and the catalog table already select.
-POSTER_VARIANT_WIDTHS = (96, 192, 400)
+# 96 and 192 are the related card's box at 1x and its first step up; 400 is the
+# width the lightbox and the catalog table already select. 256 closes the gap
+# between 192 and 400, which is 2.08x wide: measured in Chromium, every consumer
+# needing 193-288 device px jumped straight from 192 to 400, and at DPR 1.25 and
+# 1.5 -- 125%/150% display scaling, i.e. most Windows laptops -- the featured
+# card and the related card both land in that band on every load. 288 was
+# measured as the alternative and covers no need 256 does not, for 436 256 B more
+# in the repo and 2 472 B more per file.
+POSTER_VARIANT_WIDTHS = (96, 192, 256, 400)
 
 
 def variant_suffix(width):

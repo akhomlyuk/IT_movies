@@ -34,7 +34,7 @@ const {
 // The poster variant ladder, mirrored from tools/lib.py POSTER_VARIANT_WIDTHS.
 // verify.py parses this line and fails if the two ever disagree, so the copy in
 // JS cannot drift from the one gen_posters.py writes and gen_pages.py emits.
-const POSTER_VARIANT_WIDTHS = [96, 192, 400];
+const POSTER_VARIANT_WIDTHS = [96, 192, 256, 400];
 
 const FILM_TEMPLATE = `
   <header class="top">
