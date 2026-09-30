@@ -211,8 +211,74 @@ def start_server():
     return httpd, f"http://127.0.0.1:{port}/"
 
 
+def assert_rows_align_to_the_title(page):
+    """A one-line column must not read as belonging to the alt title.
+
+    The title cell carries two lines -- the title and the alt title in the other
+    language -- while genre, year and ratings carry one each. With the two-line
+    block top-aligned, a one-line cell lands between them and closer to the alt:
+    measured 17.6px below the primary title and only 2.6px above the alt, so the
+    row read as "title, then the numbers belong to the second line". Centring the
+    block puts the one-line cells at the midpoint, 10.2px from each.
+
+    The invariant is deliberately the RELATION, not a fixed offset: the partner
+    chose a centred block over a top-aligned one (which would put the numbers on
+    the title line exactly, at 0.5px), so this asserts the defect is gone rather
+    than that a number I proposed is reproduced.
+
+    Read through Range rects, not through the cells' own boxes: a td is stretched
+    to the whole row, so its bounding box says nothing about where its text is.
+    """
+    rows = page.evaluate(
+        """() => {
+          const textRect = (el) => {
+            const r = document.createRange();
+            r.selectNodeContents(el);
+            const b = r.getBoundingClientRect();
+            return { center: b.top + b.height / 2 };
+          };
+          return [...document.querySelectorAll('#movies tbody tr')]
+            .filter(row => row.querySelector('.title-primary') && row.querySelector('.alt-title'))
+            .slice(0, 6)
+            .map(row => {
+              const poster = row.querySelector('.poster-wrap');
+              const pb = poster ? poster.getBoundingClientRect() : null;
+              return {
+                primary: textRect(row.querySelector('.title-primary')).center,
+                alt: textRect(row.querySelector('.alt-title')).center,
+                genre: textRect(row.querySelector('.genre')).center,
+                year: textRect(row.querySelector('.year')).center,
+                kp: textRect(row.querySelector('.num')).center,
+                poster: pb ? pb.top + pb.height / 2 : null,
+              };
+            });
+        }"""
+    )
+    assert rows, "expected catalog rows carrying both a title and an alt title"
+    for row in rows:
+        to_primary = abs(row["genre"] - row["primary"])
+        to_alt = abs(row["genre"] - row["alt"])
+        assert to_primary <= to_alt + 6, (
+            f"the genre column sits {to_primary:.1f}px from the title but only"
+            f" {to_alt:.1f}px from the alt title, so the row reads as if the"
+            f" numbers belonged to the alt title"
+        )
+        for col in ("year", "kp"):
+            assert abs(row[col] - row["genre"]) <= 2, (
+                f"the {col} column is {row[col] - row['genre']:+.1f}px off the"
+                f" genre column; they share a line"
+            )
+        if row["poster"] is not None:
+            midpoint = (row["primary"] + row["alt"]) / 2
+            assert abs(row["poster"] - midpoint) <= 3, (
+                f"the poster icon sits {row['poster'] - midpoint:+.1f}px off the"
+                f" centre of the two title lines, so the title block is not centred"
+            )
+
+
 def test_main_filter(page, base):
     page.goto(base + "index.html", wait_until="domcontentloaded")
+    assert_rows_align_to_the_title(page)
     page.locator("#srch").fill("матриц")
     expect(page.locator("#movies tbody tr")).to_have_count(2)
 

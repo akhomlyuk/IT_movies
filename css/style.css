@@ -999,7 +999,15 @@ tbody tr:hover td:first-child {
 
 .title-layout {
   display: flex;
-  align-items: flex-start;
+  /* The title cell carries two lines -- the title and the alt title in the other
+     language -- while genre, year and ratings carry one each. Top-aligned, the
+     single-line cells landed between the two: measured 17.6px below the primary
+     title and only 2.6px above the alt, so the row read as "title, then the
+     numbers belong to the second line". Centring the two-line block halves the
+     gap (10.2px) and centres the poster icon with it. Top-aligning the cells
+     instead would put the numbers on the primary title line exactly (0.5px), but
+     the block reads better centred, and that is the call the partner made. */
+  align-items: center;
   gap: var(--space-2);
   min-height: 3.75em;
 }
