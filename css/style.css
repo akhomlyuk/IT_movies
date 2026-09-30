@@ -20,7 +20,6 @@
   --accent: #157a46;
   --accent-ink: #ffffff;
   --signal: #d9363e;
-  --icon: #2f6f9f;
   --paper-strong: #efece4;
   --th-bg: rgba(26, 24, 21, 0.035);
   --glass: rgba(252, 251, 248, 0.72);
@@ -89,7 +88,6 @@
     --accent: #57bd84;
     --accent-ink: #0b130e;
     --signal: #ff6b6f;
-    --icon: #83bce8;
     --paper-strong: #242220;
     --th-bg: rgba(237, 233, 227, 0.04);
     --glass: rgba(28, 26, 23, 0.74);
@@ -169,7 +167,6 @@
   --accent: #57bd84;
   --accent-ink: #0b130e;
   --signal: #ff6b6f;
-  --icon: #83bce8;
   --paper-strong: #242220;
   --th-bg: rgba(237, 233, 227, 0.04);
   --glass: rgba(28, 26, 23, 0.74);
@@ -347,8 +344,15 @@ html:not(.js) #app[v-cloak] nav.nav:not(.nav--dialog) {
   flex: none;
 }
 
+/* Icons are --muted, and the blue they used to be is gone. --icon was a token
+   of its own with exactly one consumer, so once icons became the muted warm
+   grey it was a second name for the same colour in both themes; deleting it
+   leaves one source. The blue was the only cool hue in an otherwise warm
+   palette -- warm paper, warm ink, orange KP, gold IMDb, green accent -- and
+   against a #14120f page it read as a foreign colour rather than as an icon.
+   Worst contrast across both themes and every surface icons sit on: 4.95:1. */
 svg:not(.heart) {
-  color: var(--icon);
+  color: var(--muted);
 }
 
 .tool-buttons {
