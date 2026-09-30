@@ -124,6 +124,30 @@ RELATED_POSTER_RENDERED = """() => {
 }"""
 RU_SORT_KEY = None
 
+# One row, and one chip baseline, read off the live layout. `chipSpread` is
+# UNROUNDED on purpose: the six-column grid deals fractional tracks, so the
+# cards' border boxes land on different sub-pixel phases, and rounding that
+# 0.03px phase to whole pixels invents a 1px stagger that is not on the page.
+RELATED_ROW_PROBE = """() => {
+  const cards = [...document.querySelectorAll('.related li')];
+  const tops = [...new Set(cards.map(c => Math.round(c.getBoundingClientRect().y)))];
+  const firstRow = cards.filter(c => Math.round(c.getBoundingClientRect().y) === tops[0]);
+  const chipY = firstRow
+    .map(c => c.querySelector('.rc-rating.kp'))
+    .filter(Boolean)
+    .map(el => el.getBoundingClientRect().y);
+  const spread = chipY.length
+    ? Math.round((Math.max(...chipY) - Math.min(...chipY)) * 1000) / 1000
+    : -1;
+  return {
+    rows: tops.length,
+    inRow: firstRow.length,
+    cards: cards.length,
+    chipSpread: spread,
+    cardW: Math.round(firstRow[0].getBoundingClientRect().width * 100) / 100,
+  };
+}"""
+
 NOJS_RENDER = r"""() => {
   const painted = (el) => !!el && el.checkVisibility({checkVisibilityCSS: true});
   const potential = (el) => {
@@ -329,13 +353,21 @@ def test_genre_filter(page, base):
 def test_featured_breakpoints(page, base):
     """Below lg the block is a rail, from lg up it is a six-column grid.
 
-    The two tiers are the same ones `.related` uses and they change at the same
-    1024px, because the arithmetic is the same: six cards do not fit below lg at
-    a readable size, and they do above it. The one place this test differs from
-    a plain tier check is that it also reads the RENDERED card width, because
-    the track is 156px below lg and a grid FRACTION above it -- so the lg side of
-    the `sizes` slot in index.html has no declaration in the stylesheet to be
-    compared against, and this measurement is the only witness it has.
+    `.related` also switches at 1024px, but the two are NOT the same shape of
+    tier and the arithmetic is not the same. This block's card is 156px below lg
+    and a grid FRACTION above it, so the card grows with the container -- 194px
+    at 1280 against 156 on the phone. The related card instead has a px width on
+    both sides: 160px, capped above by `minmax(0, 160px)` rather than `1fr`, and
+    below lg it is a scroller because six 160px cards do not fit below 1024.
+    Both land on the same 1024 edge because six cards of a readable size is the
+    same arithmetic, but the card size does not grow above it on the film pages,
+    and `test_related_one_row_and_level_chips` is what holds that.
+
+    The one place this test differs from a plain tier check is that it also
+    reads the RENDERED card width, because the track is 156px below lg and a grid
+    FRACTION above it -- so the lg side of the `sizes` slot in index.html has no
+    declaration in the stylesheet to be compared against, and this measurement is
+    the only witness it has.
     """
     for width, tier in ((390, "rail"), (576, "rail"), (1024, "grid"), (1280, "grid")):
         page.set_viewport_size({"width": width, "height": 900})
@@ -907,6 +939,41 @@ def assert_rail_controls(page, expect_overflow):
             f" width, but scrollWidth={track.evaluate('el => el.scrollWidth')}"
             f" clientWidth={track.evaluate('el => el.clientWidth')}"
         )
+
+    # A scrolling strip must hold its cards OFF the scrollbar, and a strip that
+    # does not scroll must not reserve room for one. Both halves are the same
+    # declaration seen from two sides, and the defect this guards is a
+    # specificity one that no stylesheet reading can catch: `ul.related-track`
+    # carries both classes, `.related ul { padding: 0 }` is (0,1,1) and a
+    # `padding-bottom` on a bare `.related-track` is (0,1,0), so the reset won
+    # and the gap was worth 0px -- the cards sat flush against the bar while the
+    # stylesheet appeared to declare a padding for exactly that.
+    #
+    # Asserted on the COMPUTED value, not on the declaration, because the whole
+    # point is that a declaration can exist and be dead.
+    gap = track.evaluate(
+        "el => { const li = el.querySelector('li');"
+        " if (!li) return null;"
+        " const bar = el.offsetHeight - el.clientHeight;"
+        " return Math.round((el.getBoundingClientRect().bottom - bar"
+        "   - li.getBoundingClientRect().bottom) * 100) / 100; }"
+    )
+    if expect_overflow:
+        assert gap is not None and gap > 0, (
+            f"the strip scrolls but its cards are flush against the scrollbar "
+            f"(gap {gap}px). `.related ul` and `.related-track` are the same "
+            f"element, so a `padding-bottom` declared on `.related-track` loses "
+            f"to the `padding: 0` reset at higher specificity and never applies -- "
+            f"put it in the `.related ul` rule instead"
+        )
+    else:
+        assert gap == 0, (
+            f"the strip does not scroll but reserves {gap}px for a scrollbar that "
+            f"is not there. The grid tier resets `padding-bottom` to 0 on the same "
+            f"selector that declares it; a `.related-track` reset at (0,1,0) would "
+            f"lose to the (0,1,1) base it is cancelling"
+        )
+
     dots = page.locator(".related-dot")
     assert page.locator(".related-nav").count() == 0, (
         "the strip has no arrow buttons; it is dots, drag and the arrow keys"
@@ -1180,6 +1247,74 @@ def test_poster_modal(page, base):
     expect(page.locator(".poster-modal[open]")).to_have_count(0)
 
 
+def test_related_one_row_and_level_chips(page, base):
+    """The two things the 2026-09-30 related rework promises, swept, not sampled.
+
+    Both are absolute claims, so both are stated as absolutes here:
+
+    * the six cards never occupy more than one row at ANY width, and
+    * the rating chips share a baseline across the cards of a row, so they do
+      not "dance" when one neighbour's title runs to a second line.
+
+    The width sweep is the point. `test_film_mobile_layout` already asserted one
+    row at xs and `test_film_theme` asserted it at 1280, and both were green
+    while the 768-1023 band put six cards in FOUR columns -- two rows, two
+    orphans, an 807px block. The defect lived entirely between the two tested
+    widths. A guard that only samples will keep finding the widths it already
+    looked at, so this walks 320..1600 on one page and resizes: the layout is
+    pure CSS, so a viewport change reflows it without a reload.
+
+    The chip baseline is measured UNROUNDED and against a half-pixel floor. The
+    grid deals fractional tracks, so the six cards' border boxes land on
+    different sub-pixel phases, and rounding a 0.03px phase to whole pixels
+    fabricates a 1px "stagger" that is not there. A stagger a reader could see
+    is at least half a pixel; anything under it is rounding, not alignment.
+    """
+    page.set_viewport_size({"width": 1280, "height": 1000})
+    page.goto(base + FILM_MOBILE_PAGE, wait_until="domcontentloaded")
+    page.wait_for_selector(".related li")
+
+    multi_row, dancing = [], []
+    worst = (0.0, None)
+    for width in range(320, 1601):
+        page.set_viewport_size({"width": width, "height": 1000})
+        m = page.evaluate(RELATED_ROW_PROBE)
+        if m["rows"] != 1:
+            multi_row.append((width, m["rows"]))
+        if m["chipSpread"] > 0.5:
+            dancing.append((width, m["chipSpread"]))
+        if m["chipSpread"] > worst[0]:
+            worst = (m["chipSpread"], width)
+
+    assert not multi_row, (
+        f"the related strip broke into more than one row at {len(multi_row)} widths, "
+        f"first at {multi_row[0] if multi_row else None}. Six cards must always be one "
+        f"row; where they do not fit the strip scrolls. This is the 768-1023 four-column "
+        f"band's defect returning"
+    )
+    assert not dancing, (
+        f"the rating chips are not on a shared baseline at {len(dancing)} widths, "
+        f"first at {dancing[0] if dancing else None} -- worst spread {worst[0]:.3f}px at "
+        f"@{worst[1]}. `.rc-title` must stay clamped to one line; a two-line title "
+        f"pushes its own chips 22px below its neighbour's"
+    )
+    # The card is one size everywhere, which is what "same at every resolution"
+    # means -- and the one place it is allowed to be narrower is the 1024 band,
+    # where six columns have to share a 969px track.
+    page.set_viewport_size({"width": 1280, "height": 1000})
+    page.wait_for_timeout(200)
+    wide = page.evaluate(RELATED_ROW_PROBE)
+    page.set_viewport_size({"width": 375, "height": 1000})
+    page.wait_for_timeout(200)
+    narrow = page.evaluate(RELATED_ROW_PROBE)
+    assert abs(wide["cardW"] - narrow["cardW"]) < 1.0, (
+        f"the related card is not one size: {narrow['cardW']}px at 375 against "
+        f"{wide['cardW']}px at 1280. Above lg the grid cap is `minmax(0, 160px)` and "
+        f"NOT `1fr` -- a fraction grows the card with the container, which is how the "
+        f"desktop cards became 194px against the phone's 160"
+    )
+
+
 def main():
     global RU_SORT_KEY
     RU_SORT_KEY, branch, rejected = resolve_russian_sort_key()
@@ -1212,6 +1347,7 @@ def main():
                 test_film_theme,
                 test_film_lang,
                 test_film_mobile_layout,
+                test_related_one_row_and_level_chips,
                 test_boot_fallback,
                 test_lucky,
                 test_poster_modal,

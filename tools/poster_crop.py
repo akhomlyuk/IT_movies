@@ -74,15 +74,20 @@ POSTER_ASPECT = 2 / 3
 DISCARDED_AREA_CEILING = 0.02
 PROXY_ASPECT_STANDARD = 0.02
 REPORT_TOLERANCE = 0.02
-RELATED_BOX_DESKTOP = (170, 255)
-# There is no separate mobile box, and there is no single box at all: the card
-# is a flex scroller below 1024 and a six-column grid above it, so the rendered
-# poster measures 125.5x188.25 at lg, 134x201 at xs and 170.66x255.98 at xl.
-# Every one of those is exactly 2:3, which is the only thing this module
-# depends on -- DISCARDED_AREA is a function of the box's ASPECT RATIO alone, so
-# the absolute numbers here change no reported figure. They are the widest
-# tier's, because that is the one a reader renders sharpest.
-RELATED_BOX_MOBILE = RELATED_BOX_DESKTOP
+# ONE box, and the two names are kept only because callers still import them.
+# The 2026-09-30 related rework made the card 160px at every width: a
+# `flex: 0 0 160px` track below lg and `minmax(0, 160px)` above it, which the
+# six shrink to 151.5 at 1024 rather than wrapping. The poster is the track less
+# 24px of padding and 2px of border, so 160 -> 134, and 151.5 -> 125.5. Every
+# one of those is exactly 2:3, which is the only thing this module depends on:
+# DISCARDED_AREA is a function of the box's ASPECT RATIO alone, so the absolute
+# numbers change no reported figure in any run of this tool. The named box is
+# 134x201 because that is what renders at 375 and at 1920 -- the widest
+# measurement is not needed any more, and quoting the 170x255 it replaced would
+# describe a box that stopped existing.
+RELATED_BOX = (134, 201)
+RELATED_BOX_DESKTOP = RELATED_BOX
+RELATED_BOX_MOBILE = RELATED_BOX
 HERO_BOX_WIDTH_MOBILE = 240
 HERO_BOX_WIDTH_DESKTOP = 320
 WORST_N = 5

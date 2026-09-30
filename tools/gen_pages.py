@@ -638,8 +638,17 @@ def inject_last_updated(src):
 # exact expression text: an expression the table does not know, or a table
 # entry the fragment no longer uses, stops the generator instead of letting the
 # two renderings drift apart in silence.
+#
+# The `sizes` slot is 134px, which is the rendered poster box at EVERY width
+# after the 2026-09-30 rework, and `width`/`height` are the same 2:3 pair. It
+# was `sizes="170px"` with a 160x240 attribute pair, copied from the card's old
+# 170px flex track; the poster never rendered 170px wide, and the declared slot
+# was 27% wider than the box it described. Since the card is 160px at every
+# width now, the poster is 160 less 24px of padding and 2px of border = 134, and
+# that is the same number at 375 and at 1920 -- measured across 15 widths, the
+# spread collapsed from 151.5-170.66 to a flat 134.
 RC_CARD = """<a class="rc" :href="'../' + itemSlug(r) + '/'">
-  <img v-if="relatedPoster(r)" class="rc-poster" :src="relatedPoster(r)" :srcset="relatedPosterSrcset(r)" sizes="170px" alt="" width="160" height="240" loading="lazy" decoding="async">
+  <img v-if="relatedPoster(r)" class="rc-poster" :src="relatedPoster(r)" :srcset="relatedPosterSrcset(r)" sizes="134px" alt="" width="134" height="201" loading="lazy" decoding="async">
   <span class="rc-content">
     <span class="rc-title">{{ relatedTitle(r) }}</span>
     <span class="rc-info">{{ relatedInfo(r) }}</span>

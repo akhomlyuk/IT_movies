@@ -1148,6 +1148,177 @@ def check_featured_poster_sizes():
 check_featured_poster_sizes()
 
 
+# 6e.2. The related card's own slot, and it is a FIXED one, so it is a different
+# shape of gate from either existing poster: the hero and the featured card both
+# declare a responsive `sizes` and are checked as such, while this card is
+# 134px at 375 and 134px at 1920 and gets a bare `sizes="134px"`.
+#
+# The direction of the failure is the whole reason this check exists. A slot
+# WIDER than the box only costs bytes, so the 27% over-declaration it shipped
+# with (sizes="170px" for a 134px poster) was invisible. A slot NARROWER than
+# the box makes the browser fetch a source smaller than the box renders and
+# scale it up into a blur, and nothing else in the tree can see that: the emitted
+# value and any canonical value agree perfectly while both are wrong.
+RELATED_SIZES_BINDING = "gen_pages.RC_CARD"
+RELATED_BOX = 134
+RELATED_POSTER_ATTRS = re.compile(
+    r'\bsizes="([^"]*)"[^>]*?\bwidth="(\d+)"[^>]*?\bheight="(\d+)"')
+
+
+def check_related_poster_slot():
+    """The related card's slot must be a bare px length no narrower than its box.
+
+    And the box is not a constant here either -- it is DERIVED, from the card's
+    width less its padding and its border, and the card's width is written down
+    in two places in css/style.css with two different mechanisms: `flex: 0 0
+    160px` for the scroller track below 1024, and `minmax(0, 160px)` for the
+    six-column grid above it. Both state 160, so both are read and the smaller is
+    used: the grid's six columns are ALLOWED to shrink to fit a 969px track at
+    1024 (measured 151.5), so 160 is the widest this card ever renders, and
+    certifying a slot against a larger number is how a blur ships.
+    """
+    path = ROOT / "css" / "style.css"
+    if not path.exists():
+        errors.append(
+            f"Related slot size: {path.name} is missing, so the card width this "
+            f"derives the box from has no witness at all"
+        )
+        return
+    src = re.sub(r"/\*.*?\*/", "", path.read_text(encoding="utf-8"), flags=re.S)
+    root, _ = _style_root_font_px(src)
+
+    # `.related a.rc` declares `padding: var(--space-3)`, not a px literal, so
+    # this check resolves the token exactly as the style-literal gate does: read
+    # the declaration out of `:root` and convert against the root font-size. A
+    # raw `POSTER_BOX_PX` scan finds nothing there and would raise, which is why
+    # the literal path alone cannot be reused.
+    tokens = {}
+    for tname, tval in re.findall(r"(--[\w-]+)\s*:\s*([^;{}]+);", src):
+        kind, resolved = _style_classify(tval.strip(), root)
+        if kind == "length":
+            tokens[tname] = resolved
+
+    def to_px(value):
+        """The px a box-spacing value resolves to, or None if it has no length."""
+        value = value.strip()
+        var = re.fullmatch(r"var\(\s*(--[\w-]+)\s*\)", value)
+        if var:
+            return tokens.get(var.group(1))
+        px = POSTER_BOX_PX.fullmatch(value)
+        if px:
+            return float(px.group(1))
+        kind, resolved = _style_classify(value, root)
+        return resolved if kind == "length" else None
+
+    def box_part(value):
+        """The px length in `padding: <v>`-style shorthand: every side, and the
+        box is symmetric here, so the max is the side. `0 12px` is a real
+        possibility and 0 is a length too, hence no truthiness test."""
+        found = [to_px(part) for part in value.split()]
+        found = [f for f in found if f is not None]
+        return max(found) if found else None
+
+    widths, pad, border = set(), None, None
+    for m in re.finditer(r"([^{}]+)\{([^{}]*)\}", src):
+        sel, body = m.group(1), m.group(2)
+        # The card's own box and the width that tracks it are DIFFERENT rules --
+        # `.related a.rc` carries the padding and border, `.related li` the flex
+        # basis and the grid cap. Matching both against one selector would read
+        # neither, which is what the first version of this check did.
+        if ".related li" in sel:
+            # The scroller's px basis and the grid's px track cap both state the
+            # card's width; `flex: 1` / `auto` state nothing and the regexes skip
+            # them, so a regression back to `1fr` fails this rather than passing.
+            for f in re.finditer(r"\bflex\s*:\s*[^;]*?\b(\d+(?:\.\d+)?)px\s*;?", body):
+                widths.add(float(f.group(1)))
+            for g in re.finditer(r"minmax\(\s*0\s*,\s*(\d+(?:\.\d+)?)px\s*\)", body):
+                widths.add(float(g.group(1)))
+        if re.search(r"\.related\s+a\.rc(?![\w-])", sel):
+            for p in re.finditer(r"\bpadding\s*:\s*([^;]+);", body):
+                if pad is None:
+                    pad = box_part(p.group(1))
+            for b in re.finditer(r"\bborder(?:-width)?\s*:\s*([^;]+);", body):
+                if border is None:
+                    border = box_part(b.group(1))
+
+    if not widths:
+        errors.append(
+            f"Related slot size: no `.related li` rule in {path.name} declares a px "
+            f"card width -- no `flex: 0 0 <N>px` basis and no "
+            f"`minmax(0, <N>px)` grid cap -- so the poster box cannot be derived from "
+            f"the stylesheet and this constant has no witness"
+        )
+        return
+    card = min(widths)
+    if pad is None or border is None:
+        errors.append(
+            f"Related slot size: `.related a.rc` in {path.name} declares no padding or "
+            f"border, so the poster box cannot be derived from the {card:g}px card "
+            f"(the poster is the card's content box)"
+        )
+        return
+
+    derived = card - 2 * pad - 2 * border
+    if abs(derived - RELATED_BOX) > 0.01:
+        errors.append(
+            f"Related slot size: the card is {card:g}px in css/style.css and the poster "
+            f"is the card's content box, {card:g} less {pad:g}px of padding and "
+            f"{border:g}px of border on each side, which makes it {derived:g}px. "
+            f"verify.RELATED_BOX is {RELATED_BOX}px. If the card, its padding or its "
+            f"border moved, this constant is stale and every slot compared against it "
+            f"is wrong"
+        )
+
+    owner = ROOT / "tools" / "gen_pages.py"
+    found = RELATED_POSTER_ATTRS.findall(owner.read_text(encoding="utf-8")) \
+        if owner.exists() else []
+    if len(found) != 1:
+        errors.append(
+            f"Related slot size: {RELATED_SIZES_BINDING} carries {len(found)} "
+            f"related-poster `sizes`/`width`/`height` attribute triples, expected 1. "
+            f"The card has one source, so more than one means a second copy was "
+            f"pasted into the fragment"
+        )
+        return
+    sizes, w, h = found[0]
+    px = POSTER_BOX_PX.search(sizes)
+    slot = float(px.group(1)) if px else None
+    if slot is None:
+        errors.append(
+            f"Related slot size: the related card declares sizes={sizes!r}, which is not "
+            f"a px length. A viewport-relative slot is unbounded above, so no value of "
+            f"it could be certified"
+        )
+        return
+    if slot < RELATED_BOX:
+        errors.append(
+            f"Related slot size: the related card declares sizes={sizes!r} for a poster "
+            f"that renders {RELATED_BOX}px wide. A slot NARROWER than its box makes the "
+            f"browser fetch a source smaller than the box renders and scale it into a "
+            f"blur; only a wider slot merely costs bytes. This is the direction "
+            f"check_poster_slot_shape exists to stop, and the one the old 170px slot "
+            f"got wrong in the other direction"
+        )
+    if (int(w), int(h)) != (RELATED_BOX, RELATED_BOX * 3 // 2):
+        errors.append(
+            f"Related slot size: the related card's width/height attributes are "
+            f"{w}x{h}, expected {RELATED_BOX}x{RELATED_BOX * 3 // 2}. The intrinsic "
+            f"ratio is what reserves the card's height before the poster loads, and it "
+            f"must be the 2:3 the box renders"
+        )
+    print(
+        f"Related slot size: sizes={sizes!r} -- bare px, no media condition, and "
+        f"{'>=' if slot >= RELATED_BOX else '<'} the {RELATED_BOX}px box it describes, "
+        f"derived in css/style.css from the {card:g}px card less {pad:g}px of padding "
+        f"and {border:g}px of border on each side; the card states {card:g}px in both "
+        f"its `flex` basis and its grid cap, and tools/e2e.py measures the rendered box "
+        f"at both tiers"
+    )
+
+
+check_related_poster_slot()
+
+
 # 6f. The media-condition gate. A width edge is the only thing that decides which
 # rule-set a viewport gets, and before this block the pre-Stage-2b ad-hoc set
 # (480 / 525 / 720 / 721 / 950) could be reintroduced one literal at a time with

@@ -2129,17 +2129,45 @@ html.no-scroll-state.scrolled .scroll-top {
   letter-spacing: -0.02em;
 }
 
+/* The related strip's base is the SCROLLER, and it is the whole below-lg tier.
+   `ul` here is also `.related-track` -- the element carries both classes -- so
+   `display: flex` plus `.related-track`'s `overflow-x: auto` is the strip, with
+   no media block needed to build it. Before the 2026-09-30 rework the base said
+   170px and three media blocks re-stated it: a six-column grid above 1024, a
+   FOUR-column grid from 768 to 1023 (which put six cards in two rows with two
+   orphans, an 807px block at 768), and a 160px scroller below 768. The md block
+   is gone and the base is now the canonical card, so the two tiers are the base
+   and the single lg grid below.
+
+   160px is the one width this card has at every viewport, which is what "the
+   same size on every resolution" means. The partner's ruling was that the
+   posters must never break into a second row: where six 160px cards do not fit,
+   the strip scrolls. Six of them plus gaps need 1020px, so that is a 1024px
+   boundary, and it is the same edge the grid below turns on. */
 .related ul {
   display: flex;
   gap: var(--space-3);
   margin: 0;
+  /* `padding: 0` first, then a bottom padding IN THE SAME RULE. This is not
+     redundancy: the element carries both `.related ul` and `.related-track`, and
+     `.related ul` is (0,1,1) while a bare `.related-track` is (0,1,0), so a
+     `padding-bottom` declared on `.related-track` LOSES to the reset on the same
+     element and never applied. It read as the gap between the cards and the
+     horizontal scrollbar, and it was worth 0px: the cards sat flush against
+     the bar. Declared here it is the same rule that resets the list padding, so
+     no specificity contest is possible. */
   padding: 0;
+  padding-bottom: var(--space-2);
   list-style: none;
 }
 
 .related li {
   display: flex;
-  flex: 0 0 170px;
+  flex: 0 0 160px;
+  /* min-width: 0 is load-bearing: a flex item's default min-width is auto, so
+     without it the card's min-content (the poster's intrinsic width) holds the
+     track open at ~210px and the 160px basis is a no-op. */
+  min-width: 0;
   scroll-snap-align: start;
 }
 
@@ -2197,66 +2225,70 @@ html.no-scroll-state.scrolled .scroll-top {
   background: var(--accent);
 }
 
+/* One row at EVERY width. There used to be three bands -- a flex scroller below
+   768, a FOUR-column grid from 768 to 1023, and a six-column grid above -- and
+   the middle one was a defect rather than a tier: six cards in four columns put
+   two of them on a second row, so at 768 the block rendered two rows with two
+   orphans and measured 807px tall against 419px for a single row. The partner
+   asked for the posters never to break into two rows, scrolling instead.
+
+   So there are two bands now, and the card is 160px in both. `flex: 0 0 160px`
+   is the track below 1024; from 1024 up it is `minmax(0, 160px)`, a CAP rather
+   than `1fr`. That cap is the load-bearing part: `1fr` grew the columns with the
+   container, so the desktop cards measured 194-197px against the phone's 160 --
+   the same film, a different size, at the same width. Six cards at 160px plus
+   gaps need 1020px, which a 969px track at 1024 cannot give, so the six shrink
+   to 151.5 there (measured, and the poster to 125.5) instead of wrapping. That
+   is the whole reason for the cap: `minmax(0, 160px)` is allowed to be narrower,
+   so six always fit on one row and the card stops growing.
+
+   Below lg the strip stays a scroller and keeps its dots, because six 160px
+   cards genuinely do not fit below 1024 and there is no honest way to show them
+   all without either clipping a poster or scrolling.
+
+   There is deliberately NO block from 768 to 1023. It used to hold a four-column
+   grid, and a four-column grid is the defect: six cards do not fit in four
+   columns, so two of them took a second row. The base rule is already the
+   scroller, so this tier needs nothing declared, and a card width must be stated
+   in exactly one place -- an earlier version of this kept a 768-1023 block that
+   re-stated the same 160px the base already had, and deleting the 767 block while
+   keeping it meant the strip quietly fell back to the base's old 170px below
+   768. The card size is checked in tools/e2e.py by reading the rendered width
+   at 375 and at 1280 and comparing them. */
 @media (min-width: 1024px) {
-  /* From lg up the related block is not a carousel: all six cards sit in ONE
-     row and there are no dots. Six 170px cards plus gaps need 1080px, which a
-     1040px container cannot give, so the columns shrink to fit -- at 1024 that
-     is 151px each, and the narrowest thing inside a card is the 120px poster
-     plus 24px of padding, 144px. Below 1024 there is no honest way to show six
-     without either clipping the poster or scrolling, so the strip stays a
-     scroller there and keeps its dots. */
   .related ul {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 160px));
+    /* `justify-content` is the DEFAULT (`start`) and is stated nowhere, on
+       purpose. Six 160px cards plus gaps need 1020px, so on a 1225px track at
+       1280 there is 205px of slack, and this is where it goes: to the RIGHT.
+       Centring it -- which an earlier version of this rule did -- split the
+       slack evenly and indented the first card 102px from the content edge, so
+       the strip no longer started under its own heading. The partner's ruling
+       is that the row starts flush with "Похожее в каталоге", which is the
+       section's left edge, so the slack is dead space at the end of the row and
+       not a margin before it. `start` is also what the scroller tier below 1024
+       already does, so the two tiers agree on which edge the row begins. */
     gap: var(--space-3);
     overflow-x: visible;
     scroll-snap-type: none;
   }
 
   .related li {
-    flex: 1;
+    flex: none;
     min-width: 0;
   }
 
-  .related-track {
+  /* No scrollbar exists at this tier -- the grid does not overflow -- so the gap
+     the bottom padding bought is dead space here. Reset it on the SAME selector
+     that declares it, `.related ul`, because a `.related-track` reset at (0,1,0)
+     would lose to the (0,1,1) base it is cancelling. */
+  .related ul {
     padding-bottom: 0;
   }
 
   .related-dots {
     display: none;
-  }
-}
-
-/* md: 4 columns */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .related ul {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--space-3);
-  }
-  .related li {
-    flex: 1;
-    min-width: 0;
-  }
-}
-
-/* below md: horizontal scroll */
-@media (max-width: 767px) {
-  .related ul {
-    display: flex;
-    gap: var(--space-3);
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding-bottom: var(--space-2);
-  }
-  .related li {
-    flex: 0 0 160px;
-    /* min-width: 0 is load-bearing: a flex item's default min-width is auto, so
-       without it the card's min-content (the poster's intrinsic width) holds the
-       track open at ~210px and the 160px basis is a no-op. The lg and md tiers
-       already carry min-width: 0 for the same reason. */
-    min-width: 0;
-    scroll-snap-align: start;
   }
 }
 
@@ -2303,21 +2335,37 @@ html.no-scroll-state.scrolled .scroll-top {
 }
 
 .rc-title {
-  font-size: var(--fs-lg);
+  /* --fs-sm, not --fs-lg: the title is clamped to ONE line, so its width is
+     what decides whether a long Russian title is cut. At 18px the one line
+     clipped 3.9% of the library (36 of 924 cards at 375/768/1280, 62 at 1024
+     where the cards are narrowest); at 14px it clips NONE at 375, 768 or 1280
+     and 2.3% at 1024. The smaller size buys the ellipsis almost everywhere for
+     3.5px less card height. The same token the featured card's title uses. */
+  font-size: var(--fs-sm);
   font-weight: 500;
   line-height: 1.25;
-  overflow: hidden;
   overflow-wrap: normal;
   text-overflow: ellipsis;
   hyphens: auto;
   letter-spacing: -0.01em;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  /* ONE line, not two, and this is the fix for the chips "dancing": a two-line
+     title pushed its chips 22-23px lower than a one-line neighbour's, so the
+     chip row across six cards had no shared baseline. Clamping to one makes
+     every card's content the same height (measured: 17.5px title, 36px info,
+     22.4px chips, identical across all six) and the row is level at every
+     width. It also takes 22px off the card. */
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 .rc-info {
+  /* --fs-xs, 12px, and NOT --fs-sm: this label is uppercase with 0.035em of
+     tracking, so 14px is 2px WIDER than 12px rather than narrower, and the
+     measurement is not marginal -- at 14px this line clipped in 307 of 462
+     cards (66%) while the card grew from 328px to 350px. The title was moved
+     down to --fs-sm; moving this one up would undo the vertical gain. */
   font-size: var(--fs-xs);
   color: var(--ink-muted);
   text-transform: uppercase;
@@ -2332,6 +2380,15 @@ html.no-scroll-state.scrolled .scroll-top {
   display: flex;
   flex-wrap: nowrap;
   gap: var(--space-2);
+  /* `margin-top: auto` is INERT here, and it is not load-bearing: a flex item's
+     auto margin only pushes when the container has slack, and `.rc-content` is
+     content-sized -- it has no `flex: 1`, so there is never slack to push into.
+     It reads like the rule that keeps the chips aligned, and it is not: the
+     chips share a baseline because `.rc-title` is clamped to one line, so every
+     card's content is the same height. Left as-is rather than deleted, because
+     the next person to find it is better served by a comment than by a
+     re-derivation; if `.rc-content` ever grows, this becomes live and pins the
+     chips to the card's bottom edge, which is the same visual result. */
   margin-top: auto;
   padding-top: var(--space-1);
 }
