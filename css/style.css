@@ -2010,10 +2010,13 @@ html.no-scroll-state.scrolled .scroll-top {
   justify-content: center;
   align-items: center;
   gap: var(--space-1);
-  /* Overlaps the track's bottom edge rather than sitting in a row of its own:
-     the strip already ends in whitespace below the cards, and a second band
-     under it read as a separate control instead of part of the same one. */
-  margin-top: calc(-1 * var(--space-2));
+  /* No negative margin here. It was there so the dot row would sit over the
+     strip's own trailing whitespace rather than add a band under it -- correct
+     while the buttons were 44px, because the 8px dot then sat 18px below the
+     row's top edge. At 24px the dot sits 8px down, the same -8px pulled it onto
+     the cards, and the partner reported the dots stuck to the cards. The row now
+     takes its own space with an ordinary gap. */
+  margin-top: var(--space-2);
 }
 
 .related-dot {
