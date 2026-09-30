@@ -850,6 +850,18 @@ svg:not(.heart) {
   flex-direction: column;
   flex: 1;
   min-width: 0;
+  /* NO `justify-content`, deliberately. `.featured-card-media` is `flex: none`
+     (see its own comment), which is the whole fix, and adding `space-between`
+     on top of it was measured and rejected: it levels the copy block's BOTTOM
+     and so the alt line, at the cost of a NEW 18.2px spread in the gap between
+     the poster and the title. `flex: none` alone leaves the copy hanging from
+     the top, which lines up the poster, the scrim, the chips, the title's top
+     and the gap between poster and title all at once; what it gives up is the
+     alt line's baseline on the one-line cards, and the slack it does not absorb
+     is empty card surface at the bottom -- the same shape the related card
+     already has. Measured at 1280, forced two-line title in card 1:
+     chips 18.19 -> 0.02, title top 18.19 -> 0.01, poster-to-title gap
+     18.19 -> 0. */
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius-s);
@@ -872,7 +884,25 @@ svg:not(.heart) {
 .featured-card-media {
   position: relative;
   display: block;
-  flex: 1;
+  /* NOT `flex: 1`, and this one declaration is the entire fix for a card whose
+     title runs to two lines. At `flex: 1` the media absorbed whatever the copy
+     block did not use, and the copy block is 18.2px taller on a two-line title
+     -- 37 of 155 titles at 1280, 65 at 1024 -- so the media box differed by
+     18.2px across a row. Two things are anchored to that box's bottom and both
+     rode with it: `.featured-card-overlay` (`inset: auto 0 0 0`), which carries
+     the `★ year genre` meta AND the KP/IMDb chips, so the chips gained an 18.2px
+     spread -- the "dancing" that was reported. The poster itself never moved
+     (its height is the card's width x 3/2, measured spread 0.1px), so what read
+     as a shorter poster was the scrim sitting at a different height on the same
+     image.
+
+     Out of the flex flow, the media is exactly the image's own height, so its
+     height is a function of the card's WIDTH alone and the scrim is on the same
+     line in every card whatever the title does. Not a font change: `--fs-xs`
+     removes only 11 of the 37 two-line titles at 1280 and leaves 26, while
+     clamp 1 removes all of them at the cost of cutting the second line off
+     titles that read in full today. */
+  flex: none;
   min-width: 0;
 }
 

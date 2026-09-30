@@ -423,6 +423,113 @@ def test_featured_breakpoints(page, base):
             "document.documentElement.scrollWidth <= document.documentElement.clientWidth"
         ), f"@{width}: the featured block overflows the document horizontally"
 
+        # The poster, the scrim and the chips must sit on the same line in every
+        # card of a row, whatever the title does -- see `.featured-card-media`'s
+        # comment. The scrim is anchored to `.featured-card-media`'s bottom, so
+        # the thing to measure is the MEDIA box's spread, not the poster's: the
+        # image is width x 3/2 in every card and proved equal (0.1px) while the
+        # defect was live, which is why a poster-box assertion stays green
+        # through it.
+        #
+        # `pickFeatured` is random, and that is exactly what makes a SAMPLE
+        # useless here. 37 of 155 titles wrap to two lines at 1280 and 65 at
+        # 1024, so a row of six frequently holds none of them, every spread
+        # reads 0, and the assertion passes having measured nothing. So the
+        # condition is FORCED rather than hoped for: a title that measurably
+        # wraps at this column width goes into card 1, the row is measured, and
+        # the original text is put back.
+        #
+        # `titleTop` and `gap` are asserted as well, and they are what pins
+        # `flex: none` rather than a `justify-content`: the media out of the flex
+        # flow puts the copy's TOP on one line, so the gap between poster and
+        # title is 0 in every card. `justify-content: space-between` was
+        # measured and rejected -- it levels the copy's bottom instead and gives
+        # this gap an 18.2px spread of its own.
+        forced = page.evaluate(
+            """() => {
+              const cards = [...document.querySelectorAll('.featured-card')];
+              if (!cards.length) return { ok: false, why: 'no cards' };
+              const first = cards[0].querySelector('.featured-card-title');
+              const copy = cards[0].querySelector('.featured-card-copy');
+              const cs = getComputedStyle(first);
+              const lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.3;
+              const w = copy.getBoundingClientRect().width;
+              const lines = (el, text) => {
+                el.textContent = text;
+                return Math.max(1, Math.round(el.getBoundingClientRect().height / lh));
+              };
+              // The probe is a REAL `.featured-card-title` at the real width, so
+              // the shipped cascade decides its wrapping rather than a
+              // reconstruction of four properties, which is what made an earlier
+              // version of this report all 155 titles as two lines.
+              const host = document.createElement('span');
+              host.className = 'featured-card-copy';
+              host.style.cssText = 'display:block;position:absolute;left:-9999px;'
+                + 'width:' + w + 'px;';
+              const probe = document.createElement('span');
+              probe.className = 'featured-card-title';
+              host.appendChild(probe);
+              document.body.appendChild(host);
+              let chosen = null;
+              for (const item of (window.CATALOG || [])) {
+                if (lines(probe, item.titleRu) >= 2) { chosen = item.titleRu; break; }
+              }
+              host.remove();
+              if (!chosen) return { ok: false, why: 'no title wraps at ' + w + 'px' };
+              const was = first.textContent;
+              first.textContent = chosen;
+              const got = Math.round(first.getBoundingClientRect().height / lh);
+              const spread = (sel, edge) => {
+                const v = [...document.querySelectorAll(sel)]
+                  .map((e) => e.getBoundingClientRect()[edge]);
+                return v.length ? Math.max(...v) - Math.min(...v) : 0;
+              };
+              const gap = (() => {
+                const v = cards.map((c) => {
+                  const img = c.querySelector('.featured-card-media img');
+                  const cp = c.querySelector('.featured-card-copy');
+                  if (!img || !cp) return null;
+                  return cp.getBoundingClientRect().top
+                       - img.getBoundingClientRect().bottom;
+                }).filter((x) => x !== null);
+                return v.length ? Math.max(...v) - Math.min(...v) : 0;
+              })();
+              const out = {
+                ok: got >= 2, title: chosen, lines: got,
+                media: spread('.featured-card-media', 'height'),
+                overlay: spread('.featured-card-overlay', 'top'),
+                chip: spread('.rating-chip', 'bottom'),
+                titleTop: spread('.featured-card-title', 'top'),
+                gap: gap,
+              };
+              first.textContent = was;
+              return out;
+            }""")
+        assert forced["ok"], (
+            f"@{width}: could not put a two-line title into the row to measure against "
+            f"({forced.get('why', 'the forced title did not wrap')}). This check is "
+            f"about the two-line case and `pickFeatured` is random, so the row will "
+            f"not supply one on its own"
+        )
+        for key, label in (("media", "the .featured-card-media box"),
+                           ("overlay", "the poster scrim"),
+                           ("chip", "the rating chips"),
+                           ("titleTop", "the top of the featured titles"),
+                           ("gap", "the gap between poster and title")):
+            assert forced[key] < 0.5, (
+                f"@{width}: {label} differs by {forced[key]:.2f}px across the row with a "
+                f"two-line title forced into card 1 (media {forced['media']:.2f}, scrim "
+                f"{forced['overlay']:.2f}, chips {forced['chip']:.2f}, title top "
+                f"{forced['titleTop']:.2f}, gap {forced['gap']:.2f}). "
+                f"`.featured-card-media` must be `flex: none`: at `flex: 1` it absorbs "
+                f"whatever the copy block does not use, so a two-line title makes the "
+                f"media box 18.2px shorter and everything anchored to its bottom rides "
+                f"with it. Do NOT reach for `justify-content: space-between` instead -- "
+                f"it was measured and gives this gap an 18.2px spread of its own, and "
+                f"shrinking the font or clamping the title to one line would mask the "
+                f"defect rather than fix it"
+            )
+
 
 def test_featured_poster_shape(page, base):
     """The featured poster must render 2:3 at EVERY tier, and its box must be the
