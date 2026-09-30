@@ -2114,76 +2114,64 @@ html.no-scroll-state.scrolled .scroll-top {
 
 .related a.rc {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  align-items: stretch;
-  gap: var(--space-2);
+  flex: 1;
   min-width: 0;
   padding: var(--space-3);
   border: 1px solid var(--line);
   border-radius: var(--radius-s);
-  background: var(--paper);
+  background: var(--surface-1);
   color: var(--ink);
   text-decoration: none;
   cursor: pointer;
-  transition:
-    border-color 0.15s ease,
-    background-color 0.15s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .related a.rc:hover {
-  border-color: var(--line-strong);
-  background: var(--hover);
+  border-color: var(--accent);
+  background: var(--surface-2);
 }
 
 .related a.rc:focus-visible {
-  outline: var(--focus-ring-width) solid var(--focus-ring-color);
-  outline-offset: var(--focus-ring-offset);
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .rc-poster {
-  display: block;
-  flex: 0 0 auto;
-  width: 120px;
-  height: 180px;
-  border-radius: var(--radius-s);
+  width: 100%;
+  aspect-ratio: 2 / 3;
   object-fit: cover;
-  background: var(--hover);
+  border-radius: var(--radius-s);
+  background: var(--surface-2);
 }
 
 .rc-content {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  min-width: 0;
   gap: var(--space-1);
+  margin-top: var(--space-2);
+  min-width: 0;
 }
 
 .rc-title {
-  display: -webkit-box;
-  overflow: hidden;
-  overflow-wrap: normal;
-  text-overflow: ellipsis;
-  hyphens: auto;
+  font-size: var(--fs-md);
   font-weight: 500;
   line-height: 1.25;
-  -webkit-box-orient: vertical;
+  letter-spacing: -0.01em;
+  display: -webkit-box;
   -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .rc-info {
-  display: -webkit-box;
-  overflow: hidden;
-  overflow-wrap: normal;
-  text-overflow: ellipsis;
-  hyphens: auto;
-  color: var(--ink-muted);
   font-size: var(--fs-xs);
-  line-height: 1.5;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.035em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rc-meta {
