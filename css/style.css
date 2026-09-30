@@ -303,12 +303,17 @@ html:not(.js) #app[v-cloak] nav.nav:not(.nav--dialog) {
 @layer components {
 
 .top {
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-raised);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-5);
   padding-bottom: var(--space-4);
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
 }
 
@@ -402,6 +407,24 @@ svg:not(.heart) {
   gap: var(--space-2);
 }
 
+.tool-buttons button {
+  width: var(--tap);
+  height: var(--tap);
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.tool-buttons button:hover {
+  background: var(--surface-2);
+  border-color: var(--accent);
+}
+
 .result-count {
   flex: none;
   color: var(--ink-muted);
@@ -486,13 +509,19 @@ svg:not(.heart) {
   min-width: 160px;
   max-width: 100%;
   height: 40px;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-s);
-  background: var(--glass);
+  border-radius: var(--radius-m);
+  border: 1px solid var(--line);
+  background: var(--surface-1);
   color: var(--ink);
-  font: inherit;
+  font-size: var(--fs-sm);
   padding: 0 var(--space-3);
   transition: border-color var(--transition-fast) ease;
+}
+
+.search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-focus);
+  outline: none;
 }
 
 .genre-filter {
@@ -709,23 +738,23 @@ svg:not(.heart) {
   align-items: center;
   gap: var(--space-2);
   height: 40px;
-  padding: 0 var(--space-3);
+  padding: var(--space-2) var(--space-3);
   text-decoration: none;
-  border: 1px solid var(--line-strong);
   border-radius: var(--radius-s);
-  background: var(--glass);
-  transition: border-color var(--transition-fast) ease, background-color var(--transition-fast) ease;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--ink-muted);
+  transition: color 0.15s ease, background-color 0.15s ease;
 }
 
 .nav a:hover {
-  border-color: var(--ink);
-  background: var(--hover);
+  color: var(--ink);
+  background: var(--surface-1);
 }
 
 .nav a[aria-current="true"] {
-  border-color: var(--accent);
-  background: var(--paper-strong);
   color: var(--accent);
+  box-shadow: inset 0 -1px 0 var(--accent);
 }
 
 .nav span.count {
@@ -1279,18 +1308,14 @@ a.imdb .star,
 .rating-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.25em;
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-  border: 1px solid var(--line-strong);
   border-radius: var(--radius-pill);
+  border: 1px solid var(--line-strong);
   padding: 0.1em 0.5em;
   font-size: var(--fs-xs);
-  line-height: 1.4;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: var(--rating);
+  background: transparent;
 }
 
 .rating-chip--kp {
