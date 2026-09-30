@@ -318,7 +318,7 @@ def test_featured_breakpoints(page, base):
     )
     assert len(set(hrefs)) == 6, f"featured cards must be 6 distinct films: {hrefs}"
     expect(page.locator(".featured-card img")).to_have_count(6)
-    expect(grid).to_have_css("grid-auto-flow", "column")
+    expect(grid).to_have_css("display", "flex")
     expect(grid).to_have_css("overflow-x", "auto")
     expect(grid).to_have_css("scroll-snap-type", "x mandatory")
     rows = page.locator(".featured-grid > li").evaluate_all(
