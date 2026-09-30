@@ -365,7 +365,7 @@ if (mode === "slug") {
   // Card order, asserted as a sequence so a later edit that swaps two spans
   // fails here instead of in someone's eye. It lives in gen_pages.RC_CARD
   // because film.js renders the card as an opaque FILM_RC_CARD string.
-  const rcOrder = ["rc-poster", "rc-info", "rc-title", "rc-meta"];
+  const rcOrder = ["rc-poster", "rc-title", "rc-info", "rc-meta"];
   const genRc = generatorSource.slice(
     generatorSource.indexOf("RC_CARD = "),
     generatorSource.indexOf("RC_VOID_TAGS")
