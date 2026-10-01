@@ -697,10 +697,11 @@ COLOUR_READ = """el => {
 E2E_CHANNELS = (
     {"brand": "tg", "sel": ".ch-link--tg", "mark": ".ch-mark--tg",
      "url": "https://t.me/wh_lab", "label_ru": "в Telegram",
-     "accent": "rgb(94, 106, 210)"},
+     "accent": {"dark": "rgb(47, 158, 109)", "light": "rgb(14, 107, 72)"}},
     {"brand": "max", "sel": ".ch-link--max", "mark": ".ch-mark--max",
      "url": "https://max.ru/join/ByzPb9lbZJwBbvKvRvi3ioBNaFF9TyuXDy5vrIX48vs",
-     "label_ru": "в Max", "accent": "rgb(94, 106, 210)"},
+     "label_ru": "в Max",
+     "accent": {"dark": "rgb(47, 158, 109)", "light": "rgb(14, 107, 72)"}},
 )
 
 # Rasterise each glyph and measure the INK BOUNDS, which is what the eye
@@ -921,13 +922,17 @@ def test_channel_link(page, base):
                         f"shipped that way once and read as a colour problem "
                         f"rather than a missing rule"
                     )
-                    assert colour["fill"] != ch["accent"], (
+                    assert colour["fill"] != ch["accent"][theme], (
                         f"{where}: the {ch['brand']} glyph paints "
                         f"{colour['fill']}, which is --accent. That is what "
                         f"`fill: currentColor` produces here: on the <svg> element "
                         f"currentColor resolves to THAT element's own colour, and "
                         f"`svg:not(.heart)` sets it to --accent. The token has to "
-                        f"be named outright"
+                        f"be named outright. The sentinel is a PER-THEME pair "
+                        f"because --accent is #2f9e6d dark and #0e6b48 light; "
+                        f"while it was a single value in both themes one string "
+                        f"sufficed, and a single string now would leave the "
+                        f"light-theme half of this loop asserting nothing"
                     )
                     assert colour["label"] >= 4.5, (
                         f"{where}: the {ch['brand']} label is at "

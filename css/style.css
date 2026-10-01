@@ -11,8 +11,43 @@
   --ink: #f7f8f8;
   --ink-muted: #8a8f98;
   --ink-subtle: #62666d;
-  --accent: #5e6ad2;
-  --accent-focus: #5e69d1;
+  /* The accent carries THREE jobs, not one, and until 2026-10-01 it was asked to
+     do two of them at once with a single value -- which is why it could not pass.
+
+     --accent       graphics and glyphs, floor 3:1 (icons, arrows, dots, borders,
+                    focus rings). Emerald, hue 155.
+     --accent-focus the search box's outer ring, one step further from the text.
+     --accent-fill  a FILL that --ink is painted ON, floor 4.5:1: the four
+                    :active buttons and .skip-link. It must be DARK in the dark
+                    theme (--ink is near-white there) and LIGHT in the light one
+                    (--ink is black), so it needs a value per theme.
+
+     The split is not stylistic. One value for both roles in both themes is
+     impossible, and that was searched rather than argued: an exhaustive sweep of
+     360 hue x 12 saturation x 71 lightness returned 0 of 306720 candidates. The
+     old #5e6ad2 was not an exception -- it measured 4.42:1 dark and 4.47:1 light
+     as a fill, so .skip-link and every :active button were ALREADY under the
+     4.5:1 text floor before any hue was chosen. Same shape as --telegram, --kp
+     and --imdb, which are all a value per theme for the same reason.
+
+     Hue: emerald sits 46deg from the nearest occupied hue (--telegram, 200deg).
+     The old #5e6ad2 sat 18deg from --max (252deg), inside the range where a
+     second colour reads as a slightly wrong version of the first; --telegram and
+     --max appear as glyphs in the header on every page. The brands are not
+     touched: --kp, --imdb, --telegram, --max, --signal and --rating each have
+     their own token and none of them reads --accent.
+
+     Measured, worst of the four backgrounds a 1px stroke can land on (body
+     carries a 1px dot grid on a 20px step, so a dot pixel is a real surface:
+     rgb(22,22,23) dark, rgb(228,229,229) light):
+
+       dark   --accent        5.15:1   --accent-focus  6.25:1
+       light  --accent        5.17:1   --accent-focus  6.37:1
+       dark   --accent-fill  11.49:1 against --ink #f7f8f8
+       light  --accent-fill  12.23:1 against --ink #000000 */
+  --accent: #2f9e6d;
+  --accent-focus: #3fae7d;
+  --accent-fill: #0e3d29;
   --rating: #ff6b6b;
   --line: #23252a;
   --line-strong: #34343a;
@@ -71,6 +106,23 @@
      every other token here -- --focus is #f2eee8 and --ink is #f7f8f8 in the
      dark theme -- so it is a new value, not a second name for either. */
   --on-media: #ffffff;
+  /* The film badge is a LIGHT plate carrying DARK text, and it sits on a
+     photograph rather than on a themed surface, so it is the --on-media
+     precedent inverted: same one-value-in-both-themes shape, opposite polarity.
+     It does not use --accent-fill, which is dark in the dark theme precisely
+     because --ink is near-white there. The library decided this: 156 poster
+     masters, luminance min 9 / p10 38 / median 72 / p90 139 / max 212, measured
+     with Pillow over static/posters. A badge has to be light to keep its edge
+     against a dark photograph, and its own ink has to be dark because there is
+     no --ink that is dark in BOTH themes. Against the median poster this plate
+     reads 6.07:1 against 1.95:1 for the #5e6ad2 it replaces; against the three
+     brightest masters (luminance >= 200, 1.9% of the library) it reads 1.02:1
+     where the old value read 3.17:1. That trade is deliberate and recorded: the
+     badge wins on 153 of 156 and loses on 3. --on-media is #ffffff and --ink is
+     #f7f8f8 in the dark theme, so #101412 is a new value and not a second name
+     for either. */
+  --media-plate: #85e5bd;
+  --media-plate-ink: #101412;
   --paper: #131315;
   --th-bg: rgba(247, 248, 248, 0.04);
   --glass: rgba(19, 19, 21, 0.74);
@@ -132,8 +184,9 @@
     --ink: #f7f8f8;
     --ink-muted: #8a8f98;
     --ink-subtle: #62666d;
-    --accent: #5e6ad2;
-    --accent-focus: #5e69d1;
+    --accent: #2f9e6d;
+    --accent-focus: #3fae7d;
+    --accent-fill: #0e3d29;
     --rating: #ff6b6b;
     --line: #23252a;
     --line-strong: #34343a;
@@ -215,8 +268,9 @@
   --ink-muted: #62666d;
   --ink-subtle: #8a8f98;
   --telegram: #156f9f;
-  --accent: #5e6ad2;
-  --accent-focus: #5e69d1;
+  --accent: #0e6b48;
+  --accent-focus: #0a5c3d;
+  --accent-fill: #7fd7ae;
   --rating: #c92c34;
   --line: #e5e6e8;
   --line-strong: #c9cbce;
@@ -724,9 +778,14 @@ svg:not(.heart) {
 .theme-toggle:active,
 .fav-filter:active,
 .lucky:active {
-  background: var(--accent);
+  background: var(--accent-fill);
   color: var(--ink);
-  border-color: var(--accent);
+  /* Same token as the fill, and that is a correction rather than a detail: the
+     border read --accent while the fill beside it read --accent-fill, which
+     would have drawn a bright 1px ring around a dark plate in the dark theme.
+     Before the split the two declarations were the same value, so keeping them
+     the same is what preserves the pressed button's appearance. */
+  border-color: var(--accent-fill);
 }
 
 .lang:focus-visible,
@@ -1137,9 +1196,9 @@ svg:not(.heart) {
   overflow: hidden;
   border-radius: var(--radius-s);
   padding: 0.1em 0.5em;
-  background: var(--accent);
+  background: var(--media-plate);
   box-shadow: var(--shadow);
-  color: var(--ink);
+  color: var(--media-plate-ink);
   font-size: var(--fs-xs);
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -1828,7 +1887,7 @@ html.no-scroll-state.scrolled .scroll-top {
   left: 8px;
   z-index: var(--z-skip);
   padding: var(--space-2) var(--space-3);
-  background: var(--accent);
+  background: var(--accent-fill);
   color: var(--ink);
   border-radius: var(--radius-s);
   font-size: var(--fs-xs);
