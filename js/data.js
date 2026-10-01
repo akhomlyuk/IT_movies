@@ -1393,6 +1393,27 @@ window.CATALOG = [
     "poster": "static/posters/wardriver_film_poster.webp"
   },
   {
+    "type": "movie",
+    "titleEn": "Dark Web: Cicada 3301",
+    "titleRu": "Цикада 3301: Квест для хакера",
+    "desc": {
+      "ru": "Хакер Коннор, которого АНБ берёт за связь с легендарной «Цикадой 3301», в суде рассказывает, как за двадцать девять дней до ареста нашёл recruitment-игру этой организации — отбор, где участники решают цепочки загадок, — и согласился её разгадать под давлением спецслужб. Вместе с библиотекарем Гвен и другом Ави он проходит отбор, устраивает массовое отключение электричества и получает приглашение на закрытую вечеринку в Англии, куда собираются остановить саму организацию. Но Гвен — агент АНБ, а лидер «Цикады» Филлип Дюбуа защищает хаос как способ уравнять мир; Коннор увозит чужие секреты и превращает их в шантаж. История о том, что происходит на следующий день после взлома, когда данные уже у тебя и остаётся только решить, что с ними делать.",
+      "en": "A hacker caught by the NSA over his ties to the legendary Cicada 3301 testifies in a surveillance court, and describes the twenty-nine days before his arrest: stumbling on the organisation's recruitment game — a puzzle gauntlet that selects its members — and agreeing to play it under pressure from intelligence. He works through it with Gwen, a librarian hoping to be recruited, and his best friend Avi, triggers a mass power outage, and earns an invitation to Cicada's private party in England, where he plans to stop the organisation for good. Except Gwen is an NSA agent, and Cicada's leader Phillip Dubois defends chaos as a way to level the world; Connor walks out with their secrets and turns them into leverage. What the film keeps asking is what happens the day after the hack, when the data is already yours and the only question left is what to do with it."
+    },
+    "genres": [
+      "action",
+      "thriller"
+    ],
+    "year": 2021,
+    "imdbId": "tt8110246",
+    "imdbRating": 5.0,
+    "imdbVotes": 3000,
+    "kpId": 1133310,
+    "kpRating": 6.3,
+    "kpVotes": 62908,
+    "poster": "static/posters/darkwebcicada3301_film_poster.webp"
+  },
+  {
     "type": "documentary",
     "titleEn": "BBS: The Documentary",
     "titleRu": "BBS: The Documentary",
