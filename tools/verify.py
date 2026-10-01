@@ -1384,8 +1384,35 @@ check_related_poster_slot()
 # the relative prefix is checked per page because it is the one thing that differs
 # between them and the one thing that fails silently (a wrong prefix 404s, and a
 # missing icon glyph renders as an empty box rather than an error).
-CHANNEL_URL = "https://t.me/wh_lab"
-CHANNEL_SPRITE_SYMBOL = "icon-telegram"
+# The header's channels, as DATA. A second channel cannot be added to four
+# parallel Telegram constants without a second copy of each, and parallel copies
+# drift silently -- which is how an anchor reached about.html's dead noscript
+# copy while the live page had none. One table, and the pattern below is built
+# per row, so a third messenger is one row here plus one row of i18n.
+CHANNELS = (
+    {
+        "brand": "tg",
+        "url": "https://t.me/wh_lab",
+        "symbol": "icon-telegram",
+        "viewbox": "0 0 16 16",
+        "key": "telegramChannel",
+        "label_key": "telegramLabel",
+        "aria_ru": "Канал в Telegram: Whitehat Lab",
+        "colour": "--telegram",
+    },
+    {
+        "brand": "max",
+        "url": ("https://max.ru/join/"
+                "ByzPb9lbZJwBbvKvRvi3ioBNaFF9TyuXDy5vrIX48vs"),
+        "symbol": "icon-max",
+        "viewbox": "0 0 1000 1000",
+        "key": "maxChannel",
+        "label_key": "maxLabel",
+        "aria_ru": "Канал в Max: Whitehat Lab",
+        "colour": "--max",
+    },
+)
+
 CHANNEL_COPIES = (
     ("index.html", "static/share.svg"),
     ("js/film.js", "../../static/share.svg"),
@@ -1401,53 +1428,101 @@ CHANNEL_COPIES = (
     ("404.html", "static/share.svg"),
     ("privacy.html", "static/share.svg"),
 )
-# The whole ROW, not just the anchor. The glyph is a SIBLING of the anchor, not a
-# child (partner's ruling: `but you put the icon in the href too`), and that
-# ordering is the invariant worth holding: the `<use>` must be the anchor's
-# IMMEDIATE previous sibling, so "the mark is not inside the link" is a thing this
-# pattern can fail on rather than an intention. A regex scoped to the anchor's
-# own body could not see a mark that had migrated back inside it, which is exactly
-# the state that shipped once and put a border under the glyph.
-CHANNEL_ROW_RE = re.compile(
-    # the mark, first, with its own sprite reference per depth
-    r'<span class="tg-row">'
-    r'<svg[^>]*class="icon tg-mark"[^>]*viewBox="0 0 16 16"[^>]*>'
-    r'<use href="([^"]+)"></use></svg>'
-    # then the anchor immediately after it, with nothing in between
-    r'<a[^>]*class="tg-link"[^>]*href="([^"]+)"[^>]*target="_blank"'
-    r'[^>]*rel="noopener noreferrer"[^>]*'
-    # the STATIC label, not a `:aria-label` binding: the lookbehind is what keeps
-    # a Vue page's binding from being read as the fallback
-    r'(?<!:)aria-label="([^"]*)"'
-    # text only: no second <use> may reopen inside the anchor
-    r'[^>]*>(?:(?!</a>).)*?</a>'
-    r'</span>',
-    re.S,
-)
-# The static label is a FALLBACK for the moment before a page's own mechanism runs.
-# A language-aware page that carries the fallback without overriding it reads one
-# language forever, so each mechanism is named here and required in the file that
-# owns it: a Vue binding on the two Vue pages, an explicit attribute write on the
-# two static pages that have their own inline translation table.
+
+
+def channel_item_re(ch):
+    """One channel's mark+anchor inside its `.ch-item`.
+
+    Built per row rather than written once, because the three things that vary
+    between channels -- the brand modifier, the viewBox and the href -- are
+    exactly the things a hard-coded pattern would have frozen at Telegram's.
+    """
+    b, vb = ch["brand"], re.escape(ch["viewbox"])
+    return re.compile(
+        r'<span class="ch-item">'
+        # the mark first, with its own sprite reference per depth
+        r'<svg[^>]*class="icon ch-mark ch-mark--%s"[^>]*viewBox="%s"[^>]*>'
+        r'<use href="([^"]+)"></use></svg>'
+        # then the anchor IMMEDIATELY after it, with nothing in between
+        r'<a[^>]*class="ch-link ch-link--%s"[^>]*href="([^"]+)"[^>]*target="_blank"'
+        r'[^>]*rel="noopener noreferrer"[^>]*'
+        # the STATIC label, not a `:aria-label` binding: the lookbehind is what
+        # keeps a Vue page's binding from being read as the fallback
+        r'(?<!:)aria-label="([^"]*)"'
+        # text only: no second <use> may reopen inside the anchor
+        r'[^>]*>(?:(?!</a>).)*?</a>'
+        r'</span>' % (b, vb, b),
+        re.S,
+    )
+
+
+# The row body, matched up to the `</div>` that closes `.brand-text` rather
+# than to a fixed number of `</span>`: the row's children are `.ch-item`
+# spans, so a terminator written for a fixed item count breaks the moment a
+# channel is added. The first version ended on three closes and reported
+# "no .ch-row" on every copy -- which reads like a missing row rather than
+# like a wrong terminator, and the individual items are then checked inside.
+CHANNEL_ROW_RE = re.compile(r'<span class="ch-row">(.*?)</div>', re.S)
+
+# The static label is a FALLBACK for the moment before a page's own mechanism
+# runs. A language-aware page that carries the fallback without overriding it
+# reads one language forever, so each mechanism is named here and required in
+# the file that owns it: a Vue binding on the two Vue pages, an explicit write on
+# the two static pages that have their own inline translation table. The MAX
+# copy is a second entry because a page can override Telegram and forget MAX --
+# which is a real shape, since the two arrived together.
 CHANNEL_OVERRIDES = (
-    ("index.html", ':aria-label="t.telegramChannel"'),
-    ("js/film.js", ':aria-label="t.telegramChannel"'),
-    ("js/film.min.js", "t.telegramChannel"),
-    ("js/about.js", ':aria-label="t.telegramChannel"'),
-    ("js/about.min.js", "t.telegramChannel"),
-    ("about.html", None),
-    ("404.html", 'tgLink.setAttribute("aria-label", t.telegramChannel)'),
-    ("privacy.html", 'tgLink.setAttribute("aria-label", t.telegramChannel)'),
+    ("index.html", ':aria-label="t.telegramChannel"', ':aria-label="t.maxChannel"'),
+    ("js/film.js", ':aria-label="t.telegramChannel"', ':aria-label="t.maxChannel"'),
+    ("js/film.min.js", "t.telegramChannel", "t.maxChannel"),
+    ("js/about.js", ':aria-label="t.telegramChannel"', ':aria-label="t.maxChannel"'),
+    ("js/about.min.js", "t.telegramChannel", "t.maxChannel"),
+    # about.html is the <noscript> tier: no script runs there to translate
+    # anything, so a literal is correct rather than an oversight.
+    ("about.html", None, None),
+    ("404.html", 'chTelegram.setAttribute("aria-label", t.telegramChannel)',
+     'chMax.setAttribute("aria-label", t.maxChannel)'),
+    ("privacy.html", 'chTelegram.setAttribute("aria-label", t.telegramChannel)',
+     'chMax.setAttribute("aria-label", t.maxChannel)'),
 )
+
+
+def _srgb_lum(rgb):
+    """WCAG relative luminance of an (r, g, b) triple of 0-255 ints."""
+    out = []
+    for c in rgb:
+        c = c / 255.0
+        out.append(c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4)
+    return 0.2126 * out[0] + 0.7152 * out[1] + 0.0722 * out[2]
+
+
+def _contrast(a, b):
+    la, lb = _srgb_lum(a), _srgb_lum(b)
+    hi, lo = max(la, lb), min(la, lb)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def _hex_rgb(h):
+    h = h.lstrip("#")
+    if len(h) == 3:
+        h = "".join(ch * 2 for ch in h)
+    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+
+def _over(fg_rgb, alpha, bg_rgb):
+    """Alpha-composite `fg` at `alpha` over `bg`, which is what the dot grid does."""
+    return tuple(alpha * f + (1 - alpha) * b for f, b in zip(fg_rgb, bg_rgb))
 
 
 def check_channel_colour():
-    """`--telegram` must exist in BOTH themes, and the glyph must have a fill.
+    """Each channel's glyph must be painted in a colour that clears 3:1 against
+    the surface it actually sits on, in BOTH themes, and each token must be
+    declared as many times as its own contrast requires.
 
-    Two defects this closes, both of which shipped once:
+    Four defects this closes, all of which shipped at least once:
 
-    1. **The glyph painted BLACK in both themes.** `static/share.svg` declares no
-       `fill` on any of its seven symbols -- every consumer inherits
+    1. **The glyph painted BLACK in both themes.** `static/share.svg` declares
+       no fill on any of its symbols -- every consumer inherits
        `fill: currentColor` from `.share-ico`, and the header link is not a
        member of that class. With only `class="icon"` the path fell back to the
        SVG default, so a dark disc sat on a near-black header and the partner
@@ -1455,71 +1530,160 @@ def check_channel_colour():
        black blob wearing a Telegram logo. A screenshot is a poor guard, so the
        declaration is asserted here.
 
-    2. **A brand hue that cannot carry text on a light surface.** The brand hex
-       measures 7.15:1 on the dark header and **2.56:1** on the light one, under
-       the 4.5:1 text floor and the 3:1 graphics floor both. So the token is a
-       PAIR -- brand in dark, a darker value of the same hue in light, which is
-       the shape `--kp`/`--imdb` already use for exactly this reason. A token
-       declared in one theme and not the other is therefore a real defect, not a
-       style preference, and `verify.py` runs no browser so the measured numbers
-       live in this comment while the STRUCTURE is what is checked.
+    2. **A brand hue that cannot carry its own glyph.** The Telegram brand hex
+       measures 7.15:1 on the dark background and 2.56:1 on the light one, under
+       the 4.5:1 text floor and the 3:1 graphics floor both -- so `--telegram` is
+       a PAIR, a darker value of the same hue in light. MAX's three gradient
+       stops each fail in one theme or the other, and one derived value clears
+       3:1 in both, so `--max` is a SINGLE value. Those two shapes are different
+       because their contrast is different, and the count is checked so a fourth
+       declaration cannot quietly appear.
+
+    3. **`currentColor` is wrong even once a fill exists.** On the `<svg>`
+       element `currentColor` resolves to THAT element's own computed `color`,
+       and `svg:not(.heart) { color: var(--accent) }` sets it -- so a mark
+       written that way came out accent-purple beside a label in the site's own
+       link colour. The token is named outright instead.
+
+    4. **The selector must be the CLASS.** The mark moved out of the `<a>` (the
+       partner's ruling: "but you put the icon in the href too"), so a
+       descendant selector matches nothing -- silently, and with every other
+       gate green. A selector that names a shape rather than an element stops
+       working the moment the shape moves, and a dead fill declaration looks
+       exactly like the colour defect it used to cause.
+
+    And the sprite must PARSE. XML forbids a double hyphen inside a comment, and
+    a sprite that breaks that way keeps every expected id while resolving nothing
+    at all -- every `<use>` of it goes 0x0, silently. Grepping the file for the
+    id cannot see it, which is how the first version of that note broke the
+    sprite while describing how not to.
     """
     problems = []
     css = (ROOT / "css" / "style.css").read_text(encoding="utf-8")
-    decls = re.findall(r"^\s*--telegram:\s*(#[0-9a-fA-F]{3,8})\s*;", css, re.M)
-    if len(decls) != 2:
+
+    def decls(tok):
+        return re.findall(r"^\s*%s:\s*(#[0-9a-fA-F]{3,8})\s*;" % re.escape(tok),
+                          css, re.M)
+
+    # The DECLARED SHAPE, which differs per token and is checked per token.
+    # "declared twice" is not a style preference, it is the record of which
+    # brand values fail on which background; "declared once" is the record that
+    # this brand needs no second value.
+    expected_counts = {"--telegram": 2, "--max": 1}
+    for tok, want in expected_counts.items():
+        got = decls(tok)
+        if len(got) != want:
+            problems.append(
+                f"{tok} is declared {len(got)} time(s), expected {want}. This is "
+                f"not a style preference: --telegram is a PAIR because the brand "
+                f"hex measures 2.56:1 on the light background, under both the 4.5:1 "
+                f"text floor and the 3:1 graphics floor, and --max is a SINGLE "
+                f"value because one derived value clears 3:1 in both themes. A "
+                f"fourth declaration would be a value shipped with no defect to "
+                f"justify it, which is the same mistake as re-adding a deleted "
+                f"token"
+            )
+        elif want == 2 and got[0].lower() == got[1].lower():
+            problems.append(
+                f"{tok} is {got[0]} in BOTH themes, so one of them is carrying a "
+                f"value measured to fail on its own background"
+            )
+
+    # The CONTRAST, computed rather than trusted. Both the glyph colour and the
+    # surface it sits on are literal text in this file, so the ratio is
+    # arithmetic and a browser is not required to be honest about it.
+    # A glyph colour and the ground it is painted on are a PAIR, so the themes
+    # and the surfaces are PAIRED rather than nested. The first version nested
+    # them and therefore tested a dark value against the light background too:
+    # `#26a5e4` came out "2.19:1 against the dark surface" when it measures
+    # 7.15:1 there. A token declared once is active in BOTH themes; a token
+    # declared twice is one value per theme, dark first because that is the
+    # order they appear in `:root` then `:root.light`.
+    bg_dark = decls("--bg")[0] if decls("--bg") else "#0a0a0b"
+    bg_light = "#f5f6f6"
+    dots = re.findall(r"^\s*--dot:\s*rgba\(([\d.]+),\s*([\d.]+),\s*([\d.]+),"
+                      r"\s*([\d.]+)\)", css, re.M)
+    surfaces = {
+        "dark": [_hex_rgb(bg_dark)],
+        "light": [_hex_rgb(bg_light)],
+    }
+    if dots:
+        # body paints a 1px dot grid over --bg, and a 1px glyph stroke can land
+        # on a dot, so the dot composite is a surface a reader can actually hit.
+        # The blends are checked against the figures already measured in a
+        # browser (22,22,23 dark and 228,229,229 light) by the caller.
+        if len(dots) >= 2:
+            surfaces["light"].append(_over(
+                (0.0, 0.0, 0.0), float(dots[-1][3]), _hex_rgb(bg_light)))
+        surfaces["dark"].append(_over(
+            (float(dots[0][0]), float(dots[0][1]), float(dots[0][2])),
+            float(dots[0][3]), _hex_rgb(bg_dark)))
+
+    measured = {}
+    for ch in CHANNELS:
+        vals = decls(ch["colour"])
+        if not vals:
+            continue
+        active = {"dark": vals[0],
+                  "light": vals[1] if len(vals) > 1 else vals[0]}
+        for theme, v in active.items():
+            per_surface = {}
+            for idx, srgb in enumerate(surfaces[theme]):
+                per_surface["dot" if idx else "bg"] = _contrast(
+                    _hex_rgb(v), srgb)
+            measured[(ch["brand"], theme)] = per_surface
+            worst = min(per_surface.values())
+            if worst < 3.0:
+                problems.append(
+                    f"{ch['brand']}'s glyph colour {v} measures {worst:.2f}:1 in the "
+                    f"{theme} theme, under the 3:1 floor that 1.4.11 sets for a "
+                    f"non-text graphic. Measured on the page background AND on a "
+                    f"composited dot pixel, because body paints a 1px dot grid "
+                    f"over --bg and a 1px stroke can land on one"
+                )
+
+    # The fill, on the brand MODIFIER. A bare `.ch-mark` rule holding
+    # var(--telegram) would paint the MAX glyph Telegram blue on every page,
+    # which is the shape of defect 1 and 2 combined.
+    for ch in CHANNELS:
+        pat = r"\.ch-mark--%s\s*\{[^}]*fill:\s*var\(%s\)" % (
+            re.escape(ch["brand"]), re.escape(ch["colour"]))
+        if not re.search(pat, css, re.S):
+            problems.append(
+                f".ch-mark--{ch['brand']} has no `fill: var({ch['colour']})`. "
+                f"Three defects hide here. With no fill at all the path falls back "
+                f"to the SVG default and paints BLACK in both themes; with "
+                f"`currentColor` it resolves to the <svg> element's own color, "
+                f"which `svg:not(.heart)` sets to var(--accent), so the mark came "
+                f"out accent-purple; and the fill must sit on the brand MODIFIER, "
+                f"because a bare `.ch-mark` rule would paint every channel in one "
+                f"brand's colour"
+            )
+
+    # The anchor keeps the site's own link colour and never a brand hue.
+    for tok in expected_counts:
+        tg_rule = re.search(r"^\.ch-link\s*\{([^}]*)\}", css, re.M)
+        if tg_rule and re.search(r"color:\s*var\(%s\)" % re.escape(tok),
+                                 tg_rule.group(1)):
+            problems.append(
+                f".ch-link sets `color: var({tok})`. The partner ruled twice on "
+                f"this: the anchor is an ordinary link in the site's own idiom, "
+                f"the same treatment `.title-cell a` gives a film title, and only "
+                f"the GLYPH carries the brand colour. A coloured word beside the "
+                f"site's link styling reads as a different kind of thing rather "
+                f"than as a link to a channel"
+            )
+
+    # A descendant selector for the mark cannot match, and cannot be seen not to.
+    if re.search(r"\.ch-link\s+svg\s*\{", css):
         problems.append(
-            f"--telegram is declared {len(decls)} time(s), expected 2 -- once for "
-            f"the default (dark) theme and once in the light theme block. A brand "
-            f"hue that only exists in one theme is a defect, not a preference: the "
-            f"brand hex measures 2.56:1 on the light header, under the 4.5:1 text "
-            f"floor and the 3:1 graphics floor, which is why the light value is a "
-            f"darker shade of the same hue (see the token's own comment)"
+            "there is a `.ch-link svg` rule, but the mark is no longer a "
+            "descendant of the anchor -- it is its previous sibling. That "
+            "selector matches nothing, so the fill would be gone and the path "
+            "would fall back to the SVG default: BLACK, in both themes, reading "
+            "as a colour problem rather than a dead rule. Style `.ch-mark`"
         )
-    elif decls[0].lower() == decls[1].lower():
-        problems.append(
-            f"--telegram is {decls[0]} in BOTH themes, so one of them is carrying a "
-            f"value measured to fail on its own background"
-        )
-    tg_rule = re.search(r"^\.tg-link\s*\{([^}]*)\}", css, re.M)
-    if tg_rule and re.search(r"color:\s*var\(--telegram\)", tg_rule.group(1)):
-        problems.append(
-            ".tg-link sets `color: var(--telegram)`. The partner ruled twice on "
-            "this: the anchor is an ordinary link in the site's own idiom, the same "
-            "treatment `.title-cell a` gives a film title, and only the GLYPH "
-            "carries the brand colour. A blue word beside the site's link styling "
-            "reads as a different kind of thing rather than as a link to a channel"
-        )
-    if not re.search(r"\.tg-mark\s*\{[^}]*fill:\s*var\(--telegram\)", css, re.S):
-        problems.append(
-            ".tg-mark has no `fill: var(--telegram)`. Two defects hide here. "
-            "With no fill at all the path falls back to the SVG default and paints "
-            "BLACK in both themes, because the share sprite declares none on any "
-            "symbol and every consumer inherits it from `.share-ico`, which this "
-            "mark is not a member of. And `fill: currentColor` is ALSO wrong: on "
-            "the <svg> element currentColor resolves to that element's own color, "
-            "which `svg:not(.heart)` sets to var(--accent), so the mark came out "
-            "accent-purple"
-        )
-    # The selector must be the CLASS, never a descendant of the anchor. The mark
-    # moved out of the `<a>` (partner's ruling: `but you put the icon in the href
-    # too`), so `.tg-link svg` matches nothing -- silently, and with every other
-    # gate green. A selector that names a shape rather than an element stops
-    # working the moment the shape moves, and a dead fill declaration looks
-    # exactly like the colour defect it used to cause: black in both themes.
-    if re.search(r"\.tg-link\s+svg\s*\{", css):
-        problems.append(
-            "there is a `.tg-link svg` rule, but the mark is no longer a "
-            "descendant of the anchor -- it is its previous sibling. That selector "
-            "matches nothing, so the fill would be gone and the path would fall "
-            "back to the SVG default: BLACK, in both themes, reading as a colour "
-            "problem rather than a dead rule. Style `.tg-mark`"
-        )
-    # The sprite must PARSE. XML forbids a double hyphen inside a comment, and a
-    # sprite that breaks that way keeps every expected id while resolving nothing
-    # at all -- every <use> of it goes 0x0, silently. Grepping the file for the id
-    # cannot see it, which is how the first version of this note broke the sprite
-    # while describing how not to.
+
     try:
         ET.fromstring((ROOT / "static" / "share.svg").read_text(encoding="utf-8"))
     except ET.ParseError as exc:
@@ -1528,95 +1692,155 @@ def check_channel_colour():
             f"stops resolving while the ids are all still present, so every <use> "
             f"renders 0x0 and the page looks merely empty rather than broken"
         )
+
     for p in problems:
         errors.append(f"Channel colour: {p}")
     if not problems:
+        bits = []
+        for ch in CHANNELS:
+            for theme in ("dark", "light"):
+                m = measured.get((ch["brand"], theme), {})
+                if m:
+                    bits.append("%s %s %.2f:1" % (ch["brand"], theme,
+                                                  min(m.values())))
         print(
-            f"Channel colour: --telegram declared in both themes ({decls[0]} dark, "
-            f"{decls[1]} light); the anchor inherits the site's link colour, only "
-            f".tg-mark (a sibling, not a child) fills with the token, and "
-            f"static/share.svg parses as XML"
+            f"Channel colour: {len(CHANNELS)} channels painted through brand "
+            f"modifiers, each token declared exactly as its own contrast "
+            f"requires ({'; '.join('%s x%d' % (k, v) for k, v in expected_counts.items())}); "
+            f"worst measured [{'; '.join(bits)}] against the worse of --bg and a "
+            f"composited dot pixel, all clearing 3:1; the anchor inherits the "
+            f"site's link colour; static/share.svg parses as XML"
         )
 
 
 def check_channel_link():
-    """The header's Telegram link must be present, correct and resolvable on every
-    page type that carries a header.
+    """Every channel in `CHANNELS` must be present, correct and resolvable on
+    every page type that carries a header.
 
-    The header is hand-maintained five times over -- `index.html`, the
-    `FILM_TEMPLATE` in `js/film.js` (which generates all 155 film pages), and
-    `about.html` / `404.html` / `privacy.html`. Nothing else in the project
-    compares them, so a copy that lost the anchor, kept a stale href, or pointed
-    its `<use>` at a sprite path wrong for its own depth would ship silently: a
-    wrong prefix 404s and an unresolvable symbol renders as an empty box rather
-    than an error, so the page still looks right in a screenshot.
+    The header is hand-maintained in EIGHT places -- `index.html`, the
+    `FILM_TEMPLATE` in `js/film.js` (which generates all 156 film pages), the
+    `<noscript>` copy in `about.html` beside the live one rendered from
+    `js/about.js`, then `404.html` and `privacy.html`, plus both generated
+    `.min.js` copies. Nothing else in the project compares them, so a copy that
+    lost a link, kept a stale href, or pointed its `<use>` at a sprite path
+    wrong for its own depth would ship silently.
 
-    Checked per copy: the href, the new-tab rel pair, and the sprite reference
-    resolving to a symbol that exists. Checked ACROSS copies: agreement on the
-    static aria-label, because both languages are spelled out literally in
-    hand-written markup here (only `index.html` and `film.js` have a Vue binding
-    to override them) and a divergence reads the wrong language aloud.
+    The assertions are per CHANNEL and per COPY, both from the table rather than
+    from constants frozen at Telegram's values. That is the whole point of the
+    table: a second channel used to be unrepresentable here, and adding one to
+    the markup while these assertions still named Telegram would have left the
+    run green with the new link unchecked.
     """
     problems = []
     sprite = (ROOT / "static" / "share.svg").read_text(encoding="utf-8")
-    if 'id="%s"' % CHANNEL_SPRITE_SYMBOL not in sprite:
-        problems.append(
-            f"static/share.svg has no {CHANNEL_SPRITE_SYMBOL!r} symbol, so every "
-            f"copy of the channel link points at a glyph that cannot resolve"
-        )
-    seen_labels = {}
+    for ch in CHANNELS:
+        if 'id="%s"' % ch["symbol"] not in sprite:
+            problems.append(
+                f"static/share.svg has no {ch['symbol']!r} symbol, so every copy "
+                f"of the {ch['brand']} link points at a glyph that cannot resolve"
+            )
+        if ch["viewbox"] not in sprite:
+            problems.append(
+                f"static/share.svg does not declare viewBox {ch['viewbox']!r} "
+                f"for {ch['symbol']!r}. The path is authored in those units, so a "
+                f"different viewBox renders it at a fraction of its size, pinned "
+                f"into a corner -- which is how the Telegram glyph once rendered "
+                f"at 67%"
+            )
+
+    seen_labels = {ch["brand"]: {} for ch in CHANNELS}
     for rel, prefix in CHANNEL_COPIES:
         text = (ROOT / rel).read_text(encoding="utf-8")
-        found = CHANNEL_ROW_RE.search(text)
-        if not found:
+        row = CHANNEL_ROW_RE.search(text)
+        if not row:
             problems.append(
-                f"{rel}: no channel row matching the expected shape. Expected a "
-                f'<span class="tg-row"> holding a .tg-mark whose <use> is '
-                f'<use href="{prefix}#{CHANNEL_SPRITE_SYMBOL}"> followed '
-                f'IMMEDIATELY by <a class="tg-link" href="{CHANNEL_URL}" '
-                f'target="_blank" rel="noopener noreferrer" aria-label="..."> '
-                f"holding text only. The mark is a sibling of the anchor, not a "
-                f"child: it used to be inside the <a>, and then a "
-                f"`border-bottom` on the inline-flex anchor underlined the glyph as "
-                f"well as the label. The header is hand-maintained in five places "
-                f"and nothing else compares them"
+                f"{rel}: no .ch-row. Expected <span class=\"ch-row\"> holding one "
+                f".ch-item per channel: the mark's <use> pointing at "
+                f"{prefix}#<symbol> followed IMMEDIATELY by <a class=\"ch-link "
+                f"ch-link--<brand>\" href=... target=\"_blank\" "
+                f"rel=\"noopener noreferrer\" aria-label=\"...\"> holding text "
+                f"only. The mark is a SIBLING of the anchor, not a child: it used "
+                f"to be inside the <a>, and then a border-bottom on the "
+                f"inline-flex anchor underlined the glyph as well as the label. "
+                f"The header is hand-maintained in eight places and nothing else "
+                f"compares them"
             )
             continue
-        use, href, label = found.groups()
-        if href != CHANNEL_URL:
+        body = row.group(1)
+        for ch in CHANNELS:
+            found = channel_item_re(ch).search(body)
+            if not found:
+                problems.append(
+                    f"{rel}: the channel row has no {ch['brand']} item matching "
+                    f"the expected shape. Every row in CHANNELS must be present, "
+                    f"or losing one is a shorter row rather than a failure"
+                )
+                continue
+            use, href, label = found.groups()
+            if href != ch["url"]:
+                problems.append(
+                    f"{rel}: the {ch['brand']} link href is {href!r}, expected "
+                    f"{ch['url']!r}")
+            if use != "%s#%s" % (prefix, ch["symbol"]):
+                problems.append(
+                    f"{rel}: the {ch['brand']} sprite reference is {use!r}, "
+                    f"expected {prefix + '#' + ch['symbol']!r}. The page's own "
+                    f"depth decides the prefix and getting it wrong 404s silently"
+                )
+            if label != ch["aria_ru"]:
+                problems.append(
+                    f"{rel}: the {ch['brand']} static aria-label is {label!r}, "
+                    f"expected {ch['aria_ru']!r}")
+            seen_labels[ch["brand"]].setdefault(label, []).append(rel)
+
+        # every item in the row must be one this gate knows about, so a THIRD
+        # channel added to the markup without a row in CHANNELS is caught here
+        # rather than sailing through as an unexamined item
+        known = len(CHANNELS)
+        found_items = len(re.findall(r'<span class="ch-item">', body))
+        if found_items != known:
             problems.append(
-                f"{rel}: channel link href is {href!r}, expected {CHANNEL_URL!r}")
-        if use != "%s#%s" % (prefix, CHANNEL_SPRITE_SYMBOL):
-            problems.append(
-                f"{rel}: channel link sprite reference is {use!r}, expected "
-                f"{prefix + '#' + CHANNEL_SPRITE_SYMBOL!r}. The page's own depth "
-                f"decides the prefix and getting it wrong 404s silently"
+                f"{rel}: the channel row holds {found_items} .ch-item(s) but "
+                f"CHANNELS declares {known}. A channel present in the markup but "
+                f"absent from the table is a link nothing checks -- its href, its "
+                f"sprite and its label are all unverified. Add a row to CHANNELS"
             )
-        seen_labels.setdefault(label, []).append(rel)
-    if len(seen_labels) > 1:
-        problems.append(
-            "the copies disagree on the static aria-label, "
-            + "; ".join(f"{v!r} in {', '.join(f)}" for v, f in seen_labels.items())
-            + ". One of them will read the wrong language to a screen reader"
-        )
-    for rel, needed in CHANNEL_OVERRIDES:
-        if needed is None:
+
+    for ch in CHANNELS:
+        brands = seen_labels[ch["brand"]]
+        if len(brands) > 1:
+            problems.append(
+                f"the copies disagree on the {ch['brand']} static aria-label, "
+                + "; ".join(f"{v!r} in {', '.join(f)}" for v, f in brands.items())
+                + ". One of them will read the wrong language to a screen reader"
+            )
+
+    for rel, needed_tg, needed_max in CHANNEL_OVERRIDES:
+        if needed_tg is None:
             continue
-        if needed not in (ROOT / rel).read_text(encoding="utf-8"):
-            problems.append(
-                f"{rel}: the static label is a fallback for the moment before this "
-                f"page's own mechanism runs, but nothing overrides it -- expected "
-                f"{needed!r} in the file. A page with a working language toggle that "
-                f"keeps the fallback reads one language forever"
-            )
+        text = (ROOT / rel).read_text(encoding="utf-8")
+        for needed, ch in ((needed_tg, CHANNELS[0]), (needed_max, CHANNELS[1])):
+            if needed not in text:
+                problems.append(
+                    f"{rel}: the {ch['brand']} static label is a fallback for the "
+                    f"moment before this page's own mechanism runs, but nothing "
+                    f"overrides it -- expected {needed!r} in the file. A page with "
+                    f"a working language toggle that keeps the fallback reads one "
+                    f"language forever, and the two channels arrived together, so "
+                    f"one can be overridden while the other is forgotten"
+                )
+
     for p in problems:
         errors.append(f"Channel link: {p}")
     if not problems:
+        summary = ", ".join(
+            f"{ch['brand']} -> {ch['url']}" for ch in CHANNELS)
         print(
-            f"Channel link: {CHANNEL_URL} on {len(CHANNEL_COPIES)} page type(s); "
-            f"target=_blank rel=noopener noreferrer; sprite resolves to "
-            f"#{CHANNEL_SPRITE_SYMBOL} with the right prefix per depth; "
-            f"static labels agree ({next(iter(seen_labels))!r})"
+            f"Channel link: {len(CHANNELS)} channels on {len(CHANNEL_COPIES)} "
+            f"page type(s) [{summary}]; target=_blank rel=noopener noreferrer; "
+            f"each mark is its anchor's previous sibling; both sprite symbols "
+            f"resolve with the right prefix per depth; static labels agree; every "
+            f"language-aware copy overrides BOTH fallbacks"
         )
 
 

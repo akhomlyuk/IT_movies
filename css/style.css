@@ -38,6 +38,32 @@
      the brand value is the one already in this stylesheet rather than a new one
      brought in from outside. */
   --telegram: #26a5e4;
+  /* The MAX brand colour, and it is ONE value for both themes rather than the
+     pair --telegram needs, because here the pair has nothing to solve. MAX
+     ships a GRADIENT, not a hex, so "the brand colour" was a judgement and the
+     three stops were measured rather than picked. The gradient runs #44ccff
+     (cyan) -> #5533ee (blue) -> #9933dd (violet), and every one of them fails
+     a floor in one theme or the other:
+
+       #44ccff  dark 10.67:1   light  1.71:1   FAILS light
+       #5533ee  dark  2.92:1   light  6.27:1   FAILS dark
+       #9933dd  dark  3.65:1   light  5.01:1   passes both
+
+     Walking VALUE up the mid-stop hue with hue and saturation held fixed tops
+     out at 3.19:1, because that hue has no more headroom on a near-black
+     ground: the first value that technically clears the 3:1 floor clears it by
+     0.01, which is a value sitting ON the floor rather than above it. So this
+     is the decision --telegram already makes, pointed the other way: preserve
+     the brand hue, shift the value to clear the floor on the ground it fails
+     on. --telegram darkens for light; this lightens for dark.
+
+       #6743f1  dark  3.44:1   light  5.31:1   clears 3:1 glyph in BOTH
+
+     Hue 252deg against the mid-stop's 251deg: a 1.5deg shift, the same size as
+     --telegram's documented 201 against 200. Declared once and overridden in
+     NEITHER theme, like --on-media, because one value passes both; a second
+     declaration would be a value shipped without a defect to justify it. */
+  --max: #6743f1;
   /* Text that sits on photographic media (the featured card's scrim), not on a
      themed surface. Declared once and overridden in NEITHER theme: --ink is
      dark ink in the light theme and would be invisible on a black gradient, so
@@ -410,8 +436,8 @@ html:not(.js) #app[v-cloak] nav.nav:not(.nav--dialog) {
    Telegram mark as well as under the label. `.title-cell a` underlines text.
    Moving the mark out was the partner's call and it is not free, so the cost is
    recorded rather than argued: the mark is no longer clickable and no longer in
-   the focus ring, and clicking it lands on nothing. `.tg-row` now owns the
-   layout the anchor used to own, and `.tg-link` holds the label only.
+   the focus ring, and clicking it lands on nothing. `.ch-row` now owns the
+   layout the anchor used to own, and `.ch-link` holds the label only.
 
    Only the MARK carries the brand colour. It has to be named outright rather
    than left as `currentColor`: on the <svg> element `currentColor` resolves to
@@ -422,21 +448,37 @@ html:not(.js) #app[v-cloak] nav.nav:not(.nav--dialog) {
    symbols and every consumer inherits one from `.share-ico`, which this mark is
    not a member of. Both shipped.
 
-   THE SELECTOR IS `.tg-mark`, NOT `.tg-link svg`, and that is the third defect
+   THE SELECTOR IS `.ch-mark`, NOT `.ch-link svg`, and that is the third defect
    this file records rather than the third fix. The mark is no longer a
    DESCENDANT of the anchor, so a descendant selector written for the old shape
    matches nothing -- SILENTLY, and with every other gate green, which is
    precisely how both a black mark and an --accent mark came to look like colour
    problems rather than like two dead rules. A selector that names a shape stops
    working when the shape moves, and nothing else in the project notices. */
-.tg-row {
+/* The ROW holds both channels and the ITEM holds one, and the two levels exist
+   because the gaps are not the same: within an item the mark sits against its
+   own label at --space-0-35, between items the labels need --space-3. A single
+   gap on one level would have to compromise between the two, and the tighter
+   one is what keeps a mark from reading as detached from its label. The wrap
+   is deliberate and measured, not defensive: at 300-340 the two links do not
+   fit on one line, they wrap to two, and they are FLUSH (0.0px overflow) at
+   every width in that band, with no document-level overflow at any width. */
+.ch-row {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-0-35);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  row-gap: var(--space-1);
   margin-top: var(--space-1);
 }
 
-.tg-link {
+.ch-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-0-35);
+}
+
+.ch-link {
   display: inline;
   font-size: var(--fs-sm);
   text-decoration: none;
@@ -461,21 +503,65 @@ html:not(.js) #app[v-cloak] nav.nav:not(.nav--dialog) {
       out --accent, a purple plane, beside a label in the site's own link
       colour. The token is named outright instead.
 
-   3. The selector is `.tg-mark` and NOT `.tg-link svg`, because the mark is no
+   3. The selector is `.ch-mark` and NOT `.ch-link svg`, because the mark is no
       longer a descendant of the anchor -- it is its previous sibling. A
       descendant selector written for the old shape matches nothing once the
       markup moves, and it matches nothing SILENTLY, which is how the black
       glyph and the --accent glyph both looked like colour problems rather than
-      dead rules. `check_channel_colour()` requires the class, not the shape. */
-.tg-mark {
+      dead rules. `check_channel_colour()` requires the class, not the shape.
+
+   The fill is on a MODIFIER, `.ch-mark--tg` / `.ch-mark--max`, not on
+   `.ch-mark` itself. Two channels means two brands, and a bare `.ch-mark` rule
+   holding `var(--telegram)` would paint the MAX glyph Telegram blue on every
+   page with the mark of the defect above: a rule that exists, that matches,
+   and that is wrong. A modifier names the brand it paints, so a third channel
+   has to state its own colour or render uncoloured. */
+.ch-mark--tg {
   fill: var(--telegram);
 }
 
-.tg-link:hover {
+/* The optical size correction, and it is the one non-obvious value here.
+
+   `icon-max` paints 76% of its own 1000-unit viewBox; `icon-telegram` paints
+   100% of its 16. At one CSS size the MAX mark therefore reads about a quarter
+   SMALLER than the Telegram one beside it, even though both are the same
+   nominal size. Measured by rasterising each glyph and scanning for the ink
+   BOUNDS, not its area: the two differ in solidity as well, so the area ratio
+   (1.92x, i.e. 1.39 linear) disagrees with the extent ratio (1.32) and the eye
+   compares extent. Hence 17.59 * 1.32 = 23.22.
+
+   Cost of the correction, measured at every width in both themes: the row grows
+   1.22px (22 -> 23.22), the header 0.61px at 375 and nothing at all from 767 up,
+   and the two marks' centres stay level to 0.01px because the row is
+   `align-items: center` and both items are themselves centred. */
+.ch-mark--max {
+  fill: var(--max);
+}
+
+/* The SIZE correction needs the compounded selector, and the reason is a dead
+   rule rather than a missing one. `.icon { width: 1.1rem; height: 1.1rem }` sits
+   LATER in this file, and both selectors are (0,1,0), so the declaration below
+   was computed away and the mark rendered at exactly Telegram's 17.6px -- the
+   fill worked, because `.icon` does not set `fill`, so the defect was invisible
+   in the one property anyone was checking. Compounding to (0,2,0) settles it
+   against reordering, which is the same treatment `.tool-buttons .lang` gets for
+   the same reason: a bare (0,1,0) class loses to a later blanket and the loss
+   has no other symptom.
+
+   1.1rem * 1.32 = 1.452rem. Expressed as a RATIO of the glyph's own size rather
+   than as the measured 23.22px, because the invariant is the 1.32 factor: it
+   must survive a change of root font-size, and a hardcoded pixel value silently
+   breaks the moment `.icon` is rescaled. */
+.ch-mark.ch-mark--max {
+  width: 1.452rem;
+  height: 1.452rem;
+}
+
+.ch-link:hover {
   border-bottom-color: var(--ink);
 }
 
-.tg-link:focus-visible {
+.ch-link:focus-visible {
   outline: var(--focus-ring-width) solid var(--focus-ring-color);
   outline-offset: var(--focus-ring-offset);
   border-radius: var(--radius-xs);

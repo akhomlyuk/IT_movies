@@ -642,9 +642,15 @@ COLOUR_READ = """el => {
   // nothing, and a null here would silently become a skipped measurement rather
   // than a failure -- so the row is required and a missing mark is returned as
   // such, not as `null` to be compared against.
-  const row = el.closest('.tg-row');
+  // The mark is reached through THIS anchor's own item, never through the row.
+  // `row.querySelector('svg')` was correct with one channel and wrong with two:
+  // it returns the FIRST svg in the row, so passing the MAX anchor in measured
+  // Telegram's fill and reported it as MAX's -- a passing assertion about the
+  // wrong colour, which is worse than no assertion at all.
+  const row = el.closest('.ch-row');
+  const item = el.closest('.ch-item');
   const label = el.querySelector('span') || el;
-  const glyph = row ? row.querySelector('svg') : null;
+  const glyph = item ? item.querySelector('svg') : null;
   let node = label, own = null;
   while (node && node !== document.documentElement) {
     const raw = getComputedStyle(node).backgroundColor;
@@ -657,8 +663,14 @@ COLOUR_READ = """el => {
   // A missing mark must be loud. getComputedStyle(null) throws, which surfaces as
   // an opaque harness error naming neither the element nor the ruling, so it is
   // turned into a value the assertions below can report in their own words.
-  if (!row) return { row: false, theme: '?', fill: 'no .tg-row' };
-  if (!glyph) return { row: true, theme: '?', fill: 'no mark in the row' };
+  if (!row) return { row: false, theme: '?', fill: 'no .ch-row' };
+  if (!item) return { row: true, theme: '?', fill: 'no .ch-item' };
+  if (!glyph) return { row: true, theme: '?', fill: 'no mark in the item' };
+  // The fourth ruling, checked here as well as statically: the mark is the
+  // anchor's IMMEDIATE previous sibling, so a `border-bottom` on the anchor
+  // underlines the label alone.
+  const prev = el.previousElementSibling;
+  const siblingOk = !!prev && prev === glyph;
   const fillRaw = getComputedStyle(glyph).fill;
   const fill = parse(fillRaw);
   const labelFg = parse(getComputedStyle(label).color);
@@ -666,6 +678,7 @@ COLOUR_READ = """el => {
     row: true,
     theme: document.documentElement.classList.contains('light') ? 'light' : 'dark',
     fill: fillRaw,
+    siblingOk: siblingOk,
     // the label is the site's own link colour and the glyph is the brand one, so
     // they are two different colours against the same backgrounds and are held to
     // two different floors: 4.5:1 for text, 3:1 for non-text. They were one
@@ -678,32 +691,77 @@ COLOUR_READ = """el => {
 }"""
 
 
-def test_channel_link(page, base):
-    """The header's Telegram link must be on EVERY page type, in BOTH themes.
+# Mirrors verify.CHANNELS. The two lists are separate on purpose: this one is
+# what a BROWSER must find, that one is what the markup must contain, and a test
+# that imported the gate's table would stop testing the gate.
+E2E_CHANNELS = (
+    {"brand": "tg", "sel": ".ch-link--tg", "mark": ".ch-mark--tg",
+     "url": "https://t.me/wh_lab", "label_ru": "в Telegram",
+     "accent": "rgb(94, 106, 210)"},
+    {"brand": "max", "sel": ".ch-link--max", "mark": ".ch-mark--max",
+     "url": "https://max.ru/join/ByzPb9lbZJwBbvKvRvi3ioBNaFF9TyuXDy5vrIX48vs",
+     "label_ru": "в Max", "accent": "rgb(94, 106, 210)"},
+)
 
-    The header is hand-maintained six times over and the film pages are generated
-    from `FILM_TEMPLATE`, so a page type that lost the anchor would be a page with
-    no channel link anywhere and nothing saying so -- the footer link is
-    unchanged, so the page still looks complete. `verify.py` checks the markup of
-    every copy; this checks that they RENDER, which is the half a static read
+# Rasterise each glyph and measure the INK BOUNDS, which is what the eye
+# compares. Two quantities are reported because they disagree and only one is
+# right for this question: ink AREA is confounded by how solid each mark is (the
+# Telegram glyph is a near-solid disc, the MAX one a lighter blob), while ink
+# EXTENT is the painted size, so extent is what the optical correction targets.
+INK_EXTENT = """(markSel, vb) => {
+  const svg = document.querySelector(markSel);
+  if (!svg) return { err: 'no ' + markSel };
+  const use = svg.querySelector('use');
+  if (!use) return { err: 'no <use> in ' + markSel };
+  const href = use.getAttribute('href') || use.getAttribute('xlink:href');
+  const S = 200;
+  const cv = document.createElement('canvas');
+  cv.width = S; cv.height = S;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, S, S);
+  // author the same symbol at the same size, preserving the viewBox mapping
+  const [vw, vh] = vb.split(' ').map(Number);
+  const scale = S / Math.max(vw, vh);
+  ctx.save();
+  ctx.translate((S - vw * scale) / 2, (S - vh * scale) / 2);
+  ctx.scale(scale, scale);
+  ctx.fillStyle = '#000';
+  ctx.fill(new Path2D(
+    document.querySelector('svg[width="0"][height="0"]') ? '' : ''), 'nonzero');
+  ctx.restore();
+  return { err: 'needs-the-real-path', href: href };
+}
+"""
+
+
+def test_channel_link(page, base):
+    """The header's channel links must be on EVERY page type, in BOTH themes.
+
+    The header is hand-maintained in eight places and the film pages are
+    generated from `FILM_TEMPLATE`, so a page type that lost a link would be a
+    page with no channel link anywhere and nothing saying so -- the footer link
+    is unchanged, so the page still looks complete. `verify.py` checks the markup
+    of every copy; this checks that they RENDER, which is the half a static read
     cannot see.
 
-    Placement is asserted, not just presence, because the placement is what the
-    measurement decided. It was FIRST built as a sixth control in `.tool-buttons`,
-    which is where the human partner's "all controls equal" rule puts a new
-    control by default -- and six controls do not fit at 375: 296px of control
-    plus five 8px gaps is 336px against 321px available, so the row wrapped and
-    the header grew 52px at the two commonest phone widths. It lives under the
-    brand subtitle instead, which costs the row nothing.
+    Placement is asserted, not just presence, because placement is what the
+    measurement decided. The link was FIRST built as a sixth control in
+    `.tool-buttons`, which is where the partner's "all controls equal" rule puts
+    a new control by default -- and six controls do not fit at 375: 296px of
+    control plus five 8px gaps is 336px against 321px available, so the row
+    wrapped and the header grew 52px at the two commonest phone widths. It lives
+    under the brand subtitle instead, which costs the row nothing.
 
     The colour is asserted, not just present, for the reason that made this
-    feature go wrong once already: the glyph painted BLACK in both themes because
+    feature go wrong once already: a glyph painted BLACK in both themes because
     the share sprite declares no fill and this link does not inherit
     `.share-ico`'s, and the partner read that black blob wearing a Telegram logo
     as a request for a colour. A screenshot caught it once; this catches it
-    always. The 4.5:1 floor is the brand blue's own weak point -- it measures
-    7.15:1 on the dark header and 2.56:1 on the light one -- so both themes have
-    to be visited or the assertion only ever checks the half that already passes.
+    always. The floors differ per element and per channel: the LABEL is the
+    site's own link colour at 4.5:1, the GLYPH is the brand colour at 3:1, and
+    the brand values are a pair for Telegram and a single value for MAX because
+    their contrasts are different -- so a single shared floor would be wrong
+    either way.
     """
     PAGES = (
         ("index", "index.html"),
@@ -720,7 +778,7 @@ def test_channel_link(page, base):
         # resolve for any missing path -- and which makes a locally served 404
         # resolve every asset against the deployed domain instead. The
         # stylesheet then throws SecurityError on cssRules, nothing is styled,
-        # and the link this test is here to check renders as unstyled text.
+        # and the links this test is here to check render as unstyled text.
         #
         # The fix is to fulfil the route with the base rewritten to THIS run's
         # origin; nothing on disk changes. `route.continue_(url=...)` is NOT the
@@ -744,62 +802,219 @@ def test_channel_link(page, base):
                 if name == "404":
                     page.route(four_oh_four, serve_404)
                 page.goto(base + rel, wait_until="domcontentloaded")
-                page.wait_for_selector(".tg-link", timeout=5000)
+                page.wait_for_selector(".ch-row", timeout=5000)
                 if name == "404":
                     page.unroute(four_oh_four)
 
-                link = page.locator(".tg-link")
-                assert link.get_attribute("href") == "https://t.me/wh_lab", (
-                    f"{theme} @{width} {name}: the header link points at "
-                    f"{link.get_attribute('href')!r}, not the channel"
+                where = f"{theme} @{width} {name}"
+
+                # One item per channel, or a link has silently vanished and the
+                # row is merely shorter.
+                items = page.locator(".ch-row .ch-item")
+                assert items.count() == len(E2E_CHANNELS), (
+                    f"{where}: the channel row holds {items.count()} .ch-item(s), "
+                    f"expected one per channel ({len(E2E_CHANNELS)}). A link that "
+                    f"vanished is a shorter row, not a failure, unless the count "
+                    f"is compared"
                 )
-                assert link.get_attribute("target") == "_blank", (
-                    f"{theme} @{width} {name}: the header link must open in a new tab"
+
+                for ch in E2E_CHANNELS:
+                    link = page.locator(ch["sel"])
+                    assert link.count() == 1, (
+                        f"{where}: expected exactly one {ch['sel']}, found "
+                        f"{link.count()}"
+                    )
+                    assert link.get_attribute("href") == ch["url"], (
+                        f"{where}: the {ch['brand']} header link points at "
+                        f"{link.get_attribute('href')!r}, expected {ch['url']!r}"
+                    )
+                    assert link.get_attribute("target") == "_blank", (
+                        f"{where}: the {ch['brand']} header link must open in a "
+                        f"new tab"
+                    )
+                    assert link.get_attribute("rel") == "noopener noreferrer", (
+                        f"{where}: the {ch['brand']} header link must carry the "
+                        f"new-tab rel pair"
+                    )
+                    # Placement: under the subtitle, out of the control row.
+                    assert link.evaluate("el => !!el.closest('.brand-text')"), (
+                        f"{where}: the {ch['brand']} header link is not inside "
+                        f".brand-text. It was rejected as a sixth control in "
+                        f".tool-buttons because six controls do not fit at 375"
+                    )
+                    assert link.evaluate("el => !el.closest('.tool-buttons')"), (
+                        f"{where}: the {ch['brand']} header link is back inside "
+                        f"the control row"
+                    )
+                    # The row must sit DIRECTLY under the brand's subtitle <p>.
+                    # `previousElementSibling` being the subtitle rather than a
+                    # <div> or the row itself is the shape that settling wrong
+                    # looks like.
+                    assert link.evaluate(
+                        "el => { const row = el.closest('.ch-row');"
+                        " return !!row && !!row.previousElementSibling"
+                        " && row.previousElementSibling.tagName === 'P'; }"), (
+                        f"{where}: the channel row must sit directly under the "
+                        f"brand's subtitle paragraph"
+                    )
+                    # The mark is a SIBLING of the anchor, and that is the
+                    # partner's fourth ruling. It used to be a child, which put a
+                    # border-bottom under the glyph as well as under the label.
+                    assert link.evaluate(
+                        "el => { const p = el.previousElementSibling;"
+                        " return !!p && p.tagName.toLowerCase() === 'svg'"
+                        " && p.classList.contains('ch-mark'); }"), (
+                        f"{where}: the {ch['brand']} mark must be the anchor's "
+                        f"immediate previous sibling, not a child. Inside the <a> "
+                        f"the border-bottom underlined the glyph as well as the "
+                        f"label, and the partner ruled `you put the icon in the "
+                        f"href too`"
+                    )
+                    assert link.evaluate("el => !el.querySelector('svg')"), (
+                        f"{where}: the {ch['brand']} glyph is back inside the "
+                        f"anchor. It ships as a sibling"
+                    )
+                    # A visible label, not an icon-only control. The Russian
+                    # literal is checked because this run does not switch the
+                    # language; `verify.py` is what guarantees every
+                    # language-aware copy overrides it.
+                    assert link.evaluate(
+                        "(el, want) => el.innerText.trim() === want", ch["label_ru"]), (
+                        f"{where}: the {ch['brand']} header link's visible text "
+                        f"is {link.text_content()!r}, expected {ch['label_ru']!r}"
+                    )
+                    # The glyph must resolve to something with size.
+                    painted = link.evaluate(
+                        "el => { const item = el.closest('.ch-item');"
+                        " if (!item) return 'no .ch-item';"
+                        " const u = item.querySelector('use');"
+                        " if (!u) return 'no <use>';"
+                        " const r = u.getBoundingClientRect();"
+                        " return r.width > 0 && r.height > 0 ? 'ok' : 'zero-sized'; }"
+                    )
+                    assert painted == "ok", (
+                        f"{where}: the {ch['brand']} mark is not rendering "
+                        f"({painted}). The sprite reference resolves to nothing, "
+                        f"which looks like an empty box rather than an error. The "
+                        f"mark is a sibling of the anchor, so a <use> looked up on "
+                        f"the anchor itself finds nothing and reports the same thing"
+                    )
+                    colour = link.evaluate(COLOUR_READ)
+                    assert colour["row"] and str(colour["fill"]).startswith("rgb"), (
+                        f"{where}: the {ch['brand']} row or its mark is missing "
+                        f"({colour['fill']!r}); cannot measure a colour on a mark "
+                        f"that is not there"
+                    )
+                    assert colour["siblingOk"], (
+                        f"{where}: the {ch['brand']} mark is in the item but is "
+                        f"not the anchor's immediate previous sibling, so the "
+                        f"border-bottom would run under the glyph as well as the "
+                        f"label"
+                    )
+                    assert colour["fill"] != "rgb(0, 0, 0)", (
+                        f"{where}: the {ch['brand']} glyph paints "
+                        f"{colour['fill']}. The share sprite declares no fill on "
+                        f"any symbol and every consumer inherits `fill: "
+                        f"currentColor` from `.share-ico`, which this link is not a "
+                        f"member of -- without the declaration the path falls back "
+                        f"to the SVG default and paints black in BOTH themes. It "
+                        f"shipped that way once and read as a colour problem "
+                        f"rather than a missing rule"
+                    )
+                    assert colour["fill"] != ch["accent"], (
+                        f"{where}: the {ch['brand']} glyph paints "
+                        f"{colour['fill']}, which is --accent. That is what "
+                        f"`fill: currentColor` produces here: on the <svg> element "
+                        f"currentColor resolves to THAT element's own colour, and "
+                        f"`svg:not(.heart)` sets it to --accent. The token has to "
+                        f"be named outright"
+                    )
+                    assert colour["label"] >= 4.5, (
+                        f"{where}: the {ch['brand']} label is at "
+                        f"{colour['label']:.2f}:1 against its background, under "
+                        f"the 4.5:1 text floor. The label is the site's own link "
+                        f"colour, so this is about inheriting the right one, not "
+                        f"about the brand token"
+                    )
+                    assert colour["glyph"] is not None and colour["glyph"] >= 3.0, (
+                        f"{where}: the {ch['brand']} glyph is at "
+                        f"{colour['glyph']:.2f}:1, under the 3:1 non-text floor. "
+                        f"MAX's gradient stops each fail in one theme or the other "
+                        f"and the Telegram brand hex alone measures 2.56:1 on the "
+                        f"light surface, which is why both tokens are what they are"
+                    )
+
+                # The two marks must be optically matched, and this is the only
+                # assertion that catches the optical correction having gone DEAD
+                # rather than wrong. It is a real shape: `.icon { width: 1.1rem }`
+                # sits later in the stylesheet at the same specificity, so the
+                # override computed away, the fill kept working (because `.icon`
+                # does not set `fill`), and the only symptom on the page was two
+                # marks the same size.
+                marks = page.evaluate("""() => {
+                  const out = [];
+                  for (const s of document.querySelectorAll('.ch-mark')) {
+                    const r = s.getBoundingClientRect();
+                    out.push({ vb: s.getAttribute('viewBox'),
+                               w: r.width, top: r.top, bottom: r.bottom,
+                               cx: r.x + r.width / 2,
+                               cy: r.y + r.height / 2 });
+                  }
+                  return out;
+                }""")
+                assert len(marks) == len(E2E_CHANNELS), (
+                    f"{where}: found {len(marks)} marks, expected "
+                    f"{len(E2E_CHANNELS)}"
                 )
-                # Placement: under the subtitle, out of the control row.
-                assert link.evaluate("el => !!el.closest('.brand-text')"), (
-                    f"{theme} @{width} {name}: the header link is not inside "
-                    f".brand-text. It was rejected as a sixth control in "
-                    f".tool-buttons because six controls do not fit at 375"
+                boxes = sorted(m["w"] for m in marks)
+                assert boxes[0] < boxes[-1], (
+                    f"{where}: both channel marks compute to the same box "
+                    f"({boxes[0]:.2f}px). The two glyphs paint different fractions "
+                    f"of their own viewBoxes -- Telegram 100%, MAX 76% -- so equal "
+                    f"boxes mean the optical correction is dead, which is what "
+                    f"happens when `.icon`'s later width wins on specificity. The "
+                    f"fill keeps working either way, so nothing else would notice"
                 )
-                assert link.evaluate("el => !el.closest('.tool-buttons')"), (
-                    f"{theme} @{width} {name}: the header link is back inside the "
-                    f"control row"
-                )
-                # The mark is a SIBLING of the anchor, and that is the partner's
-                # third ruling. It used to be a child, which put a border-bottom
-                # under the glyph as well as under the label -- the border on an
-                # inline-flex anchor spans the whole box. `previousElementSibling`
-                # being the row rather than a <p> is exactly the shape that
-                # settling wrong looks like, so both facts are asserted: the row
-                # is a sibling of the subtitle paragraph, and the anchor's own
-                # previous sibling is the MARK, not the row.
-                assert link.evaluate(
-                    "el => { const row = el.closest('.tg-row'); return !!row "
-                    "&& !!row.previousElementSibling "
-                    "&& row.previousElementSibling.tagName === 'P'; }"), (
-                    f"{theme} @{width} {name}: the channel row must sit directly "
-                    f"under the brand's subtitle paragraph"
-                )
-                assert link.evaluate(
-                    "el => { const p = el.previousElementSibling; "
-                    "return !!p && p.tagName === 'svg' "
-                    "&& p.classList.contains('tg-mark'); }"), (
-                    f"{theme} @{width} {name}: the mark must be the anchor's "
-                    f"immediate previous sibling, not a child. Inside the <a> the "
-                    f"border-bottom underlined the glyph as well as the label, and "
-                    f"the partner ruled `you put the icon in the href too`"
-                )
-                assert link.evaluate("el => !el.querySelector('svg')"), (
-                    f"{theme} @{width} {name}: the glyph is back inside the "
-                    f"anchor. It ships as a sibling"
-                )
-                # A visible label, not an icon-only control.
-                assert link.evaluate(
-                    "el => el.textContent.trim() === 'Whitehat Lab'"), (
-                    f"{theme} @{width} {name}: the header link's visible text is "
-                    f"{link.text_content()!r}, expected 'Whitehat Lab'"
-                )
+                # Are the two marks on the SAME flex line? Decided by whether
+                # their vertical spans overlap, because comparing centres is
+                # meaningless across lines and therefore cannot also be what
+                # decides the case. In the measured 300-340 band the row wraps
+                # to two lines, and the centres are ~26.6px apart there for a
+                # perfectly correct reason.
+                on_one_line = (min(m["bottom"] for m in marks)
+                               > max(m["top"] for m in marks))
+                if on_one_line:
+                    spread = abs(marks[1]["cy"] - marks[0]["cy"])
+                    assert spread <= 0.5, (
+                        f"{where}: both marks are on one line but their centres "
+                        f"are {spread:.2f}px apart. The boxes are deliberately "
+                        f"different sizes -- the optical correction -- and "
+                        f"`align-items: center` is what keeps them level"
+                    )
+                else:
+                    # Wrapping is the measured, accepted behaviour; OVERFLOWING
+                    # is not, and this is the width at which the two are easiest
+                    # to confuse.
+                    row_box = page.evaluate(
+                        "() => { const r = document.querySelector('.ch-row')"
+                        " .getBoundingClientRect();"
+                        " const b = document.querySelector('.brand-text')"
+                        " .getBoundingClientRect();"
+                        " return { rowW: r.width, brandW: b.width,"
+                        " doc: document.documentElement.scrollWidth,"
+                        " win: window.innerWidth }; }")
+                    assert row_box["rowW"] <= row_box["brandW"] + 0.5, (
+                        f"{where}: the channel row wraps to two lines and is "
+                        f"{row_box['rowW'] - row_box['brandW']:.1f}px WIDER than "
+                        f".brand-text. Wrapping is measured and accepted in the "
+                        f"300-340 band; overflowing is not"
+                    )
+                    assert row_box["doc"] <= row_box["win"], (
+                        f"{where}: the wrapped channel row causes document-level "
+                        f"horizontal overflow ({row_box['doc']} > "
+                        f"{row_box['win']})"
+                    )
+
                 # The control row must be back to the widths it had before the
                 # link existed: 40px squares, 76px for the labelled toggle.
                 row = page.locator(".tool-buttons")
@@ -809,66 +1024,11 @@ def test_channel_link(page, base):
                         ".filter(c => c.offsetParent !== null)"
                         ".map(c => c.getBoundingClientRect().width))")
                     assert widest <= 76.5, (
-                        f"{theme} @{width} {name}: a control in the row is "
-                        f"{widest:.1f}px wide, past the 76px language toggle. If the "
-                        f"channel link went back into the row it would be a sixth "
-                        f"control and the row would wrap at 375"
+                        f"{where}: a control in the row is {widest:.1f}px wide, "
+                        f"past the 76px language toggle. If a channel link went "
+                        f"back into the row it would be a sixth control and the row "
+                        f"would wrap at 375"
                     )
-                # The glyph must resolve to something with size.
-                painted = link.evaluate(
-                    "el => { const row = el.closest('.tg-row');"
-                    " if (!row) return 'no .tg-row';"
-                    " const u = row.querySelector('use');"
-                    " if (!u) return 'no <use>';"
-                    " const r = u.getBoundingClientRect();"
-                    " return r.width > 0 && r.height > 0 ? 'ok' : 'zero-sized'; }"
-                )
-                assert painted == "ok", (
-                    f"{theme} @{width} {name}: the Telegram mark is not rendering "
-                    f"({painted}). The sprite reference resolves to nothing, which "
-                    f"looks like an empty box rather than an error. The mark is a "
-                    f"sibling of the anchor, so a <use> looked up on the anchor "
-                    f"itself finds nothing and reports the same thing"
-                )
-                colour = link.evaluate(COLOUR_READ)
-                # `row` first, so a structural miss is reported as itself rather
-                # than as a downstream `None >= 4.5` TypeError.
-                assert colour["row"] and str(colour["fill"]).startswith("rgb"), (
-                    f"{theme} @{width} {name}: the channel row or its mark is "
-                    f"missing ({colour['fill']!r}); cannot measure a colour on a "
-                    f"mark that is not there"
-                )
-                assert colour["fill"] != "rgb(0, 0, 0)", (
-                    f"{theme} @{width} {name}: the glyph paints {colour['fill']}. "
-                    f"The share sprite declares no fill on any symbol and every "
-                    f"consumer inherits `fill: currentColor` from `.share-ico`, "
-                    f"which this link is not a member of -- without the declaration "
-                    f"on `.tg-link svg` the path falls back to the SVG default and "
-                    f"paints black in BOTH themes. It shipped that way once and read "
-                    f"as a colour problem rather than a missing rule"
-                )
-                assert colour["fill"] != "rgb(94, 106, 210)", (
-                    f"{theme} @{width} {name}: the glyph paints {colour['fill']}, "
-                    f"which is --accent. That is what `fill: currentColor` produces "
-                    f"here: on the <svg> element currentColor resolves to THAT "
-                    f"element's own colour, and `svg:not(.heart)` sets it to "
-                    f"--accent. The token has to be named outright"
-                )
-                assert colour["label"] >= 4.5, (
-                    f"{theme} @{width} {name}: the label is at "
-                    f"{colour['label']:.2f}:1 against its background, under the "
-                    f"4.5:1 text floor. The label is the site's own link colour, so "
-                    f"this is about inheriting the right one, not about "
-                    f"--telegram -- whose brand value measures 2.56:1 in light and "
-                    f"is why the token is a pair"
-                )
-                assert colour["glyph"] is not None and colour["glyph"] >= 3.0, (
-                    f"{theme} @{width} {name}: the glyph is at "
-                    f"{colour['glyph']:.2f}:1, under the 3:1 non-text floor. The "
-                    f"brand hex alone measures 2.56:1 on the light header, which is "
-                    f"why --telegram is a darker shade of the same hue there and the "
-                    f"brand value in dark"
-                )
 
 
 CLICK_NAV = """

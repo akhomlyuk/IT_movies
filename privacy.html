@@ -118,7 +118,7 @@
         <div class="brand-text">
           <div class="brand-name">IT Movies</div>
           <p data-i18n="subtitle">Политика конфиденциальности / Privacy policy</p>
-          <span class="tg-row"><svg class="icon tg-mark" viewBox="0 0 16 16" aria-hidden="true"><use href="static/share.svg#icon-telegram"></use></svg><a class="tg-link" href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer" aria-label="Канал в Telegram: Whitehat Lab" title="Канал в Telegram: Whitehat Lab"><span>Whitehat Lab</span></a></span>
+          <span class="ch-row"><span class="ch-item"><svg class="icon ch-mark ch-mark--tg" viewBox="0 0 16 16" aria-hidden="true"><use href="static/share.svg#icon-telegram"></use></svg><a class="ch-link ch-link--tg" href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer" aria-label="Канал в Telegram: Whitehat Lab"><span>в Telegram</span></a></span><span class="ch-item"><svg class="icon ch-mark ch-mark--max" viewBox="0 0 1000 1000" aria-hidden="true"><use href="static/share.svg#icon-max"></use></svg><a class="ch-link ch-link--max" href="https://max.ru/join/ByzPb9lbZJwBbvKvRvi3ioBNaFF9TyuXDy5vrIX48vs" target="_blank" rel="noopener noreferrer" aria-label="Канал в Max: Whitehat Lab"><span>в Max</span></a></span></span>
         </div>
       </div>
       <div class="toolbar">
@@ -234,6 +234,9 @@
           privacyCurrent: "Политика конфиденциальности",
           swapLang: "Переключить язык",
           telegramChannel: "Канал в Telegram: Whitehat Lab",
+          telegramLabel: "в Telegram",
+          maxChannel: "Канал в Max: Whitehat Lab",
+          maxLabel: "в Max",
           themeToDark: "Включить тёмную тему",
           themeToLight: "Включить светлую тему",
         },
@@ -266,6 +269,9 @@
           privacyCurrent: "Privacy policy",
           swapLang: "Switch language",
           telegramChannel: "Telegram channel: Whitehat Lab",
+          telegramLabel: "Telegram",
+          maxChannel: "MAX channel: Whitehat Lab",
+          maxLabel: "MAX",
           themeToDark: "Enable dark theme",
           themeToLight: "Enable light theme",
         },
@@ -314,10 +320,19 @@
         document.documentElement.classList.toggle("light", theme === "light");
         var csMeta = document.querySelector('meta[name="color-scheme"]');
         if (csMeta) csMeta.setAttribute("content", theme);
-        var tgLink = document.querySelector(".tg-link");
-        if (tgLink) {
-          tgLink.setAttribute("aria-label", t.telegramChannel);
-          tgLink.setAttribute("title", t.telegramChannel);
+        var chTelegram = document.querySelector(".ch-link--tg");
+        var chMax = document.querySelector(".ch-link--max");
+        if (chTelegram) {
+          chTelegram.setAttribute("aria-label", t.telegramChannel);
+          chTelegram.setAttribute("title", t.telegramChannel);
+          var tgText = chTelegram.querySelector("span");
+          if (tgText) { tgText.textContent = t.telegramLabel; }
+        }
+        if (chMax) {
+          chMax.setAttribute("aria-label", t.maxChannel);
+          chMax.setAttribute("title", t.maxChannel);
+          var mxText = chMax.querySelector("span");
+          if (mxText) { mxText.textContent = t.maxLabel; }
         }
         var themeBtn = document.querySelector(".theme-toggle");
         if (themeBtn) {

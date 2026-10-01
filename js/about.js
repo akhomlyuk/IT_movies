@@ -21,7 +21,7 @@ const ABOUT_TEMPLATE = `
       <div class="brand-text">
         <h1>{{ about.heading }}</h1>
         <p v-if="altTitle">{{ altTitle }}</p>
-        <span class="tg-row"><svg class="icon tg-mark" viewBox="0 0 16 16" aria-hidden="true"><use href="static/share.svg#icon-telegram"></use></svg><a class="tg-link" href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer" aria-label="Канал в Telegram: Whitehat Lab" :aria-label="t.telegramChannel" :title="t.telegramChannel"><span>Whitehat Lab</span></a></span>
+        <span class="ch-row"><span class="ch-item"><svg class="icon ch-mark ch-mark--tg" viewBox="0 0 16 16" aria-hidden="true"><use href="static/share.svg#icon-telegram"></use></svg><a class="ch-link ch-link--tg" href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer" aria-label="Канал в Telegram: Whitehat Lab" :aria-label="t.telegramChannel" :title="t.telegramChannel"><span><span class="pre-mount">в Telegram</span><span class="post-mount">{{ t.telegramLabel }}</span></span></a></span><span class="ch-item"><svg class="icon ch-mark ch-mark--max" viewBox="0 0 1000 1000" aria-hidden="true"><use href="static/share.svg#icon-max"></use></svg><a class="ch-link ch-link--max" href="https://max.ru/join/ByzPb9lbZJwBbvKvRvi3ioBNaFF9TyuXDy5vrIX48vs" target="_blank" rel="noopener noreferrer" aria-label="Канал в Max: Whitehat Lab" :aria-label="t.maxChannel" :title="t.maxChannel"><span><span class="pre-mount">в Max</span><span class="post-mount">{{ t.maxLabel }}</span></span></a></span></span>
       </div>
     </div>
     <div class="toolbar">
