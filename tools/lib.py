@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SITE_BASE = "https://akhomlyuk.github.io/IT_movies"
+SITE_BASE = "https://movies.whlab.ru"
 
 
 def load_catalog(root=ROOT):

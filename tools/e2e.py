@@ -774,24 +774,11 @@ def test_channel_link(page, base):
     root = Path(__file__).resolve().parents[1]
 
     def serve_404(route):
-        # 404.html carries <base href="https://akhomlyuk.github.io/IT_movies/">,
-        # which is CORRECT for GitHub Pages -- it is what makes relative assets
-        # resolve for any missing path -- and which makes a locally served 404
-        # resolve every asset against the deployed domain instead. The
-        # stylesheet then throws SecurityError on cssRules, nothing is styled,
-        # and the links this test is here to check render as unstyled text.
-        #
-        # The fix is to fulfil the route with the base rewritten to THIS run's
-        # origin; nothing on disk changes. `route.continue_(url=...)` is NOT the
-        # fix and looks like it: it re-issues the request against the URL passed
-        # to it, i.e. against the real deployed origin, so the stylesheet still
-        # comes from production and the test measures production.
-        html = (root / "404.html").read_text(encoding="utf-8")
-        html = html.replace(
-            '<base href="https://akhomlyuk.github.io/IT_movies/">',
-            '<base href="%s/">' % base)
-        route.fulfill(status=200, content_type="text/html; charset=utf-8",
-                      body=html)
+        # 404.html carries <base href="/">, so relative assets resolve against
+        # the serving origin -- this http.server, same as production. No rewrite.
+        route.fulfill(
+            status=200, content_type="text/html; charset=utf-8",
+            body=(root / "404.html").read_text(encoding="utf-8"))
 
     four_oh_four = re.compile(r"404\.html$")
     for theme in ("dark", "light"):
