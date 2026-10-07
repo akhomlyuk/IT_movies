@@ -3310,7 +3310,48 @@ if _theme_block(about_src) != theme_core:
     )
 
 # 9c2. Yandex.Metrika: single source (gen_pages.METRIKA_SCRIPT) on every page
-metrika_needle = f"mc.yandex.ru/metrika/tag.js?id={gen_pages.METRIKA_ID}"
+#
+# Номер счётчика закреплён намеренно. Проверка выше выводит needle из
+# METRIKA_ID, поэтому она довольна любым согласованным значением: если номер
+# сменился вместе с константой, страницы продолжат собираться, проверка
+# промолчит, а статистика начнёт уходить в чужой счётчик. По самой странице
+# это не заметно — счётчик одинаково рисуется и там, и там.
+EXPECTED_METRIKA_ID = "113537604"
+if gen_pages.METRIKA_ID != EXPECTED_METRIKA_ID:
+    errors.append(
+        f"METRIKA_ID = {gen_pages.METRIKA_ID!r}, а ожидался {EXPECTED_METRIKA_ID!r}: "
+        "номер счётчика меняется только осознанно"
+    )
+
+# Номер счётчика дублируется ещё и в политике конфиденциальности — в
+# статическом тексте и в JSON-острове страницы, на двух языках. Расхождение
+# между текстом политики и тем, что реально грузится, — это не опечатка, а
+# несоответствие документа поведению, и оно молча переживало бы смену
+# счётчика. Поэтому номер сверяется с METRIKA_ID.
+#
+# Проверяется именно privacy.html: текст политики написан руками и в
+# js/i18n.js его нет — ключей metrikaH/metrikaP там тоже нет. Проверять
+# номер в i18n.js было бы проверкой несуществующего требования.
+_pat_ru = r"счётчика (\d+)"
+_pat_en = r"counter \(account (\d+)\)"
+for _bad in set(re.findall(_pat_ru, privacy_src)) | set(re.findall(_pat_en, privacy_src)):
+    if _bad != gen_pages.METRIKA_ID:
+        errors.append(
+            f"privacy.html: в политике номер счётчика {_bad}, а подключается {gen_pages.METRIKA_ID}"
+        )
+if f"счётчика {gen_pages.METRIKA_ID}" not in privacy_src:
+    errors.append(f"privacy.html: в политике нет номера счётчика {gen_pages.METRIKA_ID}")
+
+# Хост и имя скрипта берутся из самого METRIKA_SCRIPT, а не дублируются в
+# проверке. Дублирование означало, что смена адреса загрузчика тихо ломала
+# verify.py на 156 страницах фильмов, пока снимок и проверка жили в разных
+# местах. Теперь достаточно править константу один раз.
+_metrika_url = re.search(r"https://[^\s\"']*metrika/tag\S*?id=\d+", gen_pages.METRIKA_SCRIPT)
+if _metrika_url is None:
+    errors.append("gen_pages.METRIKA_SCRIPT: не найден адрес загрузчика счётчика")
+    metrika_needle = "\0"  # заведомо отсутствующая подстрока
+else:
+    metrika_needle = _metrika_url.group(0)
 metrika_core = _norm_ws(gen_pages.METRIKA_SCRIPT)
 metrika_checked = 0
 for fname, src in (
