@@ -1243,12 +1243,28 @@ def en_attr_rules(name, lang="en"):
     return rules
 
 
+def nested_region_error(page, outer, inner):
+    return SystemExit(
+        f"{page}: {inner} is nested inside {outer}. Marked blocks are a flat list"
+        " of siblings here: every block is one element or one run of text, so a"
+        " block inside a block has no meaning, and the selection below keeps one"
+        " flag for depth. Rather than guess which copy the author meant, this"
+        " stops the build"
+    )
+
+
 def check_regions(src, lang, page):
     inventory = {}
     stack = []
     for kind, rlang, name in REGION_RE.findall(src):
         inventory.setdefault(name, set()).add(rlang)
         if kind == "begin":
+            if stack:
+                raise nested_region_error(
+                    page,
+                    f"begin:{stack[-1][0]}:{stack[-1][1]}",
+                    f"begin:{rlang}:{name}",
+                )
             stack.append((rlang, name))
             continue
         if not stack:
@@ -1260,6 +1276,17 @@ def check_regions(src, lang, page):
             )
     if stack:
         raise SystemExit(f"{page}: marked region {stack[-1][1]!r} is never closed")
+    depth = 0
+    for tag in re.finditer(r"<template\b[^>]*>|</template>", src):
+        if tag.group(0).startswith("</"):
+            depth -= 1
+            continue
+        if depth:
+            name = re.search(r'id="en:([^"]+)"', tag.group(0))
+            raise nested_region_error(
+                page, "another <template>", f'<template id="en:{name.group(1) if name else "?"}">'
+            )
+        depth += 1
     templates = {name for name, _ in EN_TEMPLATE_RE.findall(src)}
     problems = []
     for name, langs in sorted(inventory.items()):
@@ -1281,18 +1308,30 @@ def check_regions(src, lang, page):
         )
 
 
-def select_regions(src, lang):
+def select_regions(src, lang, page):
     kept = []
     pos = 0
     dropping = False
+    depth = 0
+    opened = []
     for m in REGION_RE.finditer(src):
         if not dropping:
             kept.append(src[pos: m.start()])
         if m.group(1) == "begin":
+            if depth:
+                raise nested_region_error(
+                    page,
+                    f"begin:{opened[-1][0]}:{opened[-1][1]}",
+                    f"begin:{m.group(2)}:{m.group(3)}",
+                )
+            depth += 1
+            opened.append((m.group(2), m.group(3)))
             dropping = m.group(2) != lang
             if not dropping:
                 kept.append(m.group(0))
         else:
+            depth -= 1
+            opened.pop()
             if not dropping:
                 kept.append(m.group(0))
             dropping = False
@@ -1376,6 +1415,29 @@ def mirror_href(value, lang):
     return value
 
 
+LANG_GATE_RE = re.compile(
+    r'\n *document\.querySelectorAll\("\[data-lang-block\]"\)\.forEach\(function \(el\)'
+    r' \{\n *el\.hidden = el\.getAttribute\("data-lang-block"\) !== lang;\n *\}\);'
+)
+
+
+def drop_language_gate(text, page, lang):
+    block = ' data-lang-block="%s"' % lang
+    if block not in text:
+        raise SystemExit(
+            f"{page}: the kept {lang} block carries no data-lang-block attribute, so"
+            " there is nothing of the language gate left to remove"
+        )
+    out, n = LANG_GATE_RE.subn("", text, count=1)
+    if n != 1:
+        raise SystemExit(
+            f"{page}: found {n} language-gate statements, expected exactly one. This"
+            " page carries one language, so the show/hide loop has nothing to do and"
+            " the attribute it reads must not survive in the markup"
+        )
+    return out.replace(block, "", 1)
+
+
 def page_json_ld(text, page, strings, other_strings, ru_url, url, lang):
     m = LD_SCRIPT_RE.search(text)
     if m is None:
@@ -1410,7 +1472,7 @@ def en_root_page(path, src=None, lang="en"):
     other_url = SITE_BASE + lang_path(RU_ROOT_PATH[page], other_lang)
 
     check_regions(src, lang, page)
-    out = select_regions(src, lang)
+    out = select_regions(src, lang, page)
 
     for old, new in en_attr_rules(page, lang):
         if old not in out:
@@ -1443,21 +1505,12 @@ def en_root_page(path, src=None, lang="en"):
 
     if page == "privacy.html":
         out = keep_inline_i18n(out, page, lang)
-        gated = re.search(
-            r'<(\w+)[^>]*\shidden(?=[\s>])[^>]*data-lang-block="%s"' % lang, out
-        )
-        if gated:
+        out = drop_language_gate(out, page, lang)
+        if "data-lang-block" in out:
             raise SystemExit(
-                f"{page}: the block this page speaks is still gated behind"
-                " hidden, so the page is blank without JavaScript: "
-                f"{gated.group(0)[:80]}"
-            )
-        other_gate = re.search(r'data-lang-block="(?!%s")[^"]+"' % lang, out)
-        if other_gate:
-            raise SystemExit(
-                f"{page}: still carries the {other_gate.group(1)} language block"
-                f" ({other_gate.group(0)}). This page speaks one language and the"
-                " gate that used to pick between them is gone"
+                f"{page}: still carries a data-lang-block attribute after the gate"
+                " was removed, so a reader without JavaScript could be shown a block"
+                " the page does not speak"
             )
 
     out = sub_once(

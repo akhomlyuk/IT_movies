@@ -3446,6 +3446,165 @@ def _en_root_missing_variant(src, page, name):
     return pattern.sub("", src, count=1)
 
 
+class RegionTree(RcCardTree):
+    pass
+
+
+EN_PARITY_DROP = {
+    "boot-fallback": ("br", "span"),
+    "about-noscript": ("p",),
+}
+VOID_TAGS = set(RC_VOID_TAGS)
+CHANNEL_ARIA_KEYS = ("telegramChannel", "maxChannel")
+RU_REGION_RE = re.compile(
+    r"<!--\s*begin:ru:([a-z0-9-]+)\s*-->(.*?)<!--\s*end:ru:\1\s*-->", re.S
+)
+EN_TEMPLATE_BLOCK_RE = re.compile(
+    r'<template id="en:([a-z0-9-]+)">(.*?)</template>', re.S
+)
+
+
+def _region_fragments(path):
+    text = (ROOT / path).read_text(encoding="utf-8")
+    return text, dict(RU_REGION_RE.findall(text)), dict(
+        EN_TEMPLATE_BLOCK_RE.findall(text)
+    )
+
+
+def _tag_balance(fragment):
+    opens = {}
+    closes = {}
+    for m in re.finditer(r"<(/?)([a-zA-Z][^\s/>]*)", fragment):
+        tag = m.group(2).lower()
+        if tag in VOID_TAGS:
+            continue
+        table = closes if m.group(1) else opens
+        table[tag] = table.get(tag, 0) + 1
+    return {
+        tag: (opens.get(tag, 0), closes.get(tag, 0))
+        for tag in sorted(set(opens) | set(closes))
+        if opens.get(tag, 0) != closes.get(tag, 0)
+    }
+
+
+def _channel_aria_labels(fragment):
+    return re.findall(r'<a[^>]+class="ch-link[^"]*"[^>]+aria-label="([^"]*)"', fragment)
+
+
+def _renumber(nodes, dropped):
+    dropped = set(dropped)
+    mapping = {old: new for new, old in
+               enumerate(i for i in range(len(nodes)) if i not in dropped)}
+    out = []
+    for i, (tag, classes, parent) in enumerate(nodes):
+        if i in dropped:
+            continue
+        out.append(
+            (tag, classes, mapping.get(parent, None) if parent is not None else None)
+        )
+    return out
+
+
+def _region_parity_problems():
+    problems = []
+    labels = parse_i18n()
+    checked = 0
+    for name in EN_ROOT_PAGES:
+        src_text, ru_blocks, en_blocks = _region_fragments(name)
+        for block in sorted(set(ru_blocks) | set(en_blocks)):
+            ru = ru_blocks.get(block)
+            en = en_blocks.get(block)
+            if ru is None or en is None:
+                problems.append(
+                    f"{name}: block {block!r} has only one of the two copies"
+                )
+                continue
+            for lang, fragment in (("ru", ru), ("en", en)):
+                unbalanced = _tag_balance(fragment)
+                if unbalanced:
+                    problems.append(
+                        f"{name}: the {lang} copy of {block!r} has unbalanced tags "
+                        f"{unbalanced}. A stray end tag is discarded by the parser and"
+                        " never shows in a screenshot, so nothing else would see it"
+                    )
+            ru_aria = _channel_aria_labels(ru)
+            en_aria = _channel_aria_labels(en)
+            if ru_aria and ru_aria != [labels["ru"][key] for key in CHANNEL_ARIA_KEYS]:
+                problems.append(
+                    f"{name}: the ru copy of {block!r} carries channel aria-labels "
+                    f"{ru_aria}, which are not I18N.ru's"
+                )
+            if en_aria and en_aria != [labels["en"][key] for key in CHANNEL_ARIA_KEYS]:
+                problems.append(
+                    f"{name}: the en copy of {block!r} carries channel aria-labels "
+                    f"{en_aria}, which are not I18N.en's. This copy paints in the"
+                    " tier with no script to correct it"
+                )
+            drop = EN_PARITY_DROP.get(block, ())
+            tree = RcCardTree()
+            tree.feed(ru)
+            tree.close()
+            dropped = []
+            for tag in drop:
+                for i, node in enumerate(tree.nodes):
+                    if node[0] == tag:
+                        dropped.append(i)
+                        break
+                else:
+                    problems.append(
+                        f"{name}: block {block!r} was allowed to differ by a <{tag}>,"
+                        " and there is no longer one. The allowance is now stale: it"
+                        " either hides a real difference or should be deleted"
+                    )
+            ru_nodes = _renumber(tree.nodes, dropped)
+            right = RcCardTree()
+            right.feed(en)
+            right.close()
+            divergence = rc_first_divergence(ru_nodes, right.nodes)
+            if divergence is not None:
+                i, a, b = divergence
+                problems.append(
+                    f"{name}: block {block!r} -- the ru copy and the en copy are not the"
+                    f" same document at node {i}: {a} against {b}. The two copies are"
+                    " one block in two languages, so a moved, renamed or missing"
+                    " element is a structural edit made in one language only"
+                )
+            checked += 1
+    return problems
+
+
+VHTML_HREF_RE = re.compile(r"href='(/[^']*)'")
+
+
+def _i18n_vhtml_link_problems():
+    labels = parse_i18n()
+    problems = []
+
+    def walk(node, prefix=""):
+        for key, value in node.items():
+            path = f"{prefix}{key}"
+            if isinstance(value, dict):
+                walk(value, path + ".")
+                continue
+            for href in VHTML_HREF_RE.findall(str(value)):
+                if lang == "en":
+                    if not href.startswith("/en/"):
+                        problems.append(
+                            f"js/i18n.js: I18N.en.{path} carries href='{href}', which"
+                            " is not under /en/. This string is injected as HTML"
+                            " (v-html), so no langPath() can reach it: on /en/about.html"
+                            " it renders a link out of the English tree"
+                        )
+                elif href.startswith("/en/"):
+                    problems.append(
+                        f"js/i18n.js: I18N.ru.{path} carries href='{href}', which is"
+                        " the English address on the Russian page"
+                    )
+    for lang in ("ru", "en"):
+        walk(labels[lang], "")
+    return problems
+
+
 def check_en_root_pages():
     bad = []
     transform = getattr(gen_pages, "en_root_page", None)
@@ -3472,8 +3631,18 @@ def check_en_root_pages():
             bad.append(f"en/{name} is missing -- run gen_pages.py")
             continue
         text = target.read_text(encoding="utf-8")
-        fresh = transform(ROOT / name)
-        if fresh != text:
+        try:
+            fresh = transform(ROOT / name)
+        except SystemExit as exc:
+            fresh = None
+            bad.append(
+                f"en/{name}: the transform refuses the Russian source ({exc})."
+                " Freshness cannot be judged, and the blocks below still ran"
+            )
+        except Exception as exc:  # noqa: BLE001
+            fresh = None
+            bad.append(f"en/{name}: the transform raised {exc!r} on the source")
+        if fresh is not None and fresh != text:
             bad.append(
                 f"en/{name} is stale -- run gen_pages.py. The English page is "
                 "generated from the Russian one by rule, so a hand-edit is either "
@@ -3614,16 +3783,17 @@ def check_en_root_pages():
                             f"{en_prefix}"
                         )
                         break
-        for lang_block in re.findall(r'<main[^>]*data-lang-block="ru"[^>]*>', text):
+        if "data-lang-block" in text:
             bad.append(
-                f"en/{name}: still carries the gated Russian block {lang_block!r}"
+                f"en/{name}: still carries a data-lang-block attribute. This page"
+                " speaks one language, so the gate that used to pick between the two"
+                " blocks is the mechanism this branch removed and it has nothing left"
+                " to gate"
             )
-        if re.search(r'\shidden(?=[\s>])[^>]*data-lang-block="en"', text) or (
-            name == "privacy.html" and 'data-lang-block="en" hidden' in text
-        ):
+        if re.search(r'querySelectorAll\("\[data-lang-block\]"\)', text):
             bad.append(
-                f"en/{name}: its own English block is still hidden behind the "
-                "language gate, so the page is blank without JavaScript"
+                f"en/{name}: still carries the show/hide loop over"
+                ' [data-lang-block]. One block, always shown, is not a language gate'
             )
 
     for name in EN_ROOT_PAGES:
@@ -3689,12 +3859,35 @@ def check_en_root_pages():
                     f"{name}: dropping the en:{marker} copy raised SystemExit "
                     f"({message}) without naming both the file and the marker"
                 )
+        except Exception as exc:  # noqa: BLE001
+            bad.append(
+                f"{name}: dropping the en:{marker} copy raised {exc!r} instead of "
+                "the SystemExit this check asserts on, so a crash here would read "
+                "as a pass"
+            )
         else:
             bad.append(
                 f"{name}: the transform ran with no en:{marker} copy and returned "
                 "a page. A silently dropped block is an English page with a hole "
                 "in it, which is what the build failure is for"
             )
+
+    for name in EN_ROOT_PAGES:
+        ru_src_text = (ROOT / name).read_text(encoding="utf-8")
+        try:
+            transform(ROOT / name)
+        except SystemExit as exc:
+            bad.append(
+                f"{name}: the transform refuses this source ({exc}). The freshness "
+                "check above could not run either, and this block is inside the one "
+                "place that turns a build failure into a reported finding rather "
+                "than an aborted run"
+            )
+        except Exception as exc:  # noqa: BLE001
+            bad.append(f"{name}: the transform raised {exc!r} on the committed source")
+
+    bad.extend(_i18n_vhtml_link_problems())
+    bad.extend(_region_parity_problems())
 
     for b in bad[:8]:
         errors.append(f"en root pages: {b}")
@@ -3707,7 +3900,10 @@ def check_en_root_pages():
             f"canonical and og:url = {SITE_BASE}{EN_ROOT_URL['about.html']} and its "
             "siblings, hreflang ru/en/x-default, head strings from "
             "gen_pages.en_page_strings(), zero Cyrillic anywhere in the file, no link "
-            "to a Russian address, and "
+            "to a Russian address, every i18n v-html href language-correct, every "
+            "marked block's two copies tag-balanced and structurally equal ("
+            f"the Russian copy of {sorted(EN_PARITY_DROP)} is allowed exactly the"
+            " extra nodes named there), and "
             f"{len(EN_ROOT_MUTATIONS)} missing-variant mutation(s) each refused by "
             "name"
         )
