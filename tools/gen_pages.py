@@ -196,7 +196,7 @@ def _seo_desc(text):
 
 
 POSTER_SIZES = poster_sizes()
-FILMS_PREFIX = "../../"
+FILMS_PREFIX = "/"
 
 
 def poster_candidates(poster, prefix, single=False, widths=None):
@@ -599,7 +599,7 @@ def index_noscript(catalog):
     ):
         rows = [i for i in catalog if i["type"] == t]
         lis = "".join(
-            f'          <li><a href="films/{item_slug(i)}/">{esc(i["titleRu"])}</a></li>\n'
+            f'          <li><a href="/films/{item_slug(i)}/">{esc(i["titleRu"])}</a></li>\n'
             for i in rows
         )
         out.append(f'        <h2>{label}</h2>\n        <ul>\n{lis}        </ul>\n')
@@ -661,7 +661,7 @@ def inject_last_updated(src):
 # width now, the poster is 160 less 24px of padding and 2px of border = 134, and
 # that is the same number at 375 and at 1920 -- measured across 15 widths, the
 # spread collapsed from 151.5-170.66 to a flat 134.
-RC_CARD = """<a class="rc" :href="'../' + itemSlug(r) + '/'">
+RC_CARD = """<a class="rc" :href="'/films/' + itemSlug(r) + '/'">
   <img v-if="relatedPoster(r)" class="rc-poster" :src="relatedPoster(r)" :srcset="relatedPosterSrcset(r)" sizes="134px" alt="" width="134" height="201" loading="lazy" decoding="async">
   <span class="rc-content">
     <span class="rc-title">{{ relatedTitle(r) }}</span>
@@ -761,7 +761,7 @@ def rc_values(r):
     poster = (r.get("poster") or "").lstrip("/")
     genres = " / ".join(sorted(RU_GENRES.get(g, g) for g in r.get("genres", [])))
     values = {
-        "'../' + itemSlug(r) + '/'": f"../{item_slug(r)}/",
+        "'/films/' + itemSlug(r) + '/'": f"/films/{item_slug(r)}/",
         "relatedPoster(r)": f"{FILMS_PREFIX}{poster}" if poster else "",
         "relatedPosterSrcset(r)": ", ".join(
             poster_candidates(poster, FILMS_PREFIX, single=True,
@@ -953,7 +953,7 @@ def render(item, related):
                     f' imagesizes="{POSTER_SIZES}"'
                 )
         preload_poster = (
-            f'  <link rel="preload" as="image" href="../../{poster}"'
+            f'  <link rel="preload" as="image" href="/{poster}"'
             f'{preload_attrs} fetchpriority="high">\n'
         )
 
@@ -977,7 +977,7 @@ def render(item, related):
         srcset_attr = poster_srcset_attr(poster, POSTER_SIZES, FILMS_PREFIX)
         noscript_poster = (
             f'      <figure class="film-poster">\n'
-            f'        <img src="../../{poster}"{srcset_attr} alt="{esc(title_ru)}"{dims} decoding="async">'
+            f'        <img src="/{poster}"{srcset_attr} alt="{esc(title_ru)}"{dims} decoding="async">'
             f'{fav_badge}\n'
             "      </figure>\n"
         )
@@ -1017,22 +1017,22 @@ def render(item, related):
   <meta name="theme-color" content="#F4F2ED">
   <meta name="theme-color" content="#14120F" media="(prefers-color-scheme: dark)">
 {preload_poster}{THEME_SCRIPT}
-  <link rel="manifest" href="../../static/site.webmanifest">
-  <link rel="icon" href="../../static/favicons/favicon.ico" sizes="48x48">
-  <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicons/favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicons/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="48x48" href="../../static/favicons/favicon-48x48.png">
-  <link rel="icon" type="image/png" sizes="64x64" href="../../static/favicons/favicon-64x64.png">
-  <link rel="icon" type="image/png" sizes="128x128" href="../../static/favicons/favicon-128x128.png">
-  <link rel="icon" type="image/png" sizes="256x256" href="../../static/favicons/favicon-256x256.png">
-  <link rel="apple-touch-icon" sizes="57x57" href="../../static/favicons/apple-touch-icon-57x57.png">
-  <link rel="apple-touch-icon" sizes="114x114" href="../../static/favicons/apple-touch-icon-114x114.png">
-  <link rel="apple-touch-icon" sizes="120x120" href="../../static/favicons/apple-touch-icon-120x120.png">
-  <link rel="apple-touch-icon" href="../../static/favicons/apple-touch-icon.png">
+  <link rel="manifest" href="/static/site.webmanifest">
+  <link rel="icon" href="/static/favicons/favicon.ico" sizes="48x48">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/favicons/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/static/favicons/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="/static/favicons/favicon-64x64.png">
+  <link rel="icon" type="image/png" sizes="128x128" href="/static/favicons/favicon-128x128.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="/static/favicons/favicon-256x256.png">
+  <link rel="apple-touch-icon" sizes="57x57" href="/static/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/static/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/static/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" href="/static/favicons/apple-touch-icon.png">
   <meta name="msapplication-TileColor" content="#F4F2ED">
-  <link rel="stylesheet" href="../../css/style.css">
-  <link rel="preload" href="../../static/fonts/ubuntu-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="../../static/fonts/ubuntu-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preload" href="/static/fonts/ubuntu-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/static/fonts/ubuntu-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <script type="application/ld+json">{json_ld}</script>
 </head>
 <body>
@@ -1041,7 +1041,7 @@ def render(item, related):
       <header class="top">
         <div class="brand">
           <div class="logo">
-            <a href="../../"><img src="../../static/logo.webp" alt="IT Movies" width="100" height="100"></a>
+            <a href="/"><img src="/static/logo.webp" alt="IT Movies" width="100" height="100"></a>
           </div>
           <div class="brand-text">
             <div class="brand-name">IT Movies</div>
@@ -1051,7 +1051,7 @@ def render(item, related):
       </header>
       <main>
         <nav class="breadcrumb" aria-label="Главная">
-          <a href="../../">Главная</a><span class="bc-sep"> › </span><span class="bc-current"><span class="bc-type">{esc(title_ru)}</span></span>
+          <a href="/">Главная</a><span class="bc-sep"> › </span><span class="bc-current"><span class="bc-type">{esc(title_ru)}</span></span>
         </nav>
         <article class="film-main">
 {noscript_poster}          <div class="film-info">
@@ -1072,14 +1072,14 @@ def render(item, related):
           <ul>
 {related_items}          </ul>
         </section>
-        <p class="back-catalog"><a href="../../">← Вернуться на главную</a></p>
+        <p class="back-catalog"><a href="/">← Вернуться на главную</a></p>
       </main>
       <footer>
         <div class="footer-line">
           <span>Сделано с</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
         </div>
         <div class="footer-line">
-          <a class="footer-privacy" href="../../privacy.html">Политика конфиденциальности</a>
+          <a class="footer-privacy" href="/privacy.html">Политика конфиденциальности</a>
         </div>
       </footer>
     </noscript>
@@ -1087,11 +1087,11 @@ def render(item, related):
 
   <script>window.FILM_PAGE = {page_data};</script>
   <script>window.FILM_RC_CARD = {rc_card_js};</script>
-  <script src="../../js/vue.global.prod.js" defer></script>
-  <script src="../../js/i18n.min.js" defer></script>
-  <script src="../../js/common.min.js" defer></script>
-  <script src="../../js/rail_math.js" defer></script>
-  <script src="../../js/film.min.js" defer></script>
+  <script src="/js/vue.global.prod.js" defer></script>
+  <script src="/js/i18n.min.js" defer></script>
+  <script src="/js/common.min.js" defer></script>
+  <script src="/js/rail_math.js" defer></script>
+  <script src="/js/film.min.js" defer></script>
 {METRIKA_SCRIPT}
 </body>
 </html>

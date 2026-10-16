@@ -73,6 +73,11 @@ function shuffle(items, random) {
   return copy;
 }
 
+function posterSrc(item) {
+  const src = (item && (item.poster400 || item.poster)) || "";
+  return src ? "/" + src.replace(/^\//, "") : "";
+}
+
 function pickFeatured(catalog, random = Math.random) {
   const favorites = catalog.filter((item) => item.fav);
   const selected = ["movie", "documentary", "series"].flatMap((type) =>
@@ -186,6 +191,7 @@ const CatalogTable = {
       arrow,
       openPoster,
       closePoster,
+      posterSrc,
     };
   },
   template: "#tpl-catalog",
@@ -415,7 +421,7 @@ const app = createApp({
     function featuredSrcset(item) {
       const src = item.poster;
       if (!src) return null;
-      const path = src.replace(/^\//, "");
+      const path = "/" + src.replace(/^\//, "");
       return POSTER_VARIANT_WIDTHS.map(
         (w) => `${path.replace(/\.webp$/, "_" + w + ".webp")} ${w}w`
       ).join(", ");
@@ -526,6 +532,7 @@ const app = createApp({
       genreLabel,
       firstGenre,
       altTitle,
+      posterSrc,
       featuredSrcset,
       goLucky,
       scrollToTop,

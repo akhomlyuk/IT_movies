@@ -400,10 +400,9 @@ for page in (ROOT / "films").glob("*/index.html"):
     for v in re.findall(r'(?:content|src|href)="([^"]+)"', text):
         if v.startswith("http://") or v.startswith("https://"):
             continue
-        if v.startswith("../../"):
-            refs.add(v)
-            continue
-        m = re.search(r'(?:static|\.\./static|css|js)/[^"\')\s]+', v)
+        m = re.search(
+            r'(?:static|\.\./static|css|js)/[^"\')\s]+|(?:privacy|about)\.html', v
+        )
         if m:
             refs.add(m.group(0))
 for r in refs:
@@ -422,12 +421,7 @@ for r in refs:
     # failure. The file loads, the page looks right in a screenshot, and the glyph
     # is simply absent, so the fragment is resolved against the file's own ids.
     ref, _, frag = r.partition("#")
-    if ref.startswith("../../"):
-        path = ROOT / ref[6:]
-    elif ref.startswith("../static"):
-        path = ROOT / ref.replace("../static", "static", 1)
-    else:
-        path = ROOT / ref
+    path = ROOT / ref.lstrip("/")
     if not path.exists():
         errors.append(f"Broken file reference: {r}")
     elif frag and path.suffix == ".svg":
@@ -1414,19 +1408,19 @@ CHANNELS = (
 )
 
 CHANNEL_COPIES = (
-    ("index.html", "static/share.svg"),
-    ("js/film.js", "../../static/share.svg"),
-    ("js/film.min.js", "../../static/share.svg"),
+    ("index.html", "/static/share.svg"),
+    ("js/film.js", "/static/share.svg"),
+    ("js/film.min.js", "/static/share.svg"),
     # about.html carries a header inside <noscript> and the LIVE one is rendered
     # from js/about.js, so both are copies and both are needed: the first is what a
     # no-JS reader gets, the second is what everyone else gets. Reading only
     # about.html is how the anchor ended up in the noscript copy while the live
     # page had none -- and the regex could not tell, because both contain it.
-    ("about.html", "static/share.svg"),
-    ("js/about.js", "static/share.svg"),
-    ("js/about.min.js", "static/share.svg"),
-    ("404.html", "static/share.svg"),
-    ("privacy.html", "static/share.svg"),
+    ("about.html", "/static/share.svg"),
+    ("js/about.js", "/static/share.svg"),
+    ("js/about.min.js", "/static/share.svg"),
+    ("404.html", "/static/share.svg"),
+    ("privacy.html", "/static/share.svg"),
 )
 
 
@@ -3128,7 +3122,7 @@ def check_related():
                 f"{slug}: noscript cards {noscript} != generated {expected}"
             )
         for r in rel:
-            if f'href="../{item_slug(r)}/"' not in text:
+            if f'href="/films/{item_slug(r)}/"' not in text:
                 parity.append(
                     f"{slug}: noscript is missing a link to {item_slug(r)}"
                 )
@@ -3583,6 +3577,38 @@ for slug in sorted(slugs):
     )
     lang_checked += 1
 print(f"Language/OG coherence: checked ({lang_checked} pages)")
+
+RELATIVE_REF = re.compile(r'''(?:src|href)\s*=\s*["']\.\.?/''')
+RELATIVE_ASSET = re.compile(
+    r'''(?:src|href|srcset|imagesrcset)\s*=\s*["']'''
+    r'''((?:\.\.?/)*(?:css|js|static|films)/|(?:\.\.?/)*(?:privacy|about|404)\.html)'''
+)
+
+
+def check_no_relative_links():
+    bad = []
+    for p in sorted(ROOT.rglob("*.html")):
+        rel = p.relative_to(ROOT)
+        if any(part.startswith(".") for part in rel.parts):
+            continue
+        for n, line in enumerate(
+            p.read_text(encoding="utf-8").splitlines(), 1
+        ):
+            for m in list(RELATIVE_REF.finditer(line)) + list(
+                RELATIVE_ASSET.finditer(line)
+            ):
+                bad.append(f"{rel.as_posix()}:{n}  {m.group(0)}")
+    return bad
+
+
+_relative_link_violations = check_no_relative_links()
+for _v in _relative_link_violations:
+    errors.append(f"relative internal link: {_v}")
+print(
+    "Absolute internal links: checked "
+    f"({len(_relative_link_violations)} violations)"
+)
+
 if (ROOT / ".nojekyll").exists():
     print(".nojekyll: present")
 print()

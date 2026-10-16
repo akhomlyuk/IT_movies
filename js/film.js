@@ -62,12 +62,12 @@ const FILM_TEMPLATE = `
   <header class="top">
     <div class="brand">
       <div class="logo">
-        <a href="../../"><img src="../../static/logo.webp" alt="IT Movies" fetchpriority="high" decoding="async" width="100" height="100"></a>
+        <a href="/"><img src="/static/logo.webp" alt="IT Movies" fetchpriority="high" decoding="async" width="100" height="100"></a>
       </div>
       <div class="brand-text">
         <div class="brand-name">IT Movies</div>
         <p>{{ t.subtitle }}</p>
-        <span class="ch-row"><span class="ch-item"><svg class="icon ch-mark ch-mark--tg" viewBox="0 0 16 16" aria-hidden="true"><use href="../../static/share.svg#icon-telegram"></use></svg><a class="ch-link ch-link--tg" href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer" aria-label="Канал в Telegram: Whitehat Lab" :aria-label="t.telegramChannel" :title="t.telegramChannel"><span><span class="pre-mount">в Telegram</span><span class="post-mount">{{ t.telegramLabel }}</span></span></a></span><span class="ch-item"><svg class="icon ch-mark ch-mark--max" viewBox="0 0 1000 1000" aria-hidden="true"><use href="../../static/share.svg#icon-max"></use></svg><a class="ch-link ch-link--max" href="https://max.ru/join/ByzPb9lbZJwBbvKvRvi3ioBNaFF9TyuXDy5vrIX48vs" target="_blank" rel="noopener noreferrer" aria-label="Канал в Max: Whitehat Lab" :aria-label="t.maxChannel" :title="t.maxChannel"><span><span class="pre-mount">в Max</span><span class="post-mount">{{ t.maxLabel }}</span></span></a></span></span>
+        <span class="ch-row"><span class="ch-item"><svg class="icon ch-mark ch-mark--tg" viewBox="0 0 16 16" aria-hidden="true"><use href="/static/share.svg#icon-telegram"></use></svg><a class="ch-link ch-link--tg" href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer" aria-label="Канал в Telegram: Whitehat Lab" :aria-label="t.telegramChannel" :title="t.telegramChannel"><span><span class="pre-mount">в Telegram</span><span class="post-mount">{{ t.telegramLabel }}</span></span></a></span><span class="ch-item"><svg class="icon ch-mark ch-mark--max" viewBox="0 0 1000 1000" aria-hidden="true"><use href="/static/share.svg#icon-max"></use></svg><a class="ch-link ch-link--max" href="https://max.ru/join/ByzPb9lbZJwBbvKvRvi3ioBNaFF9TyuXDy5vrIX48vs" target="_blank" rel="noopener noreferrer" aria-label="Канал в Max: Whitehat Lab" :aria-label="t.maxChannel" :title="t.maxChannel"><span><span class="pre-mount">в Max</span><span class="post-mount">{{ t.maxLabel }}</span></span></a></span></span>
       </div>
     </div>
     <div class="toolbar">
@@ -86,7 +86,7 @@ const FILM_TEMPLATE = `
 
   <main>
     <nav class="breadcrumb" :aria-label="t.home">
-      <a href="../../">{{ t.home }}</a><span class="bc-sep"> › </span><span class="bc-current"><span class="bc-type">{{ title }}</span></span>
+      <a href="/">{{ t.home }}</a><span class="bc-sep"> › </span><span class="bc-current"><span class="bc-type">{{ title }}</span></span>
     </nav>
     <article class="film-main">
       <figure class="film-poster" v-if="posterSrc">
@@ -112,11 +112,11 @@ const FILM_TEMPLATE = `
         <div class="share-row" role="group" :aria-label="t.share">
           <a v-for="n in shareNets" :key="n.key" class="share-btn" :data-net="n.key" :href="n.href"
              target="_blank" rel="noopener noreferrer" :title="n.label" :aria-label="n.label">
-            <svg class="share-ico" aria-hidden="true" viewBox="0 0 24 24"><use :href="'../../static/share.svg#icon-' + n.key"></use></svg>
+            <svg class="share-ico" aria-hidden="true" viewBox="0 0 24 24"><use :href="'/static/share.svg#icon-' + n.key"></use></svg>
           </a>
           <button v-if="nativeShare" type="button" class="share-btn share-native" data-net="native"
             :aria-label="t.shareNative" :title="t.shareNative" @click="doNativeShare">
-            <svg class="share-ico" aria-hidden="true" viewBox="0 0 24 24"><use href="../../static/share.svg#icon-native"></use></svg>
+            <svg class="share-ico" aria-hidden="true" viewBox="0 0 24 24"><use href="/static/share.svg#icon-native"></use></svg>
           </button>
         </div>
         <span class="visually-hidden" role="status">{{ shareStatus }}</span>
@@ -137,7 +137,7 @@ const FILM_TEMPLATE = `
       </template>
       <p class="empty" v-else>{{ t.empty }}</p>
     </section>
-    <p class="back-catalog"><a href="../../">← {{ t.backToCatalog }}</a></p>
+    <p class="back-catalog"><a href="/">← {{ t.backToCatalog }}</a></p>
   </main>
 
   <footer>
@@ -145,7 +145,7 @@ const FILM_TEMPLATE = `
       <span>{{ t.codedWith }}</span><svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.8 1.7Z" fill="currentColor"/></svg><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
     </div>
     <div class="footer-line">
-      <a class="footer-privacy" href="../../privacy.html">{{ t.privacy }}</a>
+      <a class="footer-privacy" href="/privacy.html">{{ t.privacy }}</a>
     </div>
   </footer>
   <button class="scroll-top" :aria-label="t.scrollTop" @click="scrollToTop">↑</button>
@@ -296,7 +296,7 @@ const app = createApp({
     );
     const year = computed(() => (item ? item.year : ""));
     const posterSrc = computed(() =>
-      item && item.poster ? "../../" + item.poster.replace(/^\//, "") : ""
+      item && item.poster ? "/" + item.poster.replace(/^\//, "") : ""
     );
     const posterW = computed(() => (pageData && pageData.posterW) || null);
     const posterH = computed(() => (pageData && pageData.posterH) || null);
@@ -394,7 +394,7 @@ const app = createApp({
     }
 
     function relatedPoster(r) {
-      return r.poster ? "../../" + r.poster.replace(/^\//, "") : "";
+      return r.poster ? "/" + r.poster.replace(/^\//, "") : "";
     }
 
     function relatedPosterSrcset(r) {

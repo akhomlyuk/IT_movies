@@ -24,7 +24,7 @@ window.ITMoviesCommon = (function () {
   }
 
   function filmUrl(item) {
-    return `films/${itemSlug(item)}/`;
+    return `/films/${itemSlug(item)}/`;
   }
 
   function kpUrl(item) {

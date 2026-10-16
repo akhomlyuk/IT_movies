@@ -1583,7 +1583,7 @@ def test_film_theme(page, base):
     expect(bc).to_be_visible()
     expect(bc).to_have_attribute("aria-label", "Главная")
     expect(bc.locator("a")).to_have_count(1)
-    expect(bc.locator("a")).to_have_attribute("href", "../../")
+    expect(bc.locator("a")).to_have_attribute("href", "/")
     expect(bc.locator("a")).to_have_text("Главная")
     # The current crumb carries the record title; Stage 3 owns turning it into
     # a type label (see .superpowers/sdd/.../task-4-report.md).
@@ -1690,8 +1690,8 @@ def test_film_mobile_layout(page, base):
     assert own not in related_slugs, "related must not contain the current film"
     assert len(set(hrefs)) == RELATED_COUNT, f"related cards must be distinct: {hrefs}"
     for href in hrefs:
-        assert re.fullmatch(r"\.\./[a-z0-9-]+/", href), f"bad related href {href!r}"
-        assert href[3:-1] in related_slugs, f"{href} is not in related"
+        assert re.fullmatch(r"/films/[a-z0-9-]+/", href), f"bad related href {href!r}"
+        assert href[7:-1] in related_slugs, f"{href} is not in related"
     titles = page.locator(".related .rc-title").all_text_contents()
     assert all(t.strip() for t in titles), f"every related card needs a title: {titles}"
     infos = page.locator(".related .rc-info").all_text_contents()
