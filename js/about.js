@@ -22,7 +22,7 @@ const ABOUT_TEMPLATE = `
       </div>
       <div class="brand-text">
         <h1>{{ about.heading }}</h1>
-        <p v-if="altTitle">{{ altTitle }}</p>
+        <p>{{ t.subtitle }}</p>
         <span class="ch-row"><span class="ch-item"><svg class="icon ch-mark ch-mark--tg" viewBox="0 0 16 16" aria-hidden="true"><use href="/static/share.svg#icon-telegram"></use></svg><a class="ch-link ch-link--tg" href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer" aria-label="Канал в Telegram: Whitehat Lab" :aria-label="t.telegramChannel" :title="t.telegramChannel"><span><span class="pre-mount">в Telegram</span><span class="post-mount">{{ t.telegramLabel }}</span></span></a></span><span class="ch-item"><svg class="icon ch-mark ch-mark--max" viewBox="0 0 1000 1000" aria-hidden="true"><use href="/static/share.svg#icon-max"></use></svg><a class="ch-link ch-link--max" href="https://max.ru/join/ByzPb9lbZJwBbvKvRvi3ioBNaFF9TyuXDy5vrIX48vs" target="_blank" rel="noopener noreferrer" aria-label="Канал в Max: Whitehat Lab" :aria-label="t.maxChannel" :title="t.maxChannel"><span><span class="pre-mount">в Max</span><span class="post-mount">{{ t.maxLabel }}</span></span></a></span></span>
       </div>
     </div>
@@ -144,9 +144,6 @@ const app = createApp({
 
     const t = computed(() => I18N[lang.value]);
     const about = computed(() => I18N[lang.value].about);
-    const altTitle = computed(() =>
-      lang.value === "ru" ? I18N.en.about.heading : I18N.ru.about.heading
-    );
 
     watch(
       lang,
@@ -168,7 +165,6 @@ const app = createApp({
       theme,
       t,
       about,
-      altTitle,
       setTheme,
       scrollToTop,
     };

@@ -3592,7 +3592,6 @@ def _en_root_missing_variant(src, page, name):
 
 EN_PARITY_DROP = {
     "boot-fallback": ("br", "span"),
-    "about-noscript": ("p",),
 }
 VOID_TAGS = set(RC_VOID_TAGS)
 CHANNEL_ARIA_KEYS = ("telegramChannel", "maxChannel")
