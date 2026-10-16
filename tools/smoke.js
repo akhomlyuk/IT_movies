@@ -708,8 +708,13 @@ if (mode === "lang") {
   );
   const relA = global.CATALOG.slice(1, 5);
   const relB = global.CATALOG.slice(6, 10);
+  const filmItem = global.CATALOG[0];
   global.FILM_PAGE = {
-    item: global.CATALOG[0],
+    item: {
+      ...filmItem,
+      desc: filmItem.desc.ru,
+      descSeo: filmItem.desc.ru,
+    },
     related: relA,
     posterW: null,
     posterH: null,
@@ -719,9 +724,33 @@ if (mode === "lang") {
   if (!state || !Array.isArray(state.related)) {
     throw new Error("film.js setup() returned invalid state");
   }
-  if (state.desc.value === "") {
+  if (typeof state.desc.value !== "string") {
+    throw new Error(
+      "film.js desc is a " + typeof state.desc.value + ", not a string: FILM_PAGE"
+      + ".item.desc is written as a plain string by gen_pages.py and read as one,"
+      + " so a map here means the boot stub and the generator disagree about the"
+      + " payload shape"
+    );
+  }
+  if (state.desc.value.trim() === "") {
     throw new Error("film.js desc is empty");
   }
+  if (state.desc.value !== filmItem.desc.ru) {
+    throw new Error(
+      "film.js renders " + JSON.stringify(state.desc.value.slice(0, 40)) + " for a"
+      + " page carrying " + JSON.stringify(filmItem.desc.ru.slice(0, 40)) + ": the"
+      + " description a film page shows must be that page's own"
+    );
+  }
+  global.FILM_PAGE.item.desc = "";
+  const blanked = capture()();
+  if (typeof blanked.desc.value !== "string" || blanked.desc.value.trim() !== "") {
+    throw new Error(
+      "film.js rendered " + JSON.stringify(blanked.desc.value) + " for an empty"
+      + " desc, so the empty-description case is not guarded at all"
+    );
+  }
+  global.FILM_PAGE.item.desc = filmItem.desc.ru;
   const slugs = state.related.map((r) => global.ITMoviesCommon.itemSlug(r));
   const want = relA.map((r) => global.ITMoviesCommon.itemSlug(r));
   if (slugs.join(",") !== want.join(",")) {

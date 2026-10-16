@@ -64,6 +64,22 @@ def parse_i18n(root=ROOT):
     return obj
 
 
+def js_object_bounds(src, pos):
+    return _js_object(src, pos)
+
+
+def parse_inline_i18n(path, marker="var I18N ="):
+    src = Path(path).read_text(encoding="utf-8")
+    pos = src.find(marker)
+    if pos == -1:
+        raise ValueError(f"{Path(path).name}: {marker!r} not found")
+    pos = src.find("{", pos)
+    if pos == -1:
+        raise ValueError(f"{Path(path).name}: inline i18n object literal not found")
+    obj, _ = js_object_bounds(src, pos)
+    return obj
+
+
 def _js_skip(src, i):
     while i < len(src) and src[i] in " \t\r\n":
         i += 1

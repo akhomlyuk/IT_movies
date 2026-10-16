@@ -3423,6 +3423,299 @@ def check_single_description_per_page():
 check_single_description_per_page()
 
 
+EN_ROOT_PAGES = ("index.html", "about.html", "privacy.html")
+RU_ROOT_URL = {
+    "index.html": "/",
+    "about.html": "/about.html",
+    "privacy.html": "/privacy.html",
+}
+EN_ROOT_URL = {name: lang_path(path, "en") for name, path in RU_ROOT_URL.items()}
+EN_ROOT_MUTATIONS = (
+    ("index.html", "subtitle"),
+    ("index.html", "boot-fallback"),
+    ("about.html", "about-noscript"),
+    ("privacy.html", "privacy-body"),
+    ("privacy.html", "lang-label"),
+)
+
+
+def _en_root_missing_variant(src, page, name):
+    pattern = re.compile(
+        r'[ \t]*<template id="en:%s">.*?</template>\n?' % re.escape(name), re.S
+    )
+    return pattern.sub("", src, count=1)
+
+
+def check_en_root_pages():
+    bad = []
+    transform = getattr(gen_pages, "en_root_page", None)
+    if transform is None:
+        errors.append(
+            "en root pages: gen_pages exposes no en_root_page(), so nothing builds "
+            "en/index.html, en/about.html or en/privacy.html and the English copies "
+            "of three hand-maintained pages would have to be hand-edited -- which "
+            "is the failure this transform exists to prevent"
+        )
+        return
+    strings_for = getattr(gen_pages, "en_page_strings", None)
+    if strings_for is None:
+        errors.append(
+            "en root pages: gen_pages exposes no en_page_strings(), so no single "
+            "source states what the English <title>, description and channel "
+            "aria-labels of these three pages are"
+        )
+        return
+
+    for name in EN_ROOT_PAGES:
+        target = ROOT / "en" / name
+        if not target.exists():
+            bad.append(f"en/{name} is missing -- run gen_pages.py")
+            continue
+        text = target.read_text(encoding="utf-8")
+        fresh = transform(ROOT / name)
+        if fresh != text:
+            bad.append(
+                f"en/{name} is stale -- run gen_pages.py. The English page is "
+                "generated from the Russian one by rule, so a hand-edit is either "
+                "overwritten or is the only reason the file says what it says"
+            )
+        want_url = SITE_BASE + EN_ROOT_URL[name]
+        ru_url = SITE_BASE + RU_ROOT_URL[name]
+        canonical = re.search(r'rel="canonical" href="([^"]+)"', text)
+        if canonical is None or canonical.group(1) != want_url:
+            bad.append(
+                f"en/{name}: canonical is "
+                f"{canonical.group(1) if canonical else None}, expected {want_url} "
+                "-- the English page must name itself, or the two addresses "
+                "compete for the same content"
+            )
+        ogurl = re.search(r'<meta property="og:url" content="([^"]+)"', text)
+        if ogurl is None or ogurl.group(1) != want_url:
+            bad.append(
+                f"en/{name}: og:url is {ogurl.group(1) if ogurl else None}, "
+                f"expected {want_url}"
+            )
+        ogl = re.search(r'<meta property="og:locale" content="([^"]+)"', text)
+        if ogl is None or ogl.group(1) != MIRROR_OG_LOCALE["en"]:
+            bad.append(
+                f"en/{name}: og:locale is {ogl.group(1) if ogl else None}, expected "
+                f"{MIRROR_OG_LOCALE['en']}"
+            )
+        oga = re.search(
+            r'<meta property="og:locale:alternate" content="([^"]+)"', text
+        )
+        if oga is None or oga.group(1) != MIRROR_OG_LOCALE["ru"]:
+            bad.append(
+                f"en/{name}: og:locale:alternate is "
+                f"{oga.group(1) if oga else None}, expected "
+                f"{MIRROR_OG_LOCALE['ru']}"
+            )
+        got_alts = {t.get("hreflang"): t.get("href") for t in link_tag_attrs(text, "alternate")}
+        want_alts = {"ru": ru_url, "en": want_url, "x-default": ru_url}
+        for key, expected in want_alts.items():
+            if got_alts.get(key) != expected:
+                bad.append(
+                    f"en/{name}: hreflang={key} is {got_alts.get(key)}, expected "
+                    f"{expected}"
+                )
+        if len(got_alts) != len(MIRROR_HREFLANG):
+            bad.append(
+                f"en/{name}: {len(got_alts)} rel=alternate link(s), expected "
+                f"{len(MIRROR_HREFLANG)} ({', '.join(MIRROR_HREFLANG)})"
+            )
+        if '<html lang="en">' not in text:
+            bad.append(
+                f'en/{name}: no <html lang="en">. The language of a page comes from '
+                "its path, and the document element is what a crawler and a screen "
+                "reader read before any script runs"
+            )
+        strings = strings_for(name)
+        title_m = re.search(r"<title[^>]*>(.*?)</title>", text, re.S)
+        if title_m is None:
+            bad.append(f"en/{name}: no <title>")
+        elif unescape(title_m.group(1).strip()) != strings["title"]:
+            bad.append(
+                f"en/{name}: <title> is {title_m.group(1).strip()!r}, expected the"
+                f" English {strings['title']!r} from gen_pages.en_page_strings(). A"
+                " hand-typed head is how an English address ends up serving a"
+                " Russian title"
+            )
+        for tag, attr, want in (
+            ('name="description"', "content", strings["desc"]),
+            ('property="og:title"', "content", strings["title"]),
+            ('property="og:description"', "content", strings["desc"]),
+        ):
+            i = text.find(tag)
+            if i == -1:
+                bad.append(f"en/{name}: no {tag} tag")
+                continue
+            j = text.find(">", i)
+            line = text[i: j if j != -1 else len(text)]
+            m2 = re.search(attr + r'="([^"]*)"', line)
+            got = unescape(m2.group(1)) if m2 else None
+            if got != want:
+                bad.append(
+                    f"en/{name}: {tag} is {got!r}, expected the English {want!r} "
+                    "from gen_pages.en_page_strings(). A hand-typed head is how an "
+                    "English address ends up serving a Russian title"
+                )
+        found = sorted(set(CYRILLIC.findall(text)))
+        if found:
+            lines = [
+                (n, line.strip())
+                for n, line in enumerate(text.splitlines(), 1)
+                if CYRILLIC.search(line)
+            ]
+            bad.append(
+                f"en/{name}: {''.join(found)!r} ({len(lines)} line(s)) is still "
+                f"Russian, first at line {lines[0][0]}: {lines[0][1][:90]!r}. This "
+                "page is served at an English address, so any Cyrillic left in it "
+                "is the other language leaking through the transform"
+            )
+        for tag in re.findall(r"<a\b[^>]*>", text):
+            href = re.search(r'href="(/[^"]*)"', tag)
+            if href is None or 'class="lang"' in tag:
+                continue
+            href = href.group(1)
+            if href.startswith("/films/") or href in ("/", "/about.html", "/privacy.html"):
+                bad.append(
+                    f"en/{name}: links to {href}, which is the Russian address. A "
+                    "reader who follows it leaves the English site, and a crawler "
+                    "finds two pages for one title"
+                )
+        if "?lang=" in text:
+            bad.append(
+                f'en/{name}: carries a ?lang= parameter. The language comes from the '
+                "path only"
+            )
+        graph = page_json_ld(text)
+        if graph is None:
+            bad.append(f"en/{name}: no parsable JSON-LD block")
+        else:
+            en_prefix = SITE_BASE + lang_path("/", "en")
+            for node in graph:
+                if "inLanguage" in node and node["inLanguage"] != ["en"]:
+                    bad.append(
+                        f"en/{name}: JSON-LD inLanguage is {node['inLanguage']}, "
+                        "expected ['en'] -- the page ships one language"
+                    )
+            for node in graph:
+                for where, value in graph_strings(node):
+                    if CYRILLIC.search(value):
+                        bad.append(f"en/{name}: Cyrillic in JSON-LD {where}")
+                        break
+                    if (
+                        where.endswith(".url") or where.endswith(".@id")
+                    ) and value.startswith(SITE_BASE) and not value.startswith(
+                        en_prefix
+                    ):
+                        bad.append(
+                            f"en/{name}: JSON-LD {where} = {value} is not under "
+                            f"{en_prefix}"
+                        )
+                        break
+        for lang_block in re.findall(r'<main[^>]*data-lang-block="ru"[^>]*>', text):
+            bad.append(
+                f"en/{name}: still carries the gated Russian block {lang_block!r}"
+            )
+        if re.search(r'\shidden(?=[\s>])[^>]*data-lang-block="en"', text) or (
+            name == "privacy.html" and 'data-lang-block="en" hidden' in text
+        ):
+            bad.append(
+                f"en/{name}: its own English block is still hidden behind the "
+                "language gate, so the page is blank without JavaScript"
+            )
+
+    for name in EN_ROOT_PAGES:
+        ru_src_text = (ROOT / name).read_text(encoding="utf-8")
+        ru_alts = {
+            t.get("hreflang"): t.get("href") for t in link_tag_attrs(ru_src_text, "alternate")
+        }
+        want_ru_alts = {
+            "ru": SITE_BASE + RU_ROOT_URL[name],
+            "en": SITE_BASE + EN_ROOT_URL[name],
+            "x-default": SITE_BASE + RU_ROOT_URL[name],
+        }
+        for key, expected in want_ru_alts.items():
+            if ru_alts.get(key) != expected:
+                bad.append(
+                    f"{name}: hreflang={key} is {ru_alts.get(key)}, expected "
+                    f"{expected}. hreflang is a two-way claim: the English page "
+                    "points here, so a one-way set here tells a crawler the two "
+                    "addresses are not translations of each other"
+                )
+
+    index_en = ROOT / "en" / "index.html"
+    if index_en.exists():
+        block = re.search(
+            r"<!-- begin:catalog-noscript -->(.*?)<!-- end:catalog-noscript -->",
+            index_en.read_text(encoding="utf-8"),
+            re.S,
+        )
+        want = gen_pages.index_noscript(catalog, "en")
+        norm = lambda s: re.sub(r"\s+", " ", s).strip()
+        if block is None or norm(block.group(1)) != norm(want):
+            bad.append(
+                "en/index.html: the no-JS catalog block is not the English one "
+                "from gen_pages.index_noscript(catalog, 'en') -- Russian headings "
+                "and /films/ links under an English address"
+            )
+        else:
+            links = re.findall(r'<li><a href="([^"]+)">', block.group(1))
+            if not all(l.startswith("/en/films/") for l in links):
+                bad.append(
+                    "en/index.html: no-JS catalog links are not all under /en/films/, "
+                    f"first {links[0]!r}"
+                )
+
+    for name, marker in EN_ROOT_MUTATIONS:
+        source = ROOT / name
+        if not source.exists():
+            continue
+        doctored = _en_root_missing_variant(source.read_text(encoding="utf-8"), name, marker)
+        if doctored == source.read_text(encoding="utf-8"):
+            bad.append(
+                f"{name}: there is no <template id=\"en:{marker}\"> to drop, so the"
+                " mutation below tests nothing -- the generator would have nothing"
+                " to fail on"
+            )
+            continue
+        try:
+            transform(ROOT / name, doctored)
+        except SystemExit as exc:
+            message = str(exc)
+            if marker not in message or name not in message:
+                bad.append(
+                    f"{name}: dropping the en:{marker} copy raised SystemExit "
+                    f"({message}) without naming both the file and the marker"
+                )
+        else:
+            bad.append(
+                f"{name}: the transform ran with no en:{marker} copy and returned "
+                "a page. A silently dropped block is an English page with a hole "
+                "in it, which is what the build failure is for"
+            )
+
+    for b in bad[:8]:
+        errors.append(f"en root pages: {b}")
+    if len(bad) > 8:
+        errors.append(f"en root pages: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"English root pages: en/{', en/'.join(EN_ROOT_PAGES)} generated from the "
+            f"Russian sources by gen_pages.en_root_page(), each <html lang=\"en\">, "
+            f"canonical and og:url = {SITE_BASE}{EN_ROOT_URL['about.html']} and its "
+            "siblings, hreflang ru/en/x-default, head strings from "
+            "gen_pages.en_page_strings(), zero Cyrillic anywhere in the file, no link "
+            "to a Russian address, and "
+            f"{len(EN_ROOT_MUTATIONS)} missing-variant mutation(s) each refused by "
+            "name"
+        )
+
+
+check_en_root_pages()
+
+
 # 6c. Sitemap / robots.txt / webmanifest: single source in gen_pages.py
 sitemap_xml = gen_pages.generate_sitemap(catalog)
 sitemap_file = ROOT / "sitemap.xml"
@@ -4183,6 +4476,12 @@ _canonical_check("404.html", notfound_src, None)
 _canonical_check("privacy.html", privacy_src, SITE_BASE + "/privacy.html")
 # about.html — canonical to its own URL, same on every lang/theme variant
 _canonical_check("about.html", about_src, SITE_BASE + "/about.html")
+for en_root in EN_ROOT_PAGES:
+    _canonical_check(
+        f"en/{en_root}",
+        (ROOT / "en" / en_root).read_text(encoding="utf-8"),
+        SITE_BASE + EN_ROOT_URL[en_root],
+    )
 canon_checked = 0
 for slug in sorted(slugs):
     _canonical_check(
@@ -4195,7 +4494,7 @@ for slug in sorted(slugs):
 print(f"Sitemap: {sitemap_note}")
 print(f"robots.txt: {robots_note}")
 print(f"webmanifest: {webmanifest_note}")
-print(f"Canonical: checked ({canon_checked} pages + index/404/privacy/about)")
+print(f"Canonical: checked ({canon_checked} pages + index/404/privacy/about and their three English twins)")
 
 # 9g. Static language coherence (runtime switches derive from one source — the
 # <html lang>/<title>/<meta description> markup is what crawlers read pre-JS):
@@ -4247,6 +4546,13 @@ for fname, src in (
     ("about.html", about_src),
 ):
     _lang_coherence(fname, src)
+    lang_checked += 1
+for en_root in EN_ROOT_PAGES:
+    en_root_file = ROOT / "en" / en_root
+    if not en_root_file.exists():
+        errors.append(f"en/{en_root}: missing — run gen_pages.py")
+        continue
+    _lang_coherence(f"en/{en_root}", en_root_file.read_text(encoding="utf-8"))
     lang_checked += 1
 for slug in sorted(slugs):
     _lang_coherence(

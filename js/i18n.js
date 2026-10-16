@@ -191,7 +191,7 @@ const I18N = {
       suggestH: "How to suggest a film",
       suggestP: "Found an error or know a great film? Write on <a href='https://t.me/wh_lab' target='_blank' rel='noopener noreferrer'>Telegram</a> or open a pull request on <a href='https://github.com/akhomlyuk/IT_movies' target='_blank' rel='noopener noreferrer'>GitHub</a> — I review and publish them without long queues.",
       principlesH: "Principles",
-      principlesP: "No affiliate links and no tracking beyond what Yandex Metrika collects, as described in the <a href='/privacy.html'>privacy policy</a>. The code is open — any claim on this site can be verified in the repository.",
+      principlesP: "No affiliate links and no tracking beyond what Yandex Metrika collects, as described in the <a href='/en/privacy.html'>privacy policy</a>. The code is open — any claim on this site can be verified in the repository.",
       linksLabel: "Links",
     },
   },

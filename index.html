@@ -15,6 +15,9 @@
   <meta property="og:url" content="https://movies.whlab.ru/">
   <meta property="og:site_name" content="IT Movies">
   <link rel="canonical" href="https://movies.whlab.ru/">
+  <link rel="alternate" hreflang="ru" href="https://movies.whlab.ru/">
+  <link rel="alternate" hreflang="en" href="https://movies.whlab.ru/en/">
+  <link rel="alternate" hreflang="x-default" href="https://movies.whlab.ru/">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#F4F2ED">
   <meta name="theme-color" content="#14120F" media="(prefers-color-scheme: dark)">
@@ -72,8 +75,8 @@
         </div>
         <div class="brand-text">
           <h1><span class="pre-mount">IT Movies</span><span class="post-mount">{{ t.title }}</span></h1>
-          <p><span class="pre-mount">Подборка фильмов и сериалов о компьютерах, технологиях, ИИ и т.д.</span><span class="post-mount">{{ t.subtitle }}</span></p>
-          <span class="ch-row"><span class="ch-item"><svg class="icon ch-mark ch-mark--tg" viewBox="0 0 16 16" aria-hidden="true"><use href="/static/share.svg#icon-telegram"></use></svg><a class="ch-link ch-link--tg" href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer" aria-label="Канал в Telegram: Whitehat Lab" :aria-label="t.telegramChannel" :title="t.telegramChannel"><span><span class="pre-mount">в Telegram</span><span class="post-mount">{{ t.telegramLabel }}</span></span></a></span><span class="ch-item"><svg class="icon ch-mark ch-mark--max" viewBox="0 0 1000 1000" aria-hidden="true"><use href="/static/share.svg#icon-max"></use></svg><a class="ch-link ch-link--max" href="https://max.ru/join/ByzPb9lbZJwBbvKvRvi3ioBNaFF9TyuXDy5vrIX48vs" target="_blank" rel="noopener noreferrer" aria-label="Канал в Max: Whitehat Lab" :aria-label="t.maxChannel" :title="t.maxChannel"><span><span class="pre-mount">в Max</span><span class="post-mount">{{ t.maxLabel }}</span></span></a></span></span>
+          <p><!-- begin:ru:subtitle --><span class="pre-mount">Подборка фильмов и сериалов о компьютерах, технологиях, ИИ и т.д.</span><!-- end:ru:subtitle --><template id="en:subtitle"><span class="pre-mount">A curated list of films and series about computers, technology, AI, etc</span></template><span class="post-mount">{{ t.subtitle }}</span></p>
+          <span class="ch-row"><span class="ch-item"><svg class="icon ch-mark ch-mark--tg" viewBox="0 0 16 16" aria-hidden="true"><use href="/static/share.svg#icon-telegram"></use></svg><a class="ch-link ch-link--tg" href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer" aria-label="Канал в Telegram: Whitehat Lab" :aria-label="t.telegramChannel" :title="t.telegramChannel"><span><!-- begin:ru:ch-tg-label --><span class="pre-mount">в Telegram</span><!-- end:ru:ch-tg-label --><template id="en:ch-tg-label"><span class="pre-mount">Telegram</span></template><span class="post-mount">{{ t.telegramLabel }}</span></span></a></span><span class="ch-item"><svg class="icon ch-mark ch-mark--max" viewBox="0 0 1000 1000" aria-hidden="true"><use href="/static/share.svg#icon-max"></use></svg><a class="ch-link ch-link--max" href="https://max.ru/join/ByzPb9lbZJwBbvKvRvi3ioBNaFF9TyuXDy5vrIX48vs" target="_blank" rel="noopener noreferrer" aria-label="Канал в Max: Whitehat Lab" :aria-label="t.maxChannel" :title="t.maxChannel"><span><!-- begin:ru:ch-max-label --><span class="pre-mount">в Max</span><!-- end:ru:ch-max-label --><template id="en:ch-max-label"><span class="pre-mount">MAX</span></template><span class="post-mount">{{ t.maxLabel }}</span></span></a></span></span>
         </div>
       </div>
       <div class="toolbar">
@@ -100,9 +103,9 @@
     </header>
 
     <nav class="nav">
-      <a href="#movies"><span class="pre-mount">Фильмы</span><span class="post-mount">{{ t.movies }}</span> <span class="count post-mount">{{ counts.movies }}</span></a>
-      <a href="#series"><span class="pre-mount">Сериалы</span><span class="post-mount">{{ t.series }}</span> <span class="count post-mount">{{ counts.series }}</span></a>
-      <a href="#documentaries"><span class="pre-mount">Документальные</span><span class="post-mount">{{ t.documentaries }}</span> <span class="count post-mount">{{ counts.documentaries }}</span></a>
+      <a href="#movies"><!-- begin:ru:nav-movies --><span class="pre-mount">Фильмы</span><!-- end:ru:nav-movies --><template id="en:nav-movies"><span class="pre-mount">Movies</span></template><span class="post-mount">{{ t.movies }}</span> <span class="count post-mount">{{ counts.movies }}</span></a>
+      <a href="#series"><!-- begin:ru:nav-series --><span class="pre-mount">Сериалы</span><!-- end:ru:nav-series --><template id="en:nav-series"><span class="pre-mount">Series</span></template><span class="post-mount">{{ t.series }}</span> <span class="count post-mount">{{ counts.series }}</span></a>
+      <a href="#documentaries"><!-- begin:ru:nav-docs --><span class="pre-mount">Документальные</span><!-- end:ru:nav-docs --><template id="en:nav-docs"><span class="pre-mount">Documentaries</span></template><span class="post-mount">{{ t.documentaries }}</span> <span class="count post-mount">{{ counts.documentaries }}</span></a>
     </nav>
 
     <dialog class="nav-dialog" id="nav-dialog" :aria-label="t.menu">
@@ -359,7 +362,11 @@
     <button class="scroll-top" :aria-label="t.scrollTop" @click="scrollToTop">↑</button>
   </div>
 
+  <!-- begin:ru:boot-fallback -->
   <p id="boot-fallback" class="boot-fallback" role="alert" hidden>Не удалось загрузить каталог. Проверьте соединение и обновите страницу.<br><span lang="en">Catalog failed to load. Check your connection and reload the page.</span></p>
+<!-- end:ru:boot-fallback --><template id="en:boot-fallback">
+  <p id="boot-fallback" class="boot-fallback" role="alert" hidden>Catalog failed to load. Check your connection and reload the page.</p>
+</template>
 
   <template id="tpl-catalog">
     <section :id="id">

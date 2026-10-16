@@ -15,9 +15,11 @@ import subprocess
 import sys
 
 from datetime import datetime
+from pathlib import Path
 
-from lib import (ROOT, SITE_BASE, POSTER_VARIANT_WIDTHS, load_catalog,
-                  item_slug, lang_path, parse_i18n, has_rating,
+from lib import (ROOT, SITE_BASE, CYRILLIC, POSTER_VARIANT_WIDTHS, load_catalog,
+                  item_slug, js_object_bounds, lang_path, mirror_path,
+                  parse_i18n, parse_inline_i18n, has_rating,
                   fmt_rating, variant_name, webp_size, poster_sizes,
                   hero_poster_widths)
 
@@ -636,16 +638,18 @@ def generate_sitemap(catalog):
     )
 
 
-def index_noscript(catalog):
+def index_noscript(catalog, lang="ru"):
     out = []
+    labels = LABELS[lang]
     for t, label in (
-        ("movie", "Фильмы"),
-        ("documentary", "Документальные"),
-        ("series", "Сериалы"),
+        ("movie", labels["movies"]),
+        ("documentary", labels["documentaries"]),
+        ("series", labels["series"]),
     ):
         rows = [i for i in catalog if i["type"] == t]
         lis = "".join(
-            f'          <li><a href="/films/{item_slug(i)}/">{esc(i["titleRu"])}</a></li>\n'
+            f'          <li><a href="{lang_path(f"/films/{item_slug(i)}/", lang)}">'
+            f'{esc(title_of(i, lang))}</a></li>\n'
             for i in rows
         )
         out.append(f'        <h2>{label}</h2>\n        <ul>\n{lis}        </ul>\n')
@@ -1169,6 +1173,378 @@ def render(item, related, lang="ru"):
 </html>
 """
 
+
+EN_ROOT_PAGES = ("index.html", "about.html", "privacy.html")
+RU_ROOT_PATH = {
+    "index.html": "/",
+    "about.html": "/about.html",
+    "privacy.html": "/privacy.html",
+}
+REGION_RE = re.compile(r"<!--\s*(begin|end):(ru|en):([a-z0-9-]+)\s*-->")
+EN_TEMPLATE_RE = re.compile(
+    r'<template id="en:([a-z0-9-]+)"[^>]*>(.*?)</template>', re.S
+)
+EN_ATTR_PAGES = ("index.html", "privacy.html")
+PAGE_LINK_RE = re.compile(r'\b(href|src)="(/[^"#?]*)"')
+LD_SCRIPT_RE = re.compile(
+    r'(<script type="application/ld\+json">)(.*?)(</script>)', re.S
+)
+
+
+def page_strings(name, lang="en"):
+    if name == "privacy.html":
+        table = parse_inline_i18n(ROOT / "privacy.html")[lang]
+        channels = table
+        title, desc = table["title"], table["desc"]
+    else:
+        labels = LABELS[lang]
+        channels = labels
+        if name == "index.html":
+            title, desc = labels["titleFull"], labels["descSeo"]
+        elif name == "about.html":
+            title, desc = labels["about"]["title"], labels["about"]["desc"]
+        else:
+            raise SystemExit(f"page_strings: unknown root page {name!r}")
+    return {
+        "title": title,
+        "desc": desc,
+        "telegramChannel": channels["telegramChannel"],
+        "maxChannel": channels["maxChannel"],
+    }
+
+
+def en_page_strings(name):
+    return page_strings(name, "en")
+
+
+def en_attr_rules(name, lang="en"):
+    if name not in EN_ATTR_PAGES:
+        return []
+    strings = page_strings(name, lang)
+    ru = page_strings(name, "ru" if lang == "en" else "en")
+    other = "ru" if lang == "en" else "en"
+    rules = [
+        (
+            'aria-label="%s"' % ru["telegramChannel"],
+            'aria-label="%s"' % strings["telegramChannel"],
+        ),
+        (
+            'aria-label="%s"' % ru["maxChannel"],
+            'aria-label="%s"' % strings["maxChannel"],
+        ),
+    ]
+    if name == "privacy.html":
+        rules.append(
+            (
+                '<a class="lang" href="/en/" hreflang="%s"' % lang,
+                '<a class="lang" href="/en/" hreflang="%s"' % other,
+            )
+        )
+    return rules
+
+
+def check_regions(src, lang, page):
+    inventory = {}
+    stack = []
+    for kind, rlang, name in REGION_RE.findall(src):
+        inventory.setdefault(name, set()).add(rlang)
+        if kind == "begin":
+            stack.append((rlang, name))
+            continue
+        if not stack:
+            raise SystemExit(f"{page}: end:{rlang}:{name} closes no open region")
+        opened = stack.pop()
+        if opened != (rlang, name):
+            raise SystemExit(
+                f"{page}: end:{rlang}:{name} closes begin:{opened[0]}:{opened[1]}"
+            )
+    if stack:
+        raise SystemExit(f"{page}: marked region {stack[-1][1]!r} is never closed")
+    templates = {name for name, _ in EN_TEMPLATE_RE.findall(src)}
+    problems = []
+    for name, langs in sorted(inventory.items()):
+        if "ru" not in langs:
+            problems.append(f"{name!r} is marked as {sorted(langs)}")
+        if name not in templates:
+            problems.append(f"{name!r} has no <template id=\"en:{name}\"> copy")
+    for name in sorted(templates - set(inventory)):
+        problems.append(
+            f'{name!r} has an English copy but no Russian block to pair it with'
+        )
+    if problems:
+        raise SystemExit(
+            f"{page}: " + "; ".join(problems) + ". Every block this page shows"
+            " needs both copies in the source -- one build writes both languages"
+            " from this file, so a block with no copy for one of them is a hole in"
+            " one of the two pages, and a silently dropped block is a hole rather"
+            " than a build failure"
+        )
+
+
+def select_regions(src, lang):
+    kept = []
+    pos = 0
+    dropping = False
+    for m in REGION_RE.finditer(src):
+        if not dropping:
+            kept.append(src[pos: m.start()])
+        if m.group(1) == "begin":
+            dropping = m.group(2) != lang
+            if not dropping:
+                kept.append(m.group(0))
+        else:
+            if not dropping:
+                kept.append(m.group(0))
+            dropping = False
+        pos = m.end()
+    kept.append(src[pos:])
+    out = "".join(kept)
+    if lang == "ru":
+        return out
+    return EN_TEMPLATE_RE.sub(lambda m: m.group(2), out)
+
+
+def sub_once(text, pattern, repl, page, what):
+    out, n = re.subn(pattern, lambda _m: repl, text, count=1, flags=re.S)
+    if n != 1:
+        raise SystemExit(
+            f"{page}: found {n} occurrence(s) of {what}, expected exactly one. The"
+            " transform rewrites the head by rule, and a tag it cannot find is a"
+            " tag the page would ship in the other language"
+        )
+    return out
+
+
+def replace_marked_block(text, mark, body, page):
+    n = text.count(mark[0]) + text.count(mark[1])
+    if n != 2:
+        raise SystemExit(
+            f"{page}: {mark[0]} markers ({n}/2) not found, so the block this page"
+            " owns cannot be rebuilt in the page's own language"
+        )
+    return re.sub(
+        re.escape(mark[0]) + r".*?" + re.escape(mark[1]),
+        lambda _m: mark[0] + "\n" + body + mark[1],
+        text,
+        count=1,
+        flags=re.S,
+    )
+
+
+def map_json_strings(node, mapping, lang):
+    if isinstance(node, dict):
+        return {
+            k: (
+                [lang]
+                if k == "inLanguage" and isinstance(v, list)
+                else map_json_strings(v, mapping, lang)
+            )
+            for k, v in node.items()
+        }
+    if isinstance(node, list):
+        return [map_json_strings(v, mapping, lang) for v in node]
+    if isinstance(node, str):
+        return mapping.get(node, node)
+    return node
+
+
+def keep_inline_i18n(text, page, lang):
+    pos = text.find("var I18N = ")
+    if pos == -1:
+        raise SystemExit(f"{page}: no inline i18n table to reduce to one language")
+    brace = text.find("{", pos)
+    if brace == -1:
+        raise SystemExit(f"{page}: inline i18n table has no object literal")
+    table, end = js_object_bounds(text, brace)
+    if lang not in table:
+        raise SystemExit(
+            f"{page}: its inline i18n table has no {lang!r} half, so the page"
+            " would ship with no strings of its own at all"
+        )
+    return (
+        text[:brace]
+        + json.dumps({lang: table[lang]}, ensure_ascii=False)
+        + text[end:]
+    )
+
+
+def mirror_href(value, lang):
+    if value in RU_ROOT_PATH.values() or value.startswith("/films/"):
+        return lang_path(value, lang)
+    if value == "/en" or value.startswith("/en/"):
+        return mirror_path(value)
+    return value
+
+
+def page_json_ld(text, page, strings, other_strings, ru_url, url, lang):
+    m = LD_SCRIPT_RE.search(text)
+    if m is None:
+        raise SystemExit(f"{page}: no JSON-LD block to translate")
+    payload = json.loads(m.group(2))
+    mapping = {
+        other_strings["title"]: strings["title"],
+        other_strings["desc"]: strings["desc"],
+        ru_url: url,
+        SITE_BASE + "/": SITE_BASE + lang_path("/", lang),
+    }
+    payload = map_json_strings(payload, mapping, lang)
+    return (
+        text[: m.start(2)]
+        + json.dumps(payload, ensure_ascii=False)
+        + text[m.end(2):]
+    )
+
+
+def en_root_page(path, src=None, lang="en"):
+    path = Path(path)
+    page = path.name
+    if page not in RU_ROOT_PATH:
+        raise SystemExit(f"{page}: not one of the mirrored root pages")
+    if src is None:
+        src = path.read_text(encoding="utf-8")
+    other_lang = "ru" if lang == "en" else "en"
+    strings = page_strings(page, lang)
+    other_strings = page_strings(page, other_lang)
+    ru_url = SITE_BASE + RU_ROOT_PATH[page]
+    url = SITE_BASE + lang_path(RU_ROOT_PATH[page], lang)
+    other_url = SITE_BASE + lang_path(RU_ROOT_PATH[page], other_lang)
+
+    check_regions(src, lang, page)
+    out = select_regions(src, lang)
+
+    for old, new in en_attr_rules(page, lang):
+        if old not in out:
+            raise SystemExit(
+                f"{page}: the attribute rule {old!r} matched nothing, so the string"
+                " it translates has either left the page or is already in this"
+                " language. A rule that matches nothing is a rule that has stopped"
+                " being read"
+            )
+        out = out.replace(old, new)
+
+    out = PAGE_LINK_RE.sub(
+        lambda m: '%s="%s"' % (m.group(1), mirror_href(m.group(2), lang)), out
+    )
+
+    if page == "index.html":
+        out = replace_marked_block(
+            out, NSCRIPT_MARK, index_noscript(catalog, lang), page
+        )
+        out = replace_marked_block(
+            out,
+            LD_MARK,
+            '\n  <script type="application/ld+json">'
+            + index_ld_json(catalog, lang)
+            + "</script>\n",
+            page,
+        )
+    else:
+        out = page_json_ld(out, page, strings, other_strings, ru_url, url, lang)
+
+    if page == "privacy.html":
+        out = keep_inline_i18n(out, page, lang)
+        gated = re.search(
+            r'<(\w+)[^>]*\shidden(?=[\s>])[^>]*data-lang-block="%s"' % lang, out
+        )
+        if gated:
+            raise SystemExit(
+                f"{page}: the block this page speaks is still gated behind"
+                " hidden, so the page is blank without JavaScript: "
+                f"{gated.group(0)[:80]}"
+            )
+        other_gate = re.search(r'data-lang-block="(?!%s")[^"]+"' % lang, out)
+        if other_gate:
+            raise SystemExit(
+                f"{page}: still carries the {other_gate.group(1)} language block"
+                f" ({other_gate.group(0)}). This page speaks one language and the"
+                " gate that used to pick between them is gone"
+            )
+
+    out = sub_once(
+        out,
+        r'<html lang="[a-z]{2}">',
+        '<html lang="%s">' % lang,
+        page,
+        "<html lang>",
+    )
+    out = sub_once(
+        out,
+        r"<title[^>]*>.*?</title>",
+        "<title>%s</title>" % esc(strings["title"]),
+        page,
+        "<title>",
+    )
+    out = sub_once(
+        out,
+        r'<meta name="description"[^>]*>',
+        '<meta name="description" content="%s">' % esc(strings["desc"]),
+        page,
+        '<meta name="description">',
+    )
+    out = sub_once(
+        out,
+        r'<meta property="og:title" content="[^"]*">',
+        '<meta property="og:title" content="%s">' % esc(strings["title"]),
+        page,
+        '<meta property="og:title">',
+    )
+    out = sub_once(
+        out,
+        r'<meta property="og:description" content="[^"]*">',
+        '<meta property="og:description" content="%s">' % esc(strings["desc"]),
+        page,
+        '<meta property="og:description">',
+    )
+    out = sub_once(
+        out,
+        r'<meta property="og:locale:alternate" content="[^"]*">',
+        '<meta property="og:locale:alternate" content="%s">'
+        % OG_LOCALE[other_lang],
+        page,
+        '<meta property="og:locale:alternate">',
+    )
+    out = sub_once(
+        out,
+        r'<meta property="og:locale" content="[^"]*">',
+        '<meta property="og:locale" content="%s">' % OG_LOCALE[lang],
+        page,
+        '<meta property="og:locale">',
+    )
+    out = sub_once(
+        out,
+        r'<meta property="og:url" content="[^"]*">',
+        '<meta property="og:url" content="%s">' % url,
+        page,
+        '<meta property="og:url">',
+    )
+    canonical = (
+        '<link rel="canonical" href="%s">\n'
+        '  <link rel="alternate" hreflang="%s" href="%s">\n'
+        '  <link rel="alternate" hreflang="%s" href="%s">\n'
+        '  <link rel="alternate" hreflang="x-default" href="%s">'
+    ) % (url, lang, url, other_lang, other_url, other_url)
+    out = sub_once(
+        out,
+        r'<link rel="canonical" href="[^"]*">(?:\s*<link rel="alternate"[^>]*>)*',
+        canonical,
+        page,
+        '<link rel="canonical">',
+    )
+
+    leftovers = [
+        (n, line.strip())
+        for n, line in enumerate(out.splitlines(), 1)
+        if CYRILLIC.search(line)
+    ]
+    if leftovers:
+        raise SystemExit(
+            f"{page}: the {lang} page still holds {len(leftovers)} line(s) of"
+            f" Cyrillic, first at line {leftovers[0][0]}: {leftovers[0][1][:110]!r}."
+            " This page is served at an English address, so whatever is left in the"
+            " other language is a string the transform did not own"
+        )
+    return out
+
 def main():
     derived = [
         ("js/catalog.js", catalog_js(catalog)),
@@ -1282,6 +1658,20 @@ def main():
             print("about.html: up to date")
     else:
         print("about.html: not found, skipped")
+
+    for name in EN_ROOT_PAGES:
+        ru_src_path = ROOT / name
+        if not ru_src_path.exists():
+            print(f"{name}: not found, skipped")
+            continue
+        en_html = en_root_page(ru_src_path)
+        target = ROOT / "en" / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if not target.exists() or target.read_text(encoding="utf-8") != en_html:
+            target.write_text(en_html, encoding="utf-8")
+            print(f"en/{name}: generated")
+        else:
+            print(f"en/{name}: up to date")
 
 if __name__ == "__main__":
     main()
