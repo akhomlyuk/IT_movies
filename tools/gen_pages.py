@@ -599,7 +599,7 @@ def generate_robots_txt():
 
 
 def generate_sitemap(catalog):
-    """sitemap.xml with changefreq and priority (no hreflang: language is client-side, no separate EN URLs)."""
+    """sitemap.xml with changefreq and priority."""
     slugs_sorted = sorted(item_slug(item) for item in catalog)
     film_urls = "".join(
         "  <url>\n"
@@ -801,9 +801,8 @@ def rc_render_tag(tag, attrs, values):
 
 def rc_values(r, lang="ru"):
     """The values one no-JS related card binds, keyed by the Vue expression the
-    client binds in the same place. The page is lang="ru" and static, so a
-    title is the Russian one and a label is the Russian one; the client
-    resolves the same bindings against I18N[lang] and the current language."""
+    client binds in the same place. The client resolves the same bindings
+    against I18N[lang] and the current language."""
     poster = (r.get("poster") or "").lstrip("/")
     labels = LABELS[lang]
     genres = " / ".join(
@@ -899,7 +898,6 @@ def render(item, related, lang="ru"):
     title = title_of(item, lang)
     alt_title = title_of(item, other_lang)
     desc = desc_of(item, lang)
-    desc_alt = desc_of(item, other_lang)
     poster = (item.get("poster") or "").lstrip("/")
     poster_dims = webp_size(ROOT / poster) if poster else None
     genres = sorted(GENRES[lang].get(g, g) for g in item["genres"])
@@ -1141,10 +1139,6 @@ def render(item, related, lang="ru"):
               <span class="film-meta-item">{esc(genre_list)}</span>
             </div>
 {rat_tiles}            <p class="film-desc">{esc(desc)}</p>
-            <details class="film-desc-alt-wrap">
-              <summary>{esc(labels["descAlt"])}</summary>
-              <p class="film-desc film-desc-alt">{esc(desc_alt)}</p>
-            </details>
           </div>
         </article>
         <section class="related">

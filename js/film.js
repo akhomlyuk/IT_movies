@@ -108,10 +108,6 @@ const FILM_TEMPLATE = `
           <a class="imdb rating-chip rating-chip--imdb" v-if="hasImdb" :href="imdbHref" target="_blank" rel="noopener noreferrer" :aria-label="t.imdb + ': ' + imdbRating + ' — ' + t.openExternal">{{ t.imdb }}: {{ imdbRating }}{{ isHighRating(imdbRating) ? " ★" : "" }}</a>
         </div>
         <p class="film-desc">{{ desc }}</p>
-        <details class="film-desc-alt-wrap">
-          <summary>{{ t.descAlt }}</summary>
-          <p class="film-desc film-desc-alt">{{ descAlt }}</p>
-        </details>
         <div class="share-row" role="group" :aria-label="t.share">
           <a v-for="n in shareNets" :key="n.key" class="share-btn" :data-net="n.key" :href="n.href"
              target="_blank" rel="noopener noreferrer" :title="n.label" :aria-label="n.label">
@@ -294,9 +290,6 @@ const app = createApp({
     const desc = computed(() =>
       item ? item.desc[lang.value === "ru" ? "ru" : "en"] : I18N[lang.value].fatalError
     );
-    const descAlt = computed(() =>
-      item ? item.desc[lang.value === "ru" ? "en" : "ru"] : ""
-    );
     const isFav = computed(() => !!(item && item.fav));
     const genreLabel = computed(() =>
       item ? item.genres.map((g) => t.value.genres[g] || g).join(" / ") : ""
@@ -425,7 +418,6 @@ function relatedHref(r) {
       title,
       altTitle,
       desc,
-      descAlt,
       isFav,
       genreLabel,
       year,
