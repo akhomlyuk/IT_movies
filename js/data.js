@@ -16,7 +16,7 @@ window.CATALOG = [
     "imdbRating": 6.8,
     "kpId": 195847,
     "kpRating": 7.7,
-    "kpVotes": 227762,
+    "kpVotes": 229119,
     "poster": "static/posters/21_film_poster.webp"
   },
   {
@@ -36,7 +36,7 @@ window.CATALOG = [
     "imdbRating": 6.3,
     "kpId": 843789,
     "kpRating": 6.4,
-    "kpVotes": 173178,
+    "kpVotes": 173480,
     "poster": "static/posters/ghostintheshell_film_poster.webp"
   },
   {
@@ -56,7 +56,7 @@ window.CATALOG = [
     "imdbRating": 5.5,
     "kpId": 1212316,
     "kpRating": 6.1,
-    "kpVotes": 59029,
+    "kpVotes": 59489,
     "poster": "static/posters/h0u53_film_poster.webp"
   },
   {
@@ -76,7 +76,7 @@ window.CATALOG = [
     "imdbRating": 6.4,
     "kpId": 1055319,
     "kpRating": 6.7,
-    "kpVotes": 69639,
+    "kpVotes": 69823,
     "poster": "static/posters/archive_film_poster.webp"
   },
   {
@@ -96,7 +96,7 @@ window.CATALOG = [
     "imdbRating": 6.7,
     "kpId": 4499408,
     "kpRating": 6.7,
-    "kpVotes": 76443,
+    "kpVotes": 78005,
     "poster": "static/posters/thecreator_film_poster.webp"
   },
   {
@@ -116,7 +116,7 @@ window.CATALOG = [
     "imdbRating": 6.2,
     "kpId": 161085,
     "kpRating": 6.4,
-    "kpVotes": 161029,
+    "kpVotes": 162199,
     "poster": "static/posters/khottabych_film_poster.webp"
   },
   {
@@ -133,10 +133,10 @@ window.CATALOG = [
     ],
     "year": 2025,
     "imdbId": "tt6604188",
-    "imdbRating": 6.1,
+    "imdbRating": 6.2,
     "kpId": 634944,
     "kpRating": 6.2,
-    "kpVotes": 39048,
+    "kpVotes": 39477,
     "poster": "static/posters/tronares_film_poster.webp"
   },
   {
@@ -156,7 +156,7 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 502,
     "kpRating": 7.8,
-    "kpVotes": 203338,
+    "kpVotes": 204069,
     "fav": true,
     "poster": "static/posters/12monkeys_film_poster.webp"
   },
@@ -177,7 +177,7 @@ window.CATALOG = [
     "imdbRating": 7.6,
     "kpId": 496,
     "kpRating": 7.7,
-    "kpVotes": 222132,
+    "kpVotes": 222707,
     "fav": true,
     "poster": "static/posters/minorityreport_film_poster.webp"
   },
@@ -195,10 +195,10 @@ window.CATALOG = [
     ],
     "year": 2026,
     "imdbId": "tt31050594",
-    "imdbRating": 6.8,
+    "imdbRating": 6.1,
     "kpId": 5453060,
     "kpRating": 6.7,
-    "kpVotes": 50317,
+    "kpVotes": 51750,
     "poster": "static/posters/mercy_film_poster.webp"
   },
   {
@@ -218,7 +218,7 @@ window.CATALOG = [
     "imdbRating": 6.7,
     "kpId": 517988,
     "kpRating": 7.3,
-    "kpVotes": 641925,
+    "kpVotes": 647919,
     "poster": "static/posters/intime_film_poster.webp"
   },
   {
@@ -238,7 +238,7 @@ window.CATALOG = [
     "imdbRating": 7.5,
     "kpId": 1009784,
     "kpRating": 7.6,
-    "kpVotes": 478425,
+    "kpVotes": 479435,
     "poster": "static/posters/upgrade_film_poster.webp"
   },
   {
@@ -258,7 +258,7 @@ window.CATALOG = [
     "imdbRating": 6.1,
     "kpId": 797601,
     "kpRating": 6.7,
-    "kpVotes": 131577,
+    "kpVotes": 134435,
     "poster": "static/posters/hacker_film_poster.webp"
   },
   {
@@ -278,7 +278,7 @@ window.CATALOG = [
     "imdbRating": 7.2,
     "kpId": 95636,
     "kpRating": 7.5,
-    "kpVotes": 17102,
+    "kpVotes": 17144,
     "poster": "static/posters/piratesofsiliconvalley_film_poster.webp"
   },
   {
@@ -298,7 +298,7 @@ window.CATALOG = [
     "imdbRating": 6.1,
     "kpId": 592,
     "kpRating": 6.7,
-    "kpVotes": 3727,
+    "kpVotes": 3745,
     "poster": "static/posters/antitrust_film_poster.webp"
   },
   {
@@ -318,7 +318,7 @@ window.CATALOG = [
     "imdbRating": 5.5,
     "kpId": 739892,
     "kpRating": 5.4,
-    "kpVotes": 27732,
+    "kpVotes": 27840,
     "poster": "static/posters/blackhat_film_poster.webp"
   },
   {
@@ -338,7 +338,7 @@ window.CATALOG = [
     "imdbRating": 7.3,
     "kpId": 3954,
     "kpRating": 7.8,
-    "kpVotes": 148881,
+    "kpVotes": 149196,
     "fav": true,
     "poster": "static/posters/enemyofthestate_film_poster.webp"
   },
@@ -359,7 +359,7 @@ window.CATALOG = [
     "imdbRating": 6.2,
     "kpId": 4134,
     "kpRating": 7.1,
-    "kpVotes": 37656,
+    "kpVotes": 37766,
     "fav": true,
     "poster": "static/posters/hackers_film_poster.webp"
   },
@@ -380,7 +380,7 @@ window.CATALOG = [
     "imdbRating": 7.1,
     "kpId": 4886,
     "kpRating": 7.8,
-    "kpVotes": 479634,
+    "kpVotes": 480770,
     "poster": "static/posters/irobot_film_poster.webp"
   },
   {
@@ -400,7 +400,7 @@ window.CATALOG = [
     "imdbRating": 5.5,
     "kpId": 738189,
     "kpRating": 5.4,
-    "kpVotes": 16056,
+    "kpVotes": 16078,
     "poster": "static/posters/it2016_film_poster.webp"
   },
   {
@@ -420,7 +420,7 @@ window.CATALOG = [
     "imdbRating": 5.6,
     "kpId": 794783,
     "kpRating": 5.1,
-    "kpVotes": 353,
+    "kpVotes": 359,
     "poster": "static/posters/listening_film_poster.webp"
   },
   {
@@ -440,7 +440,7 @@ window.CATALOG = [
     "imdbRating": 7.1,
     "kpId": 9544,
     "kpRating": 7.3,
-    "kpVotes": 144511,
+    "kpVotes": 144714,
     "poster": "static/posters/livefreeordiehard_film_poster.webp"
   },
   {
@@ -460,7 +460,7 @@ window.CATALOG = [
     "imdbRating": 7.3,
     "kpId": 8486,
     "kpRating": 7.5,
-    "kpVotes": 45089,
+    "kpVotes": 45218,
     "poster": "static/posters/pi1997_film_poster.webp"
   },
   {
@@ -480,7 +480,7 @@ window.CATALOG = [
     "imdbRating": 6.7,
     "kpId": 63971,
     "kpRating": 6.0,
-    "kpVotes": 12512,
+    "kpVotes": 12595,
     "poster": "static/posters/primer_film_poster.webp"
   },
   {
@@ -500,7 +500,7 @@ window.CATALOG = [
     "imdbRating": 7.3,
     "kpId": 843831,
     "kpRating": 7.2,
-    "kpVotes": 251324,
+    "kpVotes": 254992,
     "poster": "static/posters/snowden_film_poster.webp"
   },
   {
@@ -520,7 +520,7 @@ window.CATALOG = [
     "imdbRating": 6.5,
     "kpId": 849,
     "kpRating": 7.2,
-    "kpVotes": 66690,
+    "kpVotes": 66889,
     "poster": "static/posters/swordfish_film_poster.webp"
   },
   {
@@ -540,7 +540,7 @@ window.CATALOG = [
     "imdbRating": 6.2,
     "kpId": 4551,
     "kpRating": 6.5,
-    "kpVotes": 1743,
+    "kpVotes": 1746,
     "poster": "static/posters/takedown_film_poster.webp"
   },
   {
@@ -560,7 +560,7 @@ window.CATALOG = [
     "imdbRating": 6.2,
     "kpId": 607152,
     "kpRating": 6.6,
-    "kpVotes": 35646,
+    "kpVotes": 35686,
     "poster": "static/posters/thefifthestate_film_poster.webp"
   },
   {
@@ -580,7 +580,7 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 635772,
     "kpRating": 7.8,
-    "kpVotes": 617574,
+    "kpVotes": 621131,
     "fav": true,
     "poster": "static/posters/theimitationgame_film_poster.webp"
   },
@@ -601,7 +601,7 @@ window.CATALOG = [
     "imdbRating": 4.6,
     "kpId": 94156,
     "kpRating": 5.1,
-    "kpVotes": 713,
+    "kpVotes": 716,
     "poster": "static/posters/thenet20_film_poster.webp"
   },
   {
@@ -621,7 +621,7 @@ window.CATALOG = [
     "imdbRating": 6.0,
     "kpId": 6132,
     "kpRating": 7.1,
-    "kpVotes": 34270,
+    "kpVotes": 34383,
     "poster": "static/posters/thenet_film_poster.webp"
   },
   {
@@ -641,7 +641,7 @@ window.CATALOG = [
     "imdbRating": 6.0,
     "kpId": 762854,
     "kpRating": 5.3,
-    "kpVotes": 24974,
+    "kpVotes": 25083,
     "poster": "static/posters/thesignal_film_poster.webp"
   },
   {
@@ -661,7 +661,7 @@ window.CATALOG = [
     "imdbRating": 7.8,
     "kpId": 427198,
     "kpRating": 7.7,
-    "kpVotes": 395838,
+    "kpVotes": 398278,
     "fav": true,
     "poster": "static/posters/socialnetwork_film_poster.webp"
   },
@@ -682,7 +682,7 @@ window.CATALOG = [
     "imdbRating": 7.0,
     "kpId": 1086,
     "kpRating": 7.6,
-    "kpVotes": 82306,
+    "kpVotes": 82795,
     "fav": true,
     "poster": "static/posters/13floor_film_poster.webp"
   },
@@ -700,10 +700,10 @@ window.CATALOG = [
     ],
     "year": 2012,
     "imdbId": "tt2357453",
-    "imdbRating": 6.9,
+    "imdbRating": 6.7,
     "kpId": 677421,
     "kpRating": 6.9,
-    "kpVotes": 526,
+    "kpVotes": 527,
     "poster": "static/posters/undergroundthejulianassangestory_film_poster.webp"
   },
   {
@@ -723,7 +723,7 @@ window.CATALOG = [
     "imdbRating": 6.2,
     "kpId": 264021,
     "kpRating": 6.7,
-    "kpVotes": 23306,
+    "kpVotes": 23450,
     "poster": "static/posters/untraceable_film_poster.webp"
   },
   {
@@ -743,7 +743,7 @@ window.CATALOG = [
     "imdbRating": 7.1,
     "kpId": 14840,
     "kpRating": 7.1,
-    "kpVotes": 8200,
+    "kpVotes": 8237,
     "poster": "static/posters/wargames_film_poster.webp"
   },
   {
@@ -783,7 +783,7 @@ window.CATALOG = [
     "imdbRating": 7.4,
     "kpId": 779602,
     "kpRating": 7.4,
-    "kpVotes": 202576,
+    "kpVotes": 203407,
     "fav": true,
     "poster": "static/posters/whoami_film_poster.webp"
   },
@@ -804,7 +804,7 @@ window.CATALOG = [
     "imdbRating": 5.4,
     "kpId": 909550,
     "kpRating": 5.8,
-    "kpVotes": 54220,
+    "kpVotes": 54307,
     "poster": "static/posters/thecircle_film_poster.webp"
   },
   {
@@ -824,7 +824,7 @@ window.CATALOG = [
     "imdbRating": 6.1,
     "kpId": 979121,
     "kpRating": 6.4,
-    "kpVotes": 89043,
+    "kpVotes": 89754,
     "poster": "static/posters/anon_film_poster.webp"
   },
   {
@@ -841,10 +841,10 @@ window.CATALOG = [
     ],
     "year": 1982,
     "imdbId": "tt0083658",
-    "imdbRating": 8.2,
+    "imdbRating": 8.1,
     "kpId": 403,
-    "kpRating": 7.7,
-    "kpVotes": 225905,
+    "kpRating": 7.8,
+    "kpVotes": 226675,
     "fav": true,
     "poster": "static/posters/bladerunner_film_poster.webp"
   },
@@ -865,7 +865,7 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 589290,
     "kpRating": 7.8,
-    "kpVotes": 521287,
+    "kpVotes": 523442,
     "poster": "static/posters/bladerunner2049_film_poster.webp"
   },
   {
@@ -885,7 +885,7 @@ window.CATALOG = [
     "imdbRating": 7.7,
     "kpId": 197532,
     "kpRating": 7.1,
-    "kpVotes": 175135,
+    "kpVotes": 175510,
     "poster": "static/posters/exmachina_film_poster.webp"
   },
   {
@@ -905,7 +905,7 @@ window.CATALOG = [
     "imdbRating": 6.8,
     "kpId": 7569,
     "kpRating": 7.0,
-    "kpVotes": 52045,
+    "kpVotes": 52230,
     "poster": "static/posters/existenz_film_poster.webp"
   },
   {
@@ -925,7 +925,7 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 577488,
     "kpRating": 7.7,
-    "kpVotes": 314539,
+    "kpVotes": 315396,
     "poster": "static/posters/her_film_poster.webp"
   },
   {
@@ -945,7 +945,7 @@ window.CATALOG = [
     "imdbRating": 8.8,
     "kpId": 447301,
     "kpRating": 8.7,
-    "kpVotes": 1128807,
+    "kpVotes": 1133082,
     "fav": true,
     "poster": "static/posters/inception_film_poster.webp"
   },
@@ -966,7 +966,7 @@ window.CATALOG = [
     "imdbRating": 5.6,
     "kpId": 3800,
     "kpRating": 6.8,
-    "kpVotes": 65482,
+    "kpVotes": 66616,
     "poster": "static/posters/johnnymnemonic_film_poster.webp"
   },
   {
@@ -986,7 +986,7 @@ window.CATALOG = [
     "imdbRating": 5.9,
     "kpId": 906340,
     "kpRating": 5.8,
-    "kpVotes": 27621,
+    "kpVotes": 27725,
     "poster": "static/posters/morgan_film_poster.webp"
   },
   {
@@ -1006,7 +1006,7 @@ window.CATALOG = [
     "imdbRating": 5.9,
     "kpId": 24773,
     "kpRating": 6.4,
-    "kpVotes": 3311,
+    "kpVotes": 3317,
     "poster": "static/posters/onepoint_film_poster.webp"
   },
   {
@@ -1026,7 +1026,7 @@ window.CATALOG = [
     "imdbRating": 5.1,
     "kpId": 712716,
     "kpRating": 5.3,
-    "kpVotes": 12300,
+    "kpVotes": 12313,
     "poster": "static/posters/openwindows_film_poster.webp"
   },
   {
@@ -1046,7 +1046,7 @@ window.CATALOG = [
     "imdbRating": 7.4,
     "kpId": 538225,
     "kpRating": 7.4,
-    "kpVotes": 645706,
+    "kpVotes": 647445,
     "poster": "static/posters/readyplayerone_film_poster.webp"
   },
   {
@@ -1066,7 +1066,7 @@ window.CATALOG = [
     "imdbRating": 5.5,
     "kpId": 7449,
     "kpRating": 6.6,
-    "kpVotes": 23598,
+    "kpVotes": 23687,
     "poster": "static/posters/thelawnmowerman_film_poster.webp"
   },
   {
@@ -1086,7 +1086,7 @@ window.CATALOG = [
     "imdbRating": 8.7,
     "kpId": 301,
     "kpRating": 8.5,
-    "kpVotes": 813544,
+    "kpVotes": 816252,
     "fav": true,
     "poster": "static/posters/matrix_film_poster.webp"
   },
@@ -1107,7 +1107,7 @@ window.CATALOG = [
     "imdbRating": 7.2,
     "kpId": 299,
     "kpRating": 7.7,
-    "kpVotes": 294486,
+    "kpVotes": 295225,
     "poster": "static/posters/thematrixreloaded_film_poster.webp"
   },
   {
@@ -1127,7 +1127,7 @@ window.CATALOG = [
     "imdbRating": 6.2,
     "kpId": 687670,
     "kpRating": 6.5,
-    "kpVotes": 146726,
+    "kpVotes": 147156,
     "poster": "static/posters/transcendence_film_poster.webp"
   },
   {
@@ -1147,7 +1147,7 @@ window.CATALOG = [
     "imdbRating": 6.6,
     "kpId": 387477,
     "kpRating": 7.4,
-    "kpVotes": 150516,
+    "kpVotes": 150792,
     "poster": "static/posters/eagleeye_film_poster.webp"
   },
   {
@@ -1167,7 +1167,7 @@ window.CATALOG = [
     "imdbRating": 5.7,
     "kpId": 397604,
     "kpRating": 6.5,
-    "kpVotes": 20179,
+    "kpVotes": 20210,
     "poster": "static/posters/echelonconspiracy_film_poster.webp"
   },
   {
@@ -1187,7 +1187,7 @@ window.CATALOG = [
     "imdbRating": 5.8,
     "kpId": 81607,
     "kpRating": 6.3,
-    "kpVotes": 6893,
+    "kpVotes": 6914,
     "poster": "static/posters/firewall_film_poster.webp"
   },
   {
@@ -1207,7 +1207,7 @@ window.CATALOG = [
     "imdbRating": 5.7,
     "kpId": 325393,
     "kpRating": 6.6,
-    "kpVotes": 91037,
+    "kpVotes": 91262,
     "poster": "static/posters/gamer_film_poster.webp"
   },
   {
@@ -1227,7 +1227,7 @@ window.CATALOG = [
     "imdbRating": 7.9,
     "kpId": 824954,
     "kpRating": 7.9,
-    "kpVotes": 51316,
+    "kpVotes": 51367,
     "poster": "static/posters/kungfury_film_poster.webp"
   },
   {
@@ -1247,7 +1247,7 @@ window.CATALOG = [
     "imdbRating": 7.1,
     "kpId": 2035,
     "kpRating": 6.7,
-    "kpVotes": 2079,
+    "kpVotes": 2094,
     "poster": "static/posters/sneakers_film_poster.webp"
   },
   {
@@ -1267,7 +1267,7 @@ window.CATALOG = [
     "imdbRating": 6.7,
     "kpId": 17463,
     "kpRating": 6.9,
-    "kpVotes": 29593,
+    "kpVotes": 29655,
     "poster": "static/posters/tron_film_poster.webp"
   },
   {
@@ -1287,7 +1287,7 @@ window.CATALOG = [
     "imdbRating": 6.8,
     "kpId": 399959,
     "kpRating": 6.9,
-    "kpVotes": 185038,
+    "kpVotes": 185379,
     "poster": "static/posters/tronlegacy_film_poster.webp"
   },
   {
@@ -1307,7 +1307,7 @@ window.CATALOG = [
     "imdbRating": 5.5,
     "kpId": 5247,
     "kpRating": 6.1,
-    "kpVotes": 6892,
+    "kpVotes": 6961,
     "poster": "static/posters/virtuosity_film_poster.webp"
   },
   {
@@ -1327,7 +1327,7 @@ window.CATALOG = [
     "imdbRating": 6.8,
     "kpId": 81291,
     "kpRating": 7.5,
-    "kpVotes": 187836,
+    "kpVotes": 188211,
     "poster": "static/posters/theisland_film_poster.webp"
   },
   {
@@ -1347,7 +1347,7 @@ window.CATALOG = [
     "imdbRating": 8.6,
     "kpId": 444,
     "kpRating": 8.4,
-    "kpVotes": 789007,
+    "kpVotes": 795238,
     "fav": true,
     "poster": "static/posters/terminator2_film_poster.webp"
   },
@@ -1368,7 +1368,7 @@ window.CATALOG = [
     "imdbRating": 8.1,
     "kpId": 507,
     "kpRating": 8.0,
-    "kpVotes": 385893,
+    "kpVotes": 387655,
     "fav": true,
     "poster": "static/posters/terminator_film_poster.webp"
   },
@@ -1389,7 +1389,7 @@ window.CATALOG = [
     "imdbRating": 5.6,
     "kpId": 11182054,
     "kpRating": 6.5,
-    "kpVotes": 29203,
+    "kpVotes": 31284,
     "poster": "static/posters/wardriver_film_poster.webp"
   },
   {
@@ -1410,7 +1410,7 @@ window.CATALOG = [
     "imdbVotes": 3000,
     "kpId": 1133310,
     "kpRating": 6.3,
-    "kpVotes": 62908,
+    "kpVotes": 63009,
     "poster": "static/posters/darkwebcicada3301_film_poster.webp"
   },
   {
@@ -1446,7 +1446,7 @@ window.CATALOG = [
     ],
     "year": 2026,
     "imdbId": "tt39150120",
-    "imdbRating": 6.8,
+    "imdbRating": 7.0,
     "imdbVotes": 235,
     "kpId": 11813093,
     "kpRating": null,
@@ -1469,7 +1469,7 @@ window.CATALOG = [
     "imdbRating": 7.2,
     "kpId": 1160654,
     "kpRating": 7.2,
-    "kpVotes": 8349,
+    "kpVotes": 8475,
     "poster": "static/posters/theinventor_doc_poster.webp"
   },
   {
@@ -1489,7 +1489,7 @@ window.CATALOG = [
     "imdbRating": 7.7,
     "kpId": 568047,
     "kpRating": 7.5,
-    "kpVotes": 360,
+    "kpVotes": 362,
     "fav": true,
     "poster": "static/posters/download_doc_poster.webp"
   },
@@ -1550,7 +1550,7 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 843103,
     "kpRating": 7.3,
-    "kpVotes": 11101,
+    "kpVotes": 11112,
     "fav": true,
     "poster": "static/posters/citizenfour_doc_poster.webp"
   },
@@ -1570,7 +1570,7 @@ window.CATALOG = [
     "imdbRating": 6.9,
     "kpId": 808328,
     "kpRating": 6.9,
-    "kpVotes": 1340,
+    "kpVotes": 1342,
     "poster": "static/posters/deepweb_doc_poster.webp"
   },
   {
@@ -1722,7 +1722,7 @@ window.CATALOG = [
     "imdbRating": 7.4,
     "kpId": 1045212,
     "kpRating": 7.3,
-    "kpVotes": 140,
+    "kpVotes": 141,
     "poster": "static/posters/thesecretrulesofmodernlivingalgorithms_doc_poster.webp"
   },
   {
@@ -1798,7 +1798,7 @@ window.CATALOG = [
     "imdbRating": 7.0,
     "kpId": 1405959,
     "kpRating": 7.2,
-    "kpVotes": 508,
+    "kpVotes": 512,
     "poster": "static/posters/console_wars_doc_poster.webp"
   },
   {
@@ -1817,7 +1817,7 @@ window.CATALOG = [
     "imdbRating": 7.4,
     "kpId": 1398870,
     "kpRating": 7.3,
-    "kpVotes": 824,
+    "kpVotes": 825,
     "fav": true,
     "poster": "static/posters/high_score_doc_poster.webp"
   },
@@ -1911,7 +1911,7 @@ window.CATALOG = [
     ],
     "year": 2010,
     "imdbId": "tt1692889",
-    "imdbRating": 7.2,
+    "imdbRating": 7.1,
     "imdbVotes": 158,
     "kpId": 573467,
     "kpRating": null,
@@ -1934,7 +1934,7 @@ window.CATALOG = [
     "imdbRating": 6.7,
     "kpId": 724722,
     "kpRating": 6.5,
-    "kpVotes": 317,
+    "kpVotes": 318,
     "poster": "static/posters/googleandtheworldbrain_doc_poster.webp"
   },
   {
@@ -1954,7 +1954,7 @@ window.CATALOG = [
     "imdbRating": 7.2,
     "kpId": 13343,
     "kpRating": 7.2,
-    "kpVotes": 1526,
+    "kpVotes": 1531,
     "fav": true,
     "poster": "static/posters/revos_doc_poster.webp"
   },
@@ -1971,7 +1971,7 @@ window.CATALOG = [
     ],
     "year": 2006,
     "imdbId": "tt1422757",
-    "imdbRating": 7.1,
+    "imdbRating": 6.9,
     "imdbVotes": 491,
     "kpId": 1009588,
     "kpRating": null,
@@ -1990,10 +1990,10 @@ window.CATALOG = [
     ],
     "year": 2013,
     "imdbId": "tt2608732",
-    "imdbRating": 7.6,
+    "imdbRating": 7.4,
     "kpId": 731222,
     "kpRating": 7.1,
-    "kpVotes": 1077,
+    "kpVotes": 1079,
     "poster": "static/posters/tpbafk_doc_poster.webp"
   },
   {
@@ -2012,7 +2012,7 @@ window.CATALOG = [
     "imdbRating": 7.3,
     "kpId": 784415,
     "kpRating": 7.1,
-    "kpVotes": 247,
+    "kpVotes": 248,
     "poster": "static/posters/termsandconditionsmayapply_doc_poster.webp"
   },
   {
@@ -2031,7 +2031,7 @@ window.CATALOG = [
     "imdbRating": 7.3,
     "kpId": 103861,
     "kpRating": 7.2,
-    "kpVotes": 266,
+    "kpVotes": 270,
     "poster": "static/posters/thecode_doc_poster.webp"
   },
   {
@@ -2047,10 +2047,10 @@ window.CATALOG = [
     ],
     "year": 2014,
     "imdbId": "tt4047350",
-    "imdbRating": 6.5,
+    "imdbRating": 6.4,
     "kpId": 843766,
-    "kpRating": 6.4,
-    "kpVotes": 141,
+    "kpRating": 6.5,
+    "kpVotes": 145,
     "poster": "static/posters/thehackerwars_doc_poster.webp"
   },
   {
@@ -2069,7 +2069,7 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 827868,
     "kpRating": 7.8,
-    "kpVotes": 1381,
+    "kpVotes": 1385,
     "fav": true,
     "poster": "static/posters/internetboy_doc_poster.webp"
   },
@@ -2105,7 +2105,7 @@ window.CATALOG = [
     ],
     "year": 2012,
     "imdbId": "tt2073120",
-    "imdbRating": 7.1,
+    "imdbRating": 7.0,
     "imdbVotes": 57,
     "kpId": 942305,
     "kpRating": null,
@@ -2146,7 +2146,7 @@ window.CATALOG = [
     "imdbRating": 7.2,
     "kpId": 663064,
     "kpRating": 7.3,
-    "kpVotes": 1274,
+    "kpVotes": 1283,
     "fav": true,
     "poster": "static/posters/wearelegionthestoryofthehacktivists_doc_poster.webp"
   },
@@ -2201,10 +2201,10 @@ window.CATALOG = [
     ],
     "year": 2021,
     "imdbId": "tt18573320",
-    "imdbRating": 7.5,
+    "imdbRating": 7.3,
     "kpId": 4742511,
     "kpRating": 8.3,
-    "kpVotes": 27244,
+    "kpVotes": 27418,
     "fav": true,
     "poster": "static/posters/russianhackers_doc_poster.webp"
   },
@@ -2224,7 +2224,7 @@ window.CATALOG = [
     "imdbRating": 7.6,
     "kpId": 1337788,
     "kpRating": 7.2,
-    "kpVotes": 12126,
+    "kpVotes": 12182,
     "fav": true,
     "poster": "static/posters/socialdilemma_doc_poster.webp"
   },
@@ -2244,7 +2244,7 @@ window.CATALOG = [
     "imdbRating": 7.8,
     "kpId": 1049453,
     "kpRating": 8.1,
-    "kpVotes": 917,
+    "kpVotes": 921,
     "poster": "static/posters/alphago_doc_poster.webp"
   },
   {
@@ -2263,7 +2263,7 @@ window.CATALOG = [
     "imdbRating": 7.0,
     "kpId": 1282028,
     "kpRating": 6.4,
-    "kpVotes": 1397,
+    "kpVotes": 1403,
     "poster": "static/posters/thegreathack_doc_poster.webp"
   },
   {
@@ -2282,7 +2282,7 @@ window.CATALOG = [
     "imdbRating": 7.2,
     "kpId": 1331542,
     "kpRating": 6.5,
-    "kpVotes": 630,
+    "kpVotes": 632,
     "poster": "static/posters/theperfectweapon_doc_poster.webp"
   },
   {
@@ -2340,7 +2340,7 @@ window.CATALOG = [
     "imdbRating": 6.4,
     "kpId": 4418516,
     "kpRating": 6.3,
-    "kpVotes": 3387,
+    "kpVotes": 3390,
     "poster": "static/posters/durov_doc_poster.webp"
   },
   {
@@ -2360,7 +2360,7 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 1333556,
     "kpRating": 7.8,
-    "kpVotes": 13487,
+    "kpVotes": 13554,
     "poster": "static/posters/cats_doc_poster.webp"
   },
   {
@@ -2380,7 +2380,7 @@ window.CATALOG = [
     "imdbRating": 6.1,
     "kpId": 801567,
     "kpRating": 7.2,
-    "kpVotes": 533,
+    "kpVotes": 534,
     "poster": "static/posters/video_games_doc_poster.webp"
   },
   {
@@ -2420,7 +2420,7 @@ window.CATALOG = [
     "imdbRating": 7.0,
     "kpId": 954061,
     "kpRating": 6.6,
-    "kpVotes": 2242,
+    "kpVotes": 2246,
     "poster": "static/posters/loandbeholdreveriesoftheconnectedworld_doc_poster.webp"
   },
   {
@@ -2440,7 +2440,7 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 680925,
     "kpRating": 7.6,
-    "kpVotes": 1524,
+    "kpVotes": 1525,
     "poster": "static/posters/stevejobsthelostinterview_doc_poster.webp"
   },
   {
@@ -2460,7 +2460,7 @@ window.CATALOG = [
     "imdbRating": 8.7,
     "kpId": 655800,
     "kpRating": 8.5,
-    "kpVotes": 432816,
+    "kpVotes": 434791,
     "poster": "static/posters/blackmirror_series_poster.webp"
   },
   {
@@ -2480,7 +2480,7 @@ window.CATALOG = [
     "imdbRating": 6.8,
     "kpId": 740776,
     "kpRating": 6.7,
-    "kpVotes": 6860,
+    "kpVotes": 6915,
     "poster": "static/posters/intelligence_series_poster.webp"
   },
   {
@@ -2500,7 +2500,7 @@ window.CATALOG = [
     "imdbRating": 7.9,
     "kpId": 855925,
     "kpRating": 7.3,
-    "kpVotes": 25455,
+    "kpVotes": 25531,
     "poster": "static/posters/humans_series_poster.webp"
   },
   {
@@ -2516,10 +2516,10 @@ window.CATALOG = [
     ],
     "year": 2020,
     "imdbId": "tt8879940",
-    "imdbRating": 7.6,
+    "imdbRating": 7.7,
     "kpId": 1188292,
     "kpRating": 7.2,
-    "kpVotes": 5197,
+    "kpVotes": 5210,
     "poster": "static/posters/mythicquest_series_poster.webp"
   },
   {
@@ -2535,10 +2535,10 @@ window.CATALOG = [
     ],
     "year": 2025,
     "imdbId": "tt30221618",
-    "imdbRating": 6.4,
+    "imdbRating": 6.3,
     "kpId": 6798442,
     "kpRating": 7.4,
-    "kpVotes": 8031,
+    "kpVotes": 8368,
     "poster": "static/posters/safeharbor_series_poster.webp"
   },
   {
@@ -2558,7 +2558,7 @@ window.CATALOG = [
     "imdbRating": 7.9,
     "kpId": 4630370,
     "kpRating": 7.6,
-    "kpVotes": 2818,
+    "kpVotes": 2825,
     "poster": "static/posters/thebilliondollarcode_series_poster.webp"
   },
   {
@@ -2578,7 +2578,7 @@ window.CATALOG = [
     "imdbRating": 7.1,
     "kpId": 1338345,
     "kpRating": 7.9,
-    "kpVotes": 422077,
+    "kpVotes": 424214,
     "poster": "static/posters/offlayn_series_poster.webp"
   },
   {
@@ -2598,7 +2598,7 @@ window.CATALOG = [
     "imdbRating": 7.7,
     "kpId": 795260,
     "kpRating": 6.9,
-    "kpVotes": 14262,
+    "kpVotes": 14329,
     "poster": "static/posters/12monkeys_series_poster.webp"
   },
   {
@@ -2618,7 +2618,7 @@ window.CATALOG = [
     "imdbRating": 8.4,
     "kpId": 412342,
     "kpRating": 8.0,
-    "kpVotes": 125281,
+    "kpVotes": 125965,
     "fav": true,
     "poster": "static/posters/fringe_series_poster.webp"
   },
@@ -2658,7 +2658,7 @@ window.CATALOG = [
     "imdbRating": 7.4,
     "kpId": 6802577,
     "kpRating": 7.0,
-    "kpVotes": 17613,
+    "kpVotes": 17798,
     "poster": "static/posters/murderbot_series_poster.webp"
   },
   {
@@ -2678,7 +2678,7 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 688729,
     "kpRating": 8.1,
-    "kpVotes": 1006,
+    "kpVotes": 1009,
     "fav": true,
     "poster": "static/posters/scene_series_poster.webp"
   },
@@ -2699,7 +2699,7 @@ window.CATALOG = [
     "imdbRating": 5.5,
     "kpId": 840541,
     "kpRating": 6.1,
-    "kpVotes": 1064,
+    "kpVotes": 1070,
     "poster": "static/posters/csicyber_series_poster.webp"
   },
   {
@@ -2719,7 +2719,7 @@ window.CATALOG = [
     "imdbRating": 8.4,
     "kpId": 719481,
     "kpRating": 7.9,
-    "kpVotes": 11930,
+    "kpVotes": 12052,
     "fav": true,
     "poster": "static/posters/halt_series_poster.webp"
   },
@@ -2739,7 +2739,7 @@ window.CATALOG = [
     "imdbRating": 7.3,
     "kpId": 5134511,
     "kpRating": 7.6,
-    "kpVotes": 99527,
+    "kpVotes": 99589,
     "poster": "static/posters/korocheplantakoy_series_poster.webp"
   },
   {
@@ -2759,7 +2759,7 @@ window.CATALOG = [
     "imdbRating": 8.5,
     "kpId": 859908,
     "kpRating": 7.8,
-    "kpVotes": 124648,
+    "kpVotes": 125400,
     "poster": "static/posters/mrrobot_series_poster.webp"
   },
   {
@@ -2779,7 +2779,7 @@ window.CATALOG = [
     "imdbRating": 7.0,
     "kpId": 1263485,
     "kpRating": 7.2,
-    "kpVotes": 123824,
+    "kpVotes": 124053,
     "poster": "static/posters/bravenewworld_series_poster.webp"
   },
   {
@@ -2799,7 +2799,7 @@ window.CATALOG = [
     "imdbRating": 7.0,
     "kpId": 5379179,
     "kpRating": 6.8,
-    "kpVotes": 12590,
+    "kpVotes": 12756,
     "poster": "static/posters/zeroday_series_poster.webp"
   },
   {
@@ -2819,7 +2819,7 @@ window.CATALOG = [
     "imdbRating": 8.5,
     "kpId": 582359,
     "kpRating": 8.0,
-    "kpVotes": 49419,
+    "kpVotes": 49839,
     "fav": true,
     "poster": "static/posters/personofinterest_series_poster.webp"
   },
@@ -2840,7 +2840,7 @@ window.CATALOG = [
     "imdbRating": 7.1,
     "kpId": 826050,
     "kpRating": 7.1,
-    "kpVotes": 36169,
+    "kpVotes": 36282,
     "poster": "static/posters/scorpion_series_poster.webp"
   },
   {
@@ -2860,7 +2860,7 @@ window.CATALOG = [
     "imdbRating": 6.7,
     "kpId": 1254840,
     "kpRating": 7.5,
-    "kpVotes": 60882,
+    "kpVotes": 63271,
     "poster": "static/posters/stalk_series_poster.webp"
   },
   {
@@ -2880,7 +2880,7 @@ window.CATALOG = [
     "imdbRating": 7.6,
     "kpId": 1137249,
     "kpRating": 7.3,
-    "kpVotes": 50404,
+    "kpVotes": 50583,
     "poster": "static/posters/devs_series_poster.webp"
   },
   {
@@ -2899,7 +2899,7 @@ window.CATALOG = [
     "imdbRating": 7.5,
     "kpId": 1320895,
     "kpRating": 7.0,
-    "kpVotes": 38601,
+    "kpVotes": 38908,
     "poster": "static/posters/theperipheral_series_poster.webp"
   },
   {
@@ -2918,7 +2918,7 @@ window.CATALOG = [
     "imdbRating": 7.9,
     "kpId": 669089,
     "kpRating": 7.4,
-    "kpVotes": 104493,
+    "kpVotes": 105005,
     "poster": "static/posters/alteredcarbon_series_poster.webp"
   },
   {
@@ -2935,10 +2935,10 @@ window.CATALOG = [
     ],
     "year": 2020,
     "imdbId": "tt7826376",
-    "imdbRating": 7.7,
+    "imdbRating": 7.8,
     "kpId": 1127489,
     "kpRating": 7.4,
-    "kpVotes": 40405,
+    "kpVotes": 40615,
     "fav": true,
     "poster": "static/posters/upload_series_poster.webp"
   },
@@ -2958,7 +2958,7 @@ window.CATALOG = [
     "imdbRating": 8.5,
     "kpId": 723959,
     "kpRating": 8.4,
-    "kpVotes": 164891,
+    "kpVotes": 165865,
     "fav": true,
     "poster": "static/posters/siliconvalley_series_poster.webp"
   },
@@ -2979,7 +2979,7 @@ window.CATALOG = [
     "imdbRating": 7.8,
     "kpId": 972878,
     "kpRating": 7.6,
-    "kpVotes": 14341,
+    "kpVotes": 14360,
     "poster": "static/posters/startup_series_poster.webp"
   },
   {
@@ -2998,7 +2998,7 @@ window.CATALOG = [
     "imdbRating": 7.4,
     "kpId": 842849,
     "kpRating": 6.4,
-    "kpVotes": 617,
+    "kpVotes": 622,
     "poster": "static/posters/thecode2014_series_poster.webp"
   },
   {
@@ -3017,7 +3017,7 @@ window.CATALOG = [
     "imdbRating": 8.5,
     "kpId": 386715,
     "kpRating": 7.8,
-    "kpVotes": 39446,
+    "kpVotes": 39757,
     "poster": "static/posters/theitcrowd_series_poster.webp"
   },
   {
@@ -3037,7 +3037,7 @@ window.CATALOG = [
     "imdbRating": 8.4,
     "kpId": 195523,
     "kpRating": 7.8,
-    "kpVotes": 307814,
+    "kpVotes": 309670,
     "poster": "static/posters/westworld_series_poster.webp"
   },
   {
@@ -3057,7 +3057,7 @@ window.CATALOG = [
     "imdbRating": 6.1,
     "kpId": 991671,
     "kpRating": 6.2,
-    "kpVotes": 416,
+    "kpVotes": 419,
     "poster": "static/posters/youarewanted_series_poster.webp"
   },
   {
@@ -3076,7 +3076,7 @@ window.CATALOG = [
     "imdbRating": 8.0,
     "kpId": 998777,
     "kpRating": 7.3,
-    "kpVotes": 11561,
+    "kpVotes": 11682,
     "fav": true,
     "poster": "static/posters/travelers_series_poster.webp"
   },
@@ -3098,7 +3098,7 @@ window.CATALOG = [
     "imdbVotes": 65000,
     "kpId": 260995,
     "kpRating": 6.9,
-    "kpVotes": 18493,
+    "kpVotes": 18575,
     "poster": "static/posters/terminatorthesarahconnorchronicles_series_poster.webp"
   }
 ];
