@@ -185,3 +185,60 @@ python -m http.server 8000
 - Page slug = `<imdbId|kp-<kpId>>-<title-en-slug>`; editing `titleEn` renames the URL, so treat `titleEn` spelling as permanent.
 - `js/data.js` is grouped by type in blocks: `movie` → `documentary` → `series`. Keep records in their block.
 - Do NOT add code comments unless the user asks for them. All comments and docstrings must be in English (RU text is allowed only in data/content strings — titles, descriptions, i18n translations).
+
+## Re-collecting Kinopoisk ratings (`kp_refresh` runbook)
+
+Runtime ratings come from Kinopoisk because IMDb serves no rating
+programmatically, so `js/data.js`'s `imdbRating` is a read of Kinopoisk's
+`.film-sub-rating` block and `imdbRating`/`kpRating` are Kinopoisk's
+`aggregateRating`. Monthly refresh tooling lives in `_tmp/` (gitignored, NOT in
+history -- if the scripts are needed after a re-clone, move them to `tools/` and
+commit them). As of 2026-10-16 it is `kp_refresh.ps1`, `kp_compare.py`,
+`kp_apply.py`.
+
+```powershell
+Copy-Item _tmp\kp_votes_fresh.json _tmp\kp_votes_$(Get-Date -Format yyyy-MM).json   # BEFORE the refresh
+pwsh -NoProfile -File _tmp\kp_refresh.ps1      # ~1h, 10 films per batch, 90-150s between
+python _tmp\kp_compare.py                      # read-only report
+python _tmp\kp_apply.py                        # dry run: prints every edit
+python _tmp\kp_apply.py --apply                # writes js/data.js
+python tools\gen_pages.py; python tools\verify.py --strict; node tools\smoke.js; node tools\smoke.js --min; python tools\e2e.py
+```
+
+**`kp_refresh.ps1` DELETES `_tmp\kp_votes_fresh.json` on start**, so the copy
+above is the only way to compare two months against each other.
+
+**Refresh `kpVotes`, never `imdbVotes`.** `kpVotes` is exact and feeds
+`aggregateRating.ratingCount`, which is what Google renders as snippet stars.
+Kinopoisk rounds `imdbVotes` to the nearest hundred above 1000 (128 of 151
+collected values are exact multiples of 100; all 23 below 1000 are exact), and
+its mirror is far looser than that -- for *Mercy* it reported 32 000 votes where
+imdb.com shows 84K. Writing those into structured data would present a rounded
+figure as a counted one.
+
+**Rewrite `js/data.js` at the BYTE level.** The file is CRLF throughout (3104
+CRLF, 0 lone LF) and each record opens with `\r\n  {\r\n` -- **two** spaces, not
+four, and the inner fields sit at four. `read_text`/`write_text` go through
+universal newlines and would rewrite every line ending; and a boundary written
+as `"\n    {\n"` matches **nothing** in this file, which silently yields a
+no-op updater that reports "0 changes" rather than failing. `kp_apply.py`
+captures the boundary with a regex and rejoins the captured bytes.
+
+**Do not read a file's indentation off console output that you formatted
+yourself.** A `Write-Output("  " + $_)` prefix added two spaces that were then
+mistaken for the file's own, which is how the four-space boundary above was
+wrong in the first place. Print `repr()` of raw bytes when the layout matters.
+
+**Ratings move; do not treat a small delta as an error.** A 2026 release's
+rating has not settled -- *Mercy* read 6.8 in the catalog, 6.1 on Kinopoisk and
+6.2 on imdb.com the same day. Trust Kinopoisk, because it is the only source,
+and compare **vote counts** for identity instead: they only ever grow, so a
+count that DROPPED means the wrong page was opened. The 2026-10-16 run had 126
+grow, 7 unchanged, 0 fell, 0 unverified, and the 23 records with no rating were
+the same 23 set-for-set in both collections -- i.e. Kinopoisk genuinely has none
+for them and the catalog was never missing any.
+
+**Never take titles from the Kinopoisk scrape.** It writes `Хоттабыч` as a
+leet-styled `}{отт@бь)ч`, and `Пираты Силиконовой Долины` in English title case
+against the Russian sentence case this catalog uses. `Военные игры 2: Код смерти`
+is a genuine KP rename. Take numbers only.
