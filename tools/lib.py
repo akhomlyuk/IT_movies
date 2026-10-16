@@ -7,6 +7,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SITE_BASE = "https://movies.whlab.ru"
 EN_PREFIX = "/en"
+ROOT_URL_PATHS = {
+    "index.html": "/",
+    "privacy.html": "/privacy.html",
+    "about.html": "/about.html",
+}
 CYRILLIC = re.compile("[А-Яа-яЁё]")
 
 

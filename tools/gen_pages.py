@@ -17,7 +17,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from lib import (ROOT, SITE_BASE, CYRILLIC, POSTER_VARIANT_WIDTHS, load_catalog,
+from lib import (ROOT, SITE_BASE, CYRILLIC, POSTER_VARIANT_WIDTHS, ROOT_URL_PATHS,
+                  load_catalog,
                   item_slug, js_object_bounds, lang_path, mirror_path,
                   parse_i18n, parse_inline_i18n, has_rating,
                   fmt_rating, variant_name, webp_size, poster_sizes,
@@ -603,37 +604,32 @@ def generate_robots_txt():
 def generate_sitemap(catalog):
     """sitemap.xml with changefreq and priority."""
     slugs_sorted = sorted(item_slug(item) for item in catalog)
-    film_urls = "".join(
-        "  <url>\n"
-        f"    <loc>{SITE_BASE}/films/{slug}/</loc>\n"
-        f"    <lastmod>{CATALOG_DATE}</lastmod>\n"
-        "    <changefreq>monthly</changefreq>\n"
-        "    <priority>0.7</priority>\n"
-        "  </url>\n"
-        for slug in slugs_sorted
-    )
+
+    def entry(url, priority):
+        return (
+            "  <url>\n"
+            f"    <loc>{url}</loc>\n"
+            f"    <lastmod>{CATALOG_DATE}</lastmod>\n"
+            "    <changefreq>monthly</changefreq>\n"
+            f"    <priority>{priority}</priority>\n"
+            "  </url>\n"
+        )
+
+    body = ""
+    for lang in ("ru", "en"):
+        for name, priority in (("index.html", "1.0"), ("privacy.html", "0.3"),
+                               ("about.html", "0.5")):
+            body += entry(
+                SITE_BASE + lang_path(ROOT_URL_PATHS[name], lang), priority
+            )
+        body += "".join(
+            entry(SITE_BASE + lang_path(f"/films/{slug}/", lang), "0.7")
+            for slug in slugs_sorted
+        )
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        "  <url>\n"
-        f"    <loc>{SITE_BASE}/</loc>\n"
-        f"    <lastmod>{CATALOG_DATE}</lastmod>\n"
-        "    <changefreq>monthly</changefreq>\n"
-        "    <priority>1.0</priority>\n"
-        "  </url>\n"
-        "  <url>\n"
-        f"    <loc>{SITE_BASE}/privacy.html</loc>\n"
-        f"    <lastmod>{CATALOG_DATE}</lastmod>\n"
-        "    <changefreq>monthly</changefreq>\n"
-        "    <priority>0.3</priority>\n"
-        "  </url>\n"
-        "  <url>\n"
-        f"    <loc>{SITE_BASE}/about.html</loc>\n"
-        f"    <lastmod>{CATALOG_DATE}</lastmod>\n"
-        "    <changefreq>monthly</changefreq>\n"
-        "    <priority>0.5</priority>\n"
-        "  </url>\n"
-        + film_urls
+        + body
         + "</urlset>\n"
     )
 

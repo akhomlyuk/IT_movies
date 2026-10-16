@@ -15,7 +15,7 @@ from xml.etree import ElementTree
 
 import gen_pages
 import poster_crop
-from lib import BELOW_MD_MAX, CYRILLIC, ROOT, SITE_BASE, BREAKPOINT_SCALE, CSS_MEDIA_EDGES, FEATURED_BOX_DESKTOP, FEATURED_BOX_MOBILE, FEATURED_SLOT_CONDITION, POSTER_BOX_DESKTOP, POSTER_BOX_MOBILE, POSTER_VARIANT_WIDTHS, featured_poster_sizes, hero_poster_widths, item_slug, lang_path, load_catalog, known_genres, mirror_path, parse_i18n, i18n_key_paths, has_rating, poster_sizes, variant_name, variant_path, webp_size
+from lib import BELOW_MD_MAX, CYRILLIC, ROOT, ROOT_URL_PATHS, SITE_BASE, BREAKPOINT_SCALE, CSS_MEDIA_EDGES, FEATURED_BOX_DESKTOP, FEATURED_BOX_MOBILE, FEATURED_SLOT_CONDITION, POSTER_BOX_DESKTOP, POSTER_BOX_MOBILE, POSTER_VARIANT_WIDTHS, featured_poster_sizes, hero_poster_widths, item_slug, lang_path, load_catalog, known_genres, mirror_path, parse_i18n, i18n_key_paths, has_rating, poster_sizes, variant_name, variant_path, webp_size
 
 sys.stdout.reconfigure(encoding="utf-8")
 errors = []
@@ -396,18 +396,42 @@ film_js = (ROOT / "js" / "film.js").read_text(encoding="utf-8")
 app_js = (ROOT / "js" / "app.js").read_text(encoding="utf-8")
 about_js = (ROOT / "js" / "about.js").read_text(encoding="utf-8")
 catalog_src = (ROOT / "js" / "catalog.js").read_text(encoding="utf-8")
-refs = {
-    r[:-1] if r.endswith("\\") else r
-    for r in re.findall(r"""['"]((?:static|\.\./static)/[^'"]+)['"]""", i18n_src + raw + app_js + film_js + about_js + catalog_src)
-}
+refs = set()
+# A literal whose closing quote is followed by `+` is only the FIRST half of a
+# concatenation: film.js builds the share glyphs as
+# `'/static/share.svg#icon-' + n.key`, so the quoted fragment names no symbol of
+# its own and the id cannot be resolved from the source. The FILE is still
+# checked; the fragment is checked only where it is a complete literal.
+partial_fragments = set()
+for m in re.finditer(
+    r"""(['"])((?:/?static|\.\./static)/[^'"]+)\1(\s*\+)?""",
+    i18n_src + raw + app_js + film_js + about_js + catalog_src,
+):
+    ref = m.group(2)
+    ref = ref[:-1] if ref.endswith("\\") else ref
+    refs.add(ref)
+    if m.group(3):
+        partial_fragments.add(ref)
 for name in ("index.html", "404.html", "privacy.html", "about.html"):
     text = (ROOT / name).read_text(encoding="utf-8")
     for v in re.findall(r'(?:content|src|href)="([^"]+)"', text):
         m = re.search(r'(?:static|\.\./static|css|js)/[^"\')\s]+', v)
         if m:
             refs.add(m.group(0))
-for page in (ROOT / "films").glob("*/index.html"):
+for page in list((ROOT / "films").glob("*/index.html")) + list(
+    (ROOT / "en" / "films").glob("*/index.html")
+):
     text = page.read_text(encoding="utf-8")
+    for v in re.findall(r'(?:content|src|href)="([^"]+)"', text):
+        if v.startswith("http://") or v.startswith("https://"):
+            continue
+        m = re.search(
+            r'(?:static|\.\./static|css|js)/[^"\')\s]+|(?:privacy|about)\.html', v
+        )
+        if m:
+            refs.add(m.group(0))
+for name in ("index.html", "privacy.html", "about.html"):
+    text = (ROOT / "en" / name).read_text(encoding="utf-8")
     for v in re.findall(r'(?:content|src|href)="([^"]+)"', text):
         if v.startswith("http://") or v.startswith("https://"):
             continue
@@ -435,7 +459,7 @@ for r in refs:
     path = ROOT / ref.lstrip("/")
     if not path.exists():
         errors.append(f"Broken file reference: {r}")
-    elif frag and path.suffix == ".svg":
+    elif frag and path.suffix == ".svg" and r not in partial_fragments:
         body = path.read_text(encoding="utf-8")
         if ('id="%s"' % frag) not in body:
             errors.append(
@@ -3424,11 +3448,7 @@ check_single_description_per_page()
 
 
 EN_ROOT_PAGES = ("index.html", "about.html", "privacy.html")
-RU_ROOT_URL = {
-    "index.html": "/",
-    "about.html": "/about.html",
-    "privacy.html": "/privacy.html",
-}
+RU_ROOT_URL = dict(ROOT_URL_PATHS)
 EN_ROOT_URL = {name: lang_path(path, "en") for name, path in RU_ROOT_URL.items()}
 EN_ROOT_MUTATIONS = (
     ("index.html", "subtitle"),
@@ -3444,10 +3464,6 @@ def _en_root_missing_variant(src, page, name):
         r'[ \t]*<template id="en:%s">.*?</template>\n?' % re.escape(name), re.S
     )
     return pattern.sub("", src, count=1)
-
-
-class RegionTree(RcCardTree):
-    pass
 
 
 EN_PARITY_DROP = {
@@ -3508,9 +3524,8 @@ def _renumber(nodes, dropped):
 def _region_parity_problems():
     problems = []
     labels = parse_i18n()
-    checked = 0
     for name in EN_ROOT_PAGES:
-        src_text, ru_blocks, en_blocks = _region_fragments(name)
+        _, ru_blocks, en_blocks = _region_fragments(name)
         for block in sorted(set(ru_blocks) | set(en_blocks)):
             ru = ru_blocks.get(block)
             en = en_blocks.get(block)
@@ -3569,7 +3584,6 @@ def _region_parity_problems():
                     " one block in two languages, so a moved, renamed or missing"
                     " element is a structural edit made in one language only"
                 )
-            checked += 1
     return problems
 
 
@@ -3873,7 +3887,6 @@ def check_en_root_pages():
             )
 
     for name in EN_ROOT_PAGES:
-        ru_src_text = (ROOT / name).read_text(encoding="utf-8")
         try:
             transform(ROOT / name)
         except SystemExit as exc:
@@ -3912,6 +3925,376 @@ def check_en_root_pages():
 check_en_root_pages()
 
 
+def _canonical_hrefs(text):
+    return [
+        m.group(1)
+        for tag in re.findall(r"<link\b[^>]*>", text)
+        if re.search(r'\brel\s*=\s*"canonical"', tag)
+        for m in [re.search(r'\bhref\s*=\s*"([^"]+)"', tag)]
+        if m
+    ]
+
+
+SITEMAP_NS = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
+
+
+def generated_pages():
+    out = []
+    for name in EN_ROOT_PAGES:
+        out.append(ROOT / name)
+        out.append(ROOT / "en" / name)
+    for _lang, prefix in MIRROR_ROOTS:
+        out.extend(mirror_pages(prefix))
+    return [p for p in out if p.exists()]
+
+
+def self_url(page):
+    rel = page.relative_to(ROOT).as_posix()
+    if rel == "index.html":
+        rel = ""
+    elif rel.endswith("/index.html"):
+        rel = rel[: -len("index.html")]
+    return SITE_BASE + "/" + rel
+
+
+def site_path_from_url(url):
+    if not isinstance(url, str) or not url.startswith(SITE_BASE + "/"):
+        return None
+    rel = url[len(SITE_BASE) + 1:]
+    if not rel:
+        rel = "index.html"
+    elif rel.endswith("/"):
+        rel += "index.html"
+    return ROOT / rel
+
+
+def url_path(url):
+    if not isinstance(url, str) or not url.startswith(SITE_BASE + "/"):
+        return None
+    return "/" + url[len(SITE_BASE) + 1:]
+
+
+def expected_site_urls():
+    urls = []
+    for lang in ("ru", "en"):
+        for item in catalog:
+            urls.append(SITE_BASE + lang_path(f"/films/{item_slug(item)}/", lang))
+        for name in sorted(RU_ROOT_URL):
+            urls.append(SITE_BASE + lang_path(RU_ROOT_URL[name], lang))
+    return urls
+
+
+def check_canonical_is_self():
+    bad = []
+    pages = generated_pages()
+    if not pages:
+        errors.append(
+            "canonical self: no generated page was read, so this run would pass on an "
+            "empty set"
+        )
+        return
+    for page in pages:
+        rel = page.relative_to(ROOT).as_posix()
+        want = self_url(page)
+        hrefs = _canonical_hrefs(page.read_text(encoding="utf-8"))
+        if len(hrefs) != 1 or hrefs[0] != want:
+            bad.append(
+                f"{rel}: canonical is {hrefs[0] if len(hrefs) == 1 else hrefs}, "
+                f"expected exactly one equal to {want}. A canonical that names the "
+                "other language, or none at all, tells a crawler the two addresses "
+                "are not the same page in two languages"
+            )
+    for b in bad[:8]:
+        errors.append(f"canonical self: {b}")
+    if len(bad) > 8:
+        errors.append(f"canonical self: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"Canonical is self: {len(pages)} generated page(s) across both "
+            "languages, each with exactly one canonical equal to its own "
+            f"{SITE_BASE} address"
+        )
+
+
+check_canonical_is_self()
+
+
+def check_hreflang_targets_exist():
+    bad = []
+    pages = generated_pages()
+    if not pages:
+        errors.append(
+            "hreflang targets: no generated page was read, so this run would pass on "
+            "an empty set"
+        )
+        return
+    for page in pages:
+        rel = page.relative_to(ROOT).as_posix()
+        alts = {
+            tag.get("hreflang"): tag.get("href")
+            for tag in link_tag_attrs(page.read_text(encoding="utf-8"), "alternate")
+        }
+        for key in MIRROR_HREFLANG:
+            if key not in alts:
+                bad.append(f"{rel}: no hreflang={key}")
+        for key in sorted(alts):
+            href = alts[key]
+            target = site_path_from_url(href)
+            if target is None:
+                bad.append(
+                    f"{rel}: hreflang={key} is {href!r}, which is not an address "
+                    f"under {SITE_BASE}, so it cannot be resolved to a file"
+                )
+            elif not target.exists():
+                bad.append(
+                    f"{rel}: hreflang={key} = {href} resolves to "
+                    f"{target.relative_to(ROOT).as_posix()}, which does not exist. "
+                    "hreflang is a claim about another address, and this one is "
+                    "dangling"
+                )
+        if "x-default" in alts and "ru" in alts and alts["x-default"] != alts["ru"]:
+            bad.append(
+                f"{rel}: x-default is {alts['x-default']} and ru is {alts['ru']}. "
+                "x-default names the fallback, which is the Russian address"
+            )
+    for b in bad[:8]:
+        errors.append(f"hreflang targets: {b}")
+    if len(bad) > 8:
+        errors.append(f"hreflang targets: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"hreflang targets: {len(pages)} generated page(s) across both "
+            f"languages, every hreflang ru/en/x-default resolving to a file under "
+            f"{SITE_BASE}, x-default equal to the ru target"
+        )
+
+
+check_hreflang_targets_exist()
+
+
+def check_en_is_english():
+    bad = []
+    pages = sorted((ROOT / "en").rglob("*.html")) if (ROOT / "en").is_dir() else []
+    if not pages:
+        errors.append(
+            "en is english: en/ holds no .html, so this run compared no English page "
+            "at all and would pass on an empty set"
+        )
+        return
+    by_slug = {item_slug(item): item for item in catalog}
+    for page in pages:
+        rel = page.relative_to(ROOT).as_posix()
+        text = page.read_text(encoding="utf-8")
+        html = re.search(r'<html lang="([^"]*)"', text)
+        if html is None or html.group(1) != "en":
+            bad.append(
+                f"{rel}: <html lang> is "
+                f"{html.group(1) if html else None!r}, expected 'en'. The language "
+                "of a page comes from its path, and the document element is what a "
+                "crawler and a screen reader read before any script runs"
+            )
+        title = re.search(r"<title[^>]*>(.*?)</title>", text, re.S)
+        if title is None or not title.group(1).strip():
+            bad.append(f"{rel}: no <title>")
+        elif CYRILLIC.search(title.group(1)):
+            bad.append(
+                f"{rel}: <title> is {title.group(1).strip()!r}, which is Russian. An "
+                "English address serving a Russian title is the failure this page "
+                "set exists to prevent"
+            )
+        ogl = re.search(r'<meta property="og:locale" content="([^"]+)"', text)
+        if ogl is None or ogl.group(1) != MIRROR_OG_LOCALE["en"]:
+            bad.append(
+                f"{rel}: og:locale is {ogl.group(1) if ogl else None}, expected "
+                f"{MIRROR_OG_LOCALE['en']}"
+            )
+        nodes = []
+        for block in re.findall(
+            r'<script type="application/ld\+json">(.*?)</script>', text, re.S
+        ):
+            try:
+                parsed = json.loads(block)
+            except json.JSONDecodeError as exc:
+                bad.append(f"{rel}: a JSON-LD block does not parse ({exc})")
+                continue
+            if isinstance(parsed, dict):
+                nodes.extend(parsed.get("@graph", [parsed]))
+        if not nodes:
+            bad.append(f"{rel}: no parsable JSON-LD")
+        declared = 0
+        for node in nodes:
+            if not isinstance(node, dict) or "inLanguage" not in node:
+                continue
+            declared += 1
+            values = node["inLanguage"] if isinstance(node["inLanguage"], list) else [
+                node["inLanguage"]
+            ]
+            if values != ["en"]:
+                bad.append(
+                    f"{rel}: JSON-LD inLanguage is {node['inLanguage']!r}, expected "
+                    "'en' -- this page ships one language"
+                )
+        if nodes and declared == 0:
+            bad.append(
+                f"{rel}: no JSON-LD node declares inLanguage, so a crawler reading "
+                "the structured data alone cannot tell the page's language"
+            )
+        item = (
+            by_slug.get(page.parent.name)
+            if page.parent.parent.name == "films"
+            else None
+        )
+        if item is not None:
+            node = next(
+                (
+                    n
+                    for n in nodes
+                    if isinstance(n, dict)
+                    and n.get("@type") in ("Movie", "TVSeries")
+                ),
+                None,
+            )
+            if node is None:
+                bad.append(f"{rel}: no Movie/TVSeries node in the JSON-LD")
+            elif node.get("name") != item["titleEn"]:
+                bad.append(
+                    f"{rel}: JSON-LD name is {node.get('name')!r}, expected the "
+                    f"record's English titleEn {item['titleEn']!r}. The comparison is "
+                    "against titleEn, never against titleRu: nine records carry "
+                    "titleRu == titleEn and an en page whose name equals the Russian "
+                    "one is correct there"
+                )
+    for b in bad[:8]:
+        errors.append(f"en is english: {b}")
+    if len(bad) > 8:
+        errors.append(f"en is english: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"English pages: {len(pages)} file(s) under en/, each <html lang=\"en\">, "
+            "a Cyrillic-free <title>, og:locale "
+            f"{MIRROR_OG_LOCALE['en']}, JSON-LD declaring inLanguage 'en' and, on "
+            f"every film page, the record's own English title"
+        )
+
+
+check_en_is_english()
+
+
+ADDRESS_RE = re.compile(r"(?:https?://[^\s\"'<>]+|/[^\s\"'<>]*)")
+
+
+def check_404_not_mirrored():
+    bad = []
+    en_home = lang_path("/", "en")
+    if (ROOT / "en" / "404.html").exists():
+        bad.append(
+            "en/404.html exists. The 404 stays Russian by decision, and a mirrored "
+            "copy would be served at one address per miss"
+        )
+    src = ROOT / "404.html"
+    if not src.exists():
+        bad.append("404.html is missing")
+    else:
+        text = src.read_text(encoding="utf-8")
+        addresses = set()
+        for value in re.findall(
+            r'(?:href|src|srcset|content)="([^"]*)"', text
+        ):
+            addresses.update(ADDRESS_RE.findall(value))
+        for address in sorted(addresses):
+            if address.startswith(SITE_BASE + "/"):
+                path = url_path(address)
+            elif "://" in address:
+                continue
+            else:
+                path = address
+            if path is not None and (
+                path.startswith(en_home) or path.rstrip("/") == en_home.rstrip("/")
+            ):
+                bad.append(
+                    f"404.html carries {address}, which is an English address. The "
+                    "404 is not mirrored, so it names a page that is not there -- a "
+                    "link, a srcset candidate or a content URL, none of them resolves"
+                )
+    for b in bad:
+        errors.append(f"404 not mirrored: {b}")
+    if not bad:
+        print(
+            f"404 not mirrored: en/404.html absent and 404.html carries no address "
+            f"under {SITE_BASE}{en_home} in any href, src, srcset or content attribute"
+        )
+
+
+check_404_not_mirrored()
+
+
+def check_sitemap_lists_every_page():
+    bad = []
+    expected = expected_site_urls()
+    wanted = set(expected)
+    file = ROOT / "sitemap.xml"
+    if not file.exists():
+        errors.append("sitemap coverage: sitemap.xml is missing")
+        return
+    try:
+        tree = ElementTree.fromstring(file.read_text(encoding="utf-8"))
+    except ElementTree.ParseError as exc:
+        errors.append(f"sitemap coverage: sitemap.xml does not parse as XML ({exc})")
+        return
+    locs = [u.findtext(f"{SITEMAP_NS}loc") for u in tree.findall(f"{SITEMAP_NS}url")]
+    got = set(locs)
+    missing = sorted(wanted - got)
+    extra = sorted(got - wanted)
+    if missing:
+        bad.append(
+            f"{len(missing)} generated address(es) are absent from sitemap.xml, "
+            f"first {missing[0]}. The sitemap is the only thing that makes a page "
+            "reachable by a crawler, so an address that is not in it is a page that "
+            "does not get indexed"
+        )
+    if extra:
+        bad.append(
+            f"{len(extra)} <loc> value(s) name no generated page, first {extra[0]}. "
+            "Every address in a sitemap must resolve, or a crawler spends its crawl "
+            "budget on a 404"
+        )
+    repeats = sorted({loc for loc in locs if locs.count(loc) > 1})
+    if repeats:
+        bad.append(
+            f"{len(repeats)} <loc> value(s) appear more than once, first "
+            f"{repeats[0]}"
+        )
+    dangling = []
+    for loc in locs:
+        target = site_path_from_url(loc)
+        if target is None:
+            dangling.append(f"{loc} is not under {SITE_BASE}")
+        elif not target.exists():
+            dangling.append(
+                f"{loc} resolves to {target.relative_to(ROOT).as_posix()}, which "
+                "does not exist"
+            )
+    if dangling:
+        bad.append(
+            f"{len(dangling)} <loc> value(s) do not resolve to a file on disk, "
+            f"first {dangling[0]}"
+        )
+    for b in bad[:8]:
+        errors.append(f"sitemap coverage: {b}")
+    if len(bad) > 8:
+        errors.append(f"sitemap coverage: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"Sitemap coverage: {len(locs)} <loc>, every generated address in both "
+            f"languages ({sum(1 for loc in locs if url_path(loc).startswith('/en/'))} "
+            f"under /en/, {sum(1 for loc in locs if not url_path(loc).startswith('/en/'))} "
+            f"under /), each resolving to a file under {SITE_BASE}, none repeated"
+        )
+
+
+check_sitemap_lists_every_page()
+
+
 # 6c. Sitemap / robots.txt / webmanifest: single source in gen_pages.py
 sitemap_xml = gen_pages.generate_sitemap(catalog)
 sitemap_file = ROOT / "sitemap.xml"
@@ -3941,8 +4324,10 @@ if without_lastmod:
     errors.append(
         f"Sitemap: {len(without_lastmod)} urls missing lastmod (first: {without_lastmod[0]})"
     )
-if len(url_entries) != len(catalog) + 3:
-    errors.append(f"Sitemap: expected {len(catalog) + 3} urls, got {len(url_entries)}")
+if len(url_entries) != len(expected_site_urls()):
+    errors.append(
+        f"Sitemap: expected {len(expected_site_urls())} urls, got {len(url_entries)}"
+    )
 print(f"Sitemap lastmod: {len(url_entries) - len(without_lastmod)}/{len(url_entries)} urls")
 
 robots_path = ROOT / "robots.txt"
@@ -4636,16 +5021,6 @@ for fname, txt in (
 
 # 9f. Canonical links: single, parameterless, and equal to the page's own URL
 # (?q=/?fav= filter variants must consolidate onto the clean URL, no duplicate content)
-def _canonical_hrefs(text):
-    return [
-        m.group(1)
-        for tag in re.findall(r"<link\b[^>]*>", text)
-        if re.search(r'\brel\s*=\s*"canonical"', tag)
-        for m in [re.search(r'\bhref\s*=\s*"([^"]+)"', tag)]
-        if m
-    ]
-
-
 def _canonical_check(fname, text, expected):
     hrefs = _canonical_hrefs(text)
     if expected is None:
