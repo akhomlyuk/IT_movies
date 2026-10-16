@@ -1651,11 +1651,6 @@ def test_film_lang(page, base):
     expect(toggle).to_have_attribute("href", "/en/" + FILM_PAGE)
     expect(toggle).to_have_attribute("hreflang", "en")
 
-    # The English copy of the same record. Task 2 dropped these assertions
-    # because /en/ did not exist yet; a link that resolves to nothing is exactly
-    # what they are here to catch, so they are asserted again -- and the two
-    # halves are read from FILM_PAGE itself, so the assertion cannot pass by
-    # comparing the page against another copy of the same wrong value.
     desc_ru = page.evaluate("() => window.FILM_PAGE.item.desc.ru")
     desc_en = page.evaluate("() => window.FILM_PAGE.item.desc.en")
     assert desc_en.strip() and not CYRILLIC.search(desc_en), (

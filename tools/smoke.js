@@ -636,10 +636,6 @@ if (mode === "lang") {
     throw new Error("related rating chips must carry rating-chip so the pill"
       + " styling is shared with the rest of the site, not re-declared per card");
   }
-  // The card's href is language-aware through ONE binding, because the template
-  // is emitted into both trees verbatim: a card on an English page has to link
-  // into /en/films/, and a hard-coded '/films/' would send every reader out of
-  // the mirror on click.
   if (!genRc.includes('relatedHref(r)')) {
     throw new Error("gen_pages.RC_CARD must bind its href to relatedHref(r), not"
       + " to a literal '/films/' path: the same template is emitted into the"
@@ -731,11 +727,6 @@ if (mode === "lang") {
   if (slugs.join(",") !== want.join(",")) {
     throw new Error("film.js must render FILM_PAGE.related verbatim, got " + slugs.join(","));
   }
-  // The related card's href, booted on both path prefixes: the card has to stay
-  // inside the reader's own language tree, or a click on /en/films/x/ lands on
-  // the Russian page. The binding is asserted here on a real setup() call,
-  // because a template string can carry the right binding and still resolve to
-  // the wrong prefix.
   const ruHref = state.relatedHref(relA[0]);
   if (!/^\/films\/[a-z0-9-]+\/$/.test(ruHref)) {
     throw new Error("a related card on a Russian path must link to /films/<slug>/,"

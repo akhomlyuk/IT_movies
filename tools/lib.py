@@ -11,13 +11,6 @@ CYRILLIC = re.compile("[А-Яа-яЁё]")
 
 
 def mirror_path(path):
-    """The other language's address for a root-relative path.
-
-    `/films/x/` <-> `/en/films/x/`, `/` <-> `/en/`. One rule, and js/common.js
-    carries the same one in mirrorPath(); every expected hreflang, canonical and
-    link in this project is built from here rather than from a literal, so the
-    mirror cannot be one file's opinion.
-    """
     if not isinstance(path, str) or not path.startswith("/"):
         raise ValueError(f"mirror_path: {path!r} is not a root-relative path")
     if path == EN_PREFIX or path.startswith(EN_PREFIX + "/"):
@@ -26,6 +19,8 @@ def mirror_path(path):
 
 
 def lang_path(path, lang):
+    if not isinstance(path, str) or not path.startswith("/"):
+        raise ValueError(f"lang_path: {path!r} is not a root-relative path")
     return mirror_path(path) if lang == "en" else path
 
 

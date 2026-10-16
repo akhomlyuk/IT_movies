@@ -9,6 +9,7 @@ import subprocess
 import sys
 import xml.etree.ElementTree as ET
 import unicodedata
+from html import unescape
 from html.parser import HTMLParser
 from xml.etree import ElementTree
 
@@ -316,12 +317,7 @@ else:
     print("  BOUND: every poster is within DISCARDED_AREA_CEILING %s"
           % poster_crop.DISCARDED_AREA_CEILING)
 
-# 4b. Film pages exist and match the current generator (gen_pages.py), in BOTH
-# languages. The English copy is the same generator run with a different `lang`,
-# so it is exactly as derivable as the Russian one and there is no reason for it
-# to be checked by a weaker rule: a stale en/films page is a page serving a
-# description the generator would not emit any more, at an address a crawler is
-# told is the English copy of the record.
+# 4b. Film pages exist and match the current generator (gen_pages.py)
 for item in catalog:
     slug = item_slug(item)
     page = ROOT / "films" / slug / "index.html"
@@ -2766,27 +2762,6 @@ check_related_card_single_source()
 check_related_card_markup()
 
 
-# 6j. The language mirror. Every record has two pages, one per language, at
-# addresses that differ by a path prefix and by nothing else: the slug is shared,
-# the pair is discovered by hreflang, and each page's canonical is its OWN
-# address. Three ways that goes wrong, and none of them is visible from a single
-# page:
-#
-#   * A page that exists in one language only. Crawlers then find one address and
-#     no pair, and the hreflang set is a dangling reference rather than a
-#     duplicate-content signal.
-#   * Russian text surviving on an English address. This is the silent one: the
-#     page renders, the layout holds, and only the search result is wrong. The
-#     whole point of mirroring is that /en/films/x/ says something different
-#     from /films/x/, so Russian there is not a cosmetic slip -- it is the page
-#     doing the thing the mirror exists to stop.
-#   * A structured-data graph that is monolingual in the wrong language, or a
-#     WebSite graph carrying 156 Russian /films/ URLs. JSON-LD is read from the
-#     markup without any rendering, so nothing downstream can correct it.
-#
-# Every expected URL is built from lib.SITE_BASE plus lib.mirror_path(), never
-# from a literal: the mirror rule has one definition in Python and one in
-# js/common.js, and the JS copy is checked by tools/smoke.js.
 MIRROR_ROOTS = (("ru", "films"), ("en", "en/films"))
 MIRROR_HREFLANG = ("ru", "en", "x-default")
 MIRROR_OG_LOCALE = {"ru": "ru_RU", "en": "en_US"}
@@ -2838,7 +2813,6 @@ def graph_strings(node, path=""):
 
 
 def check_mirror_pairs():
-    """Both languages, one slug each, and a non-empty page set on both sides."""
     bad = []
     seen = {}
     for lang, prefix in MIRROR_ROOTS:
@@ -2871,10 +2845,24 @@ def check_mirror_pairs():
                 f"mirror pairs: catalog record {item['titleEn']!r} (slug {slug}) has "
                 f"no page pair"
             )
+    for relative in ("films/x/", "index.html", "", "en/films/x/", None, 7):
+        for lang in ("ru", "en"):
+            try:
+                lang_path(relative, lang)
+            except ValueError:
+                continue
+            errors.append(
+                f"mirror pairs: lib.lang_path({relative!r}, {lang!r}) returned a value"
+                f" for a path that is not root-relative. The rule is one rule for both"
+                f" languages: a path that cannot be mirrored cannot be language-pathed"
+                f" either, and a gate that only checks the branch it happens to take is"
+                f" a gate that passes for a relative link"
+            )
     print(
         f"Mirror pairs: {len(slugs['ru'])} ru / {len(slugs['en'])} en page(s) under "
         f"films/ and en/films/, one shared slug per record; "
-        f"{len(set(slugs['ru']) | set(slugs['en']))} slug(s) in the union"
+        f"{len(set(slugs['ru']) | set(slugs['en']))} slug(s) in the union; "
+        f"lib.lang_path rejects a non-root-relative path for both languages"
     )
 
 
@@ -2882,15 +2870,6 @@ check_mirror_pairs()
 
 
 def check_trailing_slash():
-    """Every film address ends in a slash, in both languages, and canonical is
-    the page's OWN SITE_BASE address.
-
-    `/films/x` and `/films/x/` are two addresses to a crawler, so a link, a
-    canonical and an hreflang that disagree on the slash collapse the pair into
-    a duplicate. The expected URL is reconstructed from the FILE PATH rather
-    than assumed, which is the only reason it can catch a missing slash instead
-    of restating the generator's own default.
-    """
     checked = 0
     for lang, prefix in MIRROR_ROOTS:
         pages = mirror_pages(prefix)
@@ -2923,8 +2902,6 @@ check_trailing_slash()
 
 
 def check_language_head_links():
-    """Three hreflang alternates on every film page, in both languages, and an
-    og:locale that agrees with the text beside it."""
     bad = []
     checked = 0
     for lang, prefix in MIRROR_ROOTS:
@@ -3006,14 +2983,75 @@ def check_language_head_links():
 check_language_head_links()
 
 
-def check_no_cyrillic_in_en_head():
-    """An English address must not ship Russian text in the head.
+def check_og_image_alt():
+    bad = []
+    checked = 0
+    by_slug = {item_slug(item): item for item in catalog}
+    site_image = f"{SITE_BASE}/static/ogimage.webp"
+    for lang, prefix in MIRROR_ROOTS:
+        if not mirror_pages(prefix):
+            bad.append(
+                f"{prefix}/ holds no index.html, so no {lang} og:image was read and "
+                f"this run would pass on an empty set"
+            )
+            continue
+        for page in mirror_pages(prefix):
+            text = page.read_text(encoding="utf-8")
+            image = re.search(r'<meta property="og:image" content="([^"]+)"', text)
+            alt = re.search(r'<meta property="og:image:alt" content="([^"]+)"', text)
+            item = by_slug.get(page.parent.name)
+            if image is None or alt is None or item is None:
+                bad.append(
+                    f"{page.relative_to(ROOT).as_posix()}: og:image"
+                    f"{'' if image else '/og:image:alt'} is missing, so the pair this "
+                    f"check compares cannot be read"
+                )
+                continue
+            poster = (item.get("poster") or "").lstrip("/")
+            if image.group(1) == f"{SITE_BASE}/{poster}":
+                want = item["titleRu"] if lang == "ru" else item["titleEn"]
+            elif image.group(1) == site_image:
+                want = "IT Movies"
+            else:
+                bad.append(
+                    f"{page.relative_to(ROOT).as_posix()}: og:image is "
+                    f"{image.group(1)}, which is neither this record's poster nor "
+                    f"{site_image}, so this check cannot say what its alt text should "
+                    f"describe"
+                )
+                continue
+            if unescape(alt.group(1)) != want:
+                bad.append(
+                    f"{page.relative_to(ROOT).as_posix()}: og:image is {image.group(1)}"
+                    f" and og:image:alt is {alt.group(1)!r}, which describes "
+                    f"{want!r}. The alt text describes the image it labels, not the "
+                    f"page it sits on: a shared site card labelled with a film title "
+                    f"is a caption that is wrong about its own picture"
+                )
+            checked += 1
+    for b in bad[:8]:
+        errors.append(f"og:image:alt: {b}")
+    if len(bad) > 8:
+        errors.append(f"og:image:alt: {len(bad) - 8} more problems")
+    if not bad:
+        poster_pages = sum(
+            1
+            for lang, prefix in MIRROR_ROOTS
+            for page in mirror_pages(prefix)
+            if by_slug.get(page.parent.name, {}).get("poster")
+        )
+        print(
+            f"og:image:alt: {checked} film page(s) in both languages, each alt "
+            f"describing the image beside it -- the record's own title on the "
+            f"{poster_pages} page(s) that carry that poster, and IT Movies on the "
+            f"shared {site_image}"
+        )
 
-    A silent substitution is the worst outcome: the page looks finished, the
-    layout holds, and only what the search engine was told is wrong. The head is
-    where that text lives -- title, description, og:title, og:description are
-    exactly what a crawler reads without rendering anything.
-    """
+
+check_og_image_alt()
+
+
+def check_no_cyrillic_in_en_head():
     bad = []
     pages = sorted((ROOT / "en").rglob("*.html")) if (ROOT / "en").is_dir() else []
     if not pages:
@@ -3052,17 +3090,6 @@ check_no_cyrillic_in_en_head()
 
 
 def check_en_json_ld():
-    """The English page's structured data is monolingual English.
-
-    Two separate claims, and the second is the one a single-page check cannot
-    make. On the page: no Cyrillic anywhere in the graph, and every internal
-    url/@id under /en/ rather than /films/. In the generator: the site-wide
-    WebSite graph, whose ItemList holds one entry per record, must exist in an
-    English form -- English names and /en/films/ URLs -- because the graph that
-    ships with a language parameter is the same graph Task 5 puts on /en/, and a
-    156-entry ItemList of Russian titles under an English address is the exact
-    shape this gate exists to keep off the site.
-    """
     bad = []
     pages = mirror_pages("en/films")
     internal_prefix = SITE_BASE + "/en/"
@@ -3118,23 +3145,56 @@ def check_en_json_ld():
         )
     else:
         entries = itemlist.get("itemListElement", [])
-        wrong = [
-            e.get("url") for e in entries
-            if not str(e.get("url", "")).startswith(SITE_BASE + "/en/films/")
+        wanted = [
+            (
+                i + 1,
+                item["titleEn"],
+                SITE_BASE + lang_path(f"/films/{item_slug(item)}/", "en"),
+            )
+            for i, item in enumerate(catalog)
         ]
-        if wrong:
+        got = [
+            (e.get("position"), e.get("name"), e.get("url")) for e in entries
+        ]
+        if got != wanted:
+            for i, (a, b) in enumerate(zip(got, wanted)):
+                if a != b:
+                    bad.append(
+                        f"index_ld_json(lang='en'): ItemList entry {i} is "
+                        f"position/name/url {a}, expected {b}. The expected url is "
+                        f"built from lib.lang_path, not read back out of the "
+                        f"function under test"
+                    )
+                    break
+            else:
+                bad.append(
+                    f"index_ld_json(lang='en'): ItemList holds {len(got)} entries, "
+                    f"expected {len(wanted)}, and the common prefix matches"
+                )
+        wrong_id = [
+            e.get("@id") for e in entries if e.get("@id") != e.get("url")
+        ]
+        if wrong_id:
             bad.append(
-                f"index_ld_json(lang='en'): {len(wrong)} of {len(entries)} ItemList "
-                f"urls are not under {SITE_BASE}/en/films/, first {wrong[0]}"
+                f"index_ld_json(lang='en'): {len(wrong_id)} ItemList @id value(s) "
+                f"disagree with their own url, first {wrong_id[0]!r}"
             )
-        russian = sorted(
-            {e.get("name") for e in entries if CYRILLIC.search(str(e.get("name", "")))}
-        )
-        if russian:
-            bad.append(
-                f"index_ld_json(lang='en'): {len(russian)} ItemList name(s) are "
-                f"Russian, first {russian[0]!r}"
-            )
+    en_prefix = SITE_BASE + lang_path("/", "en")
+    for node in en_site:
+        for where, value in ((w, v) for w, v in graph_strings(node)):
+            if CYRILLIC.search(value):
+                bad.append(
+                    f"index_ld_json(lang='en'): Cyrillic in {where} ({value[:40]!r})"
+                )
+                break
+            if (
+                where.endswith(".url") or where.endswith(".@id")
+            ) and value.startswith(SITE_BASE) and not value.startswith(en_prefix):
+                bad.append(
+                    f"index_ld_json(lang='en'): {where} = {value} is not under "
+                    f"{en_prefix}"
+                )
+                break
     for b in bad[:8]:
         errors.append(f"en json-ld: {b}")
     if len(bad) > 8:
@@ -3142,10 +3202,10 @@ def check_en_json_ld():
     if not bad:
         print(
             f"English JSON-LD: {len(pages)} film page(s) monolingual (inLanguage "
-            f"'en', no Cyrillic, every internal url/@id under {SITE_BASE}/en/), "
+            f"'en', no Cyrillic, every internal url/@id under {en_prefix}), "
             f"and index_ld_json(lang='en') carries a WebSite in ['en'] plus an "
-            f"ItemList of {len(catalog)} entries, all under {SITE_BASE}/en/films/ "
-            f"with Latin names"
+            f"ItemList of {len(catalog)} entries rebuilt from lib.lang_path, every "
+            f"string Cyrillic-free"
         )
 
 
@@ -3153,16 +3213,6 @@ check_en_json_ld()
 
 
 def check_related_cards_language():
-    """The no-JS related cards on an English page link into /en/films/ and carry
-    the English titles; on the Russian page they link into /films/ and carry the
-    Russian ones.
-
-    Both renderings come from ONE source (gen_pages.RC_CARD), and the no-JS side
-    is resolved from RC_STATIC through the `lang` argument. A page that got the
-    right title and the wrong href -- or the reverse -- is a card that reads
-    correctly in one language and navigates out of the mirror in the other, and
-    that is the shape a language-blind RC_STATIC produces.
-    """
     bad = []
     checked = 0
     for lang, prefix in MIRROR_ROOTS:
@@ -3211,14 +3261,6 @@ check_related_cards_language()
 
 
 def check_en_text_guard():
-    """The generator refuses to emit an English page with empty English text.
-
-    Empty text on an English address is as wrong as Russian text there, and it is
-    the quieter of the two: nothing looks wrong, the description meta is simply
-    empty. So the guard is checked three ways -- that a real record passes it,
-    that a record with an empty field is named by it, and that render() actually
-    raises SystemExit rather than writing the page anyway.
-    """
     guard = getattr(gen_pages, "en_text_error", None)
     if guard is None:
         errors.append(

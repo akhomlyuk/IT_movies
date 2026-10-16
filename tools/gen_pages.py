@@ -49,13 +49,6 @@ def desc_of(item, lang):
 
 
 def en_text_error(item):
-    """Why this record cannot be mirrored, or None when it can.
-
-    Empty English text on an English address is as wrong as Russian text there:
-    the description meta is simply empty and nothing looks broken. The guard is
-    loud and it names the record, because the alternative is an English page
-    that ships with no synopsis and a gate that cannot tell.
-    """
     slug = item_slug(item)
     problems = []
     title_en = item.get("titleEn")
@@ -606,13 +599,7 @@ def generate_robots_txt():
 
 
 def generate_sitemap(catalog):
-    """sitemap.xml with changefreq and priority, Russian addresses only.
-
-    The /en/ copies of the film pages are generated and linked by hreflang, but
-    they are not listed here: this sitemap has never carried a language, and
-    adding one (xhtml:link alternates alongside the /en/ locations) belongs with
-    the step that mirrors the catalog root.
-    """
+    """sitemap.xml with changefreq and priority (no hreflang: language is client-side, no separate EN URLs)."""
     slugs_sorted = sorted(item_slug(item) for item in catalog)
     film_urls = "".join(
         "  <url>\n"
@@ -814,10 +801,9 @@ def rc_render_tag(tag, attrs, values):
 
 def rc_values(r, lang="ru"):
     """The values one no-JS related card binds, keyed by the Vue expression the
-    client binds in the same place. The client resolves the same bindings
-    against I18N[lang] and the current language, so every string here is the one
-    for THIS page's language and every href stays inside the same language tree:
-    a card on an English page links into /en/films/."""
+    client binds in the same place. The page is lang="ru" and static, so a
+    title is the Russian one and a label is the Russian one; the client
+    resolves the same bindings against I18N[lang] and the current language."""
     poster = (r.get("poster") or "").lstrip("/")
     labels = LABELS[lang]
     genres = " / ".join(
@@ -1021,6 +1007,7 @@ def render(item, related, lang="ru"):
 
     og_image = f"{SITE_BASE}/{poster}" if poster else f"{SITE_BASE}/static/ogimage.webp"
     og_dims = poster_dims or webp_size(ROOT / "static" / "ogimage.webp")
+    og_image_alt = title if poster else labels["title"]
 
     preload_poster = ""
     if poster:
@@ -1082,7 +1069,7 @@ def render(item, related, lang="ru"):
             f'  <meta property="og:image:width" content="{og_dims[0]}">\n'
             f'  <meta property="og:image:height" content="{og_dims[1]}">\n'
         )
-    og_image_tags += f'  <meta property="og:image:alt" content="{esc(title)}">\n'
+    og_image_tags += f'  <meta property="og:image:alt" content="{esc(og_image_alt)}">\n'
     alternates = (
         f'  <link rel="alternate" hreflang="ru" href="{ru_url}">\n'
         f'  <link rel="alternate" hreflang="en" href="{en_url}">\n'
