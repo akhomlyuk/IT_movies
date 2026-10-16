@@ -1438,7 +1438,7 @@ def test_en_root_pages(page, base):
     page.goto(base + "en/about.html", wait_until="domcontentloaded")
     expect(page).to_have_title("About the site \u2014 IT Movies")
     expect(page.locator("h1")).to_have_text("About the site")
-    painted = page.evaluate(EN_ROOT_TEXT_JS, ".brand-text > p")
+    painted = page.evaluate(EN_ROOT_TEXT_JS)
     assert not cyr_re.search(painted["text"]), (
         "/en/about.html paints Cyrillic: "
         f"{painted['cyrillic']!r}"
