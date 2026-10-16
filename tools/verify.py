@@ -3579,15 +3579,30 @@ for slug in sorted(slugs):
 print(f"Language/OG coherence: checked ({lang_checked} pages)")
 
 RELATIVE_REF = re.compile(r'''(?:src|href)\s*=\s*["']\.\.?/''')
+_REL_UP = r"""(?:\.\.?/)*"""
+_TOP_DIRS = "|".join(
+    re.escape(p.name)
+    for p in sorted(ROOT.iterdir())
+    if p.is_dir() and not p.name.startswith(".")
+)
+_TOP_FILES = "|".join(
+    re.escape(p.name)
+    for p in sorted(ROOT.iterdir())
+    if p.is_file() and not p.name.startswith(".")
+)
 RELATIVE_ASSET = re.compile(
     r'''(?:src|href|srcset|imagesrcset)\s*=\s*["']'''
-    r'''((?:\.\.?/)*(?:css|js|static|films)/|(?:\.\.?/)*(?:privacy|about|404)\.html)'''
+    r"(" + _REL_UP + r"(?:" + _TOP_DIRS + r")/"
+    r"|" + _REL_UP + r"(?:" + _TOP_FILES + r"))"
 )
+RELATIVE_LINK_FILES = sorted(
+    ROOT.rglob("*.html")
+) + sorted((ROOT / "js").glob("*.js"))
 
 
 def check_no_relative_links():
     bad = []
-    for p in sorted(ROOT.rglob("*.html")):
+    for p in RELATIVE_LINK_FILES:
         rel = p.relative_to(ROOT)
         if any(part.startswith(".") for part in rel.parts):
             continue
@@ -3606,7 +3621,8 @@ for _v in _relative_link_violations:
     errors.append(f"relative internal link: {_v}")
 print(
     "Absolute internal links: checked "
-    f"({len(_relative_link_violations)} violations)"
+    f"({len(RELATIVE_LINK_FILES)} files, "
+    f"{len(_relative_link_violations)} violations)"
 )
 
 if (ROOT / ".nojekyll").exists():
