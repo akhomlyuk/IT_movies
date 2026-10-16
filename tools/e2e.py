@@ -94,7 +94,7 @@ from playwright.sync_api import expect, sync_playwright
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import poster_crop  # noqa: E402
-from lib import FEATURED_BOX_DESKTOP, FEATURED_BOX_MOBILE, POSTER_VARIANT_WIDTHS, ROOT, variant_name, webp_size  # noqa: E402
+from lib import CYRILLIC, FEATURED_BOX_DESKTOP, FEATURED_BOX_MOBILE, POSTER_VARIANT_WIDTHS, ROOT, variant_name, webp_size  # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -104,6 +104,7 @@ FILM_PAGE = "films/tt0133093-the-matrix/index.html"
 FILM_MOBILE_PAGE = "films/tt8488126-the-inventor-out-for-blood-in-silicon-valley/index.html"
 RELATED_COUNT = 6
 I18N_RU_SUBTITLE = "Подборка фильмов и сериалов о компьютерах, технологиях, ИИ и т.д."
+I18N_EN_SUBTITLE = "A curated list of films and series about computers, technology, AI, etc"
 META_DARK = "#14120F"
 META_LIGHT = "#F4F2ED"
 DESKTOP = {"width": 1280, "height": 800}
@@ -1332,15 +1333,180 @@ def test_about_page(page, base):
     )
 
 
+EN_ROOT_TEXT_JS = """(extraSkip) => {
+  const skip = ["noscript", ".alt-title", ".featured-card-alt", ".pre-mount",
+                extraSkip].filter(Boolean).join(", ");
+  const out = [];
+  const walk = (node) => {
+    if (node.nodeType === 3) { out.push(node.nodeValue); return; }
+    if (node.nodeType !== 1) return;
+    if (node.matches(skip) || node.hidden) return;
+    for (const child of node.childNodes) walk(child);
+  };
+  walk(document.body);
+  const text = out.join(" ");
+  const cyr = /[\\u0400-\\u04FF]/.exec(text);
+  return {
+    text,
+    cyrillic: cyr ? text.slice(Math.max(0, cyr.index - 40), cyr.index + 40) : null,
+    lang: document.documentElement.lang,
+    title: document.title,
+  };
+}"""
+
+EN_PREMOUNT_JS = """() => {
+  const one = (sel) => {
+    const el = document.querySelector(sel);
+    return el ? el.textContent.trim() : null;
+  };
+  return {
+    subtitle: one(".brand-text p .pre-mount"),
+    nav: Array.from(
+      document.querySelectorAll("nav.nav:not(.nav--dialog) a .pre-mount")
+    ).map((el) => el.textContent.trim()),
+    channels: Array.from(
+      document.querySelectorAll(".ch-link .pre-mount")
+    ).map((el) => el.textContent.trim()),
+    aria: Array.from(document.querySelectorAll(".ch-link")).map((el) =>
+      el.getAttribute("aria-label")
+    ),
+  };
+}"""
+
+
+EN_LINKS_JS = """() => Array.from(document.querySelectorAll("a[href^='/']"))
+  .filter((a) => !a.classList.contains("lang"))
+  .map((a) => a.getAttribute("href"))"""
+
+
+def assert_links_stay_in_english(page, where):
+    hrefs = page.evaluate(EN_LINKS_JS)
+    assert hrefs, f"{where} has no root-relative links at all, so this asserts nothing"
+    stray = [h for h in hrefs if not h.startswith("/en/")]
+    assert not stray, (
+        f"{where} links out of the English tree: {stray[:4]}. A reader who follows "
+        "one lands on the Russian page and a crawler finds two pages for one title"
+    )
+
+
+def test_en_root_pages(page, base):
+    cyr_re = re.compile(r"[\u0400-\u04FF]")
+
+    page.goto(base + "en/index.html", wait_until="domcontentloaded")
+    expect(page).to_have_title(
+        "Films and series on computers, technology and AI \u2014 IT Movies"
+    )
+    painted = page.evaluate(EN_ROOT_TEXT_JS)
+    assert painted["lang"] == "en", (
+        f"/en/ paints html.lang={painted['lang']!r}"
+    )
+    assert not cyr_re.search(painted["text"]), (
+        f"/en/ paints Cyrillic in the rendered text: {painted['cyrillic']!r}"
+    )
+    expect(page.locator("nav.nav:not(.nav--dialog) a").first).to_contain_text("Movies")
+    expect(page.locator("nav.nav:not(.nav--dialog) a").nth(2)).to_contain_text(
+        "Documentaries"
+    )
+    expect(page.locator(".brand-text p")).to_contain_text(
+        "A curated list of films and series"
+    )
+    expect(page.locator(".ch-link--tg")).to_contain_text("Telegram")
+    expect(page.locator(".ch-link--max")).to_contain_text("MAX")
+    expect(page.locator("a.lang")).to_have_attribute("href", "/index.html")
+    expect(page.locator("a.lang")).to_have_attribute("hreflang", "ru")
+    assert_links_stay_in_english(page, "/en/")
+    expect(page.locator("table tbody tr").first).to_be_visible()
+    expect(page.locator("#movies h2")).to_have_text("Movies")
+    film_href = page.locator("#movies td.title-cell a").first.get_attribute("href")
+    assert film_href.startswith("/en/films/"), (
+        f"a catalog row on /en/ links to {film_href!r}, which leaves the English site"
+    )
+    pre = page.evaluate(EN_PREMOUNT_JS)
+    assert pre["subtitle"] == (
+        "A curated list of films and series about computers, technology, AI, etc"
+    ), f"the pre-mount subtitle on /en/ is {pre['subtitle']!r}"
+    assert pre["nav"] == ["Movies", "Series", "Documentaries"], (
+        f"the pre-mount nav on /en/ is {pre['nav']}"
+    )
+    assert pre["channels"] == ["Telegram", "MAX"], (
+        f"the pre-mount channel labels on /en/ are {pre['channels']}"
+    )
+    assert not any(cyr_re.search(a or "") for a in pre["aria"]), (
+        f"a channel aria-label on /en/ is still Russian: {pre['aria']}"
+    )
+
+    page.goto(base + "en/about.html", wait_until="domcontentloaded")
+    expect(page).to_have_title("About the site \u2014 IT Movies")
+    expect(page.locator("h1")).to_have_text("About the site")
+    painted = page.evaluate(EN_ROOT_TEXT_JS, ".brand-text > p")
+    assert not cyr_re.search(painted["text"]), (
+        "/en/about.html paints Cyrillic: "
+        f"{painted['cyrillic']!r}"
+    )
+    about_lead = page.locator(".about-lead").inner_text().strip()
+    assert not cyr_re.search(about_lead), (
+        f"/en/about.html paints a Cyrillic lead: {about_lead[:80]!r}"
+    )
+    assert page.locator(".about-section").count() == 6, (
+        "the English about page lost a section"
+    )
+    expect(page.locator("a.lang")).to_have_attribute("href", "/about.html")
+    assert_links_stay_in_english(page, "/en/about.html")
+
+    page.goto(base + "en/privacy.html", wait_until="domcontentloaded")
+    expect(page).to_have_title("Privacy Policy \u2014 IT Movies")
+    visible_mains = page.locator("main.privacy:visible")
+    assert visible_mains.count() == 1, (
+        f"/en/privacy.html shows {visible_mains.count()} policy blocks, expected 1:"
+        " the English page carries one language, and the gate that used to hide"
+        " half of it must not be hiding this half"
+    )
+    expect(visible_mains).to_contain_text("Who runs the site")
+    painted = page.evaluate(EN_ROOT_TEXT_JS)
+    assert not cyr_re.search(painted["text"]), (
+        "/en/privacy.html paints Cyrillic: " f"{painted['cyrillic']!r}"
+    )
+    expect(page.locator("a.lang")).to_have_attribute("href", "/privacy.html")
+    assert_links_stay_in_english(page, "/en/privacy.html")
+
+    ctx = page.context.browser.new_context(java_script_enabled=False)
+    try:
+        nojs = ctx.new_page()
+        nojs.goto(base + "en/about.html", wait_until="domcontentloaded")
+        expect(nojs.locator("noscript h1")).to_have_text("About the site")
+        nojs_text = nojs.locator("#app noscript").first.inner_text()
+        assert not cyr_re.search(nojs_text), (
+            f"/en/about.html without JS paints Cyrillic: {nojs_text[:120]!r}"
+        )
+        nojs.goto(base + "en/index.html", wait_until="domcontentloaded")
+        nojs_text = nojs.locator(".no-js-catalog").inner_text()
+        assert not cyr_re.search(nojs_text), (
+            f"/en/index.html without JS paints Cyrillic: {nojs_text[:120]!r}"
+        )
+        expect(nojs.locator(".no-js-catalog h2").first).to_have_text("Movies")
+        nojs_href = nojs.locator(".no-js-catalog li a").first.get_attribute("href")
+        assert nojs_href.startswith("/en/films/"), (
+            f"the no-JS catalog on /en/ links to {nojs_href!r}"
+        )
+        nojs.goto(base + "en/privacy.html", wait_until="domcontentloaded")
+        expect(nojs.locator("main.privacy")).to_be_visible()
+        expect(nojs.locator("main.privacy")).to_contain_text("Who runs the site")
+    finally:
+        ctx.close()
+
+
 def test_main_lang(page, base):
     page.goto(base + "index.html", wait_until="domcontentloaded")
     expect(page).to_have_title(
         "Фильмы и сериалы о компьютерах, технологиях и ИИ — IT Movies"
     )
-    page.locator(".lang").click()
-    expect(page).to_have_title(
-        "Films and series on computers, technology and AI — IT Movies"
+    toggle = page.locator(".lang")
+    assert toggle.evaluate("e => e.tagName") == "A", (
+        "the language toggle is a link to the mirror of the current path; it no"
+        " longer mutates state in place"
     )
+    expect(toggle).to_have_attribute("href", "/en/index.html")
+    expect(toggle).to_have_attribute("hreflang", "en")
 
 
 def report_related_crop(page):
@@ -1583,7 +1749,7 @@ def test_film_theme(page, base):
     expect(bc).to_be_visible()
     expect(bc).to_have_attribute("aria-label", "Главная")
     expect(bc.locator("a")).to_have_count(1)
-    expect(bc.locator("a")).to_have_attribute("href", "../../")
+    expect(bc.locator("a")).to_have_attribute("href", "/")
     expect(bc.locator("a")).to_have_text("Главная")
     # The current crumb carries the record title; Stage 3 owns turning it into
     # a type label (see .superpowers/sdd/.../task-4-report.md).
@@ -1639,15 +1805,64 @@ def test_film_lang(page, base):
     )
     expect(page.locator("h1.film-title")).to_have_text(ru)
     expect(page.locator(".film-alt")).to_have_text(en)
-    page.locator(".lang").click()
+    toggle = page.locator(".lang")
+    assert toggle.evaluate("e => e.tagName") == "A", (
+        "the language toggle is a link to the mirror of the current path; it no"
+        " longer mutates state in place"
+    )
+    expect(toggle).to_have_attribute("href", "/en/" + FILM_PAGE)
+    expect(toggle).to_have_attribute("hreflang", "en")
+
+    desc_ru = page.evaluate("() => window.FILM_PAGE.item.desc")
+    assert desc_ru.strip() and CYRILLIC.search(desc_ru), (
+        f"the Russian page carries only desc.ru, so it must be present and hold"
+        f" Cyrillic: {desc_ru[:120]!r}"
+    )
+    page.goto(base + "en/" + FILM_PAGE, wait_until="domcontentloaded")
     expect(page.locator("html")).to_have_attribute("lang", "en")
+    expect(page.locator(".brand-text p")).to_have_text(I18N_EN_SUBTITLE)
     expect(page.locator("h1.film-title")).to_have_text(en)
-    expect(page.locator(".film-alt")).to_have_text(ru)
+    desc_en = page.evaluate("() => window.FILM_PAGE.item.desc")
+    assert desc_en.strip() and not CYRILLIC.search(desc_en), (
+        f"the English page carries only desc.en, so it must be present and free of"
+        f" Cyrillic: {desc_en[:120]!r}"
+    )
+    assert desc_en != desc_ru, (
+        "desc.ru and desc.en are the two halves of this assertion and must differ"
+    )
+    shown = page.locator("p.film-desc").inner_text().strip()
+    assert shown == desc_en.strip(), (
+        "the English page must show the English synopsis, got "
+        f"{shown[:120]!r} against desc.en {desc_en[:120]!r}"
+    )
+    assert desc_ru.strip() not in shown, (
+        "the English page is showing the Russian synopsis"
+    )
     expect(page.locator("nav.breadcrumb")).to_have_attribute("aria-label", "Home")
-    expect(page).to_have_title(re.compile(rf"^{re.escape(en)}( \(\d{{4}}\))? — "))
+    expect(page.locator("nav.breadcrumb a")).to_have_attribute("href", "/en/")
+    expect(page.locator(".related h2")).to_have_text("Related in the catalog")
+    hrefs = page.locator(".related a.rc").evaluate_all(
+        "els => els.map(el => el.getAttribute('href'))"
+    )
+    assert len(hrefs) == RELATED_COUNT, f"related cards: {hrefs}"
+    wrong = [h for h in hrefs if not h.startswith("/en/films/")]
+    assert not wrong, (
+        "a related card on an English page must stay inside the /en/ tree, "
+        f"got {wrong}"
+    )
     titles = page.locator(".related .rc-title").all_text_contents()
-    bad = [t for t in titles if not (t.strip() and is_latin_script(t))]
-    assert not bad, f"EN related titles must be non-empty Latin script: {bad}"
+    related_titles = page.evaluate(
+        "() => window.FILM_PAGE.related.map(r => r.titleEn)"
+    )
+    assert titles == related_titles, (
+        f"related cards must carry the English titles, got {titles} against "
+        f"{related_titles}"
+    )
+    en_toggle = page.locator(".lang")
+    expect(en_toggle).to_have_attribute("href", "/" + FILM_PAGE)
+    expect(en_toggle).to_have_attribute("hreflang", "ru")
+    page.goto(base + FILM_PAGE, wait_until="domcontentloaded")
+    expect(page.locator("h1.film-title")).to_have_text(ru)
 
 
 def test_film_mobile_layout(page, base):
@@ -1690,8 +1905,8 @@ def test_film_mobile_layout(page, base):
     assert own not in related_slugs, "related must not contain the current film"
     assert len(set(hrefs)) == RELATED_COUNT, f"related cards must be distinct: {hrefs}"
     for href in hrefs:
-        assert re.fullmatch(r"\.\./[a-z0-9-]+/", href), f"bad related href {href!r}"
-        assert href[3:-1] in related_slugs, f"{href} is not in related"
+        assert re.fullmatch(r"/films/[a-z0-9-]+/", href), f"bad related href {href!r}"
+        assert href[7:-1] in related_slugs, f"{href} is not in related"
     titles = page.locator(".related .rc-title").all_text_contents()
     assert all(t.strip() for t in titles), f"every related card needs a title: {titles}"
     infos = page.locator(".related .rc-info").all_text_contents()
@@ -1861,6 +2076,7 @@ def main():
                 test_nojs_cloak,
                 test_about_page,
                 test_main_lang,
+                test_en_root_pages,
                 test_film_theme,
                 test_film_lang,
                 test_film_mobile_layout,

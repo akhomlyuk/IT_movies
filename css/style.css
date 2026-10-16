@@ -738,6 +738,7 @@ svg:not(.heart) {
   white-space: nowrap;
   flex-shrink: 0;
   cursor: pointer;
+  text-decoration: none;
   transition:
     background-color 0.15s ease,
     color 0.15s ease,
@@ -2260,29 +2261,6 @@ html.no-scroll-state.scrolled .scroll-top {
   color: var(--line-strong);
 }
 
-.film-desc-alt-wrap {
-  max-width: var(--measure);
-  margin: 0 0 var(--space-4);
-}
-
-.film-desc-alt-wrap > summary {
-  display: inline-flex;
-  align-items: center;
-  min-height: 24px;
-  margin-bottom: var(--space-2);
-  color: var(--ink-muted);
-  font-size: var(--fs-sm);
-  cursor: pointer;
-  text-decoration: underline;
-  text-decoration-color: var(--line-strong);
-  text-underline-offset: 0.2em;
-}
-
-.film-desc-alt-wrap > summary:hover {
-  color: var(--ink);
-  text-decoration-color: var(--ink);
-}
-
 .film-poster {
   position: relative;
   margin: 0;
@@ -2300,14 +2278,6 @@ html.no-scroll-state.scrolled .scroll-top {
   max-width: var(--measure);
   margin: 0 0 var(--space-4);
   line-height: 1.6;
-}
-
-.film-desc-alt {
-  margin-top: 0;
-  color: var(--ink-muted);
-  font-size: var(--fs-md);
-  padding-left: var(--space-3);
-  border-left: 1px solid var(--accent);
 }
 
 .ratings {

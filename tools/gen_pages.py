@@ -15,18 +15,65 @@ import subprocess
 import sys
 
 from datetime import datetime
+from pathlib import Path
 
-from lib import (ROOT, SITE_BASE, POSTER_VARIANT_WIDTHS, load_catalog, make_slug,
-                  item_slug, ru_genres, has_rating, fmt_rating, variant_name,
-                  webp_size, poster_sizes, hero_poster_widths)
+from lib import (ROOT, SITE_BASE, CYRILLIC, POSTER_VARIANT_WIDTHS, ROOT_URL_PATHS,
+                  load_catalog,
+                  item_slug, js_object_bounds, lang_path, mirror_path,
+                  parse_i18n, parse_inline_i18n, has_rating,
+                  fmt_rating, variant_name, webp_size, poster_sizes,
+                  hero_poster_widths)
 
 sys.stdout.reconfigure(encoding="utf-8")
 
 OUT = ROOT / "films"
+OUT_EN = ROOT / "en" / "films"
 
 catalog = load_catalog()
 
-RU_GENRES = ru_genres()
+I18N = parse_i18n()
+RU_GENRES = I18N["ru"]["genres"]
+EN_GENRES = I18N["en"]["genres"]
+GENRES = {"ru": RU_GENRES, "en": EN_GENRES}
+LABELS = {"ru": I18N["ru"], "en": I18N["en"]}
+OG_LOCALE = {"ru": "ru_RU", "en": "en_US"}
+CATALOG_ITEMLIST_NAME = {
+    "ru": "Фильмы и сериалы о компьютерах, технологиях и искусственном интеллекте",
+    "en": "Films and series about computers, technology and artificial intelligence",
+}
+
+
+def title_of(item, lang):
+    return item["titleRu"] if lang == "ru" else item["titleEn"]
+
+
+def desc_of(item, lang):
+    return (item.get("desc") or {}).get("ru" if lang == "ru" else "en") or ""
+
+
+def en_text_error(item):
+    slug = item_slug(item)
+    problems = []
+    title_en = item.get("titleEn")
+    if not isinstance(title_en, str) or not title_en.strip():
+        problems.append("titleEn is empty")
+    desc_en = (item.get("desc") or {}).get("en")
+    if not isinstance(desc_en, str) or not desc_en.strip():
+        problems.append("desc.en is empty")
+    if not problems:
+        return None
+    return (
+        f"record {slug} ({item.get('titleRu')!r}): an English page is being "
+        f"generated and {' and '.join(problems)}. Fill it in js/data.js -- the "
+        f"English address ships an empty description rather than the Russian "
+        f"one, and an empty one is as wrong as a Russian one"
+    )
+
+
+def require_en_text(item):
+    problem = en_text_error(item)
+    if problem:
+        raise SystemExit(problem)
 
 
 def catalog_git_date():
@@ -196,7 +243,7 @@ def _seo_desc(text):
 
 
 POSTER_SIZES = poster_sizes()
-FILMS_PREFIX = "../../"
+FILMS_PREFIX = "/"
 
 
 def poster_candidates(poster, prefix, single=False, widths=None):
@@ -239,19 +286,21 @@ def poster_srcset_attr(poster, sizes, prefix, single=False):
     return ' srcset="%s" sizes="%s"' % (", ".join(candidates), sizes)
 
 
-def index_ld_json(catalog):
-    base = SITE_BASE + "/"
+def index_ld_json(catalog, lang="ru"):
+    base = SITE_BASE + lang_path("/", lang)
+    home = SITE_BASE + lang_path("/", lang)
     items = []
     for i, item in enumerate(catalog):
-        url = base + "films/" + item_slug(item) + "/"
+        url = SITE_BASE + lang_path(f"/films/{item_slug(item)}/", lang)
         entry = {
             "@type": "TVSeries" if item["type"] == "series" else "Movie",
             "position": i + 1,
-            "name": item["titleRu"],
-            "alternateName": item["titleEn"],
-            "url": url,
-            "@id": url,
+            "name": title_of(item, lang),
         }
+        if lang == "ru":
+            entry["alternateName"] = item["titleEn"]
+        entry["url"] = url
+        entry["@id"] = url
         if item.get("poster"):
             entry["image"] = f"{SITE_BASE}/{item['poster'].lstrip('/')}"
         if item.get("year"):
@@ -263,37 +312,37 @@ def index_ld_json(catalog):
             "@id": base,
             "url": base,
             "name": "IT Movies",
-            "inLanguage": ["ru", "en"],
+            "inLanguage": ["ru", "en"] if lang == "ru" else [lang],
             "potentialAction": {
                 "@type": "SearchAction",
                 "target": {
                     "@type": "EntryPoint",
-                    "urlTemplate": base + "?q={search_term_string}",
+                    "urlTemplate": home + "?q={search_term_string}",
                 },
                 "query-input": "required name=search_term_string",
             },
         },
         {
             "@type": "Organization",
-            "@id": base + "#organization",
+            "@id": home + "#organization",
             "name": "IT Movies",
-            "url": base,
-            "logo": base + "static/logo.webp",
+            "url": home,
+            "logo": SITE_BASE + "/static/logo.webp",
         },
         {
             "@type": "WebPage",
-            "@id": base + "#webpage",
-            "url": base,
+            "@id": home + "#webpage",
+            "url": home,
             "name": "IT Movies",
-            "inLanguage": ["ru", "en"],
-            "isPartOf": {"@id": base},
-            "mainEntity": {"@id": base + "#catalog"},
-            "publisher": {"@id": base + "#organization"},
+            "inLanguage": ["ru", "en"] if lang == "ru" else [lang],
+            "isPartOf": {"@id": home},
+            "mainEntity": {"@id": home + "#catalog"},
+            "publisher": {"@id": home + "#organization"},
         },
         {
             "@type": "ItemList",
-            "@id": base + "#catalog",
-            "name": "Фильмы и сериалы о компьютерах, технологиях и искусственном интеллекте",
+            "@id": home + "#catalog",
+            "name": CATALOG_ITEMLIST_NAME[lang],
             "numberOfItems": len(catalog),
             "itemListElement": items,
         },
@@ -553,53 +602,50 @@ def generate_robots_txt():
 
 
 def generate_sitemap(catalog):
-    """sitemap.xml with changefreq and priority (no hreflang: language is client-side, no separate EN URLs)."""
+    """sitemap.xml with changefreq and priority."""
     slugs_sorted = sorted(item_slug(item) for item in catalog)
-    film_urls = "".join(
-        "  <url>\n"
-        f"    <loc>{SITE_BASE}/films/{slug}/</loc>\n"
-        f"    <lastmod>{CATALOG_DATE}</lastmod>\n"
-        "    <changefreq>monthly</changefreq>\n"
-        "    <priority>0.7</priority>\n"
-        "  </url>\n"
-        for slug in slugs_sorted
-    )
+
+    def entry(url, priority):
+        return (
+            "  <url>\n"
+            f"    <loc>{url}</loc>\n"
+            f"    <lastmod>{CATALOG_DATE}</lastmod>\n"
+            "    <changefreq>monthly</changefreq>\n"
+            f"    <priority>{priority}</priority>\n"
+            "  </url>\n"
+        )
+
+    body = ""
+    for lang in ("ru", "en"):
+        for name, priority in (("index.html", "1.0"), ("privacy.html", "0.3"),
+                               ("about.html", "0.5")):
+            body += entry(
+                SITE_BASE + lang_path(ROOT_URL_PATHS[name], lang), priority
+            )
+        body += "".join(
+            entry(SITE_BASE + lang_path(f"/films/{slug}/", lang), "0.7")
+            for slug in slugs_sorted
+        )
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-        "  <url>\n"
-        f"    <loc>{SITE_BASE}/</loc>\n"
-        f"    <lastmod>{CATALOG_DATE}</lastmod>\n"
-        "    <changefreq>monthly</changefreq>\n"
-        "    <priority>1.0</priority>\n"
-        "  </url>\n"
-        "  <url>\n"
-        f"    <loc>{SITE_BASE}/privacy.html</loc>\n"
-        f"    <lastmod>{CATALOG_DATE}</lastmod>\n"
-        "    <changefreq>monthly</changefreq>\n"
-        "    <priority>0.3</priority>\n"
-        "  </url>\n"
-        "  <url>\n"
-        f"    <loc>{SITE_BASE}/about.html</loc>\n"
-        f"    <lastmod>{CATALOG_DATE}</lastmod>\n"
-        "    <changefreq>monthly</changefreq>\n"
-        "    <priority>0.5</priority>\n"
-        "  </url>\n"
-        + film_urls
+        + body
         + "</urlset>\n"
     )
 
 
-def index_noscript(catalog):
+def index_noscript(catalog, lang="ru"):
     out = []
+    labels = LABELS[lang]
     for t, label in (
-        ("movie", "Фильмы"),
-        ("documentary", "Документальные"),
-        ("series", "Сериалы"),
+        ("movie", labels["movies"]),
+        ("documentary", labels["documentaries"]),
+        ("series", labels["series"]),
     ):
         rows = [i for i in catalog if i["type"] == t]
         lis = "".join(
-            f'          <li><a href="films/{item_slug(i)}/">{esc(i["titleRu"])}</a></li>\n'
+            f'          <li><a href="{lang_path(f"/films/{item_slug(i)}/", lang)}">'
+            f'{esc(title_of(i, lang))}</a></li>\n'
             for i in rows
         )
         out.append(f'        <h2>{label}</h2>\n        <ul>\n{lis}        </ul>\n')
@@ -661,7 +707,7 @@ def inject_last_updated(src):
 # width now, the poster is 160 less 24px of padding and 2px of border = 134, and
 # that is the same number at 375 and at 1920 -- measured across 15 widths, the
 # spread collapsed from 151.5-170.66 to a flat 134.
-RC_CARD = """<a class="rc" :href="'../' + itemSlug(r) + '/'">
+RC_CARD = """<a class="rc" :href="relatedHref(r)">
   <img v-if="relatedPoster(r)" class="rc-poster" :src="relatedPoster(r)" :srcset="relatedPosterSrcset(r)" sizes="134px" alt="" width="134" height="201" loading="lazy" decoding="async">
   <span class="rc-content">
     <span class="rc-title">{{ relatedTitle(r) }}</span>
@@ -753,30 +799,32 @@ def rc_render_tag(tag, attrs, values):
     return f"<{name} " + " ".join(parts) + ">"
 
 
-def rc_values(r):
+def rc_values(r, lang="ru"):
     """The values one no-JS related card binds, keyed by the Vue expression the
-    client binds in the same place. The page is lang="ru" and static, so a
-    title is the Russian one and a label is the Russian one; the client
-    resolves the same bindings against I18N[lang] and the current language."""
+    client binds in the same place. The client resolves the same bindings
+    against I18N[lang] and the current language."""
     poster = (r.get("poster") or "").lstrip("/")
-    genres = " / ".join(sorted(RU_GENRES.get(g, g) for g in r.get("genres", [])))
+    labels = LABELS[lang]
+    genres = " / ".join(
+        sorted(GENRES[lang].get(g, g) for g in r.get("genres", []))
+    )
     values = {
-        "'../' + itemSlug(r) + '/'": f"../{item_slug(r)}/",
+        "relatedHref(r)": lang_path(f"/films/{item_slug(r)}/", lang),
         "relatedPoster(r)": f"{FILMS_PREFIX}{poster}" if poster else "",
         "relatedPosterSrcset(r)": ", ".join(
             poster_candidates(poster, FILMS_PREFIX, single=True,
                               widths=POSTER_VARIANT_WIDTHS)
         ),
-        "relatedTitle(r)": r["titleRu"],
+        "relatedTitle(r)": title_of(r, lang),
         "relatedInfo(r)": " · ".join(
             p for p in (genres, str(r.get("year") or "")) if p
         ),
         "hasRating(r.kpRating)": has_rating(r.get("kpRating")),
         "r.imdbId": bool(r.get("imdbId")),
         "hasRating(r.imdbRating)": has_rating(r.get("imdbRating")),
-        "t.kpShort": "КП",
+        "t.kpShort": labels["kpShort"],
         "formatRating(r.kpRating)": fmt_rating(r.get("kpRating")),
-        "t.imdb": "IMDb",
+        "t.imdb": labels["imdb"],
         "formatRating(r.imdbRating)": fmt_rating(r.get("imdbRating")),
     }
     if set(values) != RC_EXPRESSIONS:
@@ -791,10 +839,10 @@ def rc_values(r):
     return values
 
 
-def rc_card_html(r):
+def rc_card_html(r, lang="ru"):
     """RC_CARD with every binding resolved to its no-JS value and every element "
     "whose v-if is false dropped with its subtree."""
-    values = rc_values(r)
+    values = rc_values(r, lang)
     out = []
     pos = 0
     for m in RC_TAG_RE.finditer(RC_CARD):
@@ -824,10 +872,10 @@ def rc_card_html(r):
     return "".join(out)
 
 
-def rc_cards_html(related):
+def rc_cards_html(related, lang="ru"):
     lis = []
     for r in related:
-        lines = rc_card_html(r).split("\n")
+        lines = rc_card_html(r, lang).split("\n")
         lis.append(
             '        <li>' + lines[0]
             + "".join("\n          " + line for line in lines[1:])
@@ -836,35 +884,45 @@ def rc_cards_html(related):
     return "".join(lis)
 
 
-def render(item, related):
+def render(item, related, lang="ru"):
+    if lang == "en":
+        require_en_text(item)
+    labels = LABELS[lang]
+    other_lang = "ru" if lang == "en" else "en"
     slug = item_slug(item)
-    page_url = f"{SITE_BASE}/films/{slug}/"
-    home_url = f"{SITE_BASE}/"
-    title_ru = item["titleRu"]
-    title_en = item["titleEn"]
-    desc_ru = item["desc"]["ru"]
-    desc_en = item["desc"]["en"]
+    ru_url = SITE_BASE + f"/films/{slug}/"
+    en_url = SITE_BASE + lang_path(f"/films/{slug}/", "en")
+    page_url = ru_url if lang == "ru" else en_url
+    home_url = SITE_BASE + lang_path("/", lang)
+    privacy_url = lang_path("/privacy.html", lang)
+    title = title_of(item, lang)
+    alt_title = title_of(item, other_lang)
+    desc = desc_of(item, lang)
+    seo = seo_desc(desc)
     poster = (item.get("poster") or "").lstrip("/")
     poster_dims = webp_size(ROOT / poster) if poster else None
-    genres_ru = sorted(RU_GENRES.get(g, g) for g in item["genres"])
-    genre_list = ", ".join(genres_ru)
+    genres = sorted(GENRES[lang].get(g, g) for g in item["genres"])
+    genre_list = ", ".join(genres)
 
     schema_type = "TVSeries" if item["type"] == "series" else "Movie"
     og_type = "video.tv_show" if item["type"] == "series" else "video.movie"
     graph = []
     movie = {
         "@type": schema_type,
-        "name": title_ru,
-        "alternateName": title_en,
+        "name": title,
+    }
+    if lang == "ru":
+        movie["alternateName"] = alt_title
+    movie.update({
         "url": page_url,
         "@id": page_url,
-        "inLanguage": "ru",
-        "description": desc_ru,
+        "inLanguage": lang,
+        "description": desc,
         "datePublished": str(item["year"]),
         "dateModified": CATALOG_DATE,
-        "genre": genres_ru,
+        "genre": genres,
         "sameAs": [],
-    }
+    })
     if item.get("imdbId"):
         movie["sameAs"].append(f"https://www.imdb.com/title/{item['imdbId']}/")
     movie["sameAs"].append(f"https://www.kinopoisk.ru/film/{item['kpId']}/")
@@ -890,7 +948,7 @@ def render(item, related):
         "@id": page_url + "#breadcrumb",
         "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "IT Movies", "item": home_url},
-            {"@type": "ListItem", "position": 2, "name": title_ru, "item": page_url},
+            {"@type": "ListItem", "position": 2, "name": title, "item": page_url},
         ],
     })
 
@@ -898,14 +956,14 @@ def render(item, related):
         graph.append({
             "@type": "ItemList",
             "@id": page_url + "#related",
-            "name": "Похожее в каталоге IT Movies",
+            "name": f'{labels["relatedH"]} IT Movies',
             "numberOfItems": len(related),
             "itemListElement": [
                 {
                     "@type": "ListItem",
                     "position": i + 1,
-                    "name": r["titleRu"],
-                    "url": f"{SITE_BASE}/films/{item_slug(r)}/",
+                    "name": title_of(r, lang),
+                    "url": SITE_BASE + lang_path(f"/films/{item_slug(r)}/", lang),
                 }
                 for i, r in enumerate(related)
             ],
@@ -931,7 +989,11 @@ def render(item, related):
     )
     page_data = json.dumps(
         {
-            "item": {**item, "descSeo": {"ru": seo_desc(desc_ru), "en": seo_desc(desc_en)}},
+            "item": {
+                **item,
+                "desc": desc,
+                "descSeo": seo,
+            },
             "related": [{k: r[k] for k in SLIM_KEYS if k in r} for r in related],
             "posterW": poster_dims[0] if poster_dims else None,
             "posterH": poster_dims[1] if poster_dims else None,
@@ -940,7 +1002,9 @@ def render(item, related):
         separators=(",", ":"),
     ).replace("<", "\\u003c")
 
-    poster_abs = f"{SITE_BASE}/{poster}" if poster else f"{SITE_BASE}/static/ogimage.webp"
+    og_image = f"{SITE_BASE}/{poster}" if poster else f"{SITE_BASE}/static/ogimage.webp"
+    og_dims = poster_dims or webp_size(ROOT / "static" / "ogimage.webp")
+    og_image_alt = title if poster else labels["title"]
 
     preload_poster = ""
     if poster:
@@ -953,12 +1017,12 @@ def render(item, related):
                     f' imagesizes="{POSTER_SIZES}"'
                 )
         preload_poster = (
-            f'  <link rel="preload" as="image" href="../../{poster}"'
+            f'  <link rel="preload" as="image" href="/{poster}"'
             f'{preload_attrs} fetchpriority="high">\n'
         )
 
     fav_badge = (
-        '\n            <span class="film-badge">Выбор автора</span>'
+        f'\n            <span class="film-badge">{esc(labels["authorPick"])}</span>'
         if item.get("fav")
         else ""
     )
@@ -966,8 +1030,8 @@ def render(item, related):
     # The client hides the alt line when the two titles are identical; the no-JS
     # card must agree, or 9 documentaries print their title twice.
     noscript_alt = (
-        f'            <p class="film-alt">{esc(title_en)}</p>\n'
-        if title_en and title_en != title_ru
+        f'            <p class="film-alt">{esc(alt_title)}</p>\n'
+        if alt_title and alt_title != title
         else ""
     )
 
@@ -977,62 +1041,74 @@ def render(item, related):
         srcset_attr = poster_srcset_attr(poster, POSTER_SIZES, FILMS_PREFIX)
         noscript_poster = (
             f'      <figure class="film-poster">\n'
-            f'        <img src="../../{poster}"{srcset_attr} alt="{esc(title_ru)}"{dims} decoding="async">'
+            f'        <img src="/{poster}"{srcset_attr} alt="{esc(title)}"{dims} decoding="async">'
             f'{fav_badge}\n'
             "      </figure>\n"
         )
 
-    related_items = rc_cards_html(related)
+    related_items = rc_cards_html(related, lang)
     rc_card_js = json.dumps(RC_CARD, ensure_ascii=False).replace("<", "\\u003c")
 
     rat_tiles = (
         f'        <div class="ratings">\n'
-        f'          <a class="kp rating-chip rating-chip--kp" href="https://www.kinopoisk.ru/film/{item["kpId"]}/" target="_blank" rel="noopener noreferrer">Кинопоиск: {esc(fmt_rating(item.get("kpRating")))}{esc(star(item.get("kpRating")))}</a>\n'
+        f'          <a class="kp rating-chip rating-chip--kp" href="https://www.kinopoisk.ru/film/{item["kpId"]}/" target="_blank" rel="noopener noreferrer">{esc(labels["kp"])}: {esc(fmt_rating(item.get("kpRating")))}{esc(star(item.get("kpRating")))}</a>\n'
     )
     if item.get("imdbId"):
         rat_tiles += (
-            f'          <a class="imdb rating-chip rating-chip--imdb" href="https://www.imdb.com/title/{item["imdbId"]}/" target="_blank" rel="noopener noreferrer">IMDb: {esc(fmt_rating(item.get("imdbRating")))}{esc(star(item.get("imdbRating")))}</a>\n'
+            f'          <a class="imdb rating-chip rating-chip--imdb" href="https://www.imdb.com/title/{item["imdbId"]}/" target="_blank" rel="noopener noreferrer">{esc(labels["imdb"])}: {esc(fmt_rating(item.get("imdbRating")))}{esc(star(item.get("imdbRating")))}</a>\n'
         )
     rat_tiles += "        </div>\n"
 
+    og_image_tags = f'  <meta property="og:image" content="{og_image}">\n'
+    if og_dims:
+        og_image_tags += (
+            f'  <meta property="og:image:width" content="{og_dims[0]}">\n'
+            f'  <meta property="og:image:height" content="{og_dims[1]}">\n'
+        )
+    og_image_tags += f'  <meta property="og:image:alt" content="{esc(og_image_alt)}">\n'
+    alternates = (
+        f'  <link rel="alternate" hreflang="ru" href="{ru_url}">\n'
+        f'  <link rel="alternate" hreflang="en" href="{en_url}">\n'
+        f'  <link rel="alternate" hreflang="x-default" href="{ru_url}">\n'
+    )
+
     return f"""<!DOCTYPE html>
-<html lang="ru">
+<html lang="{lang}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{esc(title_ru)} ({item["year"]}) — IT Movies</title>
-  <meta name="description" content="{esc(seo_desc(desc_ru))}">
-  <meta property="og:title" content="{esc(title_ru)} ({item["year"]}) — IT Movies">
-  <meta property="og:description" content="{esc(seo_desc(desc_ru))}">
+  <title>{esc(title)} ({item["year"]}) — IT Movies</title>
+  <meta name="description" content="{esc(seo)}">
+  <meta property="og:title" content="{esc(title)} ({item["year"]}) — IT Movies">
+  <meta property="og:description" content="{esc(seo)}">
   <meta property="og:type" content="{og_type}">
-  <meta property="og:locale" content="ru_RU">
-  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:locale" content="{OG_LOCALE[lang]}">
+  <meta property="og:locale:alternate" content="{OG_LOCALE["ru" if lang == "en" else "en"]}">
   <meta property="og:url" content="{page_url}">
   <meta property="og:site_name" content="IT Movies">
-  <meta property="og:image" content="{poster_abs}">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="{poster_abs}">
+{og_image_tags}  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{og_image}">
   <link rel="canonical" href="{page_url}">
-  <meta name="color-scheme" content="light dark">
+{alternates}  <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#F4F2ED">
   <meta name="theme-color" content="#14120F" media="(prefers-color-scheme: dark)">
 {preload_poster}{THEME_SCRIPT}
-  <link rel="manifest" href="../../static/site.webmanifest">
-  <link rel="icon" href="../../static/favicons/favicon.ico" sizes="48x48">
-  <link rel="icon" type="image/png" sizes="16x16" href="../../static/favicons/favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="../../static/favicons/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="48x48" href="../../static/favicons/favicon-48x48.png">
-  <link rel="icon" type="image/png" sizes="64x64" href="../../static/favicons/favicon-64x64.png">
-  <link rel="icon" type="image/png" sizes="128x128" href="../../static/favicons/favicon-128x128.png">
-  <link rel="icon" type="image/png" sizes="256x256" href="../../static/favicons/favicon-256x256.png">
-  <link rel="apple-touch-icon" sizes="57x57" href="../../static/favicons/apple-touch-icon-57x57.png">
-  <link rel="apple-touch-icon" sizes="114x114" href="../../static/favicons/apple-touch-icon-114x114.png">
-  <link rel="apple-touch-icon" sizes="120x120" href="../../static/favicons/apple-touch-icon-120x120.png">
-  <link rel="apple-touch-icon" href="../../static/favicons/apple-touch-icon.png">
+  <link rel="manifest" href="/static/site.webmanifest">
+  <link rel="icon" href="/static/favicons/favicon.ico" sizes="48x48">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/favicons/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="/static/favicons/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="/static/favicons/favicon-64x64.png">
+  <link rel="icon" type="image/png" sizes="128x128" href="/static/favicons/favicon-128x128.png">
+  <link rel="icon" type="image/png" sizes="256x256" href="/static/favicons/favicon-256x256.png">
+  <link rel="apple-touch-icon" sizes="57x57" href="/static/favicons/apple-touch-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/static/favicons/apple-touch-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/static/favicons/apple-touch-icon-120x120.png">
+  <link rel="apple-touch-icon" href="/static/favicons/apple-touch-icon.png">
   <meta name="msapplication-TileColor" content="#F4F2ED">
-  <link rel="stylesheet" href="../../css/style.css">
-  <link rel="preload" href="../../static/fonts/ubuntu-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="../../static/fonts/ubuntu-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preload" href="/static/fonts/ubuntu-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/static/fonts/ubuntu-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <script type="application/ld+json">{json_ld}</script>
 </head>
 <body>
@@ -1041,45 +1117,41 @@ def render(item, related):
       <header class="top">
         <div class="brand">
           <div class="logo">
-            <a href="../../"><img src="../../static/logo.webp" alt="IT Movies" width="100" height="100"></a>
+            <a href="{lang_path('/', lang)}"><img src="/static/logo.webp" alt="IT Movies" width="100" height="100"></a>
           </div>
           <div class="brand-text">
             <div class="brand-name">IT Movies</div>
-            <p>Подборка фильмов и сериалов о компьютерах, технологиях, ИИ и т.д.</p>
+            <p>{esc(labels["subtitle"])}</p>
           </div>
         </div>
       </header>
       <main>
-        <nav class="breadcrumb" aria-label="Главная">
-          <a href="../../">Главная</a><span class="bc-sep"> › </span><span class="bc-current"><span class="bc-type">{esc(title_ru)}</span></span>
+        <nav class="breadcrumb" aria-label="{esc(labels["home"])}">
+          <a href="{lang_path('/', lang)}">{esc(labels["home"])}</a><span class="bc-sep"> › </span><span class="bc-current"><span class="bc-type">{esc(title)}</span></span>
         </nav>
         <article class="film-main">
 {noscript_poster}          <div class="film-info">
-            <h1 class="film-title">{esc(title_ru)}</h1>
+            <h1 class="film-title">{esc(title)}</h1>
 {noscript_alt}            <div class="film-meta">
               <span class="film-meta-item">{esc(str(item["year"]))}</span>
               <span class="film-meta-item">{esc(genre_list)}</span>
             </div>
-{rat_tiles}            <p class="film-desc">{esc(desc_ru)}</p>
-            <details class="film-desc-alt-wrap">
-              <summary>Описание на английском</summary>
-              <p class="film-desc film-desc-alt">{esc(desc_en)}</p>
-            </details>
+{rat_tiles}            <p class="film-desc">{esc(desc)}</p>
           </div>
         </article>
         <section class="related">
-          <h2>Похожее в каталоге</h2>
+          <h2>{esc(labels["relatedH"])}</h2>
           <ul>
 {related_items}          </ul>
         </section>
-        <p class="back-catalog"><a href="../../">← Вернуться на главную</a></p>
+        <p class="back-catalog"><a href="{lang_path('/', lang)}">← {esc(labels["backToCatalog"])}</a></p>
       </main>
       <footer>
         <div class="footer-line">
-          <span>Сделано с</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
+          <span>{esc(labels["codedWith"])}</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
         </div>
         <div class="footer-line">
-          <a class="footer-privacy" href="../../privacy.html">Политика конфиденциальности</a>
+          <a class="footer-privacy" href="{privacy_url}">{esc(labels["privacy"])}</a>
         </div>
       </footer>
     </noscript>
@@ -1087,15 +1159,441 @@ def render(item, related):
 
   <script>window.FILM_PAGE = {page_data};</script>
   <script>window.FILM_RC_CARD = {rc_card_js};</script>
-  <script src="../../js/vue.global.prod.js" defer></script>
-  <script src="../../js/i18n.min.js" defer></script>
-  <script src="../../js/common.min.js" defer></script>
-  <script src="../../js/rail_math.js" defer></script>
-  <script src="../../js/film.min.js" defer></script>
+  <script src="/js/vue.global.prod.js" defer></script>
+  <script src="/js/i18n.min.js" defer></script>
+  <script src="/js/common.min.js" defer></script>
+  <script src="/js/rail_math.js" defer></script>
+  <script src="/js/film.min.js" defer></script>
 {METRIKA_SCRIPT}
 </body>
 </html>
 """
+
+
+EN_ROOT_PAGES = ("index.html", "about.html", "privacy.html")
+RU_ROOT_PATH = {
+    "index.html": "/",
+    "about.html": "/about.html",
+    "privacy.html": "/privacy.html",
+}
+REGION_RE = re.compile(r"<!--\s*(begin|end):(ru|en):([a-z0-9-]+)\s*-->")
+EN_TEMPLATE_RE = re.compile(
+    r'<template id="en:([a-z0-9-]+)"[^>]*>(.*?)</template>', re.S
+)
+EN_ATTR_PAGES = ("index.html", "privacy.html")
+PAGE_LINK_RE = re.compile(r'\b(href|src)="(/[^"#?]*)"')
+LD_SCRIPT_RE = re.compile(
+    r'(<script type="application/ld\+json">)(.*?)(</script>)', re.S
+)
+
+
+def page_strings(name, lang="en"):
+    if name == "privacy.html":
+        table = parse_inline_i18n(ROOT / "privacy.html")[lang]
+        channels = table
+        title, desc = table["title"], table["desc"]
+    else:
+        labels = LABELS[lang]
+        channels = labels
+        if name == "index.html":
+            title, desc = labels["titleFull"], labels["descSeo"]
+        elif name == "about.html":
+            title, desc = labels["about"]["title"], labels["about"]["desc"]
+        else:
+            raise SystemExit(f"page_strings: unknown root page {name!r}")
+    return {
+        "title": title,
+        "desc": desc,
+        "telegramChannel": channels["telegramChannel"],
+        "maxChannel": channels["maxChannel"],
+    }
+
+
+def en_page_strings(name):
+    return page_strings(name, "en")
+
+
+def en_attr_rules(name, lang="en"):
+    if name not in EN_ATTR_PAGES:
+        return []
+    strings = page_strings(name, lang)
+    ru = page_strings(name, "ru" if lang == "en" else "en")
+    other = "ru" if lang == "en" else "en"
+    rules = [
+        (
+            'aria-label="%s"' % ru["telegramChannel"],
+            'aria-label="%s"' % strings["telegramChannel"],
+        ),
+        (
+            'aria-label="%s"' % ru["maxChannel"],
+            'aria-label="%s"' % strings["maxChannel"],
+        ),
+    ]
+    if name == "privacy.html":
+        mirror = lang_path(RU_ROOT_PATH[name], "en")
+        rules.append(
+            (
+                '<a class="lang" href="%s" hreflang="en"' % mirror,
+                '<a class="lang" href="%s" hreflang="%s"' % (mirror, other),
+            )
+        )
+    return rules
+
+
+def nested_region_error(page, outer, inner):
+    return SystemExit(
+        f"{page}: {inner} is nested inside {outer}. Marked blocks are a flat list"
+        " of siblings here: every block is one element or one run of text, so a"
+        " block inside a block has no meaning, and the selection below keeps one"
+        " flag for depth. Rather than guess which copy the author meant, this"
+        " stops the build"
+    )
+
+
+def check_regions(src, lang, page):
+    inventory = {}
+    stack = []
+    for kind, rlang, name in REGION_RE.findall(src):
+        inventory.setdefault(name, set()).add(rlang)
+        if kind == "begin":
+            if stack:
+                raise nested_region_error(
+                    page,
+                    f"begin:{stack[-1][0]}:{stack[-1][1]}",
+                    f"begin:{rlang}:{name}",
+                )
+            stack.append((rlang, name))
+            continue
+        if not stack:
+            raise SystemExit(f"{page}: end:{rlang}:{name} closes no open region")
+        opened = stack.pop()
+        if opened != (rlang, name):
+            raise SystemExit(
+                f"{page}: end:{rlang}:{name} closes begin:{opened[0]}:{opened[1]}"
+            )
+    if stack:
+        raise SystemExit(f"{page}: marked region {stack[-1][1]!r} is never closed")
+    depth = 0
+    for tag in re.finditer(r"<template\b[^>]*>|</template>", src):
+        if tag.group(0).startswith("</"):
+            depth -= 1
+            continue
+        if depth:
+            name = re.search(r'id="en:([^"]+)"', tag.group(0))
+            raise nested_region_error(
+                page, "another <template>", f'<template id="en:{name.group(1) if name else "?"}">'
+            )
+        depth += 1
+    templates = {name for name, _ in EN_TEMPLATE_RE.findall(src)}
+    problems = []
+    for name, langs in sorted(inventory.items()):
+        if "ru" not in langs:
+            problems.append(f"{name!r} is marked as {sorted(langs)}")
+        if name not in templates:
+            problems.append(f"{name!r} has no <template id=\"en:{name}\"> copy")
+    for name in sorted(templates - set(inventory)):
+        problems.append(
+            f'{name!r} has an English copy but no Russian block to pair it with'
+        )
+    if problems:
+        raise SystemExit(
+            f"{page}: " + "; ".join(problems) + ". Every block this page shows"
+            " needs both copies in the source -- one build writes both languages"
+            " from this file, so a block with no copy for one of them is a hole in"
+            " one of the two pages, and a silently dropped block is a hole rather"
+            " than a build failure"
+        )
+
+
+def select_regions(src, lang, page):
+    kept = []
+    pos = 0
+    dropping = False
+    depth = 0
+    opened = []
+    for m in REGION_RE.finditer(src):
+        if not dropping:
+            kept.append(src[pos: m.start()])
+        if m.group(1) == "begin":
+            if depth:
+                raise nested_region_error(
+                    page,
+                    f"begin:{opened[-1][0]}:{opened[-1][1]}",
+                    f"begin:{m.group(2)}:{m.group(3)}",
+                )
+            depth += 1
+            opened.append((m.group(2), m.group(3)))
+            dropping = m.group(2) != lang
+            if not dropping:
+                kept.append(m.group(0))
+        else:
+            depth -= 1
+            opened.pop()
+            if not dropping:
+                kept.append(m.group(0))
+            dropping = False
+        pos = m.end()
+    kept.append(src[pos:])
+    out = "".join(kept)
+    if lang == "ru":
+        return out
+    return EN_TEMPLATE_RE.sub(lambda m: m.group(2), out)
+
+
+def sub_once(text, pattern, repl, page, what):
+    out, n = re.subn(pattern, lambda _m: repl, text, count=1, flags=re.S)
+    if n != 1:
+        raise SystemExit(
+            f"{page}: found {n} occurrence(s) of {what}, expected exactly one. The"
+            " transform rewrites the head by rule, and a tag it cannot find is a"
+            " tag the page would ship in the other language"
+        )
+    return out
+
+
+def replace_marked_block(text, mark, body, page):
+    n = text.count(mark[0]) + text.count(mark[1])
+    if n != 2:
+        raise SystemExit(
+            f"{page}: {mark[0]} markers ({n}/2) not found, so the block this page"
+            " owns cannot be rebuilt in the page's own language"
+        )
+    return re.sub(
+        re.escape(mark[0]) + r".*?" + re.escape(mark[1]),
+        lambda _m: mark[0] + "\n" + body + mark[1],
+        text,
+        count=1,
+        flags=re.S,
+    )
+
+
+def map_json_strings(node, mapping, lang):
+    if isinstance(node, dict):
+        return {
+            k: (
+                [lang]
+                if k == "inLanguage" and isinstance(v, list)
+                else map_json_strings(v, mapping, lang)
+            )
+            for k, v in node.items()
+        }
+    if isinstance(node, list):
+        return [map_json_strings(v, mapping, lang) for v in node]
+    if isinstance(node, str):
+        return mapping.get(node, node)
+    return node
+
+
+def keep_inline_i18n(text, page, lang):
+    pos = text.find("var I18N = ")
+    if pos == -1:
+        raise SystemExit(f"{page}: no inline i18n table to reduce to one language")
+    brace = text.find("{", pos)
+    if brace == -1:
+        raise SystemExit(f"{page}: inline i18n table has no object literal")
+    table, end = js_object_bounds(text, brace)
+    if lang not in table:
+        raise SystemExit(
+            f"{page}: its inline i18n table has no {lang!r} half, so the page"
+            " would ship with no strings of its own at all"
+        )
+    return (
+        text[:brace]
+        + json.dumps({lang: table[lang]}, ensure_ascii=False)
+        + text[end:]
+    )
+
+
+def mirror_href(value, lang):
+    if value in RU_ROOT_PATH.values() or value.startswith("/films/"):
+        return lang_path(value, lang)
+    if value == "/en" or value.startswith("/en/"):
+        return mirror_path(value)
+    return value
+
+
+LANG_GATE_RE = re.compile(
+    r'\n *document\.querySelectorAll\("\[data-lang-block\]"\)\.forEach\(function \(el\)'
+    r' \{\n *el\.hidden = el\.getAttribute\("data-lang-block"\) !== lang;\n *\}\);'
+)
+
+
+def drop_language_gate(text, page, lang):
+    block = ' data-lang-block="%s"' % lang
+    if block not in text:
+        raise SystemExit(
+            f"{page}: the kept {lang} block carries no data-lang-block attribute, so"
+            " there is nothing of the language gate left to remove"
+        )
+    out, n = LANG_GATE_RE.subn("", text, count=1)
+    if n != 1:
+        raise SystemExit(
+            f"{page}: found {n} language-gate statements, expected exactly one. This"
+            " page carries one language, so the show/hide loop has nothing to do and"
+            " the attribute it reads must not survive in the markup"
+        )
+    return out.replace(block, "", 1)
+
+
+def page_json_ld(text, page, strings, other_strings, ru_url, url, lang):
+    m = LD_SCRIPT_RE.search(text)
+    if m is None:
+        raise SystemExit(f"{page}: no JSON-LD block to translate")
+    payload = json.loads(m.group(2))
+    mapping = {
+        other_strings["title"]: strings["title"],
+        other_strings["desc"]: strings["desc"],
+        ru_url: url,
+        SITE_BASE + "/": SITE_BASE + lang_path("/", lang),
+    }
+    payload = map_json_strings(payload, mapping, lang)
+    return (
+        text[: m.start(2)]
+        + json.dumps(payload, ensure_ascii=False)
+        + text[m.end(2):]
+    )
+
+
+def en_root_page(path, src=None, lang="en"):
+    path = Path(path)
+    page = path.name
+    if page not in RU_ROOT_PATH:
+        raise SystemExit(f"{page}: not one of the mirrored root pages")
+    if src is None:
+        src = path.read_text(encoding="utf-8")
+    other_lang = "ru" if lang == "en" else "en"
+    strings = page_strings(page, lang)
+    other_strings = page_strings(page, other_lang)
+    ru_url = SITE_BASE + RU_ROOT_PATH[page]
+    url = SITE_BASE + lang_path(RU_ROOT_PATH[page], lang)
+    other_url = SITE_BASE + lang_path(RU_ROOT_PATH[page], other_lang)
+
+    check_regions(src, lang, page)
+    out = select_regions(src, lang, page)
+
+    for old, new in en_attr_rules(page, lang):
+        if old not in out:
+            raise SystemExit(
+                f"{page}: the attribute rule {old!r} matched nothing, so the string"
+                " it translates has either left the page or is already in this"
+                " language. A rule that matches nothing is a rule that has stopped"
+                " being read"
+            )
+        out = out.replace(old, new)
+
+    out = PAGE_LINK_RE.sub(
+        lambda m: '%s="%s"' % (m.group(1), mirror_href(m.group(2), lang)), out
+    )
+
+    if page == "index.html":
+        out = replace_marked_block(
+            out, NSCRIPT_MARK, index_noscript(catalog, lang), page
+        )
+        out = replace_marked_block(
+            out,
+            LD_MARK,
+            '\n  <script type="application/ld+json">'
+            + index_ld_json(catalog, lang)
+            + "</script>\n",
+            page,
+        )
+    else:
+        out = page_json_ld(out, page, strings, other_strings, ru_url, url, lang)
+
+    if page == "privacy.html":
+        out = keep_inline_i18n(out, page, lang)
+        out = drop_language_gate(out, page, lang)
+        if "data-lang-block" in out:
+            raise SystemExit(
+                f"{page}: still carries a data-lang-block attribute after the gate"
+                " was removed, so a reader without JavaScript could be shown a block"
+                " the page does not speak"
+            )
+
+    out = sub_once(
+        out,
+        r'<html lang="[a-z]{2}">',
+        '<html lang="%s">' % lang,
+        page,
+        "<html lang>",
+    )
+    out = sub_once(
+        out,
+        r"<title[^>]*>.*?</title>",
+        "<title>%s</title>" % esc(strings["title"]),
+        page,
+        "<title>",
+    )
+    out = sub_once(
+        out,
+        r'<meta name="description"[^>]*>',
+        '<meta name="description" content="%s">' % esc(strings["desc"]),
+        page,
+        '<meta name="description">',
+    )
+    out = sub_once(
+        out,
+        r'<meta property="og:title" content="[^"]*">',
+        '<meta property="og:title" content="%s">' % esc(strings["title"]),
+        page,
+        '<meta property="og:title">',
+    )
+    out = sub_once(
+        out,
+        r'<meta property="og:description" content="[^"]*">',
+        '<meta property="og:description" content="%s">' % esc(strings["desc"]),
+        page,
+        '<meta property="og:description">',
+    )
+    out = sub_once(
+        out,
+        r'<meta property="og:locale:alternate" content="[^"]*">',
+        '<meta property="og:locale:alternate" content="%s">'
+        % OG_LOCALE[other_lang],
+        page,
+        '<meta property="og:locale:alternate">',
+    )
+    out = sub_once(
+        out,
+        r'<meta property="og:locale" content="[^"]*">',
+        '<meta property="og:locale" content="%s">' % OG_LOCALE[lang],
+        page,
+        '<meta property="og:locale">',
+    )
+    out = sub_once(
+        out,
+        r'<meta property="og:url" content="[^"]*">',
+        '<meta property="og:url" content="%s">' % url,
+        page,
+        '<meta property="og:url">',
+    )
+    canonical = (
+        '<link rel="canonical" href="%s">\n'
+        '  <link rel="alternate" hreflang="%s" href="%s">\n'
+        '  <link rel="alternate" hreflang="%s" href="%s">\n'
+        '  <link rel="alternate" hreflang="x-default" href="%s">'
+    ) % (url, lang, url, other_lang, other_url, other_url)
+    out = sub_once(
+        out,
+        r'<link rel="canonical" href="[^"]*">(?:\s*<link rel="alternate"[^>]*>)*',
+        canonical,
+        page,
+        '<link rel="canonical">',
+    )
+
+    leftovers = [
+        (n, line.strip())
+        for n, line in enumerate(out.splitlines(), 1)
+        if CYRILLIC.search(line)
+    ]
+    if leftovers:
+        raise SystemExit(
+            f"{page}: the {lang} page still holds {len(leftovers)} line(s) of"
+            f" Cyrillic, first at line {leftovers[0][0]}: {leftovers[0][1][:110]!r}."
+            " This page is served at an English address, so whatever is left in the"
+            " other language is a string the transform did not own"
+        )
+    return out
 
 def main():
     derived = [
@@ -1139,20 +1637,28 @@ def main():
 
     written = 0
     for item in catalog:
+        require_en_text(item)
         rel = related_to(item, catalog)
-        html_out = render(item, rel)
-        out_dir = OUT / item_slug(item)
-        out_dir.mkdir(parents=True, exist_ok=True)
-        target = out_dir / "index.html"
-        if not target.exists() or target.read_text(encoding="utf-8") != html_out:
-            target.write_text(html_out, encoding="utf-8")
-            written += 1
+        for lang, out in (("ru", OUT), ("en", OUT_EN)):
+            html_out = render(item, rel, lang)
+            out_dir = out / item_slug(item)
+            out_dir.mkdir(parents=True, exist_ok=True)
+            target = out_dir / "index.html"
+            if not target.exists() or target.read_text(encoding="utf-8") != html_out:
+                target.write_text(html_out, encoding="utf-8")
+                written += 1
 
     desired = {item_slug(item) for item in catalog}
-    stale = [d for d in OUT.iterdir() if d.is_dir() and d.name not in desired]
-    for d in stale:
-        shutil.rmtree(d, ignore_errors=True)
-    film_note = f"Film pages: {len(catalog)} total, {written} written/updated, {len(stale)} stale dirs removed"
+    stale = []
+    for out in (OUT, OUT_EN):
+        for d in out.iterdir() if out.is_dir() else []:
+            if d.is_dir() and d.name not in desired:
+                shutil.rmtree(d, ignore_errors=True)
+                stale.append(d)
+    film_note = (
+        f"Film pages: {len(catalog)} records x 2 languages = {len(catalog) * 2} "
+        f"pages, {written} written/updated, {len(stale)} stale dirs removed"
+    )
     print(film_note)
 
     index_path = ROOT / "index.html"
@@ -1202,6 +1708,20 @@ def main():
             print("about.html: up to date")
     else:
         print("about.html: not found, skipped")
+
+    for name in EN_ROOT_PAGES:
+        ru_src_path = ROOT / name
+        if not ru_src_path.exists():
+            print(f"{name}: not found, skipped")
+            continue
+        en_html = en_root_page(ru_src_path)
+        target = ROOT / "en" / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if not target.exists() or target.read_text(encoding="utf-8") != en_html:
+            target.write_text(en_html, encoding="utf-8")
+            print(f"en/{name}: generated")
+        else:
+            print(f"en/{name}: up to date")
 
 if __name__ == "__main__":
     main()

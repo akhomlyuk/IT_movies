@@ -16,6 +16,8 @@ const {
   safeRead,
   safeWrite,
   filmUrl,
+  langPath,
+  mirrorPath,
   kpUrl,
   imdbUrl,
   hasRating,
@@ -71,6 +73,11 @@ function shuffle(items, random) {
     copy[j] = tmp;
   }
   return copy;
+}
+
+function posterSrc(item) {
+  const src = (item && (item.poster400 || item.poster)) || "";
+  return src ? "/" + src.replace(/^\//, "") : "";
 }
 
 function pickFeatured(catalog, random = Math.random) {
@@ -186,6 +193,7 @@ const CatalogTable = {
       arrow,
       openPoster,
       closePoster,
+      posterSrc,
     };
   },
   template: "#tpl-catalog",
@@ -195,7 +203,7 @@ const app = createApp({
   components: { CatalogTable },
   setup() {
     const urlParams = new URLSearchParams(location.search);
-    const lang = ref(langFrom(urlParams, safeRead));
+    const lang = ref(langFrom(location.pathname));
     const colorScheme = window.matchMedia("(prefers-color-scheme: light)");
     const theme = ref(themeFrom(urlParams, safeRead));
     const query = ref(urlParams.get("q") || "");
@@ -259,7 +267,6 @@ const app = createApp({
       lang,
       (value) => {
         currentLang = value;
-        safeWrite("it-movies-lang", value);
         document.documentElement.lang = value;
         document.title = I18N[value].titleFull;
         const metaDesc = document.querySelector('meta[name="description"]');
@@ -290,7 +297,7 @@ const app = createApp({
       }
     );
 
-    function syncUrl() {
+    function buildQuery() {
       const p = new URLSearchParams();
       if (query.value) p.set("q", query.value);
       if (genre.value) p.set("genre", genre.value);
@@ -302,7 +309,11 @@ const app = createApp({
           p.delete(`sort[${type}]`);
         }
       }
-      const qs = p.toString();
+      return p;
+    }
+
+    function syncUrl() {
+      const qs = buildQuery().toString();
       const url = location.pathname + (qs ? "?" + qs : "") + location.hash;
       clearTimeout(urlSyncTimer);
       urlSyncTimer = setTimeout(() => {
@@ -337,6 +348,14 @@ const app = createApp({
     });
 
     const t = computed(() => I18N[lang.value]);
+    const langHref = computed(() => {
+      const qs = buildQuery().toString();
+      return mirrorPath(location.pathname) + (qs ? "?" + qs : "");
+    });
+    const langHreflang = computed(() => (lang.value === "ru" ? "en" : "ru"));
+    function pageHref(path) {
+      return langPath(path, lang.value);
+    }
     const genreOptions = computed(() =>
       Object.entries(t.value.genres).sort(([, a], [, b]) =>
         a.localeCompare(b, lang.value === "ru" ? "ru" : "en")
@@ -415,14 +434,10 @@ const app = createApp({
     function featuredSrcset(item) {
       const src = item.poster;
       if (!src) return null;
-      const path = src.replace(/^\//, "");
+      const path = "/" + src.replace(/^\//, "");
       return POSTER_VARIANT_WIDTHS.map(
         (w) => `${path.replace(/\.webp$/, "_" + w + ".webp")} ${w}w`
       ).join(", ");
-    }
-
-    function setLang(next) {
-      lang.value = next;
     }
 
     function setTheme(next) {
@@ -445,7 +460,7 @@ const app = createApp({
     function goLucky() {
       if (!window.CATALOG || window.CATALOG.length === 0) return;
       const pick = window.CATALOG[Math.floor(Math.random() * window.CATALOG.length)];
-      location.href = filmUrl(pick);
+      location.href = filmUrl(pick, lang.value);
     }
 
     const menuOpen = ref(false);
@@ -504,6 +519,9 @@ const app = createApp({
 
     return {
       lang,
+      langHref,
+      langHreflang,
+      pageHref,
       theme,
       query,
       genre,
@@ -519,13 +537,13 @@ const app = createApp({
       pickFeatured,
       hasActiveFilters,
       resetFilters,
-      setLang,
       setTheme,
       sortBy,
       filmUrl,
       genreLabel,
       firstGenre,
       altTitle,
+      posterSrc,
       featuredSrcset,
       goLucky,
       scrollToTop,

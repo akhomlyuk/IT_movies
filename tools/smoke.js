@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* Node smoke harnesses for the IT Movies static site.
-   Usage: node tools/smoke.js <app|slug|film>
-   Replaces the four inline node -e harnesses that used to live in verify.py. */
+   Usage: node tools/smoke.js [lang|app|slug|film] [--min]
+   With no mode every mode runs, source and --min alike. */
 "use strict";
 
 const fs = require("fs");
@@ -32,6 +32,17 @@ function jsSrc(name) {
   return read("js/" + (min && MINIFY_MAP[name] ? MINIFY_MAP[name] : name));
 }
 
+const MODES = ["lang", "app", "slug", "film"];
+
+if (!mode) {
+  const { execFileSync } = require("child_process");
+  for (const name of MODES) {
+    const argv = [path.join(ROOT, "tools", "smoke.js"), name].concat(min ? ["--min"] : []);
+    process.stdout.write(execFileSync(process.execPath, argv, { cwd: ROOT, encoding: "utf8" }));
+  }
+  process.exit(0);
+}
+
 const MIN_LABEL = min ? " (minified)" : "";
 
 function bootApp() {
@@ -39,6 +50,7 @@ function bootApp() {
   global.location = {
     pathname: "/IT_movies/",
     search: "",
+    hash: "",
     href: "https://example.org/IT_movies/",
   };
   Object.defineProperty(global, "navigator", {
@@ -73,7 +85,11 @@ function bootApp() {
       captured = opts.setup;
       return { components: {}, config: {}, mount: noop };
     },
-    computed: (fn) => ({ value: fn() }),
+    computed: (fn) => {
+      const o = {};
+      Object.defineProperty(o, "value", { get: () => fn(), enumerable: true });
+      return o;
+    },
     reactive: (o) => o,
     ref: (v) => ({ value: v }),
     watch: noop,
@@ -84,7 +100,231 @@ function bootApp() {
   return () => captured;
 }
 
-if (mode === "slug") {
+if (mode === "lang") {
+  const capture = bootApp();
+  eval(jsSrc("common.js"));
+  const api = global.ITMoviesCommon;
+  for (const [pathname, want] of [
+    ["/", "ru"],
+    ["/index.html", "ru"],
+    ["/films/x/", "ru"],
+    ["/about.html", "ru"],
+    ["/privacy.html", "ru"],
+    ["/en", "en"],
+    ["/en/", "en"],
+    ["/en/index.html", "en"],
+    ["/en/films/x/", "en"],
+    ["/en/about.html", "en"],
+    ["/english/", "ru"],
+    ["/en-gone/", "ru"],
+  ]) {
+    if (api.langFrom(pathname) !== want) {
+      throw new Error(
+        "langFrom(" + JSON.stringify(pathname) + ") must be " + want + ", got "
+        + JSON.stringify(api.langFrom(pathname))
+      );
+    }
+  }
+  if (api.langFrom.length !== 1) {
+    throw new Error(
+      "langFrom must take the pathname and nothing else (1 parameter), got "
+      + api.langFrom.length + " -- ?lang=, it-movies-lang and navigator.language"
+      + " are gone"
+    );
+  }
+  if (api.SUPPORTED.lang !== undefined) {
+    throw new Error(
+      "SUPPORTED.lang existed only to validate ?lang= and it-movies-lang;"
+      + " with the path as the single source of truth it has no reader left"
+    );
+  }
+  const upload = { imdbId: "tt1", titleEn: "Upload" };
+  const kpOnly = { kpId: "42", titleEn: "The Net" };
+  for (const [item, lang, want] of [
+    [upload, "ru", "/films/tt1-upload/"],
+    [upload, "en", "/en/films/tt1-upload/"],
+    [kpOnly, "ru", "/films/kp-42-the-net/"],
+    [kpOnly, "en", "/en/films/kp-42-the-net/"],
+  ]) {
+    if (api.filmUrl(item, lang) !== want) {
+      throw new Error(
+        "filmUrl(" + api.itemSlug(item) + ", " + lang + ") must be " + want
+        + ", got " + api.filmUrl(item, lang)
+      );
+    }
+  }
+  for (const [pathname, want] of [
+    ["/", "/en/"],
+    ["/films/x/", "/en/films/x/"],
+    ["/about.html", "/en/about.html"],
+    ["/en/", "/"],
+    ["/en/films/x/", "/films/x/"],
+    ["/en/about.html", "/about.html"],
+    ["/en", "/"],
+    ["/en/films/x", "/films/x"],
+  ]) {
+    if (api.mirrorPath(pathname) !== want) {
+      throw new Error(
+        "mirrorPath(" + JSON.stringify(pathname) + ") must be " + want
+        + ", got " + api.mirrorPath(pathname)
+      );
+    }
+  }
+  for (const [path, lang, want] of [
+    ["/", "en", "/en/"],
+    ["/", "ru", "/"],
+    ["/privacy.html", "en", "/en/privacy.html"],
+    ["/privacy.html", "ru", "/privacy.html"],
+    ["#main", "en", "#main"],
+    ["https://t.me/wh_lab", "en", "https://t.me/wh_lab"],
+  ]) {
+    if (api.langPath(path, lang) !== want) {
+      throw new Error(
+        "langPath(" + JSON.stringify(path) + ", " + lang + ") must be " + want
+        + ", got " + api.langPath(path, lang)
+      );
+    }
+  }
+  const commonSrc = jsSrc("common.js");
+  for (const dead of ["it-movies-lang", "navigator.language", 'get("lang")', "get('lang')"]) {
+    if (commonSrc.includes(dead)) {
+      throw new Error(
+        "common.js must not read the language from " + dead + ": the path is the"
+        + " only source of truth"
+      );
+    }
+  }
+  for (const name of ["app.js", "film.js", "about.js"]) {
+    const src = jsSrc(name);
+    if (src.includes("it-movies-lang")) {
+      throw new Error(name + " must not persist the language to it-movies-lang");
+    }
+    if (src.includes("setLang")) {
+      throw new Error(
+        name + " must not keep setLang(): the language is the URL, not a state"
+        + " a button mutates"
+      );
+    }
+    if (!src.includes("location.pathname")) {
+      throw new Error(name + " must read the language from location.pathname");
+    }
+    if (src.includes("location.replace(")) {
+      throw new Error(
+        name + " must not redirect: / is always Russian, and the owner ruled"
+        + " out a client-side redirect from / to /en/"
+      );
+    }
+  }
+  for (const name of ["film.js", "about.js"]) {
+    const src = jsSrc(name);
+    if (!src.includes('class="lang"') || !src.includes("hreflang")) {
+      throw new Error(
+        name + " must render the language toggle as an <a> carrying hreflang"
+        + " to the mirror of the current path"
+      );
+    }
+  }
+  const mainMarkup = read("index.html");
+  if (!mainMarkup.includes('<a class="lang"') || !mainMarkup.includes(":hreflang")) {
+    throw new Error(
+      "index.html must render the language toggle as an <a class=\"lang\">"
+      + " carrying hreflang to the mirror of the current path"
+    );
+  }
+  if (mainMarkup.includes('<button type="button" class="lang"')) {
+    throw new Error(
+      "index.html's language toggle is a button that mutates state; it is a"
+      + " link to the mirror of the current path now"
+    );
+  }
+  for (const needle of ['filmUrl(item, lang)']) {
+    if (!mainMarkup.includes(needle)) {
+      throw new Error("index.html must call " + needle + " so card links keep the language");
+    }
+  }
+  for (const name of ["privacy.html"]) {
+    const text = read(name);
+    for (const dead of ["it-movies-lang", 'get("lang")', "get('lang')", "navigator.language"]) {
+      if (text.includes(dead)) {
+        throw new Error(
+          name + " must not read or write the language through " + dead
+          + ": the path is the only source of truth there too"
+        );
+      }
+    }
+    if (text.includes('<button type="button" class="lang"')) {
+      throw new Error(
+        name + "'s language toggle is a button that mutates state; it is a"
+        + " link to the mirror of the current path now"
+      );
+    }
+  }
+  // The app itself, booted on both path prefixes: the language is not a
+  // function of anything the reader chose earlier.
+  for (const [pathname, wantLang, wantMirror] of [
+    ["/films/x/", "ru", "/en/films/x/"],
+    ["/en/films/x/", "en", "/films/x/"],
+    ["/", "ru", "/en/"],
+    ["/en/", "en", "/"],
+  ]) {
+    global.location.pathname = pathname;
+    eval(
+      jsSrc("i18n.js") + "\n" +
+      jsSrc("common.js") + "\n" +
+      jsSrc("catalog.js") + "\n" +
+      jsSrc("app.js")
+    );
+    const state = capture()();
+    if (!state || !state.lang) {
+      throw new Error("app.js setup() must expose the reactive lang");
+    }
+    if (state.lang.value !== wantLang) {
+      throw new Error(
+        "app.js on " + pathname + " must render " + wantLang + ", got "
+        + state.lang.value
+      );
+    }
+    if (state.langHref.value !== wantMirror) {
+      throw new Error(
+        "app.js on " + pathname + " must link its language toggle to "
+        + wantMirror + ", got " + state.langHref.value
+      );
+    }
+    if (state.langHreflang.value !== (wantLang === "ru" ? "en" : "ru")) {
+      throw new Error(
+        "app.js on " + pathname + " must declare hreflang for the language it"
+        + " links to, got " + state.langHreflang.value
+      );
+    }
+    if (state.filmUrl({ imdbId: "tt1", titleEn: "Upload" }, state.lang.value)
+        !== (wantLang === "en" ? "/en/films/tt1-upload/" : "/films/tt1-upload/")) {
+      throw new Error("app.js on " + pathname + " must build film links in " + wantLang);
+    }
+    if (state.pageHref("/about.html")
+        !== (wantLang === "en" ? "/en/about.html" : "/about.html")) {
+      throw new Error("app.js on " + pathname + " must build internal links in " + wantLang);
+    }
+    state.query.value = "matrix";
+    state.genre.value = "ai";
+    state.onlyFav.value = true;
+    if (state.langHref.value !== wantMirror + "?q=matrix&genre=ai&fav=1") {
+      throw new Error(
+        "app.js on " + pathname + " must carry a filter set AFTER load into its"
+        + " language toggle, got " + state.langHref.value + " -- a computed with no"
+        + " reactive dependency is evaluated once and replaceState is not"
+        + " observable, so the mount-time query is all it ever sees"
+      );
+    }
+    state.resetFilters();
+    if (state.langHref.value !== wantMirror) {
+      throw new Error(
+        "app.js on " + pathname + " must drop cleared filters from its language"
+        + " toggle, got " + state.langHref.value
+      );
+    }
+  }
+  console.log("common.js/app.js smoke (language from the path prefix): OK" + MIN_LABEL);
+} else if (mode === "slug") {
   global.window = global;
   eval(jsSrc("catalog.js"));
   eval(jsSrc("common.js"));
@@ -100,8 +340,13 @@ if (mode === "slug") {
   );
   const setup = captured();
   const state = setup();
-  if (!state || typeof state.movies.value.length !== "number" || !state.setLang) {
+  if (!state || typeof state.movies.value.length !== "number" || !state.lang) {
     throw new Error("app.js setup() returned invalid state");
+  }
+  if (state.lang.value !== "ru") {
+    throw new Error(
+      "app.js booted on a Russian path must render ru, got " + state.lang.value
+    );
   }
   if (!state.featured || !Array.isArray(state.featured.value) || state.featured.value.length === 0) {
     throw new Error("app.js must expose a non-empty featured shelf");
@@ -391,6 +636,19 @@ if (mode === "slug") {
     throw new Error("related rating chips must carry rating-chip so the pill"
       + " styling is shared with the rest of the site, not re-declared per card");
   }
+  if (!genRc.includes('relatedHref(r)')) {
+    throw new Error("gen_pages.RC_CARD must bind its href to relatedHref(r), not"
+      + " to a literal '/films/' path: the same template is emitted into the"
+      + " Russian and the English page");
+  }
+  if (!filmSource.includes("function relatedHref")) {
+    throw new Error("film.js must define relatedHref(r), which the related card"
+      + " binds; a binding with no function behind it renders an empty href");
+  }
+  if (!filmSource.includes("filmUrl(r, lang.value)")) {
+    throw new Error("relatedHref must build the card's address with filmUrl(r,"
+      + " lang) so a card stays inside the reader's own language tree");
+  }
   // The card and its poster are the two repeated shapes in a six-up row, and the
   // partner asked for 6px on both. The radius gate in verify.py only fails a
   // BARE value, so tokenising to --radius-m would pass it while shipping the
@@ -450,8 +708,13 @@ if (mode === "slug") {
   );
   const relA = global.CATALOG.slice(1, 5);
   const relB = global.CATALOG.slice(6, 10);
+  const filmItem = global.CATALOG[0];
   global.FILM_PAGE = {
-    item: global.CATALOG[0],
+    item: {
+      ...filmItem,
+      desc: filmItem.desc.ru,
+      descSeo: filmItem.desc.ru,
+    },
     related: relA,
     posterW: null,
     posterH: null,
@@ -461,13 +724,65 @@ if (mode === "slug") {
   if (!state || !Array.isArray(state.related)) {
     throw new Error("film.js setup() returned invalid state");
   }
-  if (state.desc.value === "") {
+  if (typeof state.desc.value !== "string") {
+    throw new Error(
+      "film.js desc is a " + typeof state.desc.value + ", not a string: FILM_PAGE"
+      + ".item.desc is written as a plain string by gen_pages.py and read as one,"
+      + " so a map here means the boot stub and the generator disagree about the"
+      + " payload shape"
+    );
+  }
+  if (state.desc.value.trim() === "") {
     throw new Error("film.js desc is empty");
   }
+  if (state.desc.value !== filmItem.desc.ru) {
+    throw new Error(
+      "film.js renders " + JSON.stringify(state.desc.value.slice(0, 40)) + " for a"
+      + " page carrying " + JSON.stringify(filmItem.desc.ru.slice(0, 40)) + ": the"
+      + " description a film page shows must be that page's own"
+    );
+  }
+  global.FILM_PAGE.item.desc = "";
+  const blanked = capture()();
+  if (typeof blanked.desc.value !== "string" || blanked.desc.value.trim() !== "") {
+    throw new Error(
+      "film.js rendered " + JSON.stringify(blanked.desc.value) + " for an empty"
+      + " desc, so the empty-description case is not guarded at all"
+    );
+  }
+  global.FILM_PAGE.item.desc = filmItem.desc.ru;
   const slugs = state.related.map((r) => global.ITMoviesCommon.itemSlug(r));
   const want = relA.map((r) => global.ITMoviesCommon.itemSlug(r));
   if (slugs.join(",") !== want.join(",")) {
     throw new Error("film.js must render FILM_PAGE.related verbatim, got " + slugs.join(","));
+  }
+  const ruHref = state.relatedHref(relA[0]);
+  if (!/^\/films\/[a-z0-9-]+\/$/.test(ruHref)) {
+    throw new Error("a related card on a Russian path must link to /films/<slug>/,"
+      + " got " + ruHref);
+  }
+  const ruPath = global.location.pathname;
+  global.location.pathname = "/en/films/x/";
+  const enState = setup();
+  const enHref = enState.relatedHref(relA[0]);
+  if (enHref !== "/en" + ruHref) {
+    throw new Error("a related card on /en/ must link to " + "/en" + ruHref
+      + ", got " + enHref);
+  }
+  if (enState.lang.value !== "en") {
+    throw new Error("film.js booted on /en/ must render en, got " + enState.lang.value);
+  }
+  const enTitle = enState.relatedTitle(relA[0]);
+  const enWant = global.ITMoviesCommon.displayTitle(relA[0], "en");
+  if (enTitle !== enWant || /[\u0400-\u04FF]/.test(enTitle)) {
+    throw new Error("a related card on /en/ must carry the English title "
+      + enWant + ", got " + enTitle);
+  }
+  global.location.pathname = ruPath;
+  const restored = setup();
+  if (restored.lang.value !== "ru" || restored.relatedHref(relA[0]) !== ruHref) {
+    throw new Error("film.js must follow the path prefix in both directions,"
+      + " got " + restored.lang.value + " / " + restored.relatedHref(relA[0]));
   }
   for (let i = 0; i < 5; i++) {
     const again = setup();
@@ -511,6 +826,6 @@ if (mode === "slug") {
   }
   console.log("film.js smoke (FILM_PAGE, no data.js load on film page): OK" + MIN_LABEL);
 } else {
-  console.error("usage: node tools/smoke.js <app|slug|film>");
+  console.error("usage: node tools/smoke.js <" + MODES.join("|") + "> [--min]");
   process.exit(2);
 }

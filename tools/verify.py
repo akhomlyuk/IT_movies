@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Standalone data integrity and reference check for the IT Movies project."""
 import collections
+import copy
 import json
 import re
 import shutil
@@ -8,12 +9,13 @@ import subprocess
 import sys
 import xml.etree.ElementTree as ET
 import unicodedata
+from html import unescape
 from html.parser import HTMLParser
 from xml.etree import ElementTree
 
 import gen_pages
 import poster_crop
-from lib import BELOW_MD_MAX, ROOT, SITE_BASE, BREAKPOINT_SCALE, CSS_MEDIA_EDGES, FEATURED_BOX_DESKTOP, FEATURED_BOX_MOBILE, FEATURED_SLOT_CONDITION, POSTER_BOX_DESKTOP, POSTER_BOX_MOBILE, POSTER_VARIANT_WIDTHS, featured_poster_sizes, hero_poster_widths, item_slug, load_catalog, known_genres, parse_i18n, i18n_key_paths, has_rating, poster_sizes, variant_name, variant_path, webp_size
+from lib import BELOW_MD_MAX, CYRILLIC, ROOT, ROOT_URL_PATHS, SITE_BASE, BREAKPOINT_SCALE, CSS_MEDIA_EDGES, FEATURED_BOX_DESKTOP, FEATURED_BOX_MOBILE, FEATURED_SLOT_CONDITION, POSTER_BOX_DESKTOP, POSTER_BOX_MOBILE, POSTER_VARIANT_WIDTHS, featured_poster_sizes, hero_poster_widths, item_slug, lang_path, load_catalog, known_genres, mirror_path, parse_i18n, i18n_key_paths, has_rating, poster_sizes, variant_name, variant_path, webp_size
 
 sys.stdout.reconfigure(encoding="utf-8")
 errors = []
@@ -330,9 +332,18 @@ for item in catalog:
         errors.append(f"documentary leaked into related pool: {item['titleEn']}")
     if not {item_slug(r) for r in rel} <= {item_slug(r) for r in pool}:
         errors.append(f"static related not inside related pool: {item['titleEn']}")
-    expected = gen_pages.render(item, rel)
-    if page.read_text(encoding="utf-8") != expected:
-        errors.append(f"Stale film page: films/{slug}/ — run gen_pages.py ({item['titleEn']})")
+    for lang, folder in (("ru", "films"), ("en", "en/films")):
+        page = ROOT / folder / slug / "index.html"
+        if not page.exists():
+            errors.append(
+                f"Missing {lang} film page: {folder}/{slug}/ ({item['titleEn']})"
+            )
+            continue
+        if page.read_text(encoding="utf-8") != gen_pages.render(item, rel, lang):
+            errors.append(
+                f"Stale {lang} film page: {folder}/{slug}/ — run gen_pages.py "
+                f"({item['titleEn']})"
+            )
 
 # 5. Genres must come from the I18N dictionary (keys extracted from i18n.js)
 known = known_genres()
@@ -385,27 +396,41 @@ film_js = (ROOT / "js" / "film.js").read_text(encoding="utf-8")
 app_js = (ROOT / "js" / "app.js").read_text(encoding="utf-8")
 about_js = (ROOT / "js" / "about.js").read_text(encoding="utf-8")
 catalog_src = (ROOT / "js" / "catalog.js").read_text(encoding="utf-8")
-refs = {
-    r[:-1] if r.endswith("\\") else r
-    for r in re.findall(r"""['"]((?:static|\.\./static)/[^'"]+)['"]""", i18n_src + raw + app_js + film_js + about_js + catalog_src)
-}
+refs = set()
+partial_fragments = {}
+for m in re.finditer(
+    r"""(['"])((?:/?static|\.\./static)/[^'"]+)\1(\s*\+)?""",
+    i18n_src + raw + app_js + film_js + about_js + catalog_src,
+):
+    ref = m.group(2)
+    ref = ref[:-1] if ref.endswith("\\") else ref
+    refs.add(ref)
+    partial_fragments[ref] = partial_fragments.get(ref, True) and bool(m.group(3))
 for name in ("index.html", "404.html", "privacy.html", "about.html"):
     text = (ROOT / name).read_text(encoding="utf-8")
-    for v in re.findall(r'(?:content|src|href)="([^"]+)"', text):
-        m = re.search(r'(?:static|\.\./static|css|js)/[^"\')\s]+', v)
-        if m:
-            refs.add(m.group(0))
-for page in (ROOT / "films").glob("*/index.html"):
+    for v in re.findall(r'(?:content|src|srcset|href|imagesrcset)="([^"]+)"', text):
+        for found in re.findall(r'(?:static|\.\./static|css|js)/[^"\')\s]+', v):
+            refs.add(found)
+for page in list((ROOT / "films").glob("*/index.html")) + list(
+    (ROOT / "en" / "films").glob("*/index.html")
+):
     text = page.read_text(encoding="utf-8")
-    for v in re.findall(r'(?:content|src|href)="([^"]+)"', text):
+    for v in re.findall(r'(?:content|src|srcset|href|imagesrcset)="([^"]+)"', text):
         if v.startswith("http://") or v.startswith("https://"):
             continue
-        if v.startswith("../../"):
-            refs.add(v)
+        for found in re.findall(
+            r'(?:static|\.\./static|css|js)/[^"\')\s]+|(?:privacy|about)\.html', v
+        ):
+            refs.add(found)
+for name in ("index.html", "privacy.html", "about.html"):
+    text = (ROOT / "en" / name).read_text(encoding="utf-8")
+    for v in re.findall(r'(?:content|src|srcset|href|imagesrcset)="([^"]+)"', text):
+        if v.startswith("http://") or v.startswith("https://"):
             continue
-        m = re.search(r'(?:static|\.\./static|css|js)/[^"\')\s]+', v)
-        if m:
-            refs.add(m.group(0))
+        for found in re.findall(
+            r'(?:static|\.\./static|css|js)/[^"\')\s]+|(?:privacy|about)\.html', v
+        ):
+            refs.add(found)
 for r in refs:
     # A reference may carry a fragment -- `static/share.svg#icon-telegram` is an
     # SVG sprite lookup, and the film's own `<use>` elements are full of them.
@@ -422,15 +447,10 @@ for r in refs:
     # failure. The file loads, the page looks right in a screenshot, and the glyph
     # is simply absent, so the fragment is resolved against the file's own ids.
     ref, _, frag = r.partition("#")
-    if ref.startswith("../../"):
-        path = ROOT / ref[6:]
-    elif ref.startswith("../static"):
-        path = ROOT / ref.replace("../static", "static", 1)
-    else:
-        path = ROOT / ref
+    path = ROOT / ref.lstrip("/")
     if not path.exists():
         errors.append(f"Broken file reference: {r}")
-    elif frag and path.suffix == ".svg":
+    elif frag and path.suffix == ".svg" and not partial_fragments.get(r, False):
         body = path.read_text(encoding="utf-8")
         if ('id="%s"' % frag) not in body:
             errors.append(
@@ -1414,20 +1434,27 @@ CHANNELS = (
 )
 
 CHANNEL_COPIES = (
-    ("index.html", "static/share.svg"),
-    ("js/film.js", "../../static/share.svg"),
-    ("js/film.min.js", "../../static/share.svg"),
+    "index.html",
+    "js/film.js",
+    "js/film.min.js",
     # about.html carries a header inside <noscript> and the LIVE one is rendered
     # from js/about.js, so both are copies and both are needed: the first is what a
     # no-JS reader gets, the second is what everyone else gets. Reading only
     # about.html is how the anchor ended up in the noscript copy while the live
     # page had none -- and the regex could not tell, because both contain it.
-    ("about.html", "static/share.svg"),
-    ("js/about.js", "static/share.svg"),
-    ("js/about.min.js", "static/share.svg"),
-    ("404.html", "static/share.svg"),
-    ("privacy.html", "static/share.svg"),
+    "about.html",
+    "js/about.js",
+    "js/about.min.js",
+    "404.html",
+    "privacy.html",
 )
+
+
+def channel_sprite_prefix(rel):
+    text = (ROOT / rel).read_text(encoding="utf-8")
+    if '<base href="/">' in text:
+        return "static/share.svg"
+    return "/static/share.svg"
 
 
 def channel_item_re(ch):
@@ -1749,7 +1776,8 @@ def check_channel_link():
             )
 
     seen_labels = {ch["brand"]: {} for ch in CHANNELS}
-    for rel, prefix in CHANNEL_COPIES:
+    for rel in CHANNEL_COPIES:
+        prefix = channel_sprite_prefix(rel)
         text = (ROOT / rel).read_text(encoding="utf-8")
         row = CHANNEL_ROW_RE.search(text)
         if not row:
@@ -2757,6 +2785,1645 @@ check_related_card_single_source()
 check_related_card_markup()
 
 
+MIRROR_ROOTS = (("ru", "films"), ("en", "en/films"))
+MIRROR_HREFLANG = ("ru", "en", "x-default")
+MIRROR_OG_LOCALE = {"ru": "ru_RU", "en": "en_US"}
+EN_HEAD_TAGS = ("<title>", 'name="description"', 'property="og:title"',
+                'property="og:description"', 'property="og:image:alt"')
+
+
+def mirror_pages(prefix):
+    folder = ROOT / prefix
+    return sorted(folder.glob("*/index.html")) if folder.is_dir() else []
+
+
+def page_url(page):
+    return "/" + page.relative_to(ROOT).as_posix()[: -len("index.html")]
+
+
+def link_tag_attrs(text, rel):
+    found = []
+    for tag in re.findall(r"<link\b[^>]*>", text):
+        got = {k: v for k, v in re.findall(r'([a-zA-Z:]+)="([^"]*)"', tag)}
+        if rel in (got.get("rel") or "").split():
+            found.append(got)
+    return found
+
+
+def page_json_ld(text):
+    m = re.search(r'<script type="application/ld\+json">(.*?)</script>', text, re.S)
+    if not m:
+        return None
+    try:
+        return json.loads(m.group(1)).get("@graph", [])
+    except json.JSONDecodeError:
+        return None
+
+
+def graph_strings(node, path=""):
+    for key, value in node.items():
+        where = f"{path}.{key}" if path else key
+        if isinstance(value, str):
+            yield where, value
+        elif isinstance(value, dict):
+            yield from graph_strings(value, where)
+        elif isinstance(value, list):
+            for i, entry in enumerate(value):
+                if isinstance(entry, str):
+                    yield f"{where}[{i}]", entry
+                elif isinstance(entry, dict):
+                    yield from graph_strings(entry, f"{where}[{i}]")
+
+
+def check_mirror_pairs():
+    bad = []
+    seen = {}
+    for lang, prefix in MIRROR_ROOTS:
+        pages = mirror_pages(prefix)
+        seen[lang] = pages
+        if not pages:
+            bad.append(
+                f"{prefix}/ holds no index.html, so this run compared no {lang} page "
+                f"at all and every other check below would pass on an empty set"
+            )
+    if bad:
+        for b in bad:
+            errors.append(f"mirror pairs: {b}")
+        return
+    slugs = {lang: {p.parent.name for p in pages} for lang, pages in seen.items()}
+    for lang, other in (("ru", "en"), ("en", "ru")):
+        for slug in sorted(slugs[lang] - slugs[other]):
+            prefix = dict(MIRROR_ROOTS)[lang]
+            errors.append(
+                f"mirror pairs: {prefix}/{slug}/ has no partner in "
+                f"{dict(MIRROR_ROOTS)[other]}/{slug}/. The two addresses differ by "
+                f"the /en prefix and by nothing else, so a record cannot exist in "
+                f"one language only: the hreflang set on the page that does exist "
+                f"points at an address that is not there"
+            )
+    for item in catalog:
+        slug = item_slug(item)
+        if slug not in slugs["ru"] or slug not in slugs["en"]:
+            errors.append(
+                f"mirror pairs: catalog record {item['titleEn']!r} (slug {slug}) has "
+                f"no page pair"
+            )
+    for relative in ("films/x/", "index.html", "", "en/films/x/", None, 7):
+        for lang in ("ru", "en"):
+            try:
+                lang_path(relative, lang)
+            except ValueError:
+                continue
+            errors.append(
+                f"mirror pairs: lib.lang_path({relative!r}, {lang!r}) returned a value"
+                f" for a path that is not root-relative. The rule is one rule for both"
+                f" languages: a path that cannot be mirrored cannot be language-pathed"
+                f" either, and a gate that only checks the branch it happens to take is"
+                f" a gate that passes for a relative link"
+            )
+    print(
+        f"Mirror pairs: {len(slugs['ru'])} ru / {len(slugs['en'])} en page(s) under "
+        f"films/ and en/films/, one shared slug per record; "
+        f"{len(set(slugs['ru']) | set(slugs['en']))} slug(s) in the union; "
+        f"lib.lang_path rejects a non-root-relative path for both languages"
+    )
+
+
+check_mirror_pairs()
+
+
+def check_trailing_slash():
+    checked = 0
+    for lang, prefix in MIRROR_ROOTS:
+        pages = mirror_pages(prefix)
+        if not pages:
+            errors.append(
+                f"trailing slash: {prefix}/ holds no index.html, so no {lang} address "
+                f"was checked and this run would pass on an empty set"
+            )
+            continue
+        for page in pages:
+            url = page.relative_to(ROOT).as_posix()
+            url = url[: -len("index.html")].rstrip("/") + "/"
+            text = page.read_text(encoding="utf-8")
+            m = re.search(r'rel="canonical" href="([^"]+)"', text)
+            if not m:
+                errors.append(f"trailing slash: {url} has no canonical")
+            elif m.group(1) != f"{SITE_BASE}/{url}":
+                errors.append(
+                    f"trailing slash: {url} canonical is {m.group(1)}, "
+                    f"expected {SITE_BASE}/{url}"
+                )
+            checked += 1
+    print(
+        f"Trailing slash: {checked} film page(s) across both languages, each "
+        f"canonical equal to its own {SITE_BASE} address with the slash"
+    )
+
+
+check_trailing_slash()
+
+
+def check_language_head_links():
+    bad = []
+    checked = 0
+    for lang, prefix in MIRROR_ROOTS:
+        if not mirror_pages(prefix):
+            bad.append(
+                f"{prefix}/ holds no index.html, so no {lang} head was read and this "
+                f"run would pass on an empty set"
+            )
+        other = "en" if lang == "ru" else "ru"
+        for page in mirror_pages(prefix):
+            text = page.read_text(encoding="utf-8")
+            url = page_url(page)
+            ru_url = SITE_BASE + (
+                mirror_path(url) if url.startswith("/en/") else url
+            )
+            en_url = SITE_BASE + lang_path(
+                mirror_path(url) if url.startswith("/en/") else url, "en"
+            )
+            want = {"ru": ru_url, "en": en_url, "x-default": ru_url}
+            alts = link_tag_attrs(text, "alternate")
+            got = {}
+            for tag in alts:
+                got[tag.get("hreflang")] = tag.get("href")
+                if tag.get("hreflang") not in want:
+                    bad.append(
+                        f"{page.relative_to(ROOT).as_posix()}: hreflang="
+                        f"{tag.get('hreflang')!r} is not one of {list(want)}"
+                    )
+            for key, expected in want.items():
+                if got.get(key) != expected:
+                    bad.append(
+                        f"{page.relative_to(ROOT).as_posix()}: hreflang={key} is "
+                        f"{got.get(key)}, expected {expected}"
+                    )
+            if len(alts) != len(MIRROR_HREFLANG):
+                bad.append(
+                    f"{page.relative_to(ROOT).as_posix()}: {len(alts)} rel=alternate "
+                    f"link(s), expected {len(MIRROR_HREFLANG)} ({', '.join(MIRROR_HREFLANG)}). "
+                    f"A dropped alternate is a duplicate address a crawler cannot "
+                    f"tell apart from this one"
+                )
+            canonical = SITE_BASE + url
+            m = re.search(r'<meta property="og:url" content="([^"]+)"', text)
+            if not m or m.group(1) != canonical:
+                bad.append(
+                    f"{page.relative_to(ROOT).as_posix()}: og:url is "
+                    f"{m.group(1) if m else None}, expected {canonical}"
+                )
+            ogl = re.search(r'<meta property="og:locale" content="([^"]+)"', text)
+            if not ogl or ogl.group(1) != MIRROR_OG_LOCALE[lang]:
+                bad.append(
+                    f"{page.relative_to(ROOT).as_posix()}: og:locale is "
+                    f"{ogl.group(1) if ogl else None}, expected "
+                    f"{MIRROR_OG_LOCALE[lang]} for a {lang} page"
+                )
+            oga = re.search(
+                r'<meta property="og:locale:alternate" content="([^"]+)"', text
+            )
+            if not oga or oga.group(1) != MIRROR_OG_LOCALE[other]:
+                bad.append(
+                    f"{page.relative_to(ROOT).as_posix()}: og:locale:alternate is "
+                    f"{oga.group(1) if oga else None}, expected "
+                    f"{MIRROR_OG_LOCALE[other]}"
+                )
+            checked += 1
+    for b in bad[:8]:
+        errors.append(f"language head links: {b}")
+    if len(bad) > 8:
+        errors.append(f"language head links: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"Language head links: {checked} film page(s) in both languages, each "
+            f"with hreflang ru/en/x-default to the two addresses, og:url = canonical "
+            f"= its own {SITE_BASE} address, og:locale "
+            f"{MIRROR_OG_LOCALE['ru']}/{MIRROR_OG_LOCALE['en']}"
+        )
+
+
+check_language_head_links()
+
+
+LANG_TOGGLE_RE = re.compile(r'<a class="lang" href="([^"]*)" hreflang="([^"]*)"')
+
+
+def own_url_path(page):
+    rel = page.relative_to(ROOT).as_posix()
+    if rel.endswith("index.html"):
+        return "/" + rel[: -len("index.html")]
+    return "/" + rel
+
+
+def check_lang_toggle_mirror():
+    bad = []
+    checked = 0
+    for page in sorted(ROOT.rglob("*.html")):
+        rel = page.relative_to(ROOT)
+        if any(part.startswith(".") for part in rel.parts):
+            continue
+        found = LANG_TOGGLE_RE.findall(page.read_text(encoding="utf-8"))
+        if not found:
+            continue
+        own = own_url_path(page)
+        own_lang = "en" if rel.parts[0] == "en" else "ru"
+        for href, hreflang in found:
+            checked += 1
+            name = rel.as_posix()
+            if hreflang == own_lang:
+                bad.append(
+                    f"{name}: the language toggle declares hreflang={hreflang}, "
+                    f"which is the language this page already speaks"
+                )
+                continue
+            if hreflang not in ("ru", "en"):
+                bad.append(
+                    f"{name}: the language toggle declares hreflang={hreflang}, "
+                    f"which is not one of the two languages the site has"
+                )
+                continue
+            want = mirror_path(own)
+            if href != want:
+                bad.append(
+                    f"{name}: the language toggle is href={href!r} "
+                    f"hreflang={hreflang!r}, so it sends a reader to {href} instead "
+                    f"of to this page's own {hreflang} mirror {want!r}. A static "
+                    f"href is the one a reader without JavaScript follows, and the "
+                    f"inline script that corrects it at run time is exactly what "
+                    f"such a reader does not have"
+                )
+    for b in bad[:8]:
+        errors.append(f"language toggle: {b}")
+    if len(bad) > 8:
+        errors.append(f"language toggle: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"Language toggle: {checked} static toggle(s), each href = the page's "
+            f"own mirror in the language its hreflang names"
+        )
+
+
+check_lang_toggle_mirror()
+
+
+def og_image_faults(page, text, item, lang):
+    name = page.relative_to(ROOT).as_posix()
+    faults = []
+    site_image = f"{SITE_BASE}/static/ogimage.webp"
+    image = re.search(r'<meta property="og:image" content="([^"]+)"', text)
+    alt = re.search(r'<meta property="og:image:alt" content="([^"]+)"', text)
+    width = re.search(r'<meta property="og:image:width" content="([^"]+)"', text)
+    height = re.search(r'<meta property="og:image:height" content="([^"]+)"', text)
+    if image is None:
+        return [
+            f"{name}: og:image is missing, so the pair this check compares cannot"
+            f" be read"
+        ]
+    if alt is None:
+        faults.append(f"{name}: og:image:alt is missing")
+    if width is None or height is None:
+        faults.append(
+            f"{name}: og:image:{'width' if width is None else 'height'} is missing."
+            f" A declared size a consumer can reserve is what keeps a shared image"
+            f" from reflowing the card it is painted on"
+        )
+    if item is None:
+        if image.group(1) != site_image:
+            faults.append(
+                f"{name}: og:image is {image.group(1)}, which is not the shared"
+                f" {site_image} this page is expected to label"
+            )
+            return faults
+        want = "IT Movies"
+    else:
+        poster = (item.get("poster") or "").lstrip("/")
+        if poster and image.group(1) == f"{SITE_BASE}/{poster}":
+            want = item["titleRu"] if lang == "ru" else item["titleEn"]
+        elif image.group(1) == site_image:
+            want = "IT Movies"
+        else:
+            faults.append(
+                f"{name}: og:image is {image.group(1)}, which is neither this"
+                f" record's poster nor the {site_image}, so this check cannot say"
+                f" what its alt text should describe"
+            )
+            return faults
+    if alt is not None and unescape(alt.group(1)) != want:
+        faults.append(
+            f"{name}: og:image is {image.group(1)} and og:image:alt is"
+            f" {alt.group(1)!r}, which describes {want!r}. The alt text describes"
+            f" the image it labels, not the page it sits on: a shared site card"
+            f" labelled with a film title is a caption that is wrong about its own"
+            f" picture"
+        )
+    if width is not None and height is not None:
+        local = ROOT / image.group(1)[len(SITE_BASE) + 1:]
+        dims = webp_size(local) if local.is_file() else None
+        if dims is None:
+            faults.append(
+                f"{name}: og:image names {image.group(1)}, which is not a file in"
+                f" this repository, so its declared size cannot be checked against"
+                f" the picture itself"
+            )
+        elif (width.group(1), height.group(1)) != (str(dims[0]), str(dims[1])):
+            faults.append(
+                f"{name}: og:image:width/height are"
+                f" {width.group(1)}x{height.group(1)}, but {image.group(1)} is"
+                f" {dims[0]}x{dims[1]} on disk"
+            )
+    return faults
+
+
+def check_og_image_alt():
+    bad = []
+    checked = 0
+    root_checked = 0
+    by_slug = {item_slug(item): item for item in catalog}
+    for name in gen_pages.EN_ROOT_PAGES:
+        for rel in (name, f"en/{name}"):
+            page = ROOT / rel
+            if not page.is_file():
+                bad.append(f"{rel}: is missing, so this run skipped a root page")
+                continue
+            faults = og_image_faults(
+                page, page.read_text(encoding="utf-8"), None, None
+            )
+            root_checked += 1
+            if faults:
+                bad.extend(faults)
+                continue
+            checked += 1
+    for lang, prefix in MIRROR_ROOTS:
+        if not mirror_pages(prefix):
+            bad.append(
+                f"{prefix}/ holds no index.html, so no {lang} og:image was read and "
+                f"this run would pass on an empty set"
+            )
+            continue
+        for page in mirror_pages(prefix):
+            item = by_slug.get(page.parent.name)
+            if item is None:
+                bad.append(
+                    f"{page.relative_to(ROOT).as_posix()}: names no catalog record, "
+                    f"so there is nothing to say what its og:image should describe"
+                )
+                continue
+            faults = og_image_faults(page, page.read_text(encoding="utf-8"), item, lang)
+            if faults:
+                bad.extend(faults)
+                continue
+            checked += 1
+    for b in bad[:8]:
+        errors.append(f"og:image:alt: {b}")
+    if len(bad) > 8:
+        errors.append(f"og:image:alt: {len(bad) - 8} more problems")
+    if not bad:
+        site_image = f"{SITE_BASE}/static/ogimage.webp"
+        poster_pages = sum(
+            1
+            for lang, prefix in MIRROR_ROOTS
+            for page in mirror_pages(prefix)
+            if by_slug.get(page.parent.name, {}).get("poster")
+        )
+        print(
+            f"og:image:alt: {checked} page(s) -- {root_checked} root page(s) in both"
+            f" languages and the film pages -- each with og:image:width and"
+            f" og:image:height matching the file on disk, and each alt describing the"
+            f" image beside it: the record's own title on the {poster_pages} film"
+            f" page(s) carrying that poster, and IT Movies on the shared"
+            f" {site_image}"
+        )
+
+
+check_og_image_alt()
+
+
+def check_no_cyrillic_in_en_head():
+    bad = []
+    pages = sorted((ROOT / "en").rglob("*.html")) if (ROOT / "en").is_dir() else []
+    if not pages:
+        errors.append(
+            "en/ holds no .html, so this run compared no English page at all and "
+            "would pass on an empty page set"
+        )
+        return
+    for page in pages:
+        src = page.read_text(encoding="utf-8")
+        head = src.split("</head>", 1)[0]
+        for tag in EN_HEAD_TAGS:
+            i = head.find(tag)
+            if i == -1:
+                continue
+            j = head.find(">", i)
+            line = head[i: j if j != -1 else len(head)]
+            found = sorted(set(CYRILLIC.findall(line)))
+            if found:
+                bad.append(
+                    f"{page.relative_to(ROOT).as_posix()}: Cyrillic in {tag} "
+                    f"({''.join(found)!r})"
+                )
+    for b in bad[:8]:
+        errors.append(f"cyrillic in en head: {b}")
+    if len(bad) > 8:
+        errors.append(f"cyrillic in en head: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"Cyrillic in English head: none across {len(pages)} page(s) under en/ "
+            f"in {len(EN_HEAD_TAGS)} tag(s) ({', '.join(EN_HEAD_TAGS)})"
+        )
+
+
+check_no_cyrillic_in_en_head()
+
+
+def check_en_json_ld():
+    bad = []
+    pages = mirror_pages("en/films")
+    internal_prefix = SITE_BASE + "/en/"
+    for page in pages:
+        rel = page.relative_to(ROOT).as_posix()
+        graph = page_json_ld(page.read_text(encoding="utf-8"))
+        if graph is None:
+            bad.append(f"{rel}: no parsable JSON-LD graph")
+            continue
+        movie = next(
+            (n for n in graph if n.get("@type") in ("Movie", "TVSeries")), None
+        )
+        if not movie or movie.get("inLanguage") != "en":
+            bad.append(
+                f"{rel}: inLanguage is {movie.get('inLanguage') if movie else None}, "
+                f"expected 'en' -- the page is monolingual English"
+            )
+        for where, value in (
+            (w, v) for node in graph for w, v in graph_strings(node)
+        ):
+            if CYRILLIC.search(value):
+                bad.append(f"{rel}: Cyrillic in JSON-LD {where}")
+                break
+            if (where.endswith(".url") or where.endswith(".@id")) and value.startswith(
+                SITE_BASE
+            ) and not value.startswith(internal_prefix):
+                bad.append(f"{rel}: JSON-LD {where} = {value} is not under /en/")
+                break
+        for node in graph:
+            if node.get("@type") == "ItemList" and node.get("numberOfItems") == len(
+                catalog
+            ):
+                bad.append(
+                    f"{rel}: carries the whole-catalog ItemList "
+                    f"({len(catalog)} items). That graph belongs on the catalog "
+                    f"root, not on one film's English page"
+                )
+    if not pages:
+        bad.append("en/films/ holds no page, so no English graph was compared")
+    en_site = json.loads(gen_pages.index_ld_json(catalog, "en"))["@graph"]
+    website = next((n for n in en_site if n.get("@type") == "WebSite"), None)
+    itemlist = next((n for n in en_site if n.get("@type") == "ItemList"), None)
+    if not website or website.get("inLanguage") != ["en"]:
+        bad.append(
+            f"index_ld_json(lang='en'): WebSite inLanguage is "
+            f"{website.get('inLanguage') if website else None}, expected ['en']"
+        )
+    if not itemlist or itemlist.get("numberOfItems") != len(catalog):
+        bad.append(
+            f"index_ld_json(lang='en'): ItemList is "
+            f"{itemlist.get('numberOfItems') if itemlist else None}, expected "
+            f"{len(catalog)}"
+        )
+    else:
+        entries = itemlist.get("itemListElement", [])
+        wanted = [
+            (
+                i + 1,
+                item["titleEn"],
+                SITE_BASE + lang_path(f"/films/{item_slug(item)}/", "en"),
+            )
+            for i, item in enumerate(catalog)
+        ]
+        got = [
+            (e.get("position"), e.get("name"), e.get("url")) for e in entries
+        ]
+        if got != wanted:
+            for i, (a, b) in enumerate(zip(got, wanted)):
+                if a != b:
+                    bad.append(
+                        f"index_ld_json(lang='en'): ItemList entry {i} is "
+                        f"position/name/url {a}, expected {b}. The expected url is "
+                        f"built from lib.lang_path, not read back out of the "
+                        f"function under test"
+                    )
+                    break
+            else:
+                bad.append(
+                    f"index_ld_json(lang='en'): ItemList holds {len(got)} entries, "
+                    f"expected {len(wanted)}, and the common prefix matches"
+                )
+        wrong_id = [
+            e.get("@id") for e in entries if e.get("@id") != e.get("url")
+        ]
+        if wrong_id:
+            bad.append(
+                f"index_ld_json(lang='en'): {len(wrong_id)} ItemList @id value(s) "
+                f"disagree with their own url, first {wrong_id[0]!r}"
+            )
+    en_prefix = SITE_BASE + lang_path("/", "en")
+    for node in en_site:
+        for where, value in ((w, v) for w, v in graph_strings(node)):
+            if CYRILLIC.search(value):
+                bad.append(
+                    f"index_ld_json(lang='en'): Cyrillic in {where} ({value[:40]!r})"
+                )
+                break
+            if (
+                where.endswith(".url") or where.endswith(".@id")
+            ) and value.startswith(SITE_BASE) and not value.startswith(en_prefix):
+                bad.append(
+                    f"index_ld_json(lang='en'): {where} = {value} is not under "
+                    f"{en_prefix}"
+                )
+                break
+    for b in bad[:8]:
+        errors.append(f"en json-ld: {b}")
+    if len(bad) > 8:
+        errors.append(f"en json-ld: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"English JSON-LD: {len(pages)} film page(s) monolingual (inLanguage "
+            f"'en', no Cyrillic, every internal url/@id under {en_prefix}), "
+            f"and index_ld_json(lang='en') carries a WebSite in ['en'] plus an "
+            f"ItemList of {len(catalog)} entries rebuilt from lib.lang_path, every "
+            f"string Cyrillic-free"
+        )
+
+
+check_en_json_ld()
+
+
+def check_related_cards_language():
+    bad = []
+    checked = 0
+    for lang, prefix in MIRROR_ROOTS:
+        if not mirror_pages(prefix):
+            bad.append(
+                f"{prefix}/ holds no index.html, so no {lang} related card was read "
+                f"and this run would pass on an empty set"
+            )
+    for item in catalog:
+        rel = gen_pages.related_to(item, catalog)
+        for lang, prefix in MIRROR_ROOTS:
+            page = ROOT / prefix / item_slug(item) / "index.html"
+            if not page.exists():
+                continue
+            text = page.read_text(encoding="utf-8")
+            titles = re.findall(r'<span class="rc-title">(.*?)</span>', text, re.S)
+            hrefs = re.findall(r'<a class="rc" href="([^"]+)"', text)
+            want_titles = [r["titleRu"] if lang == "ru" else r["titleEn"] for r in rel]
+            want_hrefs = [
+                lang_path(f"/films/{item_slug(r)}/", lang) for r in rel
+            ]
+            if titles != want_titles:
+                bad.append(
+                    f"{prefix}/{item_slug(item)}/: noscript related titles "
+                    f"{titles[:2]} != generated {want_titles[:2]}"
+                )
+            if hrefs != want_hrefs:
+                bad.append(
+                    f"{prefix}/{item_slug(item)}/: noscript related hrefs "
+                    f"{hrefs[:2]} != generated {want_hrefs[:2]}"
+                )
+            checked += 1
+    for b in bad[:8]:
+        errors.append(f"related cards language: {b}")
+    if len(bad) > 8:
+        errors.append(f"related cards language: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"Related cards per language: {checked} page(s) in both languages, each "
+            f"no-JS card carrying the {RELATED_COUNT}-set of titles and hrefs for its "
+            f"own language (/films/ for ru, /en/films/ for en)"
+        )
+
+
+check_related_cards_language()
+
+
+def check_en_text_guard():
+    guard = getattr(gen_pages, "en_text_error", None)
+    if guard is None:
+        errors.append(
+            "en text guard: gen_pages exposes no en_text_error(), so there is "
+            "nothing that could stop the generator writing an English page with an "
+            "empty desc.en or titleEn"
+        )
+        return
+    bad = []
+    named = [item["titleEn"] for item in catalog if guard(item)]
+    if named:
+        bad.append(f"{len(named)} catalog record(s) would be refused, first {named[0]!r}")
+    probe = catalog[0]
+    ident = probe.get("imdbId") or "kp-" + str(probe.get("kpId"))
+    cases = {
+        "empty desc.en": lambda i: i["desc"].__setitem__("en", "   "),
+        "missing desc.en": lambda i: i["desc"].pop("en"),
+        "empty titleEn": lambda i: i.__setitem__("titleEn", ""),
+    }
+    for name, mutate in cases.items():
+        broken = copy.deepcopy(probe)
+        mutate(broken)
+        message = guard(broken)
+        if not message or ident not in str(message):
+            bad.append(
+                f"{name}: en_text_error returned {message!r}, which does not name "
+                f"the record ({ident})"
+            )
+            continue
+        try:
+            gen_pages.render(broken, [], "en")
+        except SystemExit as exc:
+            if ident not in str(exc):
+                bad.append(
+                    f"{name}: render() raised SystemExit({exc}) without naming the "
+                    f"record ({ident})"
+                )
+        else:
+            bad.append(
+                f"{name}: render() returned a page for an English record with "
+                f"{name}. The guard is a function nobody calls"
+            )
+    for b in bad:
+        errors.append(f"en text guard: {b}")
+    if not bad:
+        print(
+            f"English text guard: all {len(catalog)} records carry a non-empty "
+            f"titleEn and desc.en; {len(cases)} broken record(s) each named and "
+            f"each refused by render() with SystemExit"
+        )
+
+
+check_en_text_guard()
+
+
+def check_single_description_per_page():
+    sources = (
+        "js/film.js", "js/film.min.js", "js/i18n.js", "js/i18n.min.js",
+    )
+    bad = []
+    for name in sources:
+        path = ROOT / name
+        if not path.exists():
+            bad.append(f"{name} is missing")
+            continue
+        text = path.read_text(encoding="utf-8")
+        if "descAlt" in text:
+            bad.append(f"{name} still names descAlt ({text.count('descAlt')}x)")
+
+    gen_text = (ROOT / "tools" / "gen_pages.py").read_text(encoding="utf-8")
+    for token in ("descAlt", "desc_alt", "film-desc-alt"):
+        if token in gen_text:
+            bad.append(
+                f"tools/gen_pages.py still renders {token} "
+                f"({gen_text.count(token)}x), so regenerating puts the block back"
+            )
+
+    for lang, prefix in MIRROR_ROOTS:
+        pages = mirror_pages(prefix)
+        if not pages:
+            bad.append(
+                f"{prefix}/ holds no index.html, so no {lang} page was read and "
+                "this check would pass on an empty set"
+            )
+            continue
+        for page in pages:
+            slug = page.parent.name
+            item = next((i for i in catalog if item_slug(i) == slug), None)
+            if item is None:
+                bad.append(f"{page_url(page)}: no catalog record for this slug")
+                continue
+            other = "en" if lang == "ru" else "ru"
+            text = page.read_text(encoding="utf-8")
+            match = re.search(
+                r"<script>window\.FILM_PAGE = (.*?);</script>", text, re.S
+            )
+            if match is None:
+                bad.append(f"{page_url(page)}: no window.FILM_PAGE assignment")
+                continue
+            try:
+                payload = json.loads(match.group(1))
+            except json.JSONDecodeError as exc:
+                bad.append(f"{page_url(page)}: window.FILM_PAGE is not JSON ({exc})")
+                continue
+            shipped = (payload.get("item") or {})
+            own = gen_pages.desc_of(item, lang)
+            if shipped.get("desc") != own:
+                bad.append(
+                    f"{page_url(page)}: FILM_PAGE.item.desc is "
+                    f"{type(shipped.get('desc')).__name__} "
+                    f"{str(shipped.get('desc'))[:60]!r}, not this page's own {lang} "
+                    "description as a string"
+                )
+            if shipped.get("descSeo") != gen_pages.seo_desc(own):
+                bad.append(
+                    f"{page_url(page)}: FILM_PAGE.item.descSeo is "
+                    f"{type(shipped.get('descSeo')).__name__} "
+                    f"{str(shipped.get('descSeo'))[:60]!r}, not this page's own {lang} "
+                    "SEO description as a string"
+                )
+            dumped = json.dumps(payload, ensure_ascii=False)
+            if gen_pages.desc_of(item, other) in dumped:
+                bad.append(
+                    f"{page_url(page)}: the {other} description is still inside "
+                    "window.FILM_PAGE, so this URL ships the other language's text"
+                )
+            visible = re.sub(
+                r"<script>window\.FILM_PAGE = .*?</script>", "", text, flags=re.S
+            )
+            bodies = re.findall(r'<p class="film-desc">', visible)
+            if len(bodies) != 1:
+                bad.append(
+                    f"{page_url(page)}: {len(bodies)} p.film-desc block(s), "
+                    "expected exactly 1 (the page's own language)"
+                )
+                continue
+            if gen_pages.esc(own) not in visible:
+                bad.append(
+                    f"{page_url(page)}: the {lang} description is not in the page"
+                )
+            if gen_pages.esc(gen_pages.desc_of(item, other)) in visible:
+                bad.append(
+                    f"{page_url(page)}: the {other} description is still in the page "
+                    "outside window.FILM_PAGE, so this URL still publishes the other "
+                    "language's text"
+                )
+    for b in bad[:8]:
+        errors.append(f"single description: {b}")
+    if len(bad) > 8:
+        errors.append(f"single description: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"One description per page: {len(sources)} source file(s) and the "
+            "generator name no descAlt, and every page in films/ and en/films/ "
+            "carries its own description as a plain string in FILM_PAGE and as the "
+            "only p.film-desc, with the other language in neither"
+        )
+
+
+check_single_description_per_page()
+
+
+EN_ROOT_PAGES = ("index.html", "about.html", "privacy.html")
+RU_ROOT_URL = dict(ROOT_URL_PATHS)
+EN_ROOT_URL = {name: lang_path(path, "en") for name, path in RU_ROOT_URL.items()}
+EN_ROOT_MUTATIONS = (
+    ("index.html", "subtitle"),
+    ("index.html", "boot-fallback"),
+    ("about.html", "about-noscript"),
+    ("privacy.html", "privacy-body"),
+    ("privacy.html", "lang-label"),
+)
+
+
+def _en_root_missing_variant(src, page, name):
+    pattern = re.compile(
+        r'[ \t]*<template id="en:%s">.*?</template>\n?' % re.escape(name), re.S
+    )
+    return pattern.sub("", src, count=1)
+
+
+EN_PARITY_DROP = {
+    "boot-fallback": ("br", "span"),
+    "about-noscript": ("p",),
+}
+VOID_TAGS = set(RC_VOID_TAGS)
+CHANNEL_ARIA_KEYS = ("telegramChannel", "maxChannel")
+RU_REGION_RE = re.compile(
+    r"<!--\s*begin:ru:([a-z0-9-]+)\s*-->(.*?)<!--\s*end:ru:\1\s*-->", re.S
+)
+EN_TEMPLATE_BLOCK_RE = re.compile(
+    r'<template id="en:([a-z0-9-]+)">(.*?)</template>', re.S
+)
+
+
+def _region_fragments(path):
+    text = (ROOT / path).read_text(encoding="utf-8")
+    return text, dict(RU_REGION_RE.findall(text)), dict(
+        EN_TEMPLATE_BLOCK_RE.findall(text)
+    )
+
+
+def _tag_balance(fragment):
+    opens = {}
+    closes = {}
+    for m in re.finditer(r"<(/?)([a-zA-Z][^\s/>]*)", fragment):
+        tag = m.group(2).lower()
+        if tag in VOID_TAGS:
+            continue
+        table = closes if m.group(1) else opens
+        table[tag] = table.get(tag, 0) + 1
+    return {
+        tag: (opens.get(tag, 0), closes.get(tag, 0))
+        for tag in sorted(set(opens) | set(closes))
+        if opens.get(tag, 0) != closes.get(tag, 0)
+    }
+
+
+def _channel_aria_labels(fragment):
+    return re.findall(r'<a[^>]+class="ch-link[^"]*"[^>]+aria-label="([^"]*)"', fragment)
+
+
+def _renumber(nodes, dropped):
+    dropped = set(dropped)
+    mapping = {old: new for new, old in
+               enumerate(i for i in range(len(nodes)) if i not in dropped)}
+    out = []
+    for i, (tag, classes, parent) in enumerate(nodes):
+        if i in dropped:
+            continue
+        out.append(
+            (tag, classes, mapping.get(parent, None) if parent is not None else None)
+        )
+    return out
+
+
+def _region_parity_problems():
+    problems = []
+    labels = parse_i18n()
+    for name in EN_ROOT_PAGES:
+        _, ru_blocks, en_blocks = _region_fragments(name)
+        for block in sorted(set(ru_blocks) | set(en_blocks)):
+            ru = ru_blocks.get(block)
+            en = en_blocks.get(block)
+            if ru is None or en is None:
+                problems.append(
+                    f"{name}: block {block!r} has only one of the two copies"
+                )
+                continue
+            for lang, fragment in (("ru", ru), ("en", en)):
+                unbalanced = _tag_balance(fragment)
+                if unbalanced:
+                    problems.append(
+                        f"{name}: the {lang} copy of {block!r} has unbalanced tags "
+                        f"{unbalanced}. A stray end tag is discarded by the parser and"
+                        " never shows in a screenshot, so nothing else would see it"
+                    )
+            ru_aria = _channel_aria_labels(ru)
+            en_aria = _channel_aria_labels(en)
+            if ru_aria and ru_aria != [labels["ru"][key] for key in CHANNEL_ARIA_KEYS]:
+                problems.append(
+                    f"{name}: the ru copy of {block!r} carries channel aria-labels "
+                    f"{ru_aria}, which are not I18N.ru's"
+                )
+            if en_aria and en_aria != [labels["en"][key] for key in CHANNEL_ARIA_KEYS]:
+                problems.append(
+                    f"{name}: the en copy of {block!r} carries channel aria-labels "
+                    f"{en_aria}, which are not I18N.en's. This copy paints in the"
+                    " tier with no script to correct it"
+                )
+            drop = EN_PARITY_DROP.get(block, ())
+            tree = RcCardTree()
+            tree.feed(ru)
+            tree.close()
+            dropped = []
+            for tag in drop:
+                for i, node in enumerate(tree.nodes):
+                    if node[0] == tag:
+                        dropped.append(i)
+                        break
+                else:
+                    problems.append(
+                        f"{name}: block {block!r} was allowed to differ by a <{tag}>,"
+                        " and there is no longer one. The allowance is now stale: it"
+                        " either hides a real difference or should be deleted"
+                    )
+            ru_nodes = _renumber(tree.nodes, dropped)
+            right = RcCardTree()
+            right.feed(en)
+            right.close()
+            divergence = rc_first_divergence(ru_nodes, right.nodes)
+            if divergence is not None:
+                i, a, b = divergence
+                problems.append(
+                    f"{name}: block {block!r} -- the ru copy and the en copy are not the"
+                    f" same document at node {i}: {a} against {b}. The two copies are"
+                    " one block in two languages, so a moved, renamed or missing"
+                    " element is a structural edit made in one language only"
+                )
+    return problems
+
+
+VHTML_HREF_RE = re.compile(r"href='(/[^']*)'")
+
+
+def _i18n_vhtml_link_problems():
+    labels = parse_i18n()
+    problems = []
+
+    def walk(node, prefix=""):
+        for key, value in node.items():
+            path = f"{prefix}{key}"
+            if isinstance(value, dict):
+                walk(value, path + ".")
+                continue
+            for href in VHTML_HREF_RE.findall(str(value)):
+                if lang == "en":
+                    if not href.startswith("/en/"):
+                        problems.append(
+                            f"js/i18n.js: I18N.en.{path} carries href='{href}', which"
+                            " is not under /en/. This string is injected as HTML"
+                            " (v-html), so no langPath() can reach it: on /en/about.html"
+                            " it renders a link out of the English tree"
+                        )
+                elif href.startswith("/en/"):
+                    problems.append(
+                        f"js/i18n.js: I18N.ru.{path} carries href='{href}', which is"
+                        " the English address on the Russian page"
+                    )
+    for lang in ("ru", "en"):
+        walk(labels[lang], "")
+    return problems
+
+
+def check_en_root_pages():
+    bad = []
+    transform = getattr(gen_pages, "en_root_page", None)
+    if transform is None:
+        errors.append(
+            "en root pages: gen_pages exposes no en_root_page(), so nothing builds "
+            "en/index.html, en/about.html or en/privacy.html and the English copies "
+            "of three hand-maintained pages would have to be hand-edited -- which "
+            "is the failure this transform exists to prevent"
+        )
+        return
+    strings_for = getattr(gen_pages, "en_page_strings", None)
+    if strings_for is None:
+        errors.append(
+            "en root pages: gen_pages exposes no en_page_strings(), so no single "
+            "source states what the English <title>, description and channel "
+            "aria-labels of these three pages are"
+        )
+        return
+
+    for name in EN_ROOT_PAGES:
+        target = ROOT / "en" / name
+        if not target.exists():
+            bad.append(f"en/{name} is missing -- run gen_pages.py")
+            continue
+        text = target.read_text(encoding="utf-8")
+        try:
+            fresh = transform(ROOT / name)
+        except SystemExit as exc:
+            fresh = None
+            bad.append(
+                f"en/{name}: the transform refuses the Russian source ({exc})."
+                " Freshness cannot be judged, and the blocks below still ran"
+            )
+        except Exception as exc:  # noqa: BLE001
+            fresh = None
+            bad.append(f"en/{name}: the transform raised {exc!r} on the source")
+        if fresh is not None and fresh != text:
+            bad.append(
+                f"en/{name} is stale -- run gen_pages.py. The English page is "
+                "generated from the Russian one by rule, so a hand-edit is either "
+                "overwritten or is the only reason the file says what it says"
+            )
+        want_url = SITE_BASE + EN_ROOT_URL[name]
+        ru_url = SITE_BASE + RU_ROOT_URL[name]
+        canonical = re.search(r'rel="canonical" href="([^"]+)"', text)
+        if canonical is None or canonical.group(1) != want_url:
+            bad.append(
+                f"en/{name}: canonical is "
+                f"{canonical.group(1) if canonical else None}, expected {want_url} "
+                "-- the English page must name itself, or the two addresses "
+                "compete for the same content"
+            )
+        ogurl = re.search(r'<meta property="og:url" content="([^"]+)"', text)
+        if ogurl is None or ogurl.group(1) != want_url:
+            bad.append(
+                f"en/{name}: og:url is {ogurl.group(1) if ogurl else None}, "
+                f"expected {want_url}"
+            )
+        ogl = re.search(r'<meta property="og:locale" content="([^"]+)"', text)
+        if ogl is None or ogl.group(1) != MIRROR_OG_LOCALE["en"]:
+            bad.append(
+                f"en/{name}: og:locale is {ogl.group(1) if ogl else None}, expected "
+                f"{MIRROR_OG_LOCALE['en']}"
+            )
+        oga = re.search(
+            r'<meta property="og:locale:alternate" content="([^"]+)"', text
+        )
+        if oga is None or oga.group(1) != MIRROR_OG_LOCALE["ru"]:
+            bad.append(
+                f"en/{name}: og:locale:alternate is "
+                f"{oga.group(1) if oga else None}, expected "
+                f"{MIRROR_OG_LOCALE['ru']}"
+            )
+        got_alts = {t.get("hreflang"): t.get("href") for t in link_tag_attrs(text, "alternate")}
+        want_alts = {"ru": ru_url, "en": want_url, "x-default": ru_url}
+        for key, expected in want_alts.items():
+            if got_alts.get(key) != expected:
+                bad.append(
+                    f"en/{name}: hreflang={key} is {got_alts.get(key)}, expected "
+                    f"{expected}"
+                )
+        if len(got_alts) != len(MIRROR_HREFLANG):
+            bad.append(
+                f"en/{name}: {len(got_alts)} rel=alternate link(s), expected "
+                f"{len(MIRROR_HREFLANG)} ({', '.join(MIRROR_HREFLANG)})"
+            )
+        if '<html lang="en">' not in text:
+            bad.append(
+                f'en/{name}: no <html lang="en">. The language of a page comes from '
+                "its path, and the document element is what a crawler and a screen "
+                "reader read before any script runs"
+            )
+        strings = strings_for(name)
+        title_m = re.search(r"<title[^>]*>(.*?)</title>", text, re.S)
+        if title_m is None:
+            bad.append(f"en/{name}: no <title>")
+        elif unescape(title_m.group(1).strip()) != strings["title"]:
+            bad.append(
+                f"en/{name}: <title> is {title_m.group(1).strip()!r}, expected the"
+                f" English {strings['title']!r} from gen_pages.en_page_strings(). A"
+                " hand-typed head is how an English address ends up serving a"
+                " Russian title"
+            )
+        for tag, attr, want in (
+            ('name="description"', "content", strings["desc"]),
+            ('property="og:title"', "content", strings["title"]),
+            ('property="og:description"', "content", strings["desc"]),
+        ):
+            i = text.find(tag)
+            if i == -1:
+                bad.append(f"en/{name}: no {tag} tag")
+                continue
+            j = text.find(">", i)
+            line = text[i: j if j != -1 else len(text)]
+            m2 = re.search(attr + r'="([^"]*)"', line)
+            got = unescape(m2.group(1)) if m2 else None
+            if got != want:
+                bad.append(
+                    f"en/{name}: {tag} is {got!r}, expected the English {want!r} "
+                    "from gen_pages.en_page_strings(). A hand-typed head is how an "
+                    "English address ends up serving a Russian title"
+                )
+        found = sorted(set(CYRILLIC.findall(text)))
+        if found:
+            lines = [
+                (n, line.strip())
+                for n, line in enumerate(text.splitlines(), 1)
+                if CYRILLIC.search(line)
+            ]
+            bad.append(
+                f"en/{name}: {''.join(found)!r} ({len(lines)} line(s)) is still "
+                f"Russian, first at line {lines[0][0]}: {lines[0][1][:90]!r}. This "
+                "page is served at an English address, so any Cyrillic left in it "
+                "is the other language leaking through the transform"
+            )
+        for tag in re.findall(r"<a\b[^>]*>", text):
+            href = re.search(r'href="(/[^"]*)"', tag)
+            if href is None or 'class="lang"' in tag:
+                continue
+            href = href.group(1)
+            if href.startswith("/films/") or href in ("/", "/about.html", "/privacy.html"):
+                bad.append(
+                    f"en/{name}: links to {href}, which is the Russian address. A "
+                    "reader who follows it leaves the English site, and a crawler "
+                    "finds two pages for one title"
+                )
+        if "?lang=" in text:
+            bad.append(
+                f'en/{name}: carries a ?lang= parameter. The language comes from the '
+                "path only"
+            )
+        graph = page_json_ld(text)
+        if graph is None:
+            bad.append(f"en/{name}: no parsable JSON-LD block")
+        else:
+            en_prefix = SITE_BASE + lang_path("/", "en")
+            for node in graph:
+                if "inLanguage" in node and node["inLanguage"] != ["en"]:
+                    bad.append(
+                        f"en/{name}: JSON-LD inLanguage is {node['inLanguage']}, "
+                        "expected ['en'] -- the page ships one language"
+                    )
+            for node in graph:
+                for where, value in graph_strings(node):
+                    if CYRILLIC.search(value):
+                        bad.append(f"en/{name}: Cyrillic in JSON-LD {where}")
+                        break
+                    if (
+                        where.endswith(".url") or where.endswith(".@id")
+                    ) and value.startswith(SITE_BASE) and not value.startswith(
+                        en_prefix
+                    ):
+                        bad.append(
+                            f"en/{name}: JSON-LD {where} = {value} is not under "
+                            f"{en_prefix}"
+                        )
+                        break
+        if "data-lang-block" in text:
+            bad.append(
+                f"en/{name}: still carries a data-lang-block attribute. This page"
+                " speaks one language, so the gate that used to pick between the two"
+                " blocks is the mechanism this branch removed and it has nothing left"
+                " to gate"
+            )
+        if re.search(r'querySelectorAll\("\[data-lang-block\]"\)', text):
+            bad.append(
+                f"en/{name}: still carries the show/hide loop over"
+                ' [data-lang-block]. One block, always shown, is not a language gate'
+            )
+
+    for name in EN_ROOT_PAGES:
+        ru_src_text = (ROOT / name).read_text(encoding="utf-8")
+        ru_alts = {
+            t.get("hreflang"): t.get("href") for t in link_tag_attrs(ru_src_text, "alternate")
+        }
+        want_ru_alts = {
+            "ru": SITE_BASE + RU_ROOT_URL[name],
+            "en": SITE_BASE + EN_ROOT_URL[name],
+            "x-default": SITE_BASE + RU_ROOT_URL[name],
+        }
+        for key, expected in want_ru_alts.items():
+            if ru_alts.get(key) != expected:
+                bad.append(
+                    f"{name}: hreflang={key} is {ru_alts.get(key)}, expected "
+                    f"{expected}. hreflang is a two-way claim: the English page "
+                    "points here, so a one-way set here tells a crawler the two "
+                    "addresses are not translations of each other"
+                )
+
+    index_en = ROOT / "en" / "index.html"
+    if index_en.exists():
+        block = re.search(
+            r"<!-- begin:catalog-noscript -->(.*?)<!-- end:catalog-noscript -->",
+            index_en.read_text(encoding="utf-8"),
+            re.S,
+        )
+        want = gen_pages.index_noscript(catalog, "en")
+        norm = lambda s: re.sub(r"\s+", " ", s).strip()
+        if block is None or norm(block.group(1)) != norm(want):
+            bad.append(
+                "en/index.html: the no-JS catalog block is not the English one "
+                "from gen_pages.index_noscript(catalog, 'en') -- Russian headings "
+                "and /films/ links under an English address"
+            )
+        else:
+            links = re.findall(r'<li><a href="([^"]+)">', block.group(1))
+            if not all(l.startswith("/en/films/") for l in links):
+                bad.append(
+                    "en/index.html: no-JS catalog links are not all under /en/films/, "
+                    f"first {links[0]!r}"
+                )
+
+    for name, marker in EN_ROOT_MUTATIONS:
+        source = ROOT / name
+        if not source.exists():
+            continue
+        doctored = _en_root_missing_variant(source.read_text(encoding="utf-8"), name, marker)
+        if doctored == source.read_text(encoding="utf-8"):
+            bad.append(
+                f"{name}: there is no <template id=\"en:{marker}\"> to drop, so the"
+                " mutation below tests nothing -- the generator would have nothing"
+                " to fail on"
+            )
+            continue
+        try:
+            transform(ROOT / name, doctored)
+        except SystemExit as exc:
+            message = str(exc)
+            if marker not in message or name not in message:
+                bad.append(
+                    f"{name}: dropping the en:{marker} copy raised SystemExit "
+                    f"({message}) without naming both the file and the marker"
+                )
+        except Exception as exc:  # noqa: BLE001
+            bad.append(
+                f"{name}: dropping the en:{marker} copy raised {exc!r} instead of "
+                "the SystemExit this check asserts on, so a crash here would read "
+                "as a pass"
+            )
+        else:
+            bad.append(
+                f"{name}: the transform ran with no en:{marker} copy and returned "
+                "a page. A silently dropped block is an English page with a hole "
+                "in it, which is what the build failure is for"
+            )
+
+    for name in EN_ROOT_PAGES:
+        try:
+            transform(ROOT / name)
+        except SystemExit as exc:
+            bad.append(
+                f"{name}: the transform refuses this source ({exc}). The freshness "
+                "check above could not run either, and this block is inside the one "
+                "place that turns a build failure into a reported finding rather "
+                "than an aborted run"
+            )
+        except Exception as exc:  # noqa: BLE001
+            bad.append(f"{name}: the transform raised {exc!r} on the committed source")
+
+    bad.extend(_i18n_vhtml_link_problems())
+    bad.extend(_region_parity_problems())
+
+    for b in bad[:8]:
+        errors.append(f"en root pages: {b}")
+    if len(bad) > 8:
+        errors.append(f"en root pages: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"English root pages: en/{', en/'.join(EN_ROOT_PAGES)} generated from the "
+            f"Russian sources by gen_pages.en_root_page(), each <html lang=\"en\">, "
+            f"canonical and og:url = {SITE_BASE}{EN_ROOT_URL['about.html']} and its "
+            "siblings, hreflang ru/en/x-default, head strings from "
+            "gen_pages.en_page_strings(), zero Cyrillic anywhere in the file, no link "
+            "to a Russian address, every i18n v-html href language-correct, every "
+            "marked block's two copies tag-balanced and structurally equal ("
+            f"the Russian copy of {sorted(EN_PARITY_DROP)} is allowed exactly the"
+            " extra nodes named there), and "
+            f"{len(EN_ROOT_MUTATIONS)} missing-variant mutation(s) each refused by "
+            "name"
+        )
+
+
+check_en_root_pages()
+
+
+def _canonical_hrefs(text):
+    return [
+        m.group(1)
+        for tag in re.findall(r"<link\b[^>]*>", text)
+        if re.search(r'\brel\s*=\s*"canonical"', tag)
+        for m in [re.search(r'\bhref\s*=\s*"([^"]+)"', tag)]
+        if m
+    ]
+
+
+SITEMAP_NS = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
+
+
+def generated_pages():
+    out = []
+    for name in EN_ROOT_PAGES:
+        out.append(ROOT / name)
+        out.append(ROOT / "en" / name)
+    for _lang, prefix in MIRROR_ROOTS:
+        out.extend(mirror_pages(prefix))
+    return [p for p in out if p.exists()]
+
+
+def self_url(page):
+    rel = page.relative_to(ROOT).as_posix()
+    if rel == "index.html":
+        rel = ""
+    elif rel.endswith("/index.html"):
+        rel = rel[: -len("index.html")]
+    return SITE_BASE + "/" + rel
+
+
+def site_path_from_url(url):
+    if not isinstance(url, str) or not url.startswith(SITE_BASE + "/"):
+        return None
+    rel = url[len(SITE_BASE) + 1:]
+    if not rel:
+        rel = "index.html"
+    elif rel.endswith("/"):
+        rel += "index.html"
+    return ROOT / rel
+
+
+def url_path(url):
+    if not isinstance(url, str) or not url.startswith(SITE_BASE + "/"):
+        return None
+    return "/" + url[len(SITE_BASE) + 1:]
+
+
+def expected_site_urls():
+    urls = []
+    for lang in ("ru", "en"):
+        for item in catalog:
+            urls.append(SITE_BASE + lang_path(f"/films/{item_slug(item)}/", lang))
+        for name in sorted(RU_ROOT_URL):
+            urls.append(SITE_BASE + lang_path(RU_ROOT_URL[name], lang))
+    return urls
+
+
+def check_canonical_is_self():
+    bad = []
+    pages = generated_pages()
+    if not pages:
+        errors.append(
+            "canonical self: no generated page was read, so this run would pass on an "
+            "empty set"
+        )
+        return
+    for page in pages:
+        rel = page.relative_to(ROOT).as_posix()
+        want = self_url(page)
+        hrefs = _canonical_hrefs(page.read_text(encoding="utf-8"))
+        if len(hrefs) != 1 or hrefs[0] != want:
+            bad.append(
+                f"{rel}: canonical is {hrefs[0] if len(hrefs) == 1 else hrefs}, "
+                f"expected exactly one equal to {want}. A canonical that names the "
+                "other language, or none at all, tells a crawler the two addresses "
+                "are not the same page in two languages"
+            )
+    for b in bad[:8]:
+        errors.append(f"canonical self: {b}")
+    if len(bad) > 8:
+        errors.append(f"canonical self: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"Canonical is self: {len(pages)} generated page(s) across both "
+            "languages, each with exactly one canonical equal to its own "
+            f"{SITE_BASE} address"
+        )
+
+
+check_canonical_is_self()
+
+
+def check_hreflang_targets_exist():
+    bad = []
+    pages = generated_pages()
+    if not pages:
+        errors.append(
+            "hreflang targets: no generated page was read, so this run would pass on "
+            "an empty set"
+        )
+        return
+    for page in pages:
+        rel = page.relative_to(ROOT).as_posix()
+        tags = link_tag_attrs(page.read_text(encoding="utf-8"), "alternate")
+        alts = {tag.get("hreflang"): tag.get("href") for tag in tags}
+        counts = collections.Counter(tag.get("hreflang") for tag in tags)
+        for key in sorted(k for k, n in counts.items() if n > 1):
+            bad.append(
+                f"{rel}: {counts[key]} rel=alternate tag(s) declare hreflang={key}, "
+                "so a crawler cannot tell which of them is the claim"
+            )
+        for key in MIRROR_HREFLANG:
+            if key not in alts:
+                bad.append(f"{rel}: no hreflang={key}")
+        for tag in tags:
+            key = tag.get("hreflang")
+            href = tag.get("href")
+            target = site_path_from_url(href)
+            if target is None:
+                bad.append(
+                    f"{rel}: hreflang={key} is {href!r}, which is not an address "
+                    f"under {SITE_BASE}, so it cannot be resolved to a file"
+                )
+            elif not target.exists():
+                bad.append(
+                    f"{rel}: hreflang={key} = {href} resolves to "
+                    f"{target.relative_to(ROOT).as_posix()}, which does not exist. "
+                    "hreflang is a claim about another address, and this one is "
+                    "dangling"
+                )
+        if "x-default" in alts and "ru" in alts and alts["x-default"] != alts["ru"]:
+            bad.append(
+                f"{rel}: x-default is {alts['x-default']} and ru is {alts['ru']}. "
+                "x-default names the fallback, which is the Russian address"
+            )
+    for b in bad[:8]:
+        errors.append(f"hreflang targets: {b}")
+    if len(bad) > 8:
+        errors.append(f"hreflang targets: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"hreflang targets: {len(pages)} generated page(s) across both "
+            f"languages, every hreflang ru/en/x-default resolving to a file under "
+            f"{SITE_BASE}, x-default equal to the ru target"
+        )
+
+
+check_hreflang_targets_exist()
+
+
+def check_en_is_english():
+    bad = []
+    pages = sorted((ROOT / "en").rglob("*.html")) if (ROOT / "en").is_dir() else []
+    if not pages:
+        errors.append(
+            "en is english: en/ holds no .html, so this run compared no English page "
+            "at all and would pass on an empty set"
+        )
+        return
+    by_slug = {item_slug(item): item for item in catalog}
+    for page in pages:
+        rel = page.relative_to(ROOT).as_posix()
+        text = page.read_text(encoding="utf-8")
+        html = re.search(r'<html lang="([^"]*)"', text)
+        if html is None or html.group(1) != "en":
+            bad.append(
+                f"{rel}: <html lang> is "
+                f"{html.group(1) if html else None!r}, expected 'en'. The language "
+                "of a page comes from its path, and the document element is what a "
+                "crawler and a screen reader read before any script runs"
+            )
+        title = re.search(r"<title[^>]*>(.*?)</title>", text, re.S)
+        if title is None or not title.group(1).strip():
+            bad.append(f"{rel}: no <title>")
+        elif CYRILLIC.search(title.group(1)):
+            bad.append(
+                f"{rel}: <title> is {title.group(1).strip()!r}, which is Russian. An "
+                "English address serving a Russian title is the failure this page "
+                "set exists to prevent"
+            )
+        ogl = re.search(r'<meta property="og:locale" content="([^"]+)"', text)
+        if ogl is None or ogl.group(1) != MIRROR_OG_LOCALE["en"]:
+            bad.append(
+                f"{rel}: og:locale is {ogl.group(1) if ogl else None}, expected "
+                f"{MIRROR_OG_LOCALE['en']}"
+            )
+        nodes = []
+        for block in re.findall(
+            r'<script type="application/ld\+json">(.*?)</script>', text, re.S
+        ):
+            try:
+                parsed = json.loads(block)
+            except json.JSONDecodeError as exc:
+                bad.append(f"{rel}: a JSON-LD block does not parse ({exc})")
+                continue
+            if isinstance(parsed, dict):
+                nodes.extend(parsed.get("@graph", [parsed]))
+        if not nodes:
+            bad.append(f"{rel}: no parsable JSON-LD")
+        declared = 0
+        for node in nodes:
+            if not isinstance(node, dict) or "inLanguage" not in node:
+                continue
+            declared += 1
+            values = node["inLanguage"] if isinstance(node["inLanguage"], list) else [
+                node["inLanguage"]
+            ]
+            if values != ["en"]:
+                bad.append(
+                    f"{rel}: JSON-LD inLanguage is {node['inLanguage']!r}, expected "
+                    "'en' -- this page ships one language"
+                )
+        if nodes and declared == 0:
+            bad.append(
+                f"{rel}: no JSON-LD node declares inLanguage, so a crawler reading "
+                "the structured data alone cannot tell the page's language"
+            )
+        item = (
+            by_slug.get(page.parent.name)
+            if page.parent.parent.name == "films"
+            else None
+        )
+        if item is not None:
+            node = next(
+                (
+                    n
+                    for n in nodes
+                    if isinstance(n, dict)
+                    and n.get("@type") in ("Movie", "TVSeries")
+                ),
+                None,
+            )
+            if node is None:
+                bad.append(f"{rel}: no Movie/TVSeries node in the JSON-LD")
+            elif node.get("name") != item["titleEn"]:
+                bad.append(
+                    f"{rel}: JSON-LD name is {node.get('name')!r}, expected the "
+                    f"record's English titleEn {item['titleEn']!r}. The comparison is "
+                    "against titleEn, never against titleRu: nine records carry "
+                    "titleRu == titleEn and an en page whose name equals the Russian "
+                    "one is correct there"
+                )
+    for b in bad[:8]:
+        errors.append(f"en is english: {b}")
+    if len(bad) > 8:
+        errors.append(f"en is english: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"English pages: {len(pages)} file(s) under en/, each <html lang=\"en\">, "
+            "a Cyrillic-free <title>, og:locale "
+            f"{MIRROR_OG_LOCALE['en']}, JSON-LD declaring inLanguage 'en' and, on "
+            f"every film page, the record's own English title"
+        )
+
+
+check_en_is_english()
+
+
+ADDRESS_RE = re.compile(r"(?:https?://[^\s\"'<>]+|/[^\s\"'<>]*)")
+
+
+def check_404_not_mirrored():
+    bad = []
+    en_home = lang_path("/", "en")
+    if (ROOT / "en" / "404.html").exists():
+        bad.append(
+            "en/404.html exists. The 404 stays Russian by decision, and a mirrored "
+            "copy would be served at one address per miss"
+        )
+    src = ROOT / "404.html"
+    if not src.exists():
+        bad.append("404.html is missing")
+    else:
+        text = src.read_text(encoding="utf-8")
+        addresses = set()
+        for value in re.findall(
+            r'(?:href|src|srcset|content)="([^"]*)"', text
+        ):
+            addresses.update(ADDRESS_RE.findall(value))
+        for address in sorted(addresses):
+            if address.startswith(SITE_BASE + "/"):
+                path = url_path(address)
+            elif "://" in address:
+                continue
+            else:
+                path = address
+            if path is not None and (
+                path.startswith(en_home) or path.rstrip("/") == en_home.rstrip("/")
+            ):
+                bad.append(
+                    f"404.html carries {address}, which is an English address. The "
+                    "404 is not mirrored, so it names a page that is not there -- a "
+                    "link, a srcset candidate or a content URL, none of them resolves"
+                )
+    for b in bad:
+        errors.append(f"404 not mirrored: {b}")
+    if not bad:
+        print(
+            f"404 not mirrored: en/404.html absent and 404.html carries no address "
+            f"under {SITE_BASE}{en_home} in any href, src, srcset or content attribute"
+        )
+
+
+check_404_not_mirrored()
+
+
+def check_sitemap_lists_every_page():
+    bad = []
+    expected = expected_site_urls()
+    wanted = set(expected)
+    file = ROOT / "sitemap.xml"
+    if not file.exists():
+        errors.append("sitemap coverage: sitemap.xml is missing")
+        return
+    try:
+        tree = ElementTree.fromstring(file.read_text(encoding="utf-8"))
+    except ElementTree.ParseError as exc:
+        errors.append(f"sitemap coverage: sitemap.xml does not parse as XML ({exc})")
+        return
+    locs = [u.findtext(f"{SITEMAP_NS}loc") for u in tree.findall(f"{SITEMAP_NS}url")]
+    got = set(locs)
+    missing = sorted(wanted - got)
+    extra = sorted(got - wanted)
+    if missing:
+        bad.append(
+            f"{len(missing)} generated address(es) are absent from sitemap.xml, "
+            f"first {missing[0]}. The sitemap is the only thing that makes a page "
+            "reachable by a crawler, so an address that is not in it is a page that "
+            "does not get indexed"
+        )
+    if extra:
+        bad.append(
+            f"{len(extra)} <loc> value(s) name no generated page, first {extra[0]}. "
+            "Every address in a sitemap must resolve, or a crawler spends its crawl "
+            "budget on a 404"
+        )
+    repeats = sorted({loc for loc in locs if locs.count(loc) > 1})
+    if repeats:
+        bad.append(
+            f"{len(repeats)} <loc> value(s) appear more than once, first "
+            f"{repeats[0]}"
+        )
+    dangling = []
+    for loc in locs:
+        target = site_path_from_url(loc)
+        if target is None:
+            dangling.append(f"{loc} is not under {SITE_BASE}")
+        elif not target.exists():
+            dangling.append(
+                f"{loc} resolves to {target.relative_to(ROOT).as_posix()}, which "
+                "does not exist"
+            )
+    if dangling:
+        bad.append(
+            f"{len(dangling)} <loc> value(s) do not resolve to a file on disk, "
+            f"first {dangling[0]}"
+        )
+    for b in bad[:8]:
+        errors.append(f"sitemap coverage: {b}")
+    if len(bad) > 8:
+        errors.append(f"sitemap coverage: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"Sitemap coverage: {len(locs)} <loc>, every generated address in both "
+            f"languages ({sum(1 for loc in locs if url_path(loc).startswith('/en/'))} "
+            f"under /en/, {sum(1 for loc in locs if not url_path(loc).startswith('/en/'))} "
+            f"under /), each resolving to a file under {SITE_BASE}, none repeated"
+        )
+
+
+check_sitemap_lists_every_page()
+
+
 # 6c. Sitemap / robots.txt / webmanifest: single source in gen_pages.py
 sitemap_xml = gen_pages.generate_sitemap(catalog)
 sitemap_file = ROOT / "sitemap.xml"
@@ -2786,8 +4453,10 @@ if without_lastmod:
     errors.append(
         f"Sitemap: {len(without_lastmod)} urls missing lastmod (first: {without_lastmod[0]})"
     )
-if len(url_entries) != len(catalog) + 3:
-    errors.append(f"Sitemap: expected {len(catalog) + 3} urls, got {len(url_entries)}")
+if len(url_entries) != len(expected_site_urls()):
+    errors.append(
+        f"Sitemap: expected {len(expected_site_urls())} urls, got {len(url_entries)}"
+    )
 print(f"Sitemap lastmod: {len(url_entries) - len(without_lastmod)}/{len(url_entries)} urls")
 
 robots_path = ROOT / "robots.txt"
@@ -3128,7 +4797,7 @@ def check_related():
                 f"{slug}: noscript cards {noscript} != generated {expected}"
             )
         for r in rel:
-            if f'href="../{item_slug(r)}/"' not in text:
+            if f'href="/films/{item_slug(r)}/"' not in text:
                 parity.append(
                     f"{slug}: noscript is missing a link to {item_slug(r)}"
                 )
@@ -3206,7 +4875,7 @@ def check_related():
 check_related()
 
 
-# 9b1. Node smoke harnesses: app.js / slug / film.js (tools/smoke.js)
+# 9b1. Node smoke harnesses: app.js / slug / film.js / lang (tools/smoke.js)
 def run_smoke(*args):
     res = subprocess.run(
         ["node", str(ROOT / "tools" / "smoke.js"), *args],
@@ -3247,6 +4916,11 @@ if shutil.which("node"):
     except RuntimeError as e:
         errors.append(f"app.js smoke failed:\n{e}")
 
+    try:
+        print(run_smoke("lang"))
+    except RuntimeError as e:
+        errors.append(f"lang smoke failed:\n{e}")
+
     # Slug parity: Python item_slug must equal common.js itemSlug for every record
     check_slugs()
 
@@ -3258,7 +4932,7 @@ if shutil.which("node"):
 
     # 9b2. Repeat the smokes on the minified JS actually shipped (*.min.js),
     # so a semantics-changing bug in gen_pages.minify_js is caught by the tests
-    for name in ("app", "slug", "film"):
+    for name in ("app", "slug", "film", "lang"):
         if name == "slug":
             check_slugs("--min")
             continue
@@ -3364,30 +5038,34 @@ for fname, src in (
         errors.append(f"{fname}: Yandex.Metrika snippet missing")
     if _mark_block(src, "<!-- begin:metrika -->", "<!-- end:metrika -->") != metrika_core:
         errors.append(f"{fname} metrika block differs from gen_pages.METRIKA_SCRIPT — run gen_pages.py")
-for page in sorted((ROOT / "films").glob("*/index.html")):
-    metrika_checked += 1
-    fsrc = page.read_text(encoding="utf-8")
-    if metrika_needle not in fsrc:
-        errors.append(f"metrika snippet missing on {page}")
-    fm = re.search(r'<script type="application/ld\+json">(.*?)</script>', fsrc, re.S)
-    if fm is None:
-        errors.append(f"film JSON-LD missing on {page}")
-    else:
-        try:
-            fgraph = json.loads(fm.group(1)).get("@graph", [])
-            fmovie = next(
-                (n for n in fgraph if n.get("@type") in ("Movie", "TVSeries")), None
-            )
-            if (
-                not fmovie
-                or fmovie.get("@id") != fmovie.get("url")
-                or fmovie.get("inLanguage") != "ru"
-            ):
-                errors.append(f"film JSON-LD: @id/inLanguage broken on {page}")
-        except json.JSONDecodeError:
-            errors.append(f"film JSON-LD: invalid JSON on {page}")
-    if "srcset=" not in fsrc or "_400.webp 400w" not in fsrc or "imagesrcset" not in fsrc:
-        errors.append(f"poster srcset/preload missing on {page}")
+for page_lang, folder in (("ru", "films"), ("en", "en/films")):
+    for page in mirror_pages(folder):
+        metrika_checked += 1
+        fsrc = page.read_text(encoding="utf-8")
+        if metrika_needle not in fsrc:
+            errors.append(f"metrika snippet missing on {page}")
+        fm = re.search(r'<script type="application/ld\+json">(.*?)</script>', fsrc, re.S)
+        if fm is None:
+            errors.append(f"film JSON-LD missing on {page}")
+        else:
+            try:
+                fgraph = json.loads(fm.group(1)).get("@graph", [])
+                fmovie = next(
+                    (n for n in fgraph if n.get("@type") in ("Movie", "TVSeries")), None
+                )
+                if (
+                    not fmovie
+                    or fmovie.get("@id") != fmovie.get("url")
+                    or fmovie.get("inLanguage") != page_lang
+                ):
+                    errors.append(
+                        f"film JSON-LD: @id/inLanguage broken on {page} (expected "
+                        f"inLanguage {page_lang!r})"
+                    )
+            except json.JSONDecodeError:
+                errors.append(f"film JSON-LD: invalid JSON on {page}")
+        if "srcset=" not in fsrc or "_400.webp 400w" not in fsrc or "imagesrcset" not in fsrc:
+            errors.append(f"poster srcset/preload missing on {page}")
 print(f"Metrika: present on {metrika_checked} film pages + index/404/privacy/about (single source)")
 
 # 9d. index.html noscript catalog block must match the catalog (gen_pages.py)
@@ -3472,16 +5150,6 @@ for fname, txt in (
 
 # 9f. Canonical links: single, parameterless, and equal to the page's own URL
 # (?q=/?fav= filter variants must consolidate onto the clean URL, no duplicate content)
-def _canonical_hrefs(text):
-    return [
-        m.group(1)
-        for tag in re.findall(r"<link\b[^>]*>", text)
-        if re.search(r'\brel\s*=\s*"canonical"', tag)
-        for m in [re.search(r'\bhref\s*=\s*"([^"]+)"', tag)]
-        if m
-    ]
-
-
 def _canonical_check(fname, text, expected):
     hrefs = _canonical_hrefs(text)
     if expected is None:
@@ -3508,6 +5176,12 @@ _canonical_check("404.html", notfound_src, None)
 _canonical_check("privacy.html", privacy_src, SITE_BASE + "/privacy.html")
 # about.html — canonical to its own URL, same on every lang/theme variant
 _canonical_check("about.html", about_src, SITE_BASE + "/about.html")
+for en_root in EN_ROOT_PAGES:
+    _canonical_check(
+        f"en/{en_root}",
+        (ROOT / "en" / en_root).read_text(encoding="utf-8"),
+        SITE_BASE + EN_ROOT_URL[en_root],
+    )
 canon_checked = 0
 for slug in sorted(slugs):
     _canonical_check(
@@ -3520,15 +5194,12 @@ for slug in sorted(slugs):
 print(f"Sitemap: {sitemap_note}")
 print(f"robots.txt: {robots_note}")
 print(f"webmanifest: {webmanifest_note}")
-print(f"Canonical: checked ({canon_checked} pages + index/404/privacy/about)")
+print(f"Canonical: checked ({canon_checked} pages + index/404/privacy/about and their three English twins)")
 
 # 9g. Static language coherence (runtime switches derive from one source — the
 # <html lang>/<title>/<meta description> markup is what crawlers read pre-JS):
 #   * <html lang> must match the language of the static <title> and <meta name="description">
 #   * og:locale must match the language of og:description
-CYRILLIC = re.compile(r"[А-Яа-яЁё]")
-
-
 def _text_lang(s):
     return "ru" if CYRILLIC.search(s) else "en"
 
@@ -3576,13 +5247,80 @@ for fname, src in (
 ):
     _lang_coherence(fname, src)
     lang_checked += 1
+for en_root in EN_ROOT_PAGES:
+    en_root_file = ROOT / "en" / en_root
+    if not en_root_file.exists():
+        errors.append(f"en/{en_root}: missing — run gen_pages.py")
+        continue
+    _lang_coherence(f"en/{en_root}", en_root_file.read_text(encoding="utf-8"))
+    lang_checked += 1
 for slug in sorted(slugs):
     _lang_coherence(
         f"films/{slug}/index.html",
         (ROOT / "films" / slug / "index.html").read_text(encoding="utf-8"),
     )
     lang_checked += 1
+    en_page = ROOT / "en" / "films" / slug / "index.html"
+    if not en_page.exists():
+        errors.append(f"en/films/{slug}/index.html: missing — run gen_pages.py")
+        continue
+    _lang_coherence(
+        f"en/films/{slug}/index.html",
+        en_page.read_text(encoding="utf-8"),
+    )
+    lang_checked += 1
 print(f"Language/OG coherence: checked ({lang_checked} pages)")
+
+RELATIVE_REF = re.compile(r'''(?:src|href)\s*=\s*["']\.\.?/''')
+_REL_UP = r"""(?:\.\.?/)*"""
+_TOP_DIRS = "|".join(
+    re.escape(p.name)
+    for p in sorted(ROOT.iterdir())
+    if p.is_dir() and not p.name.startswith(".")
+)
+_TOP_FILES = "|".join(
+    re.escape(p.name)
+    for p in sorted(ROOT.iterdir())
+    if p.is_file() and not p.name.startswith(".")
+)
+RELATIVE_ASSET = re.compile(
+    r'''(?:src|href|srcset|imagesrcset)\s*=\s*["']'''
+    r"(" + _REL_UP + r"(?:" + _TOP_DIRS + r")/"
+    r"|" + _REL_UP + r"(?:" + _TOP_FILES + r"))"
+)
+RELATIVE_LINK_EXEMPT = ("404.html",)
+RELATIVE_LINK_FILES = sorted(
+    p
+    for p in sorted(ROOT.rglob("*.html")) + sorted((ROOT / "js").glob("*.js"))
+    if p.relative_to(ROOT).as_posix() not in RELATIVE_LINK_EXEMPT
+)
+
+
+def check_no_relative_links():
+    bad = []
+    for p in RELATIVE_LINK_FILES:
+        rel = p.relative_to(ROOT)
+        if any(part.startswith(".") for part in rel.parts):
+            continue
+        for n, line in enumerate(
+            p.read_text(encoding="utf-8").splitlines(), 1
+        ):
+            for m in list(RELATIVE_REF.finditer(line)) + list(
+                RELATIVE_ASSET.finditer(line)
+            ):
+                bad.append(f"{rel.as_posix()}:{n}  {m.group(0)}")
+    return bad
+
+
+_relative_link_violations = check_no_relative_links()
+for _v in _relative_link_violations:
+    errors.append(f"relative internal link: {_v}")
+print(
+    "Absolute internal links: checked "
+    f"({len(RELATIVE_LINK_FILES)} files, "
+    f"{len(_relative_link_violations)} violations)"
+)
+
 if (ROOT / ".nojekyll").exists():
     print(".nojekyll: present")
 print()

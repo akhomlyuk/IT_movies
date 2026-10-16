@@ -6,6 +6,27 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE_BASE = "https://movies.whlab.ru"
+EN_PREFIX = "/en"
+ROOT_URL_PATHS = {
+    "index.html": "/",
+    "privacy.html": "/privacy.html",
+    "about.html": "/about.html",
+}
+CYRILLIC = re.compile("[А-Яа-яЁё]")
+
+
+def mirror_path(path):
+    if not isinstance(path, str) or not path.startswith("/"):
+        raise ValueError(f"mirror_path: {path!r} is not a root-relative path")
+    if path == EN_PREFIX or path.startswith(EN_PREFIX + "/"):
+        return path[len(EN_PREFIX):] or "/"
+    return EN_PREFIX + path
+
+
+def lang_path(path, lang):
+    if not isinstance(path, str) or not path.startswith("/"):
+        raise ValueError(f"lang_path: {path!r} is not a root-relative path")
+    return mirror_path(path) if lang == "en" else path
 
 
 def load_catalog(root=ROOT):
@@ -45,6 +66,22 @@ def parse_i18n(root=ROOT):
     if pos == -1:
         raise ValueError("js/i18n.js: I18N object literal not found")
     obj, _ = _js_object(src, pos)
+    return obj
+
+
+def js_object_bounds(src, pos):
+    return _js_object(src, pos)
+
+
+def parse_inline_i18n(path, marker="var I18N ="):
+    src = Path(path).read_text(encoding="utf-8")
+    pos = src.find(marker)
+    if pos == -1:
+        raise ValueError(f"{Path(path).name}: {marker!r} not found")
+    pos = src.find("{", pos)
+    if pos == -1:
+        raise ValueError(f"{Path(path).name}: inline i18n object literal not found")
+    obj, _ = js_object_bounds(src, pos)
     return obj
 
 
