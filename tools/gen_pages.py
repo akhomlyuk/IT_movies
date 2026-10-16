@@ -898,6 +898,7 @@ def render(item, related, lang="ru"):
     title = title_of(item, lang)
     alt_title = title_of(item, other_lang)
     desc = desc_of(item, lang)
+    seo = seo_desc(desc)
     poster = (item.get("poster") or "").lstrip("/")
     poster_dims = webp_size(ROOT / poster) if poster else None
     genres = sorted(GENRES[lang].get(g, g) for g in item["genres"])
@@ -990,10 +991,8 @@ def render(item, related, lang="ru"):
         {
             "item": {
                 **item,
-                "descSeo": {
-                    "ru": seo_desc(desc_of(item, "ru")),
-                    "en": seo_desc(desc_of(item, "en")),
-                },
+                "desc": desc,
+                "descSeo": seo,
             },
             "related": [{k: r[k] for k in SLIM_KEYS if k in r} for r in related],
             "posterW": poster_dims[0] if poster_dims else None,
@@ -1060,7 +1059,6 @@ def render(item, related, lang="ru"):
         )
     rat_tiles += "        </div>\n"
 
-    seo = seo_desc(desc)
     og_image_tags = f'  <meta property="og:image" content="{og_image}">\n'
     if og_dims:
         og_image_tags += (

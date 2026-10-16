@@ -3317,18 +3317,6 @@ check_en_text_guard()
 
 
 def check_single_description_per_page():
-    """One address, one description. The `descAlt` collapsible is gone: each
-    page shows `desc[lang]` and nothing else, and the other language lives one
-    click away on the mirror. Checked at three levels because each level can
-    pass while the reader still sees two paragraphs:
-    - the four hand-written and generated JS files must not name `descAlt`
-      (the client template, the two label tables, and both minified copies,
-      since a stale `.min.js` is the copy the pages actually load);
-    - the generator's own template must not carry the markup;
-    - every generated page must hold exactly one `p.film-desc`, holding this
-      page's own language, with the other language's paragraph absent from the
-      page entirely once `window.FILM_PAGE` (data, not rendered text) is set
-      aside."""
     sources = (
         "js/film.js", "js/film.min.js", "js/i18n.js", "js/i18n.min.js",
     )
@@ -3364,7 +3352,41 @@ def check_single_description_per_page():
             if item is None:
                 bad.append(f"{page_url(page)}: no catalog record for this slug")
                 continue
+            other = "en" if lang == "ru" else "ru"
             text = page.read_text(encoding="utf-8")
+            match = re.search(
+                r"<script>window\.FILM_PAGE = (.*?);</script>", text, re.S
+            )
+            if match is None:
+                bad.append(f"{page_url(page)}: no window.FILM_PAGE assignment")
+                continue
+            try:
+                payload = json.loads(match.group(1))
+            except json.JSONDecodeError as exc:
+                bad.append(f"{page_url(page)}: window.FILM_PAGE is not JSON ({exc})")
+                continue
+            shipped = (payload.get("item") or {})
+            own = gen_pages.desc_of(item, lang)
+            if shipped.get("desc") != own:
+                bad.append(
+                    f"{page_url(page)}: FILM_PAGE.item.desc is "
+                    f"{type(shipped.get('desc')).__name__} "
+                    f"{str(shipped.get('desc'))[:60]!r}, not this page's own {lang} "
+                    "description as a string"
+                )
+            if shipped.get("descSeo") != gen_pages.seo_desc(own):
+                bad.append(
+                    f"{page_url(page)}: FILM_PAGE.item.descSeo is "
+                    f"{type(shipped.get('descSeo')).__name__} "
+                    f"{str(shipped.get('descSeo'))[:60]!r}, not this page's own {lang} "
+                    "SEO description as a string"
+                )
+            dumped = json.dumps(payload, ensure_ascii=False)
+            if gen_pages.desc_of(item, other) in dumped:
+                bad.append(
+                    f"{page_url(page)}: the {other} description is still inside "
+                    "window.FILM_PAGE, so this URL ships the other language's text"
+                )
             visible = re.sub(
                 r"<script>window\.FILM_PAGE = .*?</script>", "", text, flags=re.S
             )
@@ -3375,18 +3397,15 @@ def check_single_description_per_page():
                     "expected exactly 1 (the page's own language)"
                 )
                 continue
-            own = gen_pages.esc(gen_pages.desc_of(item, lang))
-            other = gen_pages.esc(gen_pages.desc_of(item, "en" if lang == "ru" else "ru"))
-            if own not in visible:
+            if gen_pages.esc(own) not in visible:
                 bad.append(
                     f"{page_url(page)}: the {lang} description is not in the page"
                 )
-            if other in visible:
+            if gen_pages.esc(gen_pages.desc_of(item, other)) in visible:
                 bad.append(
-                    f"{page_url(page)}: the "
-                    f"{'en' if lang == 'ru' else 'ru'} description is still in the "
-                    "page outside window.FILM_PAGE, so this URL still publishes the "
-                    "other language's text"
+                    f"{page_url(page)}: the {other} description is still in the page "
+                    "outside window.FILM_PAGE, so this URL still publishes the other "
+                    "language's text"
                 )
     for b in bad[:8]:
         errors.append(f"single description: {b}")
@@ -3396,7 +3415,8 @@ def check_single_description_per_page():
         print(
             f"One description per page: {len(sources)} source file(s) and the "
             "generator name no descAlt, and every page in films/ and en/films/ "
-            "carries one p.film-desc with its own language and none of the other"
+            "carries its own description as a plain string in FILM_PAGE and as the "
+            "only p.film-desc, with the other language in neither"
         )
 
 

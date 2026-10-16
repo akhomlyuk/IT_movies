@@ -1651,20 +1651,24 @@ def test_film_lang(page, base):
     expect(toggle).to_have_attribute("href", "/en/" + FILM_PAGE)
     expect(toggle).to_have_attribute("hreflang", "en")
 
-    desc_ru = page.evaluate("() => window.FILM_PAGE.item.desc.ru")
-    desc_en = page.evaluate("() => window.FILM_PAGE.item.desc.en")
-    assert desc_en.strip() and not CYRILLIC.search(desc_en), (
-        f"the English page shows desc.en, so it must be present and free of"
-        f" Cyrillic: {desc_en[:120]!r}"
-    )
-    assert desc_ru.strip() and desc_en != desc_ru, (
-        "desc.ru and desc.en are the two halves of this assertion and must differ"
+    desc_ru = page.evaluate("() => window.FILM_PAGE.item.desc")
+    assert desc_ru.strip() and CYRILLIC.search(desc_ru), (
+        f"the Russian page carries only desc.ru, so it must be present and hold"
+        f" Cyrillic: {desc_ru[:120]!r}"
     )
     page.goto(base + "en/" + FILM_PAGE, wait_until="domcontentloaded")
     expect(page.locator("html")).to_have_attribute("lang", "en")
     expect(page.locator(".brand-text p")).to_have_text(I18N_EN_SUBTITLE)
     expect(page.locator("h1.film-title")).to_have_text(en)
-    shown = page.locator("p.film-desc:not(.film-desc-alt)").inner_text().strip()
+    desc_en = page.evaluate("() => window.FILM_PAGE.item.desc")
+    assert desc_en.strip() and not CYRILLIC.search(desc_en), (
+        f"the English page carries only desc.en, so it must be present and free of"
+        f" Cyrillic: {desc_en[:120]!r}"
+    )
+    assert desc_en != desc_ru, (
+        "desc.ru and desc.en are the two halves of this assertion and must differ"
+    )
+    shown = page.locator("p.film-desc").inner_text().strip()
     assert shown == desc_en.strip(), (
         "the English page must show the English synopsis, got "
         f"{shown[:120]!r} against desc.en {desc_en[:120]!r}"

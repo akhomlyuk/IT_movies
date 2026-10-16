@@ -288,7 +288,7 @@ const app = createApp({
       return other && other !== primary ? other : "";
     });
     const desc = computed(() =>
-      item ? item.desc[lang.value === "ru" ? "ru" : "en"] : I18N[lang.value].fatalError
+      item ? item.desc : I18N[lang.value].fatalError
     );
     const isFav = computed(() => !!(item && item.fav));
     const genreLabel = computed(() =>
@@ -373,7 +373,7 @@ const app = createApp({
         document.documentElement.lang = value;
         document.title = `${title.value}${yearSuffix} — ${I18N[value].title}`;
         const metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc && item && item.descSeo) metaDesc.setAttribute("content", item.descSeo[value]);
+        if (metaDesc && item && item.descSeo) metaDesc.setAttribute("content", item.descSeo);
       },
       { immediate: true }
     );
