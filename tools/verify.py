@@ -397,12 +397,7 @@ app_js = (ROOT / "js" / "app.js").read_text(encoding="utf-8")
 about_js = (ROOT / "js" / "about.js").read_text(encoding="utf-8")
 catalog_src = (ROOT / "js" / "catalog.js").read_text(encoding="utf-8")
 refs = set()
-# A literal whose closing quote is followed by `+` is only the FIRST half of a
-# concatenation: film.js builds the share glyphs as
-# `'/static/share.svg#icon-' + n.key`, so the quoted fragment names no symbol of
-# its own and the id cannot be resolved from the source. The FILE is still
-# checked; the fragment is checked only where it is a complete literal.
-partial_fragments = set()
+partial_fragments = {}
 for m in re.finditer(
     r"""(['"])((?:/?static|\.\./static)/[^'"]+)\1(\s*\+)?""",
     i18n_src + raw + app_js + film_js + about_js + catalog_src,
@@ -410,36 +405,32 @@ for m in re.finditer(
     ref = m.group(2)
     ref = ref[:-1] if ref.endswith("\\") else ref
     refs.add(ref)
-    if m.group(3):
-        partial_fragments.add(ref)
+    partial_fragments[ref] = partial_fragments.get(ref, True) and bool(m.group(3))
 for name in ("index.html", "404.html", "privacy.html", "about.html"):
     text = (ROOT / name).read_text(encoding="utf-8")
-    for v in re.findall(r'(?:content|src|href)="([^"]+)"', text):
-        m = re.search(r'(?:static|\.\./static|css|js)/[^"\')\s]+', v)
-        if m:
-            refs.add(m.group(0))
+    for v in re.findall(r'(?:content|src|srcset|href|imagesrcset)="([^"]+)"', text):
+        for found in re.findall(r'(?:static|\.\./static|css|js)/[^"\')\s]+', v):
+            refs.add(found)
 for page in list((ROOT / "films").glob("*/index.html")) + list(
     (ROOT / "en" / "films").glob("*/index.html")
 ):
     text = page.read_text(encoding="utf-8")
-    for v in re.findall(r'(?:content|src|href)="([^"]+)"', text):
+    for v in re.findall(r'(?:content|src|srcset|href|imagesrcset)="([^"]+)"', text):
         if v.startswith("http://") or v.startswith("https://"):
             continue
-        m = re.search(
+        for found in re.findall(
             r'(?:static|\.\./static|css|js)/[^"\')\s]+|(?:privacy|about)\.html', v
-        )
-        if m:
-            refs.add(m.group(0))
+        ):
+            refs.add(found)
 for name in ("index.html", "privacy.html", "about.html"):
     text = (ROOT / "en" / name).read_text(encoding="utf-8")
-    for v in re.findall(r'(?:content|src|href)="([^"]+)"', text):
+    for v in re.findall(r'(?:content|src|srcset|href|imagesrcset)="([^"]+)"', text):
         if v.startswith("http://") or v.startswith("https://"):
             continue
-        m = re.search(
+        for found in re.findall(
             r'(?:static|\.\./static|css|js)/[^"\')\s]+|(?:privacy|about)\.html', v
-        )
-        if m:
-            refs.add(m.group(0))
+        ):
+            refs.add(found)
 for r in refs:
     # A reference may carry a fragment -- `static/share.svg#icon-telegram` is an
     # SVG sprite lookup, and the film's own `<use>` elements are full of them.
@@ -459,7 +450,7 @@ for r in refs:
     path = ROOT / ref.lstrip("/")
     if not path.exists():
         errors.append(f"Broken file reference: {r}")
-    elif frag and path.suffix == ".svg" and r not in partial_fragments:
+    elif frag and path.suffix == ".svg" and not partial_fragments.get(r, False):
         body = path.read_text(encoding="utf-8")
         if ('id="%s"' % frag) not in body:
             errors.append(
@@ -4030,15 +4021,20 @@ def check_hreflang_targets_exist():
         return
     for page in pages:
         rel = page.relative_to(ROOT).as_posix()
-        alts = {
-            tag.get("hreflang"): tag.get("href")
-            for tag in link_tag_attrs(page.read_text(encoding="utf-8"), "alternate")
-        }
+        tags = link_tag_attrs(page.read_text(encoding="utf-8"), "alternate")
+        alts = {tag.get("hreflang"): tag.get("href") for tag in tags}
+        counts = collections.Counter(tag.get("hreflang") for tag in tags)
+        for key in sorted(k for k, n in counts.items() if n > 1):
+            bad.append(
+                f"{rel}: {counts[key]} rel=alternate tag(s) declare hreflang={key}, "
+                "so a crawler cannot tell which of them is the claim"
+            )
         for key in MIRROR_HREFLANG:
             if key not in alts:
                 bad.append(f"{rel}: no hreflang={key}")
-        for key in sorted(alts):
-            href = alts[key]
+        for tag in tags:
+            key = tag.get("hreflang")
+            href = tag.get("href")
             target = site_path_from_url(href)
             if target is None:
                 bad.append(
