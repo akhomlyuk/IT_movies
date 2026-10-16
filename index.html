@@ -68,7 +68,7 @@
     <header class="top">
       <div class="brand">
         <div class="logo">
-          <a href="/"><img src="/static/logo.webp" alt="IT Movies Logo" fetchpriority="high" decoding="async" width="100" height="100"></a>
+          <a :href="pageHref('/')"><img src="/static/logo.webp" alt="IT Movies Logo" fetchpriority="high" decoding="async" width="100" height="100"></a>
         </div>
         <div class="brand-text">
           <h1><span class="pre-mount">IT Movies</span><span class="post-mount">{{ t.title }}</span></h1>
@@ -91,10 +91,10 @@
             <svg v-if="theme === 'dark'" class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 .278a.77.77 0 0 1 .08.858 7.2 7.2 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277q.792-.001 1.533-.16a.79.79 0 0 1 .81.316.73.73 0 0 1-.031.893A8.35 8.35 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.75.75 0 0 1 6 .278M4.858 1.311A7.27 7.27 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.32 7.32 0 0 0 5.205-2.162q-.506.063-1.029.063c-4.61 0-8.343-3.714-8.343-8.29 0-1.167.242-2.278.681-3.286M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.73 1.73 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.73 1.73 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.73 1.73 0 0 0 1.097-1.097zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.16 1.16 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.16 1.16 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732z" fill="currentColor"/></svg>
             <svg v-else class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708" fill="currentColor"/></svg>
           </button>
-          <button type="button" class="lang" :aria-label="t.swapLang + ': ' + (lang === 'ru' ? 'RU' : 'EN')" :title="t.swapLang" @click="setLang(lang === 'ru' ? 'en' : 'ru')">
+          <a class="lang" :href="langHref" :hreflang="langHreflang" :aria-label="t.swapLang + ': ' + (lang === 'ru' ? 'RU' : 'EN')" :title="t.swapLang">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 12h18M12 3c2.4 2.5 3.5 5.5 3.5 9S14.4 18.5 12 21c-2.4-2.5-3.5-5.5-3.5-9S9.6 5.5 12 3Z" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
             <span>{{ lang === 'ru' ? 'RU' : 'EN' }}</span>
-          </button>
+          </a>
         </div>
       </div>
     </header>
@@ -137,7 +137,7 @@
       </div>
       <ul class="featured-grid">
         <li v-for="(item, i) in featured" :key="'featured-' + (item.imdbId || item.kpId)">
-          <a class="featured-card" :href="filmUrl(item)">
+          <a class="featured-card" :href="filmUrl(item, lang)">
             <span class="featured-card-media">
               <img :src="posterSrc(item)" :srcset="featuredSrcset(item)" sizes="(max-width: 1023px) 154px, 195px" alt="" width="195" height="293" :loading="i === 0 ? 'eager' : 'lazy'" :fetchpriority="i === 0 ? 'high' : 'auto'" decoding="async">
               <span class="featured-card-overlay">
@@ -351,9 +351,9 @@
       <div class="footer-line">
         <span class="invite footer-privacy" v-html="t.invite"></span>
         <span class="footer-privacy"> · </span>
-        <a class="footer-privacy" href="/about.html">{{ t.aboutLink }}</a>
+        <a class="footer-privacy" :href="pageHref('/about.html')">{{ t.aboutLink }}</a>
         <span class="footer-privacy"> · </span>
-        <a class="footer-privacy" href="/privacy.html">{{ t.privacy }}</a>
+        <a class="footer-privacy" :href="pageHref('/privacy.html')">{{ t.privacy }}</a>
       </div>
     </footer>
     <button class="scroll-top" :aria-label="t.scrollTop" @click="scrollToTop">↑</button>
@@ -385,7 +385,7 @@
                     <button type="button" class="poster-icon" :aria-label="t.openPoster" @click.stop="openPoster(item)"><svg class="icon poster-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="8" cy="9" r="1.5" fill="currentColor"/><path d="m5.5 17 4.2-4 2.7 2.5 2-2 4.1 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
                   </span>
                   <span class="title-copy">
-                    <span class="title-primary"><a :href="filmUrl(item)" :title="displayTitle(item)">{{ displayTitle(item) }}</a></span>
+                    <span class="title-primary"><a :href="filmUrl(item, lang)" :title="displayTitle(item)">{{ displayTitle(item) }}</a></span>
                     <span class="alt-title" v-if="altTitle(item)">{{ altTitle(item) }}</span>
                   </span>
                   <span class="fav-icon" :title="t.recommend" v-if="item.fav"><svg class="fav-icon-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.4 4.4 0 0 1 12 7.1a4.4 4.4 0 0 1 8.8 1.7Z" fill="currentColor"/></svg></span>

@@ -1,5 +1,6 @@
 window.ITMoviesCommon = (function () {
-  const SUPPORTED = { lang: ["ru", "en"], theme: ["dark", "light"] };
+  const SUPPORTED = { theme: ["dark", "light"] };
+  const EN_PREFIX = "/en";
 
   function safeRead(key) {
     try { return localStorage.getItem(key); } catch { return null; }
@@ -23,8 +24,27 @@ window.ITMoviesCommon = (function () {
     return `${base}-${makeSlug(item.titleEn)}`;
   }
 
-  function filmUrl(item) {
-    return `/films/${itemSlug(item)}/`;
+  function langFrom(pathname) {
+    return typeof pathname === "string" &&
+      (pathname === EN_PREFIX || pathname.startsWith(EN_PREFIX + "/"))
+      ? "en"
+      : "ru";
+  }
+
+  function langPath(path, lang) {
+    if (lang !== "en") return path;
+    if (typeof path !== "string" || path[0] !== "/") return path;
+    return path === "/" ? EN_PREFIX + "/" : EN_PREFIX + path;
+  }
+
+  function mirrorPath(pathname) {
+    return langFrom(pathname) === "en"
+      ? pathname.slice(EN_PREFIX.length) || "/"
+      : langPath(pathname, "en");
+  }
+
+  function filmUrl(item, lang) {
+    return langPath(`/films/${itemSlug(item)}/`, lang);
   }
 
   function kpUrl(item) {
@@ -59,17 +79,6 @@ window.ITMoviesCommon = (function () {
 
   function genreLabel(item, t) {
     return item.genres.map((g) => t.genres[g] || g).join(" / ");
-  }
-
-  function langFrom(urlParams, read) {
-    const param = urlParams.get("lang");
-    if (SUPPORTED.lang.includes(param)) return param;
-    const saved = read("it-movies-lang");
-    return SUPPORTED.lang.includes(saved)
-      ? saved
-      : navigator.language.startsWith("ru")
-        ? "ru"
-        : "en";
   }
 
   function themeFrom(urlParams, read) {
@@ -153,6 +162,8 @@ window.ITMoviesCommon = (function () {
     makeSlug,
     itemSlug,
     filmUrl,
+    langPath,
+    mirrorPath,
     kpUrl,
     imdbUrl,
     hasRating,

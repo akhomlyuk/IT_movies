@@ -54,19 +54,12 @@
 <!-- end:theme-script -->
   <script>
     (function () {
-      var SUPPORTED = { lang: ["ru", "en"] };
-      function read(key) {
-        try { return localStorage.getItem(key); } catch (e) { return null; }
-      }
-      var params = new URLSearchParams(location.search);
-      var langParam = params.get("lang");
-      var savedLang = read("it-movies-lang");
-      var defaultLang = navigator.language.startsWith("ru") ? "ru" : "en";
-      window.__404Lang = SUPPORTED.lang.indexOf(langParam) !== -1
-        ? langParam
-        : SUPPORTED.lang.indexOf(savedLang) !== -1
-          ? savedLang
-          : defaultLang;
+      var EN_PREFIX = "/en";
+      var path = location.pathname;
+      window.__404Lang = path === EN_PREFIX || path.indexOf(EN_PREFIX + "/") === 0 ? "en" : "ru";
+      window.__404Mirror = window.__404Lang === "en"
+        ? path.slice(EN_PREFIX.length) || "/"
+        : EN_PREFIX + (path === "/" ? "/" : path);
       document.documentElement.lang = window.__404Lang;
     })();
   </script>
@@ -139,7 +132,7 @@
       <div class="toolbar">
         <div class="tool-buttons">
           <button type="button" class="theme-toggle">🌙</button>
-          <button type="button" class="lang">🌐 RU</button>
+          <a class="lang" href="/en/" hreflang="en">🌐 RU</a>
         </div>
       </div>
     </header>
@@ -209,6 +202,8 @@
         if (langBtn) {
           langBtn.textContent = "🌐 " + lang.toUpperCase();
           langBtn.setAttribute("aria-label", t.swapLang);
+          langBtn.setAttribute("href", window.__404Mirror);
+          langBtn.setAttribute("hreflang", lang === "ru" ? "en" : "ru");
         }
         var chTelegram = document.querySelector(".ch-link--tg");
         var chMax = document.querySelector(".ch-link--max");
@@ -233,14 +228,6 @@
       var lang = window.__404Lang === "ru" ? "ru" : "en";
       var theme = document.documentElement.classList.contains("dark") ? "dark" : "light";
       apply(lang);
-      var langBtn = document.querySelector(".lang");
-      if (langBtn) {
-        langBtn.addEventListener("click", function () {
-          lang = lang === "ru" ? "en" : "ru";
-          try { localStorage.setItem("it-movies-lang", lang); } catch (e) {}
-          apply(lang);
-        });
-      }
       var themeBtn = document.querySelector(".theme-toggle");
       if (themeBtn) {
         themeBtn.addEventListener("click", function () {

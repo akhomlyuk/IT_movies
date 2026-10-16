@@ -16,6 +16,8 @@ const {
   safeRead,
   safeWrite,
   filmUrl,
+  langPath,
+  mirrorPath,
   kpUrl,
   imdbUrl,
   hasRating,
@@ -201,7 +203,7 @@ const app = createApp({
   components: { CatalogTable },
   setup() {
     const urlParams = new URLSearchParams(location.search);
-    const lang = ref(langFrom(urlParams, safeRead));
+    const lang = ref(langFrom(location.pathname));
     const colorScheme = window.matchMedia("(prefers-color-scheme: light)");
     const theme = ref(themeFrom(urlParams, safeRead));
     const query = ref(urlParams.get("q") || "");
@@ -265,7 +267,6 @@ const app = createApp({
       lang,
       (value) => {
         currentLang = value;
-        safeWrite("it-movies-lang", value);
         document.documentElement.lang = value;
         document.title = I18N[value].titleFull;
         const metaDesc = document.querySelector('meta[name="description"]');
@@ -343,6 +344,13 @@ const app = createApp({
     });
 
     const t = computed(() => I18N[lang.value]);
+    const langHref = computed(
+      () => mirrorPath(location.pathname) + location.search + location.hash
+    );
+    const langHreflang = computed(() => (lang.value === "ru" ? "en" : "ru"));
+    function pageHref(path) {
+      return langPath(path, lang.value);
+    }
     const genreOptions = computed(() =>
       Object.entries(t.value.genres).sort(([, a], [, b]) =>
         a.localeCompare(b, lang.value === "ru" ? "ru" : "en")
@@ -427,10 +435,6 @@ const app = createApp({
       ).join(", ");
     }
 
-    function setLang(next) {
-      lang.value = next;
-    }
-
     function setTheme(next) {
       theme.value = next;
       safeWrite("it-movies-theme", next);
@@ -451,7 +455,7 @@ const app = createApp({
     function goLucky() {
       if (!window.CATALOG || window.CATALOG.length === 0) return;
       const pick = window.CATALOG[Math.floor(Math.random() * window.CATALOG.length)];
-      location.href = filmUrl(pick);
+      location.href = filmUrl(pick, lang.value);
     }
 
     const menuOpen = ref(false);
@@ -510,6 +514,9 @@ const app = createApp({
 
     return {
       lang,
+      langHref,
+      langHreflang,
+      pageHref,
       theme,
       query,
       genre,
@@ -525,7 +532,6 @@ const app = createApp({
       pickFeatured,
       hasActiveFilters,
       resetFilters,
-      setLang,
       setTheme,
       sortBy,
       filmUrl,

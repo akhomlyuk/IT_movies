@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* Node smoke harnesses for the IT Movies static site.
-   Usage: node tools/smoke.js <app|slug|film>
-   Replaces the four inline node -e harnesses that used to live in verify.py. */
+   Usage: node tools/smoke.js [lang|app|slug|film] [--min]
+   With no mode every mode runs, source and --min alike. */
 "use strict";
 
 const fs = require("fs");
@@ -32,6 +32,17 @@ function jsSrc(name) {
   return read("js/" + (min && MINIFY_MAP[name] ? MINIFY_MAP[name] : name));
 }
 
+const MODES = ["lang", "app", "slug", "film"];
+
+if (!mode) {
+  const { execFileSync } = require("child_process");
+  for (const name of MODES) {
+    const argv = [path.join(ROOT, "tools", "smoke.js"), name].concat(min ? ["--min"] : []);
+    process.stdout.write(execFileSync(process.execPath, argv, { cwd: ROOT, encoding: "utf8" }));
+  }
+  process.exit(0);
+}
+
 const MIN_LABEL = min ? " (minified)" : "";
 
 function bootApp() {
@@ -39,6 +50,7 @@ function bootApp() {
   global.location = {
     pathname: "/IT_movies/",
     search: "",
+    hash: "",
     href: "https://example.org/IT_movies/",
   };
   Object.defineProperty(global, "navigator", {
@@ -84,7 +96,211 @@ function bootApp() {
   return () => captured;
 }
 
-if (mode === "slug") {
+if (mode === "lang") {
+  const capture = bootApp();
+  eval(jsSrc("common.js"));
+  const api = global.ITMoviesCommon;
+  for (const [pathname, want] of [
+    ["/", "ru"],
+    ["/index.html", "ru"],
+    ["/films/x/", "ru"],
+    ["/about.html", "ru"],
+    ["/privacy.html", "ru"],
+    ["/en", "en"],
+    ["/en/", "en"],
+    ["/en/index.html", "en"],
+    ["/en/films/x/", "en"],
+    ["/en/about.html", "en"],
+    ["/english/", "ru"],
+    ["/en-gone/", "ru"],
+  ]) {
+    if (api.langFrom(pathname) !== want) {
+      throw new Error(
+        "langFrom(" + JSON.stringify(pathname) + ") must be " + want + ", got "
+        + JSON.stringify(api.langFrom(pathname))
+      );
+    }
+  }
+  if (api.langFrom.length !== 1) {
+    throw new Error(
+      "langFrom must take the pathname and nothing else (1 parameter), got "
+      + api.langFrom.length + " -- ?lang=, it-movies-lang and navigator.language"
+      + " are gone"
+    );
+  }
+  if (api.SUPPORTED.lang !== undefined) {
+    throw new Error(
+      "SUPPORTED.lang existed only to validate ?lang= and it-movies-lang;"
+      + " with the path as the single source of truth it has no reader left"
+    );
+  }
+  const upload = { imdbId: "tt1", titleEn: "Upload" };
+  const kpOnly = { kpId: "42", titleEn: "The Net" };
+  for (const [item, lang, want] of [
+    [upload, "ru", "/films/tt1-upload/"],
+    [upload, "en", "/en/films/tt1-upload/"],
+    [kpOnly, "ru", "/films/kp-42-the-net/"],
+    [kpOnly, "en", "/en/films/kp-42-the-net/"],
+  ]) {
+    if (api.filmUrl(item, lang) !== want) {
+      throw new Error(
+        "filmUrl(" + api.itemSlug(item) + ", " + lang + ") must be " + want
+        + ", got " + api.filmUrl(item, lang)
+      );
+    }
+  }
+  for (const [pathname, want] of [
+    ["/", "/en/"],
+    ["/films/x/", "/en/films/x/"],
+    ["/about.html", "/en/about.html"],
+    ["/en/", "/"],
+    ["/en/films/x/", "/films/x/"],
+    ["/en/about.html", "/about.html"],
+  ]) {
+    if (api.mirrorPath(pathname) !== want) {
+      throw new Error(
+        "mirrorPath(" + JSON.stringify(pathname) + ") must be " + want
+        + ", got " + api.mirrorPath(pathname)
+      );
+    }
+  }
+  for (const [path, lang, want] of [
+    ["/", "en", "/en/"],
+    ["/", "ru", "/"],
+    ["/privacy.html", "en", "/en/privacy.html"],
+    ["/privacy.html", "ru", "/privacy.html"],
+    ["#main", "en", "#main"],
+    ["https://t.me/wh_lab", "en", "https://t.me/wh_lab"],
+  ]) {
+    if (api.langPath(path, lang) !== want) {
+      throw new Error(
+        "langPath(" + JSON.stringify(path) + ", " + lang + ") must be " + want
+        + ", got " + api.langPath(path, lang)
+      );
+    }
+  }
+  const commonSrc = jsSrc("common.js");
+  for (const dead of ["it-movies-lang", "navigator.language", 'get("lang")', "get('lang')"]) {
+    if (commonSrc.includes(dead)) {
+      throw new Error(
+        "common.js must not read the language from " + dead + ": the path is the"
+        + " only source of truth"
+      );
+    }
+  }
+  for (const name of ["app.js", "film.js", "about.js"]) {
+    const src = jsSrc(name);
+    if (src.includes("it-movies-lang")) {
+      throw new Error(name + " must not persist the language to it-movies-lang");
+    }
+    if (src.includes("setLang")) {
+      throw new Error(
+        name + " must not keep setLang(): the language is the URL, not a state"
+        + " a button mutates"
+      );
+    }
+    if (!src.includes("location.pathname")) {
+      throw new Error(name + " must read the language from location.pathname");
+    }
+    if (src.includes("location.replace(")) {
+      throw new Error(
+        name + " must not redirect: / is always Russian, and the owner ruled"
+        + " out a client-side redirect from / to /en/"
+      );
+    }
+  }
+  for (const name of ["film.js", "about.js"]) {
+    const src = jsSrc(name);
+    if (!src.includes('class="lang"') || !src.includes("hreflang")) {
+      throw new Error(
+        name + " must render the language toggle as an <a> carrying hreflang"
+        + " to the mirror of the current path"
+      );
+    }
+  }
+  const mainMarkup = read("index.html");
+  if (!mainMarkup.includes('<a class="lang"') || !mainMarkup.includes(":hreflang")) {
+    throw new Error(
+      "index.html must render the language toggle as an <a class=\"lang\">"
+      + " carrying hreflang to the mirror of the current path"
+    );
+  }
+  if (mainMarkup.includes('<button type="button" class="lang"')) {
+    throw new Error(
+      "index.html's language toggle is a button that mutates state; it is a"
+      + " link to the mirror of the current path now"
+    );
+  }
+  for (const needle of ['filmUrl(item, lang)']) {
+    if (!mainMarkup.includes(needle)) {
+      throw new Error("index.html must call " + needle + " so card links keep the language");
+    }
+  }
+  for (const name of ["404.html", "privacy.html"]) {
+    const text = read(name);
+    for (const dead of ["it-movies-lang", 'get("lang")', "get('lang')"]) {
+      if (text.includes(dead)) {
+        throw new Error(
+          name + " must not read or write the language through " + dead
+          + ": the path is the only source of truth there too"
+        );
+      }
+    }
+    if (text.includes('<button type="button" class="lang"')) {
+      throw new Error(
+        name + "'s language toggle is a button that mutates state; it is a"
+        + " link to the mirror of the current path now"
+      );
+    }
+  }
+  // The app itself, booted on both path prefixes: the language is not a
+  // function of anything the reader chose earlier.
+  for (const [pathname, wantLang, wantMirror] of [
+    ["/films/x/", "ru", "/en/films/x/"],
+    ["/en/films/x/", "en", "/films/x/"],
+    ["/", "ru", "/en/"],
+    ["/en/", "en", "/"],
+  ]) {
+    global.location.pathname = pathname;
+    eval(
+      jsSrc("i18n.js") + "\n" +
+      jsSrc("common.js") + "\n" +
+      jsSrc("catalog.js") + "\n" +
+      jsSrc("app.js")
+    );
+    const state = capture()();
+    if (!state || !state.lang) {
+      throw new Error("app.js setup() must expose the reactive lang");
+    }
+    if (state.lang.value !== wantLang) {
+      throw new Error(
+        "app.js on " + pathname + " must render " + wantLang + ", got "
+        + state.lang.value
+      );
+    }
+    if (state.langHref.value !== wantMirror) {
+      throw new Error(
+        "app.js on " + pathname + " must link its language toggle to "
+        + wantMirror + ", got " + state.langHref.value
+      );
+    }
+    if (state.langHreflang.value !== (wantLang === "ru" ? "en" : "ru")) {
+      throw new Error(
+        "app.js on " + pathname + " must declare hreflang for the language it"
+        + " links to, got " + state.langHreflang.value
+      );
+    }
+    if (state.filmUrl({ imdbId: "tt1", titleEn: "Upload" }, state.lang.value)
+        !== (wantLang === "en" ? "/en/films/tt1-upload/" : "/films/tt1-upload/")) {
+      throw new Error("app.js on " + pathname + " must build film links in " + wantLang);
+    }
+    if (state.pageHref("/about.html")
+        !== (wantLang === "en" ? "/en/about.html" : "/about.html")) {
+      throw new Error("app.js on " + pathname + " must build internal links in " + wantLang);
+    }
+  }
+  console.log("common.js/app.js smoke (language from the path prefix): OK" + MIN_LABEL);
+} else if (mode === "slug") {
   global.window = global;
   eval(jsSrc("catalog.js"));
   eval(jsSrc("common.js"));
@@ -100,8 +316,13 @@ if (mode === "slug") {
   );
   const setup = captured();
   const state = setup();
-  if (!state || typeof state.movies.value.length !== "number" || !state.setLang) {
+  if (!state || typeof state.movies.value.length !== "number" || !state.lang) {
     throw new Error("app.js setup() returned invalid state");
+  }
+  if (state.lang.value !== "ru") {
+    throw new Error(
+      "app.js booted on a Russian path must render ru, got " + state.lang.value
+    );
   }
   if (!state.featured || !Array.isArray(state.featured.value) || state.featured.value.length === 0) {
     throw new Error("app.js must expose a non-empty featured shelf");
@@ -511,6 +732,6 @@ if (mode === "slug") {
   }
   console.log("film.js smoke (FILM_PAGE, no data.js load on film page): OK" + MIN_LABEL);
 } else {
-  console.error("usage: node tools/smoke.js <app|slug|film>");
+  console.error("usage: node tools/smoke.js <" + MODES.join("|") + "> [--min]");
   process.exit(2);
 }

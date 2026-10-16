@@ -738,6 +738,7 @@ svg:not(.heart) {
   white-space: nowrap;
   flex-shrink: 0;
   cursor: pointer;
+  text-decoration: none;
   transition:
     background-color 0.15s ease,
     color 0.15s ease,

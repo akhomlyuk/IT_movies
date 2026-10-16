@@ -1337,10 +1337,13 @@ def test_main_lang(page, base):
     expect(page).to_have_title(
         "Фильмы и сериалы о компьютерах, технологиях и ИИ — IT Movies"
     )
-    page.locator(".lang").click()
-    expect(page).to_have_title(
-        "Films and series on computers, technology and AI — IT Movies"
+    toggle = page.locator(".lang")
+    assert toggle.evaluate("e => e.tagName") == "A", (
+        "the language toggle is a link to the mirror of the current path; it no"
+        " longer mutates state in place"
     )
+    expect(toggle).to_have_attribute("href", "/en/index.html")
+    expect(toggle).to_have_attribute("hreflang", "en")
 
 
 def report_related_crop(page):
@@ -1639,15 +1642,13 @@ def test_film_lang(page, base):
     )
     expect(page.locator("h1.film-title")).to_have_text(ru)
     expect(page.locator(".film-alt")).to_have_text(en)
-    page.locator(".lang").click()
-    expect(page.locator("html")).to_have_attribute("lang", "en")
-    expect(page.locator("h1.film-title")).to_have_text(en)
-    expect(page.locator(".film-alt")).to_have_text(ru)
-    expect(page.locator("nav.breadcrumb")).to_have_attribute("aria-label", "Home")
-    expect(page).to_have_title(re.compile(rf"^{re.escape(en)}( \(\d{{4}}\))? — "))
-    titles = page.locator(".related .rc-title").all_text_contents()
-    bad = [t for t in titles if not (t.strip() and is_latin_script(t))]
-    assert not bad, f"EN related titles must be non-empty Latin script: {bad}"
+    toggle = page.locator(".lang")
+    assert toggle.evaluate("e => e.tagName") == "A", (
+        "the language toggle is a link to the mirror of the current path; it no"
+        " longer mutates state in place"
+    )
+    expect(toggle).to_have_attribute("href", "/en/" + FILM_PAGE)
+    expect(toggle).to_have_attribute("hreflang", "en")
 
 
 def test_film_mobile_layout(page, base):
