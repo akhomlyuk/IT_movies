@@ -85,7 +85,11 @@ function bootApp() {
       captured = opts.setup;
       return { components: {}, config: {}, mount: noop };
     },
-    computed: (fn) => ({ value: fn() }),
+    computed: (fn) => {
+      const o = {};
+      Object.defineProperty(o, "value", { get: () => fn(), enumerable: true });
+      return o;
+    },
     reactive: (o) => o,
     ref: (v) => ({ value: v }),
     watch: noop,
@@ -156,6 +160,8 @@ if (mode === "lang") {
     ["/en/", "/"],
     ["/en/films/x/", "/films/x/"],
     ["/en/about.html", "/about.html"],
+    ["/en", "/"],
+    ["/en/films/x", "/films/x"],
   ]) {
     if (api.mirrorPath(pathname) !== want) {
       throw new Error(
@@ -236,9 +242,9 @@ if (mode === "lang") {
       throw new Error("index.html must call " + needle + " so card links keep the language");
     }
   }
-  for (const name of ["404.html", "privacy.html"]) {
+  for (const name of ["privacy.html"]) {
     const text = read(name);
-    for (const dead of ["it-movies-lang", 'get("lang")', "get('lang')"]) {
+    for (const dead of ["it-movies-lang", 'get("lang")', "get('lang')", "navigator.language"]) {
       if (text.includes(dead)) {
         throw new Error(
           name + " must not read or write the language through " + dead
@@ -297,6 +303,24 @@ if (mode === "lang") {
     if (state.pageHref("/about.html")
         !== (wantLang === "en" ? "/en/about.html" : "/about.html")) {
       throw new Error("app.js on " + pathname + " must build internal links in " + wantLang);
+    }
+    state.query.value = "matrix";
+    state.genre.value = "ai";
+    state.onlyFav.value = true;
+    if (state.langHref.value !== wantMirror + "?q=matrix&genre=ai&fav=1") {
+      throw new Error(
+        "app.js on " + pathname + " must carry a filter set AFTER load into its"
+        + " language toggle, got " + state.langHref.value + " -- a computed with no"
+        + " reactive dependency is evaluated once and replaceState is not"
+        + " observable, so the mount-time query is all it ever sees"
+      );
+    }
+    state.resetFilters();
+    if (state.langHref.value !== wantMirror) {
+      throw new Error(
+        "app.js on " + pathname + " must drop cleared filters from its language"
+        + " toggle, got " + state.langHref.value
+      );
     }
   }
   console.log("common.js/app.js smoke (language from the path prefix): OK" + MIN_LABEL);

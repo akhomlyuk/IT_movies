@@ -297,7 +297,7 @@ const app = createApp({
       }
     );
 
-    function syncUrl() {
+    function buildQuery() {
       const p = new URLSearchParams();
       if (query.value) p.set("q", query.value);
       if (genre.value) p.set("genre", genre.value);
@@ -309,7 +309,11 @@ const app = createApp({
           p.delete(`sort[${type}]`);
         }
       }
-      const qs = p.toString();
+      return p;
+    }
+
+    function syncUrl() {
+      const qs = buildQuery().toString();
       const url = location.pathname + (qs ? "?" + qs : "") + location.hash;
       clearTimeout(urlSyncTimer);
       urlSyncTimer = setTimeout(() => {
@@ -344,9 +348,10 @@ const app = createApp({
     });
 
     const t = computed(() => I18N[lang.value]);
-    const langHref = computed(
-      () => mirrorPath(location.pathname) + location.search + location.hash
-    );
+    const langHref = computed(() => {
+      const qs = buildQuery().toString();
+      return mirrorPath(location.pathname) + (qs ? "?" + qs : "");
+    });
     const langHreflang = computed(() => (lang.value === "ru" ? "en" : "ru"));
     function pageHref(path) {
       return langPath(path, lang.value);

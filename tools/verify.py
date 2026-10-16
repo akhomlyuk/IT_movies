@@ -3200,7 +3200,7 @@ def check_related():
 check_related()
 
 
-# 9b1. Node smoke harnesses: app.js / slug / film.js (tools/smoke.js)
+# 9b1. Node smoke harnesses: app.js / slug / film.js / lang (tools/smoke.js)
 def run_smoke(*args):
     res = subprocess.run(
         ["node", str(ROOT / "tools" / "smoke.js"), *args],
@@ -3241,6 +3241,11 @@ if shutil.which("node"):
     except RuntimeError as e:
         errors.append(f"app.js smoke failed:\n{e}")
 
+    try:
+        print(run_smoke("lang"))
+    except RuntimeError as e:
+        errors.append(f"lang smoke failed:\n{e}")
+
     # Slug parity: Python item_slug must equal common.js itemSlug for every record
     check_slugs()
 
@@ -3252,7 +3257,7 @@ if shutil.which("node"):
 
     # 9b2. Repeat the smokes on the minified JS actually shipped (*.min.js),
     # so a semantics-changing bug in gen_pages.minify_js is caught by the tests
-    for name in ("app", "slug", "film"):
+    for name in ("app", "slug", "film", "lang"):
         if name == "slug":
             check_slugs("--min")
             continue
