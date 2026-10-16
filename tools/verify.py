@@ -1434,20 +1434,27 @@ CHANNELS = (
 )
 
 CHANNEL_COPIES = (
-    ("index.html", "/static/share.svg"),
-    ("js/film.js", "/static/share.svg"),
-    ("js/film.min.js", "/static/share.svg"),
+    "index.html",
+    "js/film.js",
+    "js/film.min.js",
     # about.html carries a header inside <noscript> and the LIVE one is rendered
     # from js/about.js, so both are copies and both are needed: the first is what a
     # no-JS reader gets, the second is what everyone else gets. Reading only
     # about.html is how the anchor ended up in the noscript copy while the live
     # page had none -- and the regex could not tell, because both contain it.
-    ("about.html", "/static/share.svg"),
-    ("js/about.js", "/static/share.svg"),
-    ("js/about.min.js", "/static/share.svg"),
-    ("404.html", "/static/share.svg"),
-    ("privacy.html", "/static/share.svg"),
+    "about.html",
+    "js/about.js",
+    "js/about.min.js",
+    "404.html",
+    "privacy.html",
 )
+
+
+def channel_sprite_prefix(rel):
+    text = (ROOT / rel).read_text(encoding="utf-8")
+    if '<base href="/">' in text:
+        return "static/share.svg"
+    return "/static/share.svg"
 
 
 def channel_item_re(ch):
@@ -1769,7 +1776,8 @@ def check_channel_link():
             )
 
     seen_labels = {ch["brand"]: {} for ch in CHANNELS}
-    for rel, prefix in CHANNEL_COPIES:
+    for rel in CHANNEL_COPIES:
+        prefix = channel_sprite_prefix(rel)
         text = (ROOT / rel).read_text(encoding="utf-8")
         row = CHANNEL_ROW_RE.search(text)
         if not row:
@@ -2998,11 +3006,154 @@ def check_language_head_links():
 check_language_head_links()
 
 
+LANG_TOGGLE_RE = re.compile(r'<a class="lang" href="([^"]*)" hreflang="([^"]*)"')
+
+
+def own_url_path(page):
+    rel = page.relative_to(ROOT).as_posix()
+    if rel.endswith("index.html"):
+        return "/" + rel[: -len("index.html")]
+    return "/" + rel
+
+
+def check_lang_toggle_mirror():
+    bad = []
+    checked = 0
+    for page in sorted(ROOT.rglob("*.html")):
+        rel = page.relative_to(ROOT)
+        if any(part.startswith(".") for part in rel.parts):
+            continue
+        found = LANG_TOGGLE_RE.findall(page.read_text(encoding="utf-8"))
+        if not found:
+            continue
+        own = own_url_path(page)
+        own_lang = "en" if rel.parts[0] == "en" else "ru"
+        for href, hreflang in found:
+            checked += 1
+            name = rel.as_posix()
+            if hreflang == own_lang:
+                bad.append(
+                    f"{name}: the language toggle declares hreflang={hreflang}, "
+                    f"which is the language this page already speaks"
+                )
+                continue
+            if hreflang not in ("ru", "en"):
+                bad.append(
+                    f"{name}: the language toggle declares hreflang={hreflang}, "
+                    f"which is not one of the two languages the site has"
+                )
+                continue
+            want = mirror_path(own)
+            if href != want:
+                bad.append(
+                    f"{name}: the language toggle is href={href!r} "
+                    f"hreflang={hreflang!r}, so it sends a reader to {href} instead "
+                    f"of to this page's own {hreflang} mirror {want!r}. A static "
+                    f"href is the one a reader without JavaScript follows, and the "
+                    f"inline script that corrects it at run time is exactly what "
+                    f"such a reader does not have"
+                )
+    for b in bad[:8]:
+        errors.append(f"language toggle: {b}")
+    if len(bad) > 8:
+        errors.append(f"language toggle: {len(bad) - 8} more problems")
+    if not bad:
+        print(
+            f"Language toggle: {checked} static toggle(s), each href = the page's "
+            f"own mirror in the language its hreflang names"
+        )
+
+
+check_lang_toggle_mirror()
+
+
+def og_image_faults(page, text, item, lang):
+    name = page.relative_to(ROOT).as_posix()
+    faults = []
+    site_image = f"{SITE_BASE}/static/ogimage.webp"
+    image = re.search(r'<meta property="og:image" content="([^"]+)"', text)
+    alt = re.search(r'<meta property="og:image:alt" content="([^"]+)"', text)
+    width = re.search(r'<meta property="og:image:width" content="([^"]+)"', text)
+    height = re.search(r'<meta property="og:image:height" content="([^"]+)"', text)
+    if image is None:
+        return [
+            f"{name}: og:image is missing, so the pair this check compares cannot"
+            f" be read"
+        ]
+    if alt is None:
+        faults.append(f"{name}: og:image:alt is missing")
+    if width is None or height is None:
+        faults.append(
+            f"{name}: og:image:{'width' if width is None else 'height'} is missing."
+            f" A declared size a consumer can reserve is what keeps a shared image"
+            f" from reflowing the card it is painted on"
+        )
+    if item is None:
+        if image.group(1) != site_image:
+            faults.append(
+                f"{name}: og:image is {image.group(1)}, which is not the shared"
+                f" {site_image} this page is expected to label"
+            )
+            return faults
+        want = "IT Movies"
+    else:
+        poster = (item.get("poster") or "").lstrip("/")
+        if poster and image.group(1) == f"{SITE_BASE}/{poster}":
+            want = item["titleRu"] if lang == "ru" else item["titleEn"]
+        elif image.group(1) == site_image:
+            want = "IT Movies"
+        else:
+            faults.append(
+                f"{name}: og:image is {image.group(1)}, which is neither this"
+                f" record's poster nor the {site_image}, so this check cannot say"
+                f" what its alt text should describe"
+            )
+            return faults
+    if alt is not None and unescape(alt.group(1)) != want:
+        faults.append(
+            f"{name}: og:image is {image.group(1)} and og:image:alt is"
+            f" {alt.group(1)!r}, which describes {want!r}. The alt text describes"
+            f" the image it labels, not the page it sits on: a shared site card"
+            f" labelled with a film title is a caption that is wrong about its own"
+            f" picture"
+        )
+    if width is not None and height is not None:
+        local = ROOT / image.group(1)[len(SITE_BASE) + 1:]
+        dims = webp_size(local) if local.is_file() else None
+        if dims is None:
+            faults.append(
+                f"{name}: og:image names {image.group(1)}, which is not a file in"
+                f" this repository, so its declared size cannot be checked against"
+                f" the picture itself"
+            )
+        elif (width.group(1), height.group(1)) != (str(dims[0]), str(dims[1])):
+            faults.append(
+                f"{name}: og:image:width/height are"
+                f" {width.group(1)}x{height.group(1)}, but {image.group(1)} is"
+                f" {dims[0]}x{dims[1]} on disk"
+            )
+    return faults
+
+
 def check_og_image_alt():
     bad = []
     checked = 0
+    root_checked = 0
     by_slug = {item_slug(item): item for item in catalog}
-    site_image = f"{SITE_BASE}/static/ogimage.webp"
+    for name in gen_pages.EN_ROOT_PAGES:
+        for rel in (name, f"en/{name}"):
+            page = ROOT / rel
+            if not page.is_file():
+                bad.append(f"{rel}: is missing, so this run skipped a root page")
+                continue
+            faults = og_image_faults(
+                page, page.read_text(encoding="utf-8"), None, None
+            )
+            root_checked += 1
+            if faults:
+                bad.extend(faults)
+                continue
+            checked += 1
     for lang, prefix in MIRROR_ROOTS:
         if not mirror_pages(prefix):
             bad.append(
@@ -3011,44 +3162,24 @@ def check_og_image_alt():
             )
             continue
         for page in mirror_pages(prefix):
-            text = page.read_text(encoding="utf-8")
-            image = re.search(r'<meta property="og:image" content="([^"]+)"', text)
-            alt = re.search(r'<meta property="og:image:alt" content="([^"]+)"', text)
             item = by_slug.get(page.parent.name)
-            if image is None or alt is None or item is None:
+            if item is None:
                 bad.append(
-                    f"{page.relative_to(ROOT).as_posix()}: og:image"
-                    f"{'' if image else '/og:image:alt'} is missing, so the pair this "
-                    f"check compares cannot be read"
+                    f"{page.relative_to(ROOT).as_posix()}: names no catalog record, "
+                    f"so there is nothing to say what its og:image should describe"
                 )
                 continue
-            poster = (item.get("poster") or "").lstrip("/")
-            if image.group(1) == f"{SITE_BASE}/{poster}":
-                want = item["titleRu"] if lang == "ru" else item["titleEn"]
-            elif image.group(1) == site_image:
-                want = "IT Movies"
-            else:
-                bad.append(
-                    f"{page.relative_to(ROOT).as_posix()}: og:image is "
-                    f"{image.group(1)}, which is neither this record's poster nor "
-                    f"{site_image}, so this check cannot say what its alt text should "
-                    f"describe"
-                )
+            faults = og_image_faults(page, page.read_text(encoding="utf-8"), item, lang)
+            if faults:
+                bad.extend(faults)
                 continue
-            if unescape(alt.group(1)) != want:
-                bad.append(
-                    f"{page.relative_to(ROOT).as_posix()}: og:image is {image.group(1)}"
-                    f" and og:image:alt is {alt.group(1)!r}, which describes "
-                    f"{want!r}. The alt text describes the image it labels, not the "
-                    f"page it sits on: a shared site card labelled with a film title "
-                    f"is a caption that is wrong about its own picture"
-                )
             checked += 1
     for b in bad[:8]:
         errors.append(f"og:image:alt: {b}")
     if len(bad) > 8:
         errors.append(f"og:image:alt: {len(bad) - 8} more problems")
     if not bad:
+        site_image = f"{SITE_BASE}/static/ogimage.webp"
         poster_pages = sum(
             1
             for lang, prefix in MIRROR_ROOTS
@@ -3056,10 +3187,12 @@ def check_og_image_alt():
             if by_slug.get(page.parent.name, {}).get("poster")
         )
         print(
-            f"og:image:alt: {checked} film page(s) in both languages, each alt "
-            f"describing the image beside it -- the record's own title on the "
-            f"{poster_pages} page(s) that carry that poster, and IT Movies on the "
-            f"shared {site_image}"
+            f"og:image:alt: {checked} page(s) -- {root_checked} root page(s) in both"
+            f" languages and the film pages -- each with og:image:width and"
+            f" og:image:height matching the file on disk, and each alt describing the"
+            f" image beside it: the record's own title on the {poster_pages} film"
+            f" page(s) carrying that poster, and IT Movies on the shared"
+            f" {site_image}"
         )
 
 
@@ -5155,9 +5288,12 @@ RELATIVE_ASSET = re.compile(
     r"(" + _REL_UP + r"(?:" + _TOP_DIRS + r")/"
     r"|" + _REL_UP + r"(?:" + _TOP_FILES + r"))"
 )
+RELATIVE_LINK_EXEMPT = ("404.html",)
 RELATIVE_LINK_FILES = sorted(
-    ROOT.rglob("*.html")
-) + sorted((ROOT / "js").glob("*.js"))
+    p
+    for p in sorted(ROOT.rglob("*.html")) + sorted((ROOT / "js").glob("*.js"))
+    if p.relative_to(ROOT).as_posix() not in RELATIVE_LINK_EXEMPT
+)
 
 
 def check_no_relative_links():

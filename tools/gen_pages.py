@@ -1230,10 +1230,11 @@ def en_attr_rules(name, lang="en"):
         ),
     ]
     if name == "privacy.html":
+        mirror = lang_path(RU_ROOT_PATH[name], "en")
         rules.append(
             (
-                '<a class="lang" href="/en/" hreflang="%s"' % lang,
-                '<a class="lang" href="/en/" hreflang="%s"' % other,
+                '<a class="lang" href="%s" hreflang="en"' % mirror,
+                '<a class="lang" href="%s" hreflang="%s"' % (mirror, other),
             )
         )
     return rules
