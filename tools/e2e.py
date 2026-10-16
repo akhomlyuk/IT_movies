@@ -94,7 +94,7 @@ from playwright.sync_api import expect, sync_playwright
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import poster_crop  # noqa: E402
-from lib import FEATURED_BOX_DESKTOP, FEATURED_BOX_MOBILE, POSTER_VARIANT_WIDTHS, ROOT, variant_name, webp_size  # noqa: E402
+from lib import CYRILLIC, FEATURED_BOX_DESKTOP, FEATURED_BOX_MOBILE, POSTER_VARIANT_WIDTHS, ROOT, variant_name, webp_size  # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -104,6 +104,7 @@ FILM_PAGE = "films/tt0133093-the-matrix/index.html"
 FILM_MOBILE_PAGE = "films/tt8488126-the-inventor-out-for-blood-in-silicon-valley/index.html"
 RELATED_COUNT = 6
 I18N_RU_SUBTITLE = "Подборка фильмов и сериалов о компьютерах, технологиях, ИИ и т.д."
+I18N_EN_SUBTITLE = "A curated list of films and series about computers, technology, AI, etc"
 META_DARK = "#14120F"
 META_LIGHT = "#F4F2ED"
 DESKTOP = {"width": 1280, "height": 800}
@@ -1649,6 +1650,58 @@ def test_film_lang(page, base):
     )
     expect(toggle).to_have_attribute("href", "/en/" + FILM_PAGE)
     expect(toggle).to_have_attribute("hreflang", "en")
+
+    # The English copy of the same record. Task 2 dropped these assertions
+    # because /en/ did not exist yet; a link that resolves to nothing is exactly
+    # what they are here to catch, so they are asserted again -- and the two
+    # halves are read from FILM_PAGE itself, so the assertion cannot pass by
+    # comparing the page against another copy of the same wrong value.
+    desc_ru = page.evaluate("() => window.FILM_PAGE.item.desc.ru")
+    desc_en = page.evaluate("() => window.FILM_PAGE.item.desc.en")
+    assert desc_en.strip() and not CYRILLIC.search(desc_en), (
+        f"the English page shows desc.en, so it must be present and free of"
+        f" Cyrillic: {desc_en[:120]!r}"
+    )
+    assert desc_ru.strip() and desc_en != desc_ru, (
+        "desc.ru and desc.en are the two halves of this assertion and must differ"
+    )
+    page.goto(base + "en/" + FILM_PAGE, wait_until="domcontentloaded")
+    expect(page.locator("html")).to_have_attribute("lang", "en")
+    expect(page.locator(".brand-text p")).to_have_text(I18N_EN_SUBTITLE)
+    expect(page.locator("h1.film-title")).to_have_text(en)
+    shown = page.locator("p.film-desc:not(.film-desc-alt)").inner_text().strip()
+    assert shown == desc_en.strip(), (
+        "the English page must show the English synopsis, got "
+        f"{shown[:120]!r} against desc.en {desc_en[:120]!r}"
+    )
+    assert desc_ru.strip() not in shown, (
+        "the English page is showing the Russian synopsis"
+    )
+    expect(page.locator("nav.breadcrumb")).to_have_attribute("aria-label", "Home")
+    expect(page.locator("nav.breadcrumb a")).to_have_attribute("href", "/en/")
+    expect(page.locator(".related h2")).to_have_text("Related in the catalog")
+    hrefs = page.locator(".related a.rc").evaluate_all(
+        "els => els.map(el => el.getAttribute('href'))"
+    )
+    assert len(hrefs) == RELATED_COUNT, f"related cards: {hrefs}"
+    wrong = [h for h in hrefs if not h.startswith("/en/films/")]
+    assert not wrong, (
+        "a related card on an English page must stay inside the /en/ tree, "
+        f"got {wrong}"
+    )
+    titles = page.locator(".related .rc-title").all_text_contents()
+    related_titles = page.evaluate(
+        "() => window.FILM_PAGE.related.map(r => r.titleEn)"
+    )
+    assert titles == related_titles, (
+        f"related cards must carry the English titles, got {titles} against "
+        f"{related_titles}"
+    )
+    en_toggle = page.locator(".lang")
+    expect(en_toggle).to_have_attribute("href", "/" + FILM_PAGE)
+    expect(en_toggle).to_have_attribute("hreflang", "ru")
+    page.goto(base + FILM_PAGE, wait_until="domcontentloaded")
+    expect(page.locator("h1.film-title")).to_have_text(ru)
 
 
 def test_film_mobile_layout(page, base):

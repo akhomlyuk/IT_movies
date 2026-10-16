@@ -6,6 +6,27 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE_BASE = "https://movies.whlab.ru"
+EN_PREFIX = "/en"
+CYRILLIC = re.compile("[А-Яа-яЁё]")
+
+
+def mirror_path(path):
+    """The other language's address for a root-relative path.
+
+    `/films/x/` <-> `/en/films/x/`, `/` <-> `/en/`. One rule, and js/common.js
+    carries the same one in mirrorPath(); every expected hreflang, canonical and
+    link in this project is built from here rather than from a literal, so the
+    mirror cannot be one file's opinion.
+    """
+    if not isinstance(path, str) or not path.startswith("/"):
+        raise ValueError(f"mirror_path: {path!r} is not a root-relative path")
+    if path == EN_PREFIX or path.startswith(EN_PREFIX + "/"):
+        return path[len(EN_PREFIX):] or "/"
+    return EN_PREFIX + path
+
+
+def lang_path(path, lang):
+    return mirror_path(path) if lang == "en" else path
 
 
 def load_catalog(root=ROOT):

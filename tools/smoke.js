@@ -636,6 +636,23 @@ if (mode === "lang") {
     throw new Error("related rating chips must carry rating-chip so the pill"
       + " styling is shared with the rest of the site, not re-declared per card");
   }
+  // The card's href is language-aware through ONE binding, because the template
+  // is emitted into both trees verbatim: a card on an English page has to link
+  // into /en/films/, and a hard-coded '/films/' would send every reader out of
+  // the mirror on click.
+  if (!genRc.includes('relatedHref(r)')) {
+    throw new Error("gen_pages.RC_CARD must bind its href to relatedHref(r), not"
+      + " to a literal '/films/' path: the same template is emitted into the"
+      + " Russian and the English page");
+  }
+  if (!filmSource.includes("function relatedHref")) {
+    throw new Error("film.js must define relatedHref(r), which the related card"
+      + " binds; a binding with no function behind it renders an empty href");
+  }
+  if (!filmSource.includes("filmUrl(r, lang.value)")) {
+    throw new Error("relatedHref must build the card's address with filmUrl(r,"
+      + " lang) so a card stays inside the reader's own language tree");
+  }
   // The card and its poster are the two repeated shapes in a six-up row, and the
   // partner asked for 6px on both. The radius gate in verify.py only fails a
   // BARE value, so tokenising to --radius-m would pass it while shipping the
@@ -713,6 +730,39 @@ if (mode === "lang") {
   const want = relA.map((r) => global.ITMoviesCommon.itemSlug(r));
   if (slugs.join(",") !== want.join(",")) {
     throw new Error("film.js must render FILM_PAGE.related verbatim, got " + slugs.join(","));
+  }
+  // The related card's href, booted on both path prefixes: the card has to stay
+  // inside the reader's own language tree, or a click on /en/films/x/ lands on
+  // the Russian page. The binding is asserted here on a real setup() call,
+  // because a template string can carry the right binding and still resolve to
+  // the wrong prefix.
+  const ruHref = state.relatedHref(relA[0]);
+  if (!/^\/films\/[a-z0-9-]+\/$/.test(ruHref)) {
+    throw new Error("a related card on a Russian path must link to /films/<slug>/,"
+      + " got " + ruHref);
+  }
+  const ruPath = global.location.pathname;
+  global.location.pathname = "/en/films/x/";
+  const enState = setup();
+  const enHref = enState.relatedHref(relA[0]);
+  if (enHref !== "/en" + ruHref) {
+    throw new Error("a related card on /en/ must link to " + "/en" + ruHref
+      + ", got " + enHref);
+  }
+  if (enState.lang.value !== "en") {
+    throw new Error("film.js booted on /en/ must render en, got " + enState.lang.value);
+  }
+  const enTitle = enState.relatedTitle(relA[0]);
+  const enWant = global.ITMoviesCommon.displayTitle(relA[0], "en");
+  if (enTitle !== enWant || /[\u0400-\u04FF]/.test(enTitle)) {
+    throw new Error("a related card on /en/ must carry the English title "
+      + enWant + ", got " + enTitle);
+  }
+  global.location.pathname = ruPath;
+  const restored = setup();
+  if (restored.lang.value !== "ru" || restored.relatedHref(relA[0]) !== ruHref) {
+    throw new Error("film.js must follow the path prefix in both directions,"
+      + " got " + restored.lang.value + " / " + restored.relatedHref(relA[0]));
   }
   for (let i = 0; i < 5; i++) {
     const again = setup();

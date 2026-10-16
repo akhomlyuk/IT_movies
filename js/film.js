@@ -4,6 +4,7 @@ const {
   safeRead,
   safeWrite,
   itemSlug,
+  filmUrl,
   langPath,
   mirrorPath,
   kpUrl,
@@ -388,6 +389,10 @@ const app = createApp({
       return lang.value === "ru" ? r.titleRu : r.titleEn;
     }
 
+function relatedHref(r) {
+      return filmUrl(r, lang.value);
+    }
+
     function relatedInfo(r) {
       const tt = t.value;
       const parts = [];
@@ -436,6 +441,7 @@ const app = createApp({
       related,
       itemSlug,
       relatedTitle,
+      relatedHref,
       relatedInfo,
       relatedPoster,
       relatedPosterSrcset,

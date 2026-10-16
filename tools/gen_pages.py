@@ -16,17 +16,68 @@ import sys
 
 from datetime import datetime
 
-from lib import (ROOT, SITE_BASE, POSTER_VARIANT_WIDTHS, load_catalog, make_slug,
-                  item_slug, ru_genres, has_rating, fmt_rating, variant_name,
-                  webp_size, poster_sizes, hero_poster_widths)
+from lib import (ROOT, SITE_BASE, POSTER_VARIANT_WIDTHS, load_catalog,
+                  item_slug, lang_path, parse_i18n, has_rating,
+                  fmt_rating, variant_name, webp_size, poster_sizes,
+                  hero_poster_widths)
 
 sys.stdout.reconfigure(encoding="utf-8")
 
 OUT = ROOT / "films"
+OUT_EN = ROOT / "en" / "films"
 
 catalog = load_catalog()
 
-RU_GENRES = ru_genres()
+I18N = parse_i18n()
+RU_GENRES = I18N["ru"]["genres"]
+EN_GENRES = I18N["en"]["genres"]
+GENRES = {"ru": RU_GENRES, "en": EN_GENRES}
+LABELS = {"ru": I18N["ru"], "en": I18N["en"]}
+OG_LOCALE = {"ru": "ru_RU", "en": "en_US"}
+CATALOG_ITEMLIST_NAME = {
+    "ru": "Фильмы и сериалы о компьютерах, технологиях и искусственном интеллекте",
+    "en": "Films and series about computers, technology and artificial intelligence",
+}
+
+
+def title_of(item, lang):
+    return item["titleRu"] if lang == "ru" else item["titleEn"]
+
+
+def desc_of(item, lang):
+    return (item.get("desc") or {}).get("ru" if lang == "ru" else "en") or ""
+
+
+def en_text_error(item):
+    """Why this record cannot be mirrored, or None when it can.
+
+    Empty English text on an English address is as wrong as Russian text there:
+    the description meta is simply empty and nothing looks broken. The guard is
+    loud and it names the record, because the alternative is an English page
+    that ships with no synopsis and a gate that cannot tell.
+    """
+    slug = item_slug(item)
+    problems = []
+    title_en = item.get("titleEn")
+    if not isinstance(title_en, str) or not title_en.strip():
+        problems.append("titleEn is empty")
+    desc_en = (item.get("desc") or {}).get("en")
+    if not isinstance(desc_en, str) or not desc_en.strip():
+        problems.append("desc.en is empty")
+    if not problems:
+        return None
+    return (
+        f"record {slug} ({item.get('titleRu')!r}): an English page is being "
+        f"generated and {' and '.join(problems)}. Fill it in js/data.js -- the "
+        f"English address ships an empty description rather than the Russian "
+        f"one, and an empty one is as wrong as a Russian one"
+    )
+
+
+def require_en_text(item):
+    problem = en_text_error(item)
+    if problem:
+        raise SystemExit(problem)
 
 
 def catalog_git_date():
@@ -239,19 +290,21 @@ def poster_srcset_attr(poster, sizes, prefix, single=False):
     return ' srcset="%s" sizes="%s"' % (", ".join(candidates), sizes)
 
 
-def index_ld_json(catalog):
-    base = SITE_BASE + "/"
+def index_ld_json(catalog, lang="ru"):
+    base = SITE_BASE + lang_path("/", lang)
+    home = SITE_BASE + lang_path("/", lang)
     items = []
     for i, item in enumerate(catalog):
-        url = base + "films/" + item_slug(item) + "/"
+        url = SITE_BASE + lang_path(f"/films/{item_slug(item)}/", lang)
         entry = {
             "@type": "TVSeries" if item["type"] == "series" else "Movie",
             "position": i + 1,
-            "name": item["titleRu"],
-            "alternateName": item["titleEn"],
-            "url": url,
-            "@id": url,
+            "name": title_of(item, lang),
         }
+        if lang == "ru":
+            entry["alternateName"] = item["titleEn"]
+        entry["url"] = url
+        entry["@id"] = url
         if item.get("poster"):
             entry["image"] = f"{SITE_BASE}/{item['poster'].lstrip('/')}"
         if item.get("year"):
@@ -263,37 +316,37 @@ def index_ld_json(catalog):
             "@id": base,
             "url": base,
             "name": "IT Movies",
-            "inLanguage": ["ru", "en"],
+            "inLanguage": ["ru", "en"] if lang == "ru" else [lang],
             "potentialAction": {
                 "@type": "SearchAction",
                 "target": {
                     "@type": "EntryPoint",
-                    "urlTemplate": base + "?q={search_term_string}",
+                    "urlTemplate": home + "?q={search_term_string}",
                 },
                 "query-input": "required name=search_term_string",
             },
         },
         {
             "@type": "Organization",
-            "@id": base + "#organization",
+            "@id": home + "#organization",
             "name": "IT Movies",
-            "url": base,
-            "logo": base + "static/logo.webp",
+            "url": home,
+            "logo": SITE_BASE + "/static/logo.webp",
         },
         {
             "@type": "WebPage",
-            "@id": base + "#webpage",
-            "url": base,
+            "@id": home + "#webpage",
+            "url": home,
             "name": "IT Movies",
-            "inLanguage": ["ru", "en"],
-            "isPartOf": {"@id": base},
-            "mainEntity": {"@id": base + "#catalog"},
-            "publisher": {"@id": base + "#organization"},
+            "inLanguage": ["ru", "en"] if lang == "ru" else [lang],
+            "isPartOf": {"@id": home},
+            "mainEntity": {"@id": home + "#catalog"},
+            "publisher": {"@id": home + "#organization"},
         },
         {
             "@type": "ItemList",
-            "@id": base + "#catalog",
-            "name": "Фильмы и сериалы о компьютерах, технологиях и искусственном интеллекте",
+            "@id": home + "#catalog",
+            "name": CATALOG_ITEMLIST_NAME[lang],
             "numberOfItems": len(catalog),
             "itemListElement": items,
         },
@@ -553,7 +606,13 @@ def generate_robots_txt():
 
 
 def generate_sitemap(catalog):
-    """sitemap.xml with changefreq and priority (no hreflang: language is client-side, no separate EN URLs)."""
+    """sitemap.xml with changefreq and priority, Russian addresses only.
+
+    The /en/ copies of the film pages are generated and linked by hreflang, but
+    they are not listed here: this sitemap has never carried a language, and
+    adding one (xhtml:link alternates alongside the /en/ locations) belongs with
+    the step that mirrors the catalog root.
+    """
     slugs_sorted = sorted(item_slug(item) for item in catalog)
     film_urls = "".join(
         "  <url>\n"
@@ -661,7 +720,7 @@ def inject_last_updated(src):
 # width now, the poster is 160 less 24px of padding and 2px of border = 134, and
 # that is the same number at 375 and at 1920 -- measured across 15 widths, the
 # spread collapsed from 151.5-170.66 to a flat 134.
-RC_CARD = """<a class="rc" :href="'/films/' + itemSlug(r) + '/'">
+RC_CARD = """<a class="rc" :href="relatedHref(r)">
   <img v-if="relatedPoster(r)" class="rc-poster" :src="relatedPoster(r)" :srcset="relatedPosterSrcset(r)" sizes="134px" alt="" width="134" height="201" loading="lazy" decoding="async">
   <span class="rc-content">
     <span class="rc-title">{{ relatedTitle(r) }}</span>
@@ -753,30 +812,34 @@ def rc_render_tag(tag, attrs, values):
     return f"<{name} " + " ".join(parts) + ">"
 
 
-def rc_values(r):
+def rc_values(r, lang="ru"):
     """The values one no-JS related card binds, keyed by the Vue expression the
-    client binds in the same place. The page is lang="ru" and static, so a
-    title is the Russian one and a label is the Russian one; the client
-    resolves the same bindings against I18N[lang] and the current language."""
+    client binds in the same place. The client resolves the same bindings
+    against I18N[lang] and the current language, so every string here is the one
+    for THIS page's language and every href stays inside the same language tree:
+    a card on an English page links into /en/films/."""
     poster = (r.get("poster") or "").lstrip("/")
-    genres = " / ".join(sorted(RU_GENRES.get(g, g) for g in r.get("genres", [])))
+    labels = LABELS[lang]
+    genres = " / ".join(
+        sorted(GENRES[lang].get(g, g) for g in r.get("genres", []))
+    )
     values = {
-        "'/films/' + itemSlug(r) + '/'": f"/films/{item_slug(r)}/",
+        "relatedHref(r)": lang_path(f"/films/{item_slug(r)}/", lang),
         "relatedPoster(r)": f"{FILMS_PREFIX}{poster}" if poster else "",
         "relatedPosterSrcset(r)": ", ".join(
             poster_candidates(poster, FILMS_PREFIX, single=True,
                               widths=POSTER_VARIANT_WIDTHS)
         ),
-        "relatedTitle(r)": r["titleRu"],
+        "relatedTitle(r)": title_of(r, lang),
         "relatedInfo(r)": " · ".join(
             p for p in (genres, str(r.get("year") or "")) if p
         ),
         "hasRating(r.kpRating)": has_rating(r.get("kpRating")),
         "r.imdbId": bool(r.get("imdbId")),
         "hasRating(r.imdbRating)": has_rating(r.get("imdbRating")),
-        "t.kpShort": "КП",
+        "t.kpShort": labels["kpShort"],
         "formatRating(r.kpRating)": fmt_rating(r.get("kpRating")),
-        "t.imdb": "IMDb",
+        "t.imdb": labels["imdb"],
         "formatRating(r.imdbRating)": fmt_rating(r.get("imdbRating")),
     }
     if set(values) != RC_EXPRESSIONS:
@@ -791,10 +854,10 @@ def rc_values(r):
     return values
 
 
-def rc_card_html(r):
+def rc_card_html(r, lang="ru"):
     """RC_CARD with every binding resolved to its no-JS value and every element "
     "whose v-if is false dropped with its subtree."""
-    values = rc_values(r)
+    values = rc_values(r, lang)
     out = []
     pos = 0
     for m in RC_TAG_RE.finditer(RC_CARD):
@@ -824,10 +887,10 @@ def rc_card_html(r):
     return "".join(out)
 
 
-def rc_cards_html(related):
+def rc_cards_html(related, lang="ru"):
     lis = []
     for r in related:
-        lines = rc_card_html(r).split("\n")
+        lines = rc_card_html(r, lang).split("\n")
         lis.append(
             '        <li>' + lines[0]
             + "".join("\n          " + line for line in lines[1:])
@@ -836,35 +899,45 @@ def rc_cards_html(related):
     return "".join(lis)
 
 
-def render(item, related):
+def render(item, related, lang="ru"):
+    if lang == "en":
+        require_en_text(item)
+    labels = LABELS[lang]
+    other_lang = "ru" if lang == "en" else "en"
     slug = item_slug(item)
-    page_url = f"{SITE_BASE}/films/{slug}/"
-    home_url = f"{SITE_BASE}/"
-    title_ru = item["titleRu"]
-    title_en = item["titleEn"]
-    desc_ru = item["desc"]["ru"]
-    desc_en = item["desc"]["en"]
+    ru_url = SITE_BASE + f"/films/{slug}/"
+    en_url = SITE_BASE + lang_path(f"/films/{slug}/", "en")
+    page_url = ru_url if lang == "ru" else en_url
+    home_url = SITE_BASE + lang_path("/", lang)
+    privacy_url = lang_path("/privacy.html", lang)
+    title = title_of(item, lang)
+    alt_title = title_of(item, other_lang)
+    desc = desc_of(item, lang)
+    desc_alt = desc_of(item, other_lang)
     poster = (item.get("poster") or "").lstrip("/")
     poster_dims = webp_size(ROOT / poster) if poster else None
-    genres_ru = sorted(RU_GENRES.get(g, g) for g in item["genres"])
-    genre_list = ", ".join(genres_ru)
+    genres = sorted(GENRES[lang].get(g, g) for g in item["genres"])
+    genre_list = ", ".join(genres)
 
     schema_type = "TVSeries" if item["type"] == "series" else "Movie"
     og_type = "video.tv_show" if item["type"] == "series" else "video.movie"
     graph = []
     movie = {
         "@type": schema_type,
-        "name": title_ru,
-        "alternateName": title_en,
+        "name": title,
+    }
+    if lang == "ru":
+        movie["alternateName"] = alt_title
+    movie.update({
         "url": page_url,
         "@id": page_url,
-        "inLanguage": "ru",
-        "description": desc_ru,
+        "inLanguage": lang,
+        "description": desc,
         "datePublished": str(item["year"]),
         "dateModified": CATALOG_DATE,
-        "genre": genres_ru,
+        "genre": genres,
         "sameAs": [],
-    }
+    })
     if item.get("imdbId"):
         movie["sameAs"].append(f"https://www.imdb.com/title/{item['imdbId']}/")
     movie["sameAs"].append(f"https://www.kinopoisk.ru/film/{item['kpId']}/")
@@ -890,7 +963,7 @@ def render(item, related):
         "@id": page_url + "#breadcrumb",
         "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "IT Movies", "item": home_url},
-            {"@type": "ListItem", "position": 2, "name": title_ru, "item": page_url},
+            {"@type": "ListItem", "position": 2, "name": title, "item": page_url},
         ],
     })
 
@@ -898,14 +971,14 @@ def render(item, related):
         graph.append({
             "@type": "ItemList",
             "@id": page_url + "#related",
-            "name": "Похожее в каталоге IT Movies",
+            "name": f'{labels["relatedH"]} IT Movies',
             "numberOfItems": len(related),
             "itemListElement": [
                 {
                     "@type": "ListItem",
                     "position": i + 1,
-                    "name": r["titleRu"],
-                    "url": f"{SITE_BASE}/films/{item_slug(r)}/",
+                    "name": title_of(r, lang),
+                    "url": SITE_BASE + lang_path(f"/films/{item_slug(r)}/", lang),
                 }
                 for i, r in enumerate(related)
             ],
@@ -931,7 +1004,13 @@ def render(item, related):
     )
     page_data = json.dumps(
         {
-            "item": {**item, "descSeo": {"ru": seo_desc(desc_ru), "en": seo_desc(desc_en)}},
+            "item": {
+                **item,
+                "descSeo": {
+                    "ru": seo_desc(desc_of(item, "ru")),
+                    "en": seo_desc(desc_of(item, "en")),
+                },
+            },
             "related": [{k: r[k] for k in SLIM_KEYS if k in r} for r in related],
             "posterW": poster_dims[0] if poster_dims else None,
             "posterH": poster_dims[1] if poster_dims else None,
@@ -940,7 +1019,8 @@ def render(item, related):
         separators=(",", ":"),
     ).replace("<", "\\u003c")
 
-    poster_abs = f"{SITE_BASE}/{poster}" if poster else f"{SITE_BASE}/static/ogimage.webp"
+    og_image = f"{SITE_BASE}/{poster}" if poster else f"{SITE_BASE}/static/ogimage.webp"
+    og_dims = poster_dims or webp_size(ROOT / "static" / "ogimage.webp")
 
     preload_poster = ""
     if poster:
@@ -958,7 +1038,7 @@ def render(item, related):
         )
 
     fav_badge = (
-        '\n            <span class="film-badge">Выбор автора</span>'
+        f'\n            <span class="film-badge">{esc(labels["authorPick"])}</span>'
         if item.get("fav")
         else ""
     )
@@ -966,8 +1046,8 @@ def render(item, related):
     # The client hides the alt line when the two titles are identical; the no-JS
     # card must agree, or 9 documentaries print their title twice.
     noscript_alt = (
-        f'            <p class="film-alt">{esc(title_en)}</p>\n'
-        if title_en and title_en != title_ru
+        f'            <p class="film-alt">{esc(alt_title)}</p>\n'
+        if alt_title and alt_title != title
         else ""
     )
 
@@ -977,43 +1057,56 @@ def render(item, related):
         srcset_attr = poster_srcset_attr(poster, POSTER_SIZES, FILMS_PREFIX)
         noscript_poster = (
             f'      <figure class="film-poster">\n'
-            f'        <img src="/{poster}"{srcset_attr} alt="{esc(title_ru)}"{dims} decoding="async">'
+            f'        <img src="/{poster}"{srcset_attr} alt="{esc(title)}"{dims} decoding="async">'
             f'{fav_badge}\n'
             "      </figure>\n"
         )
 
-    related_items = rc_cards_html(related)
+    related_items = rc_cards_html(related, lang)
     rc_card_js = json.dumps(RC_CARD, ensure_ascii=False).replace("<", "\\u003c")
 
     rat_tiles = (
         f'        <div class="ratings">\n'
-        f'          <a class="kp rating-chip rating-chip--kp" href="https://www.kinopoisk.ru/film/{item["kpId"]}/" target="_blank" rel="noopener noreferrer">Кинопоиск: {esc(fmt_rating(item.get("kpRating")))}{esc(star(item.get("kpRating")))}</a>\n'
+        f'          <a class="kp rating-chip rating-chip--kp" href="https://www.kinopoisk.ru/film/{item["kpId"]}/" target="_blank" rel="noopener noreferrer">{esc(labels["kp"])}: {esc(fmt_rating(item.get("kpRating")))}{esc(star(item.get("kpRating")))}</a>\n'
     )
     if item.get("imdbId"):
         rat_tiles += (
-            f'          <a class="imdb rating-chip rating-chip--imdb" href="https://www.imdb.com/title/{item["imdbId"]}/" target="_blank" rel="noopener noreferrer">IMDb: {esc(fmt_rating(item.get("imdbRating")))}{esc(star(item.get("imdbRating")))}</a>\n'
+            f'          <a class="imdb rating-chip rating-chip--imdb" href="https://www.imdb.com/title/{item["imdbId"]}/" target="_blank" rel="noopener noreferrer">{esc(labels["imdb"])}: {esc(fmt_rating(item.get("imdbRating")))}{esc(star(item.get("imdbRating")))}</a>\n'
         )
     rat_tiles += "        </div>\n"
 
+    seo = seo_desc(desc)
+    og_image_tags = f'  <meta property="og:image" content="{og_image}">\n'
+    if og_dims:
+        og_image_tags += (
+            f'  <meta property="og:image:width" content="{og_dims[0]}">\n'
+            f'  <meta property="og:image:height" content="{og_dims[1]}">\n'
+        )
+    og_image_tags += f'  <meta property="og:image:alt" content="{esc(title)}">\n'
+    alternates = (
+        f'  <link rel="alternate" hreflang="ru" href="{ru_url}">\n'
+        f'  <link rel="alternate" hreflang="en" href="{en_url}">\n'
+        f'  <link rel="alternate" hreflang="x-default" href="{ru_url}">\n'
+    )
+
     return f"""<!DOCTYPE html>
-<html lang="ru">
+<html lang="{lang}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{esc(title_ru)} ({item["year"]}) — IT Movies</title>
-  <meta name="description" content="{esc(seo_desc(desc_ru))}">
-  <meta property="og:title" content="{esc(title_ru)} ({item["year"]}) — IT Movies">
-  <meta property="og:description" content="{esc(seo_desc(desc_ru))}">
+  <title>{esc(title)} ({item["year"]}) — IT Movies</title>
+  <meta name="description" content="{esc(seo)}">
+  <meta property="og:title" content="{esc(title)} ({item["year"]}) — IT Movies">
+  <meta property="og:description" content="{esc(seo)}">
   <meta property="og:type" content="{og_type}">
-  <meta property="og:locale" content="ru_RU">
-  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:locale" content="{OG_LOCALE[lang]}">
+  <meta property="og:locale:alternate" content="{OG_LOCALE["ru" if lang == "en" else "en"]}">
   <meta property="og:url" content="{page_url}">
   <meta property="og:site_name" content="IT Movies">
-  <meta property="og:image" content="{poster_abs}">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="{poster_abs}">
+{og_image_tags}  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{og_image}">
   <link rel="canonical" href="{page_url}">
-  <meta name="color-scheme" content="light dark">
+{alternates}  <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#F4F2ED">
   <meta name="theme-color" content="#14120F" media="(prefers-color-scheme: dark)">
 {preload_poster}{THEME_SCRIPT}
@@ -1041,45 +1134,45 @@ def render(item, related):
       <header class="top">
         <div class="brand">
           <div class="logo">
-            <a href="/"><img src="/static/logo.webp" alt="IT Movies" width="100" height="100"></a>
+            <a href="{lang_path('/', lang)}"><img src="/static/logo.webp" alt="IT Movies" width="100" height="100"></a>
           </div>
           <div class="brand-text">
             <div class="brand-name">IT Movies</div>
-            <p>Подборка фильмов и сериалов о компьютерах, технологиях, ИИ и т.д.</p>
+            <p>{esc(labels["subtitle"])}</p>
           </div>
         </div>
       </header>
       <main>
-        <nav class="breadcrumb" aria-label="Главная">
-          <a href="/">Главная</a><span class="bc-sep"> › </span><span class="bc-current"><span class="bc-type">{esc(title_ru)}</span></span>
+        <nav class="breadcrumb" aria-label="{esc(labels["home"])}">
+          <a href="{lang_path('/', lang)}">{esc(labels["home"])}</a><span class="bc-sep"> › </span><span class="bc-current"><span class="bc-type">{esc(title)}</span></span>
         </nav>
         <article class="film-main">
 {noscript_poster}          <div class="film-info">
-            <h1 class="film-title">{esc(title_ru)}</h1>
+            <h1 class="film-title">{esc(title)}</h1>
 {noscript_alt}            <div class="film-meta">
               <span class="film-meta-item">{esc(str(item["year"]))}</span>
               <span class="film-meta-item">{esc(genre_list)}</span>
             </div>
-{rat_tiles}            <p class="film-desc">{esc(desc_ru)}</p>
+{rat_tiles}            <p class="film-desc">{esc(desc)}</p>
             <details class="film-desc-alt-wrap">
-              <summary>Описание на английском</summary>
-              <p class="film-desc film-desc-alt">{esc(desc_en)}</p>
+              <summary>{esc(labels["descAlt"])}</summary>
+              <p class="film-desc film-desc-alt">{esc(desc_alt)}</p>
             </details>
           </div>
         </article>
         <section class="related">
-          <h2>Похожее в каталоге</h2>
+          <h2>{esc(labels["relatedH"])}</h2>
           <ul>
 {related_items}          </ul>
         </section>
-        <p class="back-catalog"><a href="/">← Вернуться на главную</a></p>
+        <p class="back-catalog"><a href="{lang_path('/', lang)}">← {esc(labels["backToCatalog"])}</a></p>
       </main>
       <footer>
         <div class="footer-line">
-          <span>Сделано с</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
+          <span>{esc(labels["codedWith"])}</span><span class="heart"> ♥ </span><a href="https://t.me/wh_lab" target="_blank" rel="noopener noreferrer">Exited3n</a>
         </div>
         <div class="footer-line">
-          <a class="footer-privacy" href="/privacy.html">Политика конфиденциальности</a>
+          <a class="footer-privacy" href="{privacy_url}">{esc(labels["privacy"])}</a>
         </div>
       </footer>
     </noscript>
@@ -1139,20 +1232,28 @@ def main():
 
     written = 0
     for item in catalog:
+        require_en_text(item)
         rel = related_to(item, catalog)
-        html_out = render(item, rel)
-        out_dir = OUT / item_slug(item)
-        out_dir.mkdir(parents=True, exist_ok=True)
-        target = out_dir / "index.html"
-        if not target.exists() or target.read_text(encoding="utf-8") != html_out:
-            target.write_text(html_out, encoding="utf-8")
-            written += 1
+        for lang, out in (("ru", OUT), ("en", OUT_EN)):
+            html_out = render(item, rel, lang)
+            out_dir = out / item_slug(item)
+            out_dir.mkdir(parents=True, exist_ok=True)
+            target = out_dir / "index.html"
+            if not target.exists() or target.read_text(encoding="utf-8") != html_out:
+                target.write_text(html_out, encoding="utf-8")
+                written += 1
 
     desired = {item_slug(item) for item in catalog}
-    stale = [d for d in OUT.iterdir() if d.is_dir() and d.name not in desired]
-    for d in stale:
-        shutil.rmtree(d, ignore_errors=True)
-    film_note = f"Film pages: {len(catalog)} total, {written} written/updated, {len(stale)} stale dirs removed"
+    stale = []
+    for out in (OUT, OUT_EN):
+        for d in out.iterdir() if out.is_dir() else []:
+            if d.is_dir() and d.name not in desired:
+                shutil.rmtree(d, ignore_errors=True)
+                stale.append(d)
+    film_note = (
+        f"Film pages: {len(catalog)} records x 2 languages = {len(catalog) * 2} "
+        f"pages, {written} written/updated, {len(stale)} stale dirs removed"
+    )
     print(film_note)
 
     index_path = ROOT / "index.html"
