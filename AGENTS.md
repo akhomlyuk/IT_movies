@@ -201,9 +201,25 @@ Copy-Item _tmp\kp_votes_fresh.json _tmp\kp_votes_$(Get-Date -Format yyyy-MM).jso
 pwsh -NoProfile -File _tmp\kp_refresh.ps1      # ~1h, 10 films per batch, 90-150s between
 python _tmp\kp_compare.py                      # read-only report
 python _tmp\kp_apply.py                        # dry run: prints every edit
-python _tmp\kp_apply.py --apply                # writes js/data.js
-python tools\gen_pages.py; python tools\verify.py --strict; node tools\smoke.js; node tools\smoke.js --min; python tools\e2e.py
+python _tmp\kp_apply.py --apply                # rewrites js/data.js
+git add js/data.js js/catalog.js; git commit -m "data: refresh Kinopoisk ratings"   # COMMIT BEFORE REGENERATING
+python tools\gen_pages.py
+python tools\verify.py --strict; node tools\smoke.js; node tools\smoke.js --min; python tools\e2e.py
+git add -A; git commit -m "build: regenerate for the new catalog date"; git push
 ```
+
+**COMMIT `js/data.js` BEFORE RE-RUNNING THE GENERATOR, or CI goes red.**
+`CATALOG_DATE` is read from git history -- it is the commit date of the last
+commit that touched `js/data.js` -- and it is baked into every film's
+`dateModified` in JSON-LD, into the index page's last-updated widget and into all
+318 `<lastmod>` entries in `sitemap.xml`. Run the generator while `js/data.js`
+is still uncommitted and it derives the date from the PREVIOUS commit instead.
+The working tree is then internally consistent and every local gate is green,
+because the generator faithfully produced output for the state it saw. CI checks
+out the commit, where history is whole, regenerates with the real date, and the
+"fail if the working tree is dirty" step trips on 315 files. This happened on
+2026-10-16: `data.js` committed at 21:48 the same day, `sitemap.xml` stamped
+`2026-10-01` (the previous data commit's date), two commits red.
 
 **`kp_refresh.ps1` DELETES `_tmp\kp_votes_fresh.json` on start**, so the copy
 above is the only way to compare two months against each other.
