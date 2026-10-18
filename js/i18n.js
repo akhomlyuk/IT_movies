@@ -53,6 +53,9 @@ const I18N = {
     share: "Поделиться",
     shareNative: "Поделиться через систему",
     shareFailed: "Не удалось поделиться",
+    copyTitle: "Скопировать название",
+    titleCopied: "Название скопировано",
+    titleCopyFailed: "Не удалось скопировать название",
     typeLabels: {
       movie: "Фильм",
       series: "Сериал",
@@ -149,6 +152,9 @@ const I18N = {
     backToCatalog: "Back to home",
     home: "Home",
     share: "Share",
+    copyTitle: "Copy title",
+    titleCopied: "Title copied",
+    titleCopyFailed: "Could not copy the title",
     shareNative: "Share via system",
     shareFailed: "Could not share",
     typeLabels: {

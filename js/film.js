@@ -102,6 +102,12 @@ const FILM_TEMPLATE = `
         <div class="film-meta">
           <span class="film-meta-item">{{ year }}</span>
           <span class="film-meta-item">{{ genreLabel }}</span>
+          <button class="copy-title" type="button" :aria-label="copyLabel" @click="copyTitle">
+            <svg class="icon copy-ico" viewBox="0 0 24 24" aria-hidden="true" v-if="!copyState"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H8V7h11v14Z"/></svg>
+            <svg class="icon copy-ico" viewBox="0 0 24 24" aria-hidden="true" v-else><path d="M9.6 16.9 5.1 12.4l1.4-1.4 3.1 3.1 7.9-7.9 1.4 1.4-9.3 9.3Z"/></svg>
+            <span>{{ copyText }}</span>
+          </button>
+          <span class="visually-hidden" role="status">{{ copyState === "copied" ? t.titleCopied : copyState === "failed" ? t.titleCopyFailed : "" }}</span>
         </div>
         <div class="ratings">
           <a class="kp rating-chip rating-chip--kp" :href="kpHref" target="_blank" rel="noopener noreferrer" :aria-label="t.kp + ': ' + kpRating + ' — ' + t.openExternal">{{ t.kp }}: {{ kpRating }}{{ isHighRating(kpRating) ? " ★" : "" }}</a>
@@ -290,6 +296,60 @@ const app = createApp({
     const desc = computed(() =>
       item ? item.desc : I18N[lang.value].fatalError
     );
+    const copyState = ref("");
+    let copyTimer = 0;
+    function writeClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text).then(
+          () => true,
+          () => legacyCopy(text)
+        );
+      }
+      return Promise.resolve(legacyCopy(text));
+    }
+    function legacyCopy(text) {
+      const field = document.createElement("textarea");
+      field.value = text;
+      field.setAttribute("readonly", "");
+      field.style.position = "fixed";
+      field.style.opacity = "0";
+      document.body.appendChild(field);
+      field.select();
+      let ok = false;
+      try {
+        ok = document.execCommand("copy");
+      } catch (e) {
+        ok = false;
+      }
+      document.body.removeChild(field);
+      return ok;
+    }
+    function copyTitle() {
+      writeClipboard(title.value).then((ok) => {
+        copyState.value = ok ? "copied" : "failed";
+        clearTimeout(copyTimer);
+        copyTimer = setTimeout(() => {
+          copyState.value = "";
+        }, 2500);
+      });
+    }
+    const copyText = computed(() =>
+      copyState.value === "copied"
+        ? t.value.titleCopied
+        : copyState.value === "failed"
+          ? t.value.titleCopyFailed
+          : t.value.copyTitle
+    );
+    const copyLabel = computed(() =>
+      copyState.value === "copied"
+        ? t.value.titleCopied
+        : copyState.value === "failed"
+          ? t.value.titleCopyFailed
+          : t.value.copyTitle + ": " + title.value
+    );
+    watch(lang, () => {
+      copyState.value = "";
+    });
     const isFav = computed(() => !!(item && item.fav));
     const genreLabel = computed(() =>
       item ? item.genres.map((g) => t.value.genres[g] || g).join(" / ") : ""
@@ -418,6 +478,10 @@ function relatedHref(r) {
       title,
       altTitle,
       desc,
+      copyState,
+      copyText,
+      copyLabel,
+      copyTitle,
       isFav,
       genreLabel,
       year,

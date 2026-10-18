@@ -135,7 +135,6 @@
   --fs-md: 1rem;
   --fs-lg: 1.125rem;
   --fs-xl: 1.5rem;
-  --fs-display: 3rem;
   --tap: 44px;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -2219,7 +2218,7 @@ html.no-scroll-state.scrolled .scroll-top {
   max-width: min(var(--measure), 100%);
   margin: 0 0 var(--space-1);
   overflow: hidden;
-  font-size: clamp(1.5rem, 4vw, var(--fs-display));
+  font-size: clamp(1.5rem, 4vw, 2rem);
   font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1.15;
@@ -2259,6 +2258,41 @@ html.no-scroll-state.scrolled .scroll-top {
   content: "·";
   margin-right: var(--space-3);
   color: var(--line-strong);
+}
+
+.copy-title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--tap);
+  padding: 0 var(--space-2);
+  border: 1px solid var(--line-control);
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--ink-muted);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.copy-title:hover {
+  background: var(--hover);
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.copy-title:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.copy-ico {
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
 }
 
 .film-poster {
