@@ -102,12 +102,6 @@ const FILM_TEMPLATE = `
         <div class="film-meta">
           <span class="film-meta-item">{{ year }}</span>
           <span class="film-meta-item">{{ genreLabel }}</span>
-          <button class="copy-title" type="button" :aria-label="copyLabel" @click="copyTitle">
-            <svg class="icon copy-ico" viewBox="0 0 24 24" aria-hidden="true" v-if="!copyState"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H8V7h11v14Z"/></svg>
-            <svg class="icon copy-ico" viewBox="0 0 24 24" aria-hidden="true" v-else><path d="M9.6 16.9 5.1 12.4l1.4-1.4 3.1 3.1 7.9-7.9 1.4 1.4-9.3 9.3Z"/></svg>
-            <span>{{ copyText }}</span>
-          </button>
-          <span class="visually-hidden" role="status">{{ copyState === "copied" ? t.titleCopied : copyState === "failed" ? t.titleCopyFailed : "" }}</span>
         </div>
         <div class="ratings">
           <a class="kp rating-chip rating-chip--kp" :href="kpHref" target="_blank" rel="noopener noreferrer" :aria-label="t.kp + ': ' + kpRating + ' — ' + t.openExternal">{{ t.kp }}: {{ kpRating }}{{ isHighRating(kpRating) ? " ★" : "" }}</a>
@@ -123,8 +117,14 @@ const FILM_TEMPLATE = `
             :aria-label="t.shareNative" :title="t.shareNative" @click="doNativeShare">
             <svg class="share-ico" aria-hidden="true" viewBox="0 0 24 24"><use href="/static/share.svg#icon-native"></use></svg>
           </button>
+          <button class="share-btn copy-title" type="button" :data-state="copyState || null"
+            :aria-label="copyLabel" :title="copyLabel" @click="copyTitle">
+            <svg class="share-ico" aria-hidden="true" viewBox="0 0 24 24" v-if="copyState !== 'copied'"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H8V7h11v14Z"/></svg>
+            <svg class="share-ico" aria-hidden="true" viewBox="0 0 24 24" v-else><path d="M9.6 16.9 5.1 12.4l1.4-1.4 3.1 3.1 7.9-7.9 1.4 1.4-9.3 9.3Z"/></svg>
+          </button>
         </div>
         <span class="visually-hidden" role="status">{{ shareStatus }}</span>
+        <span class="visually-hidden" role="status">{{ copyState === "copied" ? t.titleCopied : copyState === "failed" ? t.titleCopyFailed : "" }}</span>
       </div>
     </article>
 
@@ -333,13 +333,6 @@ const app = createApp({
         }, 2500);
       });
     }
-    const copyText = computed(() =>
-      copyState.value === "copied"
-        ? t.value.titleCopied
-        : copyState.value === "failed"
-          ? t.value.titleCopyFailed
-          : t.value.copyTitle
-    );
     const copyLabel = computed(() =>
       copyState.value === "copied"
         ? t.value.titleCopied
@@ -479,7 +472,6 @@ function relatedHref(r) {
       altTitle,
       desc,
       copyState,
-      copyText,
       copyLabel,
       copyTitle,
       isFav,

@@ -2260,26 +2260,7 @@ html.no-scroll-state.scrolled .scroll-top {
   color: var(--line-strong);
 }
 
-.copy-title {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  min-height: var(--tap);
-  padding: 0 var(--space-2);
-  border: 1px solid var(--line-control);
-  border-radius: var(--radius-s);
-  background: transparent;
-  color: var(--ink-muted);
-  font: inherit;
-  cursor: pointer;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
-}
-
-.copy-title:hover {
-  background: var(--hover);
+.copy-title[data-state="copied"] {
   border-color: var(--ink);
   color: var(--ink);
 }
@@ -2287,12 +2268,6 @@ html.no-scroll-state.scrolled .scroll-top {
 .copy-title:focus-visible {
   outline: var(--focus-ring-width) solid var(--focus-ring-color);
   outline-offset: var(--focus-ring-offset);
-}
-
-.copy-ico {
-  width: 1rem;
-  height: 1rem;
-  fill: currentColor;
 }
 
 .film-poster {
